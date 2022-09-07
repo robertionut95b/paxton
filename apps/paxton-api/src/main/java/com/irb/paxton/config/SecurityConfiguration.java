@@ -1,6 +1,7 @@
 package com.irb.paxton.config;
 
 import com.irb.paxton.security.auth.BasicUserDetailsService;
+import com.irb.paxton.security.auth.jwt.JwtCookieAuthenticationFilter;
 import com.irb.paxton.security.auth.jwt.PaxtonJwtAuthenticationConverter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
@@ -65,6 +67,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public JwtCookieAuthenticationFilter tokenAuthenticationFilter() {
+        return new JwtCookieAuthenticationFilter();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf((csrf) -> csrf.ignoringAntMatchers("/auth/token").ignoringAntMatchers("/auth/login"))
@@ -88,6 +95,7 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(new PaxtonJwtAuthenticationConverter().jwtAuthenticationConverter());
+        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +25,12 @@ import static com.irb.paxton.config.Constants.PAXTON_CLAIMS;
 @Component
 public class JwtUtils {
 
+    @Value("${px.auth.token.expiry:900}")
+    public long expiry;
     @Value("${px.auth.token.public.key}")
     RSAPublicKey key;
     @Value("${px.auth.token.private.key}")
     RSAPrivateKey priv;
-
-    @Value("${px.auth.token.expiry:900}")
-    private long expiry;
 
     @Bean
     JwtDecoder jwtDecoder() {
@@ -64,5 +64,27 @@ public class JwtUtils {
     public String generateToken(Authentication authentication) {
         JwtClaimsSet claims = this.establishClaims(authentication);
         return this.jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public String getUsernameFromToken(String token) throws BadJwtException {
+        return decodeToken(token).getSubject();
+    }
+
+    public Instant getExpirationDateFromToken(String token) throws BadJwtException {
+        return decodeToken(token).getExpiresAt();
+    }
+
+    public Jwt decodeToken(String token) {
+        return jwtDecoder().decode(token);
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Instant expiration = getExpirationDateFromToken(token);
+        return expiration.isBefore(Instant.now());
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        String username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

@@ -24,12 +24,12 @@ import static com.irb.paxton.config.Constants.PAXTON_CLAIMS;
 @Component
 public class JwtUtils {
 
-    @Value("${px.jwt.public.key}")
+    @Value("${px.auth.token.public.key}")
     RSAPublicKey key;
-    @Value("${px.jwt.private.key}")
+    @Value("${px.auth.token.private.key}")
     RSAPrivateKey priv;
 
-    @Value("${px.jwt.validity:3600}")
+    @Value("${px.auth.token.expiry:900}")
     private long expiry;
 
     @Bean

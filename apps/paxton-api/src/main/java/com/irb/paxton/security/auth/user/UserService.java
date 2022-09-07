@@ -43,7 +43,7 @@ public class UserService {
 
     public User registerNewUser(UserSignupDto user) throws UserAlreadyExistsException {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
-            throw new UserAlreadyExistsException("Email/username already in use");
+            throw new UserAlreadyExistsException("Email or username already in use");
         }
         User u = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
                 List.of(roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString()), roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),

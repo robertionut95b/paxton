@@ -20,6 +20,8 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -65,7 +67,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((csrf) -> csrf.ignoringAntMatchers("/auth/token"))
+                .csrf((csrf) -> csrf.ignoringAntMatchers("/auth/token").ignoringAntMatchers("/auth/login"))
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
+                .and()
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(authProvider())
                 .exceptionHandling((exceptions) -> exceptions
@@ -74,7 +79,6 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/login").permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()

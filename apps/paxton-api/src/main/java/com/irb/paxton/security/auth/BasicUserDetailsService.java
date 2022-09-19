@@ -29,7 +29,7 @@ public class BasicUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User %s does not exist", lookup));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getCredentials().getValue(), getAuthorities(user.getRoles()));
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getCredentials().getValue(), user.isEmailConfirmed(), true, true, true, getAuthorities(user.getRoles()));
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
@@ -42,4 +42,6 @@ public class BasicUserDetailsService implements UserDetailsService {
         }
         return authorities;
     }
+
+
 }

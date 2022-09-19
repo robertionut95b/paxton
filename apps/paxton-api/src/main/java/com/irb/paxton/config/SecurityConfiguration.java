@@ -86,6 +86,7 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -95,6 +96,9 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(new PaxtonJwtAuthenticationConverter().jwtAuthenticationConverter());
+        // disable for production
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

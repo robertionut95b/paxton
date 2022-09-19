@@ -8,7 +8,6 @@ import static com.irb.paxton.config.Constants.PAXTON_CLAIMS;
 
 @NoArgsConstructor
 public class PaxtonJwtAuthenticationConverter {
-
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         // create a custom JWT converter to map the roles from the token as granted authorities
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();

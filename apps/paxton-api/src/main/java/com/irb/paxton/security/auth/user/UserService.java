@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,6 +38,10 @@ public class UserService {
         return this.userRepository.findByEmailOrUsername(email, username);
     }
 
+    public Optional<User> findByEmail(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
     public User findByUsername(String username) {
         return this.userRepository.findByUsername(username);
     }
@@ -47,10 +52,10 @@ public class UserService {
         }
         User u = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
                 List.of(roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString()), roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
-                new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null));
+                new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         userRepository.save(u);
-        log.info(String.format("Created user login %s", user.getUsername()));
+        log.info(String.format("Created user login %s, confirmation email message will initiate", user.getUsername()));
 
         return u;
     }
@@ -62,5 +67,14 @@ public class UserService {
         if (!bCryptPasswordEncoder.matches(userLoginDto.getPassword(), user.getCredentials().getValue())) {
             throw new InvalidCredentialsException("Invalid username/password");
         }
+    }
+
+    public User updateUser(User user) {
+        return this.userRepository.save(user);
+    }
+
+    public void confirmEmailUser(User user) {
+        user.setEmailConfirmed(true);
+        this.userRepository.save(user);
     }
 }

@@ -70,4 +70,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "credentials_id", referencedColumnName = "id")
     @JsonIgnore
     private Credentials credentials;
+
+    @NotNull
+    private boolean isEmailConfirmed = false;
 }

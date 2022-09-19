@@ -49,7 +49,7 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (JwtException jwtException) {
-            log.error(jwtException.getMessage());
+            log.debug(jwtException.getMessage());
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
@@ -64,6 +64,9 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
 
     private String getJwtFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
         for (Cookie cookie : cookies) {
             if (accessTokenCookieName.equals(cookie.getName())) {
                 return cookie.getValue();

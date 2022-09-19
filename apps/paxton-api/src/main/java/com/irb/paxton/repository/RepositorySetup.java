@@ -1,4 +1,4 @@
-package com.irb.paxton.security.auth.repository;
+package com.irb.paxton.repository;
 
 import com.irb.paxton.baseEntity.BaseEntity;
 import lombok.AllArgsConstructor;

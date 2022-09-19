@@ -1,4 +1,4 @@
-package com.irb.paxton.security.auth.repository;
+package com.irb.paxton.repository;
 
 import com.irb.paxton.security.auth.privilege.Privilege;
 import com.irb.paxton.security.auth.privilege.PrivilegeService;
@@ -57,19 +57,19 @@ public class RepositoryBootEventService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         // create system user (root)
-        User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", Collections.singletonList(adminRole), null);
+        User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", Collections.singletonList(adminRole), null, true);
         Credentials credentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("paxton123"), true, LocalDate.now(), null);
         systemUser.setCredentials(credentials);
         userService.createUser(systemUser);
 
         // create base admin user
-        User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", Collections.singletonList(adminRole), null);
+        User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", Collections.singletonList(adminRole), null, true);
         Credentials adminCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("admin"), true, LocalDate.now(), null);
         admin.setCredentials(adminCredentials);
         userService.createUser(admin);
 
         // create read-only user
-        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", Collections.singletonList(userRole), null);
+        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", Collections.singletonList(userRole), null, true);
         Credentials userCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
         readOnly.setCredentials(userCredentials);
         userService.createUser(readOnly);

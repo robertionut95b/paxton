@@ -1,6 +1,6 @@
 package com.irb.paxton.security.auth;
 
-import com.irb.paxton.security.auth.repository.RepositoryBootEventService;
+import com.irb.paxton.repository.RepositoryBootEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;

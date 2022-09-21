@@ -1,0 +1,16 @@
+scalar Date
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    birthDate: Date
+    email: String!
+    username: String!
+    roles: [Role]
+    isEmailConfirmed: Boolean
+}
+
+extend type Query {
+    getAllUsers: [User]
+}

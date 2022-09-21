@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
-import static com.irb.paxton.config.Constants.PAXTON_CLAIMS;
+import static com.irb.paxton.config.ApplicationProperties.PAXTON_CLAIMS;
 
 @NoArgsConstructor
 public class PaxtonJwtAuthenticationConverter {

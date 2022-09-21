@@ -9,7 +9,6 @@ import com.irb.paxton.security.auth.token.exceptions.TokenNotFoundException;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.dto.UserSignupDto;
-import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class SignupController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/auth/signup")
     @Transactional
-    User registerUser(@RequestBody @Valid UserSignupDto userDto, HttpServletRequest request) throws UserAlreadyExistsException {
+    User registerUser(@RequestBody @Valid UserSignupDto userDto, HttpServletRequest request) {
         User user = userService.registerNewUser(userDto);
         RegistrationToken token = registrationTokenService.createUserRegistrationToken(user);
         jmsTemplate.convertAndSend("userAccountRegistrationQueue",

@@ -1,0 +1,4 @@
+# The root query of the application
+type Query {
+    healthCheck: String
+}

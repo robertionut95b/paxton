@@ -11,7 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-import static com.irb.paxton.config.Constants.TABLE_PREFIX;
+import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
 @Table(name = TABLE_PREFIX + "_FORGOT_PASSWORD_TOKEN")

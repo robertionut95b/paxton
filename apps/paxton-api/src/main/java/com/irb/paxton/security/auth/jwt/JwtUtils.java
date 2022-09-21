@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static com.irb.paxton.config.Constants.PAXTON_CLAIMS;
+import static com.irb.paxton.config.ApplicationProperties.PAXTON_CLAIMS;
 
 @Component
 public class JwtUtils {

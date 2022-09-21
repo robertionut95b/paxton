@@ -1,4 +1,4 @@
-package com.irb.paxton.repository;
+package com.irb.paxton.jobs;
 
 import com.irb.paxton.baseEntity.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -7,28 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_REPOSITORY")
+@Table(name = TABLE_PREFIX + "_JOB_LISTING")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class RepositorySetup extends BaseEntity {
-
+public class JobListing extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private Long id;
-
-    @NotNull
-    private boolean isActive;
-
-    @NotNull
-    private boolean isOwned;
-
-    @NotNull
-    private boolean isCompleted;
 }

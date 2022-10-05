@@ -1,9 +1,15 @@
 package com.irb.paxton.organization;
 
-import com.irb.paxton.baseEntity.BaseEntity;
+import com.irb.paxton.base.BaseEntity;
+import com.irb.paxton.jobs.Job;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
@@ -20,4 +26,24 @@ public class Organization extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    private String name;
+
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    private String industry;
+
+    @NotEmpty
+    @NotNull
+    @NotBlank
+    private String location;
+
+    @OneToMany(mappedBy = "organization")
+    private Collection<Job> jobs;
+
+    @Nullable
+    private String photography;
 }

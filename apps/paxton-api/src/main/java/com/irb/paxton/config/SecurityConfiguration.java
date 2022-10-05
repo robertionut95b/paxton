@@ -4,6 +4,7 @@ import com.irb.paxton.security.auth.BasicUserDetailsService;
 import com.irb.paxton.security.auth.jwt.JwtCookieAuthenticationFilter;
 import com.irb.paxton.security.auth.jwt.PaxtonJwtAuthenticationConverter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
+import com.irb.paxton.security.cors.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -72,9 +74,14 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    CorsFilter corsFilter() {
+        return new CorsFilter();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((csrf) -> csrf.ignoringAntMatchers("/auth/token").ignoringAntMatchers("/auth/login"))
+                .csrf((csrf) -> csrf.ignoringAntMatchers(new String[]{"/auth/token", "/auth/login", "/graphql", "/h2-console/**"}))
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                 .and()
@@ -97,9 +104,9 @@ public class SecurityConfiguration {
                 .jwt()
                 .jwtAuthenticationConverter(new PaxtonJwtAuthenticationConverter().jwtAuthenticationConverter());
         // disable for production
-        http.csrf().disable();
         http.headers().frameOptions().disable();
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(corsFilter(), SessionManagementFilter.class);
         return http.build();
     }
 }

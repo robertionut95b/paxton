@@ -1,5 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
+import com.irb.paxton.profile.UserProfile;
+import com.irb.paxton.profile.UserProfileRepository;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
@@ -23,6 +25,10 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
     @Autowired
     private RoleService roleService;
 
@@ -55,6 +61,7 @@ public class UserService {
                 new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         userRepository.save(u);
+        userProfileRepository.save(new UserProfile(u));
         log.info(String.format("Created user login %s, confirmation email message will initiate", user.getUsername()));
 
         return u;

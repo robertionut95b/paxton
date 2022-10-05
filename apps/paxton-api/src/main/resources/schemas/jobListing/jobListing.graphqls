@@ -1,0 +1,8 @@
+type JobListing {
+    id: ID!
+    availableFrom: Date!
+    availableTo: Date!
+    isActive: Boolean!
+    location: String!
+    job: Job!
+}

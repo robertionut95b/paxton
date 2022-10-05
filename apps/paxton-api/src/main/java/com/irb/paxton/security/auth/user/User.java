@@ -1,7 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.irb.paxton.baseEntity.BaseEntity;
+import com.irb.paxton.base.BaseEntity;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
 import lombok.AllArgsConstructor;

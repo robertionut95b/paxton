@@ -1,5 +1,9 @@
 package com.irb.paxton.repository;
 
+import com.irb.paxton.jobs.category.JobCategory;
+import com.irb.paxton.jobs.category.JobCategoryRepository;
+import com.irb.paxton.organization.Organization;
+import com.irb.paxton.organization.OrganizationRepository;
 import com.irb.paxton.security.auth.privilege.Privilege;
 import com.irb.paxton.security.auth.privilege.PrivilegeService;
 import com.irb.paxton.security.auth.role.PaxtonRole;
@@ -31,6 +35,10 @@ public class RepositoryBootEventService {
     private PrivilegeService privilegeService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private OrganizationRepository organizationRepository;
+    @Autowired
+    private JobCategoryRepository jobCategoryRepository;
 
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
@@ -75,6 +83,8 @@ public class RepositoryBootEventService {
         userService.createUser(readOnly);
 
         this.setupRepository.save(new RepositorySetup(null, true, true, true));
+        this.organizationRepository.save(new Organization(1L, "Paxton", "IT&C", "Bucharest, Ro", null, null));
+        this.jobCategoryRepository.save(new JobCategory(1L, "IT", null));
 
         log.info("Paxton app finished initializing repository, moving on ...");
     }

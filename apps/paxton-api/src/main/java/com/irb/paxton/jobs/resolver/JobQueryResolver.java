@@ -1,0 +1,15 @@
+package com.irb.paxton.jobs.resolver;
+
+import com.irb.paxton.jobs.JobService;
+import graphql.kickstart.tools.GraphQLQueryResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class JobQueryResolver implements GraphQLQueryResolver {
+
+    @Autowired
+    private JobService jobService;
+
+
+}

@@ -1,6 +1,6 @@
 package com.irb.paxton.repository;
 
-import com.irb.paxton.baseEntity.BaseEntity;
+import com.irb.paxton.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

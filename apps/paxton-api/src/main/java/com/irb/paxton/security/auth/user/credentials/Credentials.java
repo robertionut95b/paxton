@@ -1,6 +1,6 @@
 package com.irb.paxton.security.auth.user.credentials;
 
-import com.irb.paxton.baseEntity.BaseEntity;
+import com.irb.paxton.base.BaseEntity;
 import com.irb.paxton.security.auth.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

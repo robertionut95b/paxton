@@ -1,0 +1,8 @@
+type JobCategory {
+    id: ID!
+    name: String!
+}
+
+extend type Query {
+    getAllJobCategories: [JobCategory]
+}

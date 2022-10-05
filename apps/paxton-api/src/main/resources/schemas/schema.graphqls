@@ -2,3 +2,7 @@
 type Query {
     healthCheck: String
 }
+
+type Mutation {
+    healthCheckPost: String
+}

@@ -1,6 +1,5 @@
 package com.irb.paxton.mail;
 
-import com.irb.paxton.mail.exception.SmtpConnectionRefused;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +42,7 @@ public class PaxtonMailService implements EmailService {
     private int smtpPort;
 
     @PostConstruct
-    public void checkConnection() throws SmtpConnectionRefused {
+    public void checkConnection() {
         if (!pingHost(smtpHost, smtpPort, 3000)) {
             log.error("Smtp connection refused, please check application properties. This connection is required for user management activities");
         }

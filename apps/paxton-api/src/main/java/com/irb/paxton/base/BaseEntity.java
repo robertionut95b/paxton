@@ -1,4 +1,4 @@
-package com.irb.paxton.baseEntity;
+package com.irb.paxton.base;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;

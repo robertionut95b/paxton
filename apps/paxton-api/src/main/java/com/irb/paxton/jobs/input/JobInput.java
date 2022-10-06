@@ -1,7 +1,10 @@
 package com.irb.paxton.jobs.input;
 
 import com.irb.paxton.jobs.contract.ContractType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +14,9 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobInput implements Serializable {
 
     @Serial

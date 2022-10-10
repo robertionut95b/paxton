@@ -1,7 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
-import com.irb.paxton.profile.UserProfile;
-import com.irb.paxton.profile.UserProfileRepository;
+import com.irb.paxton.core.profile.UserProfile;
+import com.irb.paxton.core.profile.UserProfileRepository;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;

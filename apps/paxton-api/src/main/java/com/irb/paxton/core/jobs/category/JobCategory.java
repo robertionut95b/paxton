@@ -1,12 +1,8 @@
-package com.irb.paxton.security.auth.privilege;
+package com.irb.paxton.core.jobs.category;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.security.auth.role.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.irb.paxton.core.jobs.Job;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,12 +13,13 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_PRIVILEGE")
+@Table(name = TABLE_PREFIX + "_JOB_CATEGORY")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Privilege extends BaseEntity {
+public class JobCategory extends BaseEntity {
+    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -33,7 +30,6 @@ public class Privilege extends BaseEntity {
     @NotBlank
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    @JsonIgnore
-    private Collection<Role> roles;
+    @OneToMany(mappedBy = "category")
+    private Collection<Job> jobs;
 }

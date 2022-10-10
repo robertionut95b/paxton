@@ -1,9 +1,9 @@
 package com.irb.paxton.repository;
 
-import com.irb.paxton.jobs.category.JobCategory;
-import com.irb.paxton.jobs.category.JobCategoryRepository;
-import com.irb.paxton.organization.Organization;
-import com.irb.paxton.organization.OrganizationRepository;
+import com.irb.paxton.core.jobs.category.JobCategory;
+import com.irb.paxton.core.jobs.category.JobCategoryRepository;
+import com.irb.paxton.core.organization.Organization;
+import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.security.auth.privilege.Privilege;
 import com.irb.paxton.security.auth.privilege.PrivilegeService;
 import com.irb.paxton.security.auth.role.PaxtonRole;

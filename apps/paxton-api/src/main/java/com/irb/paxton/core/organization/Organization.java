@@ -1,12 +1,9 @@
-package com.irb.paxton.security.auth.privilege;
+package com.irb.paxton.core.organization;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.security.auth.role.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.irb.paxton.core.jobs.Job;
+import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,23 +14,36 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_PRIVILEGE")
+@Table(name = TABLE_PREFIX + "_ORGANIZATION")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Privilege extends BaseEntity {
+public class Organization extends BaseEntity {
+    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
-    @NotEmpty
     @NotBlank
+    @NotEmpty
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    @JsonIgnore
-    private Collection<Role> roles;
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    private String industry;
+
+    @NotEmpty
+    @NotNull
+    @NotBlank
+    private String location;
+
+    @OneToMany(mappedBy = "organization")
+    private Collection<Job> jobs;
+
+    @Nullable
+    private String photography;
 }

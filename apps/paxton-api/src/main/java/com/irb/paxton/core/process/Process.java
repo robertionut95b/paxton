@@ -1,14 +1,10 @@
-package com.irb.paxton.security.auth.privilege;
+package com.irb.paxton.core.process;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.security.auth.role.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -17,12 +13,13 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_PRIVILEGE")
+@Table(name = TABLE_PREFIX + "_PROCESS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Privilege extends BaseEntity {
+public class Process extends BaseEntity {
+    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -31,9 +28,18 @@ public class Privilege extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Min(value = 5)
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    @JsonIgnore
-    private Collection<Role> roles;
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    @Min(value = 10)
+    private String description;
+
+    @OneToMany(mappedBy = "process")
+    private Collection<ProcessSteps> processSteps;
+
+    @OneToMany(mappedBy = "process")
+    private Collection<ProcessUsers> processUsers;
 }

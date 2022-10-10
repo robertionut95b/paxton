@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -64,23 +65,15 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (accessTokenCookieName.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
+        Cookie jwtSessionCookie = WebUtils.getCookie(request, accessTokenCookieName);
+        if (jwtSessionCookie != null) {
+            return jwtSessionCookie.getValue();
         }
         return null;
     }
 
     private String getJwtToken(HttpServletRequest request, boolean fromCookie) {
-        if (fromCookie) {
-            return getJwtFromCookie(request);
-        }
-        return getJwtFromRequest(request);
+        return fromCookie ? getJwtFromCookie(request) : getJwtFromRequest(request);
     }
 
 }

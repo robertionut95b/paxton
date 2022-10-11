@@ -1,9 +1,6 @@
 package com.irb.paxton.core.jobs;
 
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.jobs.category.JobCategory;
-import com.irb.paxton.core.organization.Organization;
-import com.irb.paxton.core.jobs.contract.ContractType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +30,7 @@ public class Job extends BaseEntity {
     @NotNull
     @NotBlank(message = "Name cannot be blank")
     @NotEmpty
+    @Column(unique = true)
     private String name;
 
     @NotNull
@@ -40,19 +38,6 @@ public class Job extends BaseEntity {
     @NotEmpty
     @Length(min = 10, message = "Description must be longer than 10 characters")
     private String description;
-
-    @Enumerated
-    @Column(nullable = false)
-    @NotNull
-    private ContractType contractType;
-
-    @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private JobCategory category;
 
     @OneToMany(mappedBy = "job")
     private Collection<JobListing> jobListings;

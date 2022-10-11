@@ -1,7 +1,7 @@
 package com.irb.paxton.core.jobs.resolver;
 
-import com.irb.paxton.core.jobs.JobService;
 import com.irb.paxton.core.jobs.Job;
+import com.irb.paxton.core.jobs.JobService;
 import com.irb.paxton.core.jobs.input.JobInput;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -23,7 +23,7 @@ public class JobMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public Job publishJobDescription(@Valid JobInput jobInput) {
-        return jobService.publishJobDescription(jobInput);
+    public Job publishJob(@Valid JobInput jobInput) {
+        return jobService.publishJob(jobInput);
     }
 }

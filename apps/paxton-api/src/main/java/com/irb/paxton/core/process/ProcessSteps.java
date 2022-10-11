@@ -4,6 +4,7 @@ import com.irb.paxton.core.base.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
@@ -27,6 +28,10 @@ public class ProcessSteps extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "step_id")
     private Step step;
+
+    @NotNull
+    @Enumerated
+    private Status status;
 
     @Column(nullable = false, name = "step_order")
     private int order = 1;

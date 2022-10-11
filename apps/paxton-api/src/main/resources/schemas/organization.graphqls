@@ -3,6 +3,6 @@ type Organization {
     name: String!
     industry: String!
     location: String!
-    jobs: [Job]
+    jobs: [JobListing]
     photography: String
 }

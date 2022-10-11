@@ -1,7 +1,7 @@
 package com.irb.paxton.core.organization;
 
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.jobs.Job;
+import com.irb.paxton.core.jobs.JobListing;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -42,7 +42,7 @@ public class Organization extends BaseEntity {
     private String location;
 
     @OneToMany(mappedBy = "organization")
-    private Collection<Job> jobs;
+    private Collection<JobListing> jobs;
 
     @Nullable
     private String photography;

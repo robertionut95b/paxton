@@ -2,8 +2,9 @@ package com.irb.paxton.core.profile.experience;
 
 import com.irb.paxton.core.activity.ActivitySector;
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.organization.Organization;
+import com.irb.paxton.core.profile.UserProfile;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -61,4 +62,7 @@ public class Experience extends BaseEntity {
     @NotBlank
     @NotEmpty
     private String description;
+
+    @ManyToOne
+    private UserProfile userProfile;
 }

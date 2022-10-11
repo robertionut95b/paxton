@@ -1,6 +1,5 @@
 package com.irb.paxton.core.jobs.input;
 
-import com.irb.paxton.core.jobs.contract.ContractType;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -26,13 +25,4 @@ public class JobInput implements Serializable {
     @NotEmpty
     @Length(min = 10, message = "Description must be longer than 10 characters")
     private String description;
-
-    @NotNull
-    private ContractType contractType;
-
-    @NotNull
-    private Long organizationId;
-
-    @NotNull
-    private Long jobCategoryId;
 }

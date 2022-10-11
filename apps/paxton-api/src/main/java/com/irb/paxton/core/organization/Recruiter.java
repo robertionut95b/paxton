@@ -21,8 +21,7 @@ public class Recruiter extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }

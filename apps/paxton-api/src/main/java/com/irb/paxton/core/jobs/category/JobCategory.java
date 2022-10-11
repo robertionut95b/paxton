@@ -1,7 +1,7 @@
 package com.irb.paxton.core.jobs.category;
 
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.jobs.Job;
+import com.irb.paxton.core.jobs.JobListing;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,5 +31,5 @@ public class JobCategory extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    private Collection<Job> jobs;
+    private Collection<JobListing> jobs;
 }

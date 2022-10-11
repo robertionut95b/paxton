@@ -1,12 +1,9 @@
-package com.irb.paxton.core.process;
+package com.irb.paxton.core.candidate;
 
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.jobs.JobListing;
-import com.irb.paxton.core.organization.Recruiter;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -15,12 +12,12 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_PROCESS")
+@Table(name = TABLE_PREFIX + "_DOCUMENT")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Process extends BaseEntity {
+public class Document extends BaseEntity {
     @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,22 +27,13 @@ public class Process extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
-    @Min(value = 5)
     private String name;
 
     @NotNull
     @NotEmpty
     @NotBlank
-    @Min(value = 10)
-    private String description;
+    private String url;
 
-    @OneToMany(mappedBy = "process")
-    private Collection<ProcessSteps> processSteps;
-
-    @ManyToOne
-    @JoinColumn(name = "recruiter_id")
-    private Recruiter recruiter;
-
-    @OneToMany(mappedBy = "process")
-    private Collection<JobListing> jobListings;
+    @OneToMany(mappedBy = "document")
+    private Collection<ApplicationDocument> documents;
 }

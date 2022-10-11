@@ -5,4 +5,7 @@ type JobListing {
     isActive: Boolean!
     location: String!
     job: Job!
+    contractType: ContractType!
+    organization: Organization!
+    category: JobCategory
 }

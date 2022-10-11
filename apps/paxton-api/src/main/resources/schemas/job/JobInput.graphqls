@@ -1,7 +1,4 @@
 input JobInput {
     name: String!
     description: String!
-    contractType: String!
-    organizationId: Int!
-    jobCategoryId: Int!
 }

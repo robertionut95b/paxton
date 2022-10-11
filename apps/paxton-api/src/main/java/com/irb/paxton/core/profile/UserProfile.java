@@ -1,8 +1,9 @@
 package com.irb.paxton.core.profile;
 
 import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.security.auth.user.User;
+import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.ProfileStudies;
+import com.irb.paxton.security.auth.user.User;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -27,7 +28,7 @@ public class UserProfile extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -47,6 +48,9 @@ public class UserProfile extends BaseEntity {
     @NotBlank
     @NotEmpty
     private String profileTitle;
+
+    @OneToMany(mappedBy = "userProfile")
+    private Collection<Experience> experiences;
 
     public UserProfile(User user) {
         this.user = user;

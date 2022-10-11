@@ -2,12 +2,9 @@ type Job {
     id: ID!
     name: String!
     description: String!
-    contractType: ContractType!
-    organization: Organization!
-    category: JobCategory
     jobListings: [JobListing]
 }
 
 extend type Mutation {
-    publishJobDescription(JobInput: JobInput): Job
+    publishJob(JobInput: JobInput): Job
 }

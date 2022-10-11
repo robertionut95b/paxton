@@ -1,8 +1,5 @@
 package com.irb.paxton.core.jobs.dto;
 
-import com.irb.paxton.core.jobs.category.JobCategory;
-import com.irb.paxton.core.jobs.contract.ContractType;
-import com.irb.paxton.core.organization.Organization;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -28,13 +25,4 @@ public class JobDto implements Serializable {
     @NotEmpty
     @Min(value = 10)
     private String description;
-
-    @NotNull
-    private ContractType contractType;
-
-    @NotNull
-    private Organization organization;
-
-    @NotNull
-    private JobCategory category;
 }

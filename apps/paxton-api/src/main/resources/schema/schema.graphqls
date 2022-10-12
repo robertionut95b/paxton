@@ -1,0 +1,90 @@
+# The root query of the application
+scalar Date
+
+enum ContractType {
+    FULL_TIME,
+    PART_TIME,
+    INTERNSHIP,
+    FREE_PROFESSIONAL,
+    TEMPORARY_EMPLOYEE,
+    PUPIL,
+    SEASONAL
+}
+
+type Application {
+    id: ID!
+    dateOfApplication: Date!
+}
+
+type JobCategory {
+    id: ID!
+    name: String!
+}
+
+type Job {
+    id: ID!
+    name: String!
+    description: String!
+    jobListings: [JobListing]
+}
+
+input JobInput {
+    name: String!
+    description: String!
+}
+
+type JobListing {
+    id: ID!
+    availableFrom: Date!
+    availableTo: Date!
+    isActive: Boolean!
+    location: String!
+    numberOfVacancies: Int!
+    job: Job!
+    contractType: ContractType!
+    organization: Organization!
+    category: JobCategory
+    applications: [Application]
+}
+
+type Organization {
+    id: ID!
+    name: String!
+    industry: String!
+    location: String!
+    jobs: [JobListing]
+    photography: String
+}
+
+type Privilege {
+    id: ID!
+    name: String
+}
+
+type Role {
+    id: ID!
+    name: String!
+    privileges: [Privilege]
+}
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    birthDate: Date
+    email: String!
+    username: String!
+    roles: [Role]
+    isEmailConfirmed: Boolean
+}
+
+type Query {
+    healthCheck: String
+    getAllJobCategories: [JobCategory]
+    getAllUsers: [User]
+}
+
+type Mutation {
+    healthCheckPost: String
+    publishJob(JobInput: JobInput): Job
+}

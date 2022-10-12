@@ -1,4 +1,0 @@
-type Privilege {
-    id: ID!
-    name: String
-}

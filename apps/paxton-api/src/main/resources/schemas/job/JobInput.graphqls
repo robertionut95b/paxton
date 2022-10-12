@@ -1,4 +1,0 @@
-input JobInput {
-    name: String!
-    description: String!
-}

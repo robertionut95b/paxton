@@ -64,5 +64,6 @@ public class Experience extends BaseEntity {
     private String description;
 
     @ManyToOne
+    @NotNull
     private UserProfile userProfile;
 }

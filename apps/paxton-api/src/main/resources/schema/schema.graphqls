@@ -1,5 +1,16 @@
 # The root query of the application
 scalar Date
+scalar DateTime
+
+type ActivitySector {
+    id: ID!
+    name: String!
+}
+
+type Application {
+    id: ID!
+    dateOfApplication: Date!
+}
 
 enum ContractType {
     FULL_TIME,
@@ -11,9 +22,24 @@ enum ContractType {
     SEASONAL
 }
 
-type Application {
+enum Domain {
+    PSYCHOLOGY,
+    COMPUTER_SCIENCE,
+    ARTS,
+    MATHEMATICS
+}
+
+type Experience {
     id: ID!
-    dateOfApplication: Date!
+    title: String!
+    contractType: ContractType!
+    organization: Organization
+    location: String
+    startDate: Date!
+    endDate: Date
+    activitySector: ActivitySector!
+    description: String!
+    userProfile: UserProfile!
 }
 
 type JobCategory {
@@ -61,6 +87,24 @@ type Privilege {
     name: String
 }
 
+type ProfileStudies {
+    id: ID!
+    study: Study
+    profile: UserProfile
+    startDate: Date!
+    endDate: Date
+    diploma: String
+    description: String
+    domain: Domain
+}
+
+type Study {
+    id: ID!
+    name: String!
+    description: String
+    profiles: [ProfileStudies]
+}
+
 type Role {
     id: ID!
     name: String!
@@ -76,6 +120,16 @@ type User {
     username: String!
     roles: [Role]
     isEmailConfirmed: Boolean
+}
+
+type UserProfile {
+    id: ID!
+    user: User!
+    photography: String
+    description: String
+    profileSlugUrl: String!
+    profileTitle: String!
+    experiences: [Experience]
 }
 
 type Query {

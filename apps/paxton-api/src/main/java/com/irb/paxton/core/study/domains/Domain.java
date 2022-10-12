@@ -4,6 +4,5 @@ public enum Domain {
     PSYCHOLOGY,
     COMPUTER_SCIENCE,
     ARTS,
-    MATHEMATICS,
-
+    MATHEMATICS
 }

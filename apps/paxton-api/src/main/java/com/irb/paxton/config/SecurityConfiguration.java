@@ -5,6 +5,8 @@ import com.irb.paxton.security.auth.jwt.JwtCookieAuthenticationFilter;
 import com.irb.paxton.security.auth.jwt.PaxtonJwtAuthenticationConverter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.cors.CorsFilter;
+import com.irb.paxton.security.response.PxAccessDeniedHandler;
+import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +20,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -81,15 +81,15 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((csrf) -> csrf.ignoringAntMatchers(new String[]{"/auth/token", "/auth/login", "/graphql", "/h2-console/**"}))
+                .csrf((csrf) -> csrf.ignoringAntMatchers(new String[]{"/h2-console/**"}))
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                 .and()
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(authProvider())
                 .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+                        .authenticationEntryPoint(new PxAuthenticationEntryPoint())
+                        .accessDeniedHandler(new PxAccessDeniedHandler()))
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/auth/**").permitAll()

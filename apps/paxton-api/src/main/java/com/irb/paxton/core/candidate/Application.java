@@ -13,7 +13,9 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_APPLICATION")
+@Table(name = TABLE_PREFIX + "_APPLICATION", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"candidate_id", "jobListing_id"})
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -16,13 +16,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collection;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_JOB_LISTING")
+@Table(name = TABLE_PREFIX + "_JOB_LISTING", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"job_id", "organization_id", "process_id"})
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -46,14 +48,15 @@ public class JobListing extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull
-    private LocalDateTime availableFrom;
+    private LocalDate availableFrom;
 
     @Column(nullable = false)
     @NotNull
-    private LocalDateTime availableTo;
+    private LocalDate availableTo;
 
     @Transient
-    private boolean isActive;
+    @Column(nullable = true)
+    private boolean isActive = false;
 
     @NotNull
     @NotEmpty
@@ -89,7 +92,7 @@ public class JobListing extends BaseEntity {
     private Process process;
 
     public boolean getIsActive() {
-        return availableFrom.isAfter(LocalDateTime.now())
-                && availableTo.isBefore(LocalDateTime.now());
+        return availableFrom.isAfter(LocalDate.now())
+                && availableTo.isBefore(LocalDate.now());
     }
 }

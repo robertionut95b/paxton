@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,5 +43,13 @@ public class JobService {
         }
         jobRepository.save(job);
         return job;
+    }
+
+    public List<Job> findAllJobs() {
+        return this.jobRepository.findAll();
+    }
+
+    public Optional<Job> findById(Long jobId) {
+        return this.jobRepository.findById(jobId);
     }
 }

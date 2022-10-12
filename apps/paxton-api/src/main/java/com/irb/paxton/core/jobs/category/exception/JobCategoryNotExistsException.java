@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class JobCategoryNotFoundException extends RuntimeException implements GraphQLError {
+public class JobCategoryNotExistsException extends RuntimeException implements GraphQLError {
 
     @Serial
     private static final long serialVersionUID = 5960638623851594191L;
 
     private String invalidField;
 
-    public JobCategoryNotFoundException(String message) {
+    public JobCategoryNotExistsException(String message) {
         super(message);
     }
 
-    public JobCategoryNotFoundException(String message, String invalidField) {
+    public JobCategoryNotExistsException(String message, String invalidField) {
         super(message);
         this.invalidField = invalidField;
     }

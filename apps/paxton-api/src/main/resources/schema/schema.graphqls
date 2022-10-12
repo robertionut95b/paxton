@@ -59,11 +59,26 @@ input JobInput {
     description: String!
 }
 
-type JobListing {
-    id: ID!
+input JobListingInput {
+    title: String!
+    description: String!
     availableFrom: Date!
     availableTo: Date!
-    isActive: Boolean!
+    location: String!
+    jobId: ID!
+    numberOfVacancies: Int!
+    contractType: ContractType!
+    organizationId: ID!
+    categoryId: ID!
+}
+
+type JobListing {
+    id: ID!
+    title: String!
+    description: String!
+    availableFrom: Date!
+    availableTo: Date!
+    isActive: Boolean
     location: String!
     numberOfVacancies: Int!
     job: Job!
@@ -80,6 +95,35 @@ type Organization {
     location: String!
     jobs: [JobListing]
     photography: String
+}
+
+enum Status {
+    FINISHED,
+    STARTED,
+    DRAFT,
+    IN_PROGRESS
+}
+
+type Step {
+    id: ID!
+    title: String!
+    processSteps: [ProcessSteps]
+}
+
+type Process {
+    id: ID!
+    name: String!
+    description: String!
+    processSteps: [ProcessSteps]
+
+}
+
+type ProcessSteps {
+    id: ID!
+    process: Process!
+    status: Status!
+    step: Step!
+    order: Int!
 }
 
 type Privilege {
@@ -103,6 +147,11 @@ type Study {
     name: String!
     description: String
     profiles: [ProfileStudies]
+}
+
+type Recruiter {
+    id: ID!
+    user: User!
 }
 
 type Role {
@@ -136,9 +185,14 @@ type Query {
     healthCheck: String
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
+    getAllJobs: [Job]
+    getAllOrganizations: [Organization]
+    getAllJobListings: [JobListing]
+    getAllProcesses: [Process]
 }
 
 type Mutation {
     healthCheckPost: String
     publishJob(JobInput: JobInput): Job
+    publishJobListing(JobListingInput: JobListingInput): JobListing
 }

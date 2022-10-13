@@ -4,7 +4,6 @@ import com.irb.paxton.security.auth.BasicUserDetailsService;
 import com.irb.paxton.security.auth.jwt.JwtCookieAuthenticationFilter;
 import com.irb.paxton.security.auth.jwt.PaxtonJwtAuthenticationConverter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
-import com.irb.paxton.security.cors.CorsFilter;
 import com.irb.paxton.security.response.PxAccessDeniedHandler;
 import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +23,14 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -74,18 +79,14 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsFilter corsFilter() {
-        return new CorsFilter();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults())
                 .csrf((csrf) -> csrf.ignoringAntMatchers(new String[]{"/h2-console/**"}))
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                 .and()
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(withDefaults())
                 .authenticationProvider(authProvider())
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(new PxAuthenticationEntryPoint())
@@ -94,6 +95,7 @@ public class SecurityConfiguration {
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/").permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -106,7 +108,18 @@ public class SecurityConfiguration {
         // disable for production
         http.headers().frameOptions().disable();
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(corsFilter(), SessionManagementFilter.class);
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

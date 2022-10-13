@@ -4,9 +4,9 @@ import com.irb.paxton.core.base.BaseEntity;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.organization.Recruiter;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -30,13 +30,13 @@ public class Process extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
-    @Min(value = 5)
+    @Length(min = 5)
     private String name;
 
     @NotNull
     @NotEmpty
     @NotBlank
-    @Min(value = 10)
+    @Length(min = 10)
     private String description;
 
     @OneToMany(mappedBy = "process")

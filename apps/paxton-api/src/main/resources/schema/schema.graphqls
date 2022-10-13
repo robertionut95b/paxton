@@ -189,6 +189,9 @@ type Query {
     getAllOrganizations: [Organization]
     getAllJobListings: [JobListing]
     getAllProcesses: [Process]
+    getAllSteps: [Step]
+    getStepsByProcess(processId: Int!): [Step]
+    getAllActivitySectors: [ActivitySector]
 }
 
 type Mutation {

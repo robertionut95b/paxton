@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
+    "@heroicons/react": "^2.0.12",
     "@mantine/carousel": "^5.5.5",
     "@mantine/core": "^5.5.5",
     "@mantine/dates": "^5.5.5",
@@ -29,6 +30,7 @@
     "embla-carousel-react": "^7.0.3",
     "js-cookie": "^3.0.1",
     "localforage": "^1.10.0",
+    "lodash.clonedeep": "^4.5.0",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -41,6 +43,7 @@
   "devDependencies": {
     "@types/jest": "^29.1.2",
     "@types/js-cookie": "^3.0.2",
+    "@types/lodash.clonedeep": "^4.5.7",
     "@types/node": "^18.8.5",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",

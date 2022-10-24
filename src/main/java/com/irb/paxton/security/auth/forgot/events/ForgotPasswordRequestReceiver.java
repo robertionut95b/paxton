@@ -21,11 +21,12 @@ public class ForgotPasswordRequestReceiver {
         User user = forgotPasswordRequest.getUser();
         String token = forgotPasswordRequest.getToken();
         String subject = "Recover your Paxton password";
-        String confirmationUrl = forgotPasswordRequest.getRequestUrl() + "/auth/forgot-password?token=" + token;
+//        String confirmationUrl = forgotPasswordRequest.getRequestUrl() + "/auth/forgot-password?token=" + token;
+        String confirmationUrl = "http://localhost:3000/app/forgot-password/reset?token=" + token;
 
         Context context = new Context();
         context.setVariable("requestUrl", confirmationUrl);
-        mailService.sendEmailByTemplate(user.getEmail(), subject, "mails/signup-confirmation/password-reset-email", context);
+        mailService.sendEmailByTemplate(user.getEmail(), subject, "mails/password-reset/password-reset-email", context);
         log.info(String.format("Successfully sent password recovery request e-mail to user - %s", user.getUsername()));
     }
 }

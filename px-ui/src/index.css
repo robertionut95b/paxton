@@ -2,10 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-family: "Barlow", sans-serif;
-}
-
-.px-mantine-form {
-  letter-spacing: 0.025em;
+#root {
+  background-color: #f3eff3;
+  height: 100vh;
+  width: 100vw;
 }

@@ -8,10 +8,15 @@ const api = axios.create({
 });
 
 api.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
-api.defaults.withCredentials = true;
+
+const apiRefresh = axios.create({
+  withCredentials: true,
+  baseURL: "http://localhost:8080",
+});
+apiRefresh.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
 
 // refresh jwt cookie
-api.interceptors.response.use(
+apiRefresh.interceptors.response.use(
   (resp) => {
     return resp;
   },
@@ -28,4 +33,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export { api, apiRefresh };

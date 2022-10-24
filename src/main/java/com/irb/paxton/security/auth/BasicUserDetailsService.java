@@ -25,10 +25,8 @@ public class BasicUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String lookup) throws UsernameNotFoundException {
-        User user = this.userService.findByEmailOrUsername(lookup, lookup);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User %s does not exist", lookup));
-        }
+        User user = this.userService.findByUsername(lookup)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s does not exist", lookup)));
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getCredentials().getValue(), user.isEmailConfirmed(), true, true, true, getAuthorities(user.getRoles()));
     }
 

@@ -62,7 +62,7 @@ public class UserService {
                 new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         userRepository.save(u);
-        userProfileRepository.save(new UserProfile(u));
+        userProfileRepository.save(new UserProfile(null, u, null, "", u.getUsername(), null, String.format("%s's Profile", u.getUsername()), null));
         log.info(String.format("Created user login %s, confirmation email message will initiate", user.getUsername()));
 
         return u;

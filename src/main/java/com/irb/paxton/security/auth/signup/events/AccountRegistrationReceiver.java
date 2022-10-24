@@ -21,7 +21,8 @@ public class AccountRegistrationReceiver {
         User user = accountRegistration.getUser();
         String token = accountRegistration.getToken();
         String subject = "Complete your Paxton sign-up";
-        String confirmationUrl = accountRegistration.getRequestUrl() + "/auth/signup/confirmation?token=" + token;
+//        String confirmationUrl = accountRegistration.getRequestUrl() + "/auth/signup/confirmation?token=" + token;
+        String confirmationUrl = "http://localhost:3000/app/signup/confirmation?token=" + token;
         Context context = new Context();
 
         context.setVariable("requestUrl", confirmationUrl);

@@ -22,8 +22,6 @@ export default function Login() {
   const { user, signin } = useAuth();
   const isMutating = useIsMutating(["loginUser"]);
 
-  console.log(isMutating);
-
   const from = location.state?.from?.pathname || "/app";
 
   const form = useForm({
@@ -41,18 +39,25 @@ export default function Login() {
   const handleSubmit = async (values: typeof form["values"]) => {
     const username = values.username;
     const password = values.password;
+    form.setValues({
+      username,
+      password,
+    });
     signin({ username, password }, () => navigate(from, { replace: true }));
   };
 
   return (
-    <Container size={420} my={40}>
+    <Container size={"xs"} py={40}>
       <Title align="center">Welcome to Paxton</Title>
       <p className="text-center">
         Do not have an account yet?{" "}
         <Anchor<"a">
           href="#"
           size="sm"
-          onClick={(event) => event.preventDefault()}
+          onClick={(event) => {
+            event.preventDefault();
+            navigate("/app/signup");
+          }}
         >
           Create account
         </Anchor>
@@ -78,7 +83,10 @@ export default function Login() {
           <Group position="apart" mt="md">
             <Checkbox label="Remember me" />
             <Anchor<"a">
-              onClick={(event) => event.preventDefault()}
+              onClick={(event) => {
+                event.preventDefault();
+                navigate("/app/forgot-password/request");
+              }}
               href="#"
               size="sm"
             >
@@ -86,7 +94,7 @@ export default function Login() {
             </Anchor>
           </Group>
           <Button type="submit" fullWidth mt="xl" loading={isMutating > 0}>
-            Sign in
+            Log in
           </Button>
         </form>
       </Paper>

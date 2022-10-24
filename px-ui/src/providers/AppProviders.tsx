@@ -1,4 +1,5 @@
 import { createEmotionCache, MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import AuthProvider from "@providers/AuthProvider";
 import { QueryClient, QueryClientProvider } from "react-query";
 
@@ -24,16 +25,22 @@ export default function AppProviders({
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        fontFamily: "Barlow, sans-serif",
+        fontFamily: "Roboto, sans-serif",
+        primaryColor: "violet",
+        headings: {
+          fontFamily: "Roboto, sans-serif",
+        },
       }}
       emotionCache={createEmotionCache({
         key: "mantine",
         prepend: false,
       })}
     >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
-      </QueryClientProvider>
+      <NotificationsProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryClientProvider>
+      </NotificationsProvider>
     </MantineProvider>
   );
 }

@@ -1,5 +1,4 @@
-import useLoginUser from "@hooks/useLoginUser";
-import api from "@lib/axiosClient";
+import { useAuth } from "@auth/useAuth";
 import {
   Anchor,
   Button,
@@ -14,26 +13,18 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import FormLoginSchema from "@validator/FormLoginSchema";
 import { useEffect } from "react";
-import { useMutation } from "react-query";
+import { useIsMutating } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn } = useLoginUser();
+  const { user, signin } = useAuth();
+  const isMutating = useIsMutating(["loginUser"]);
 
-  const signUser = useMutation(async (body) => {
-    const resp = await api.post("/auth/token", {
-      ...body,
-    });
-    return resp.data;
-  });
+  console.log(isMutating);
 
-  useEffect(() => {
-    api.get("/").then((resp) => console.log(resp));
-  }, []);
-
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/app";
 
   const form = useForm({
     initialValues: {
@@ -43,21 +34,14 @@ export default function Login() {
     validate: zodResolver(FormLoginSchema),
   });
 
+  useEffect(() => {
+    if (user) navigate(from, { replace: true });
+  }, [user]);
+
   const handleSubmit = async (values: typeof form["values"]) => {
     const username = values.username;
     const password = values.password;
-
-    signUser.mutate({ username, password });
-
-    // auth.signin(username, () => {
-    //   // Send them back to the page they tried to visit when they were
-    //   // redirected to the login page. Use { replace: true } so we don't create
-    //   // another entry in the history stack for the login page.  This means that
-    //   // when they get to the protected page and click the back button, they
-    //   // won't end up back on the login page, which is also really nice for the
-    //   // user experience.
-    //   navigate(from, { replace: true });
-    // });
+    signin({ username, password }, () => navigate(from, { replace: true }));
   };
 
   return (
@@ -101,7 +85,7 @@ export default function Login() {
               Forgot password?
             </Anchor>
           </Group>
-          <Button type="submit" fullWidth mt="xl">
+          <Button type="submit" fullWidth mt="xl" loading={isMutating > 0}>
             Sign in
           </Button>
         </form>

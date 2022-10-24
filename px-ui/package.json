@@ -23,6 +23,7 @@
     "@mantine/prism": "^5.5.5",
     "@mantine/rte": "^5.5.5",
     "@mantine/spotlight": "^5.5.5",
+    "@tanstack/react-query-devtools": "^4.12.0",
     "axios": "^1.1.2",
     "dayjs": "^1.11.5",
     "embla-carousel-react": "^7.0.3",

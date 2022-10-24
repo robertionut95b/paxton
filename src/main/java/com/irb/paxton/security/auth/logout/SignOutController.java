@@ -1,19 +1,50 @@
 package com.irb.paxton.security.auth.logout;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
+import com.irb.paxton.security.response.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.Objects;
+
+import static com.irb.paxton.security.SecurityUtils.isAuthenticated;
 
 @RestController
 public class SignOutController {
 
-    @GetMapping(path = "/auth/logout")
-    private void signOut(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        if (session != null) {
-            session.invalidate();
+    @Autowired
+    JwtUtils jwtUtils;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @PostMapping(path = "/auth/logout")
+    public ResponseEntity<?> signOut(HttpServletRequest request) {
+        if (!isAuthenticated()) {
+            return new ResponseEntity<>(new ApiResponse("Not authenticated", 401), HttpStatus.UNAUTHORIZED);
         }
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!Objects.equals(principal.toString(), "anonymousUser")) {
+            String username = ((UserDetails) principal).getUsername();
+            refreshTokenService.deleteByUsername(username);
+        }
+
+        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
+        ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+                .body(new ApiResponse("Successfully signed out", 200));
     }
 }

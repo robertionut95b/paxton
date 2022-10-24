@@ -10,6 +10,7 @@ import com.irb.paxton.security.auth.user.dto.UserLoginDto;
 import com.irb.paxton.security.auth.user.dto.UserSignupDto;
 import com.irb.paxton.security.auth.user.exceptions.InvalidCredentialsException;
 import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
+import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,7 +49,7 @@ public class UserService {
         return this.userRepository.findByEmail(email);
     }
 
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return this.userRepository.findByUsername(username);
     }
 
@@ -68,7 +69,7 @@ public class UserService {
     }
 
     public void loginUser(UserLoginDto userLoginDto) {
-        User user = this.userRepository.findByUsername(userLoginDto.getUsername());
+        User user = this.userRepository.findByUsername(userLoginDto.getUsername()).orElseThrow(() -> new UserNotFoundException("User does not exist"));
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (!bCryptPasswordEncoder.matches(userLoginDto.getPassword(), user.getCredentials().getValue())) {

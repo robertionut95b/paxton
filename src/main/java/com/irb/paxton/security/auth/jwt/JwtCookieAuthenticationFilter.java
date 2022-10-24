@@ -12,11 +12,9 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.WebUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +39,7 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = getJwtToken(httpServletRequest, true);
+            String jwt = jwtUtils.getJwtFromCookies(httpServletRequest);
             String username = jwtUtils.getUsernameFromToken(jwt);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
@@ -55,25 +53,4 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-    private String getJwtFromCookie(HttpServletRequest request) {
-        Cookie jwtSessionCookie = WebUtils.getCookie(request, accessTokenCookieName);
-        if (jwtSessionCookie != null) {
-            return jwtSessionCookie.getValue();
-        }
-        return null;
-    }
-
-    private String getJwtToken(HttpServletRequest request, boolean fromCookie) {
-        return fromCookie ? getJwtFromCookie(request) : getJwtFromRequest(request);
-    }
-
 }

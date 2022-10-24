@@ -1,4 +1,5 @@
-import axios from "axios";
+import { refreshLogin } from "@auth/authApi";
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
 const api = axios.create({
@@ -7,16 +8,23 @@ const api = axios.create({
 });
 
 api.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
+api.defaults.withCredentials = true;
 
 // refresh jwt cookie
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response ? error.response.status : null;
-    if (status === 401) {
-      const relog = null;
-      return api.request(error.config);
+  (resp) => {
+    return resp;
+  },
+  async (err: AxiosError) => {
+    const originalReq = err.config;
+    if (err.response?.status === 401) {
+      // @ts-expect-error("types error")
+      originalReq._retry = true;
+      await refreshLogin();
+      // @ts-expect-error("types error")
+      return api(originalReq);
     }
+    return Promise.reject(err);
   }
 );
 

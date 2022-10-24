@@ -1,22 +1,13 @@
+import { submitLogin } from "@auth/authApi";
+import { LoginUserMutationProps } from "@interfaces/login.types";
+import { AxiosError } from "axios";
 import { useMutation } from "react-query";
 
-interface LoginUserMutationProps {
-  username: string;
-  password: string;
+export default function useLoginUser<U>() {
+  return useMutation<U, AxiosError, LoginUserMutationProps, null>(
+    (body) => submitLogin(body),
+    {
+      mutationKey: "loginUser",
+    }
+  );
 }
-
-const useLoginUser = () => {
-  const signIn = (body: LoginUserMutationProps) =>
-    useMutation(async () => {
-      const resp = await fetch("/auth/token", {
-        method: "post",
-        body: JSON.stringify(body),
-      });
-      const respJson = await resp.json();
-      return respJson;
-    }).mutate({ ...body });
-
-  return { signIn };
-};
-
-export default useLoginUser;

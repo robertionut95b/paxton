@@ -7,6 +7,7 @@ import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.response.PxAccessDeniedHandler;
 import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -39,6 +40,9 @@ public class SecurityConfiguration {
 
     @Autowired
     BasicUserDetailsService paxtonUserDetailsService;
+
+    @Value("${px.auth.token.cookieName:PXSESSION}")
+    String jwtAccessCookieName;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -93,6 +97,7 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(new PxAccessDeniedHandler()))
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
+//                .antMatchers("/auth/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/").permitAll()
@@ -102,6 +107,7 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
+                .formLogin().disable()
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(new PaxtonJwtAuthenticationConverter().jwtAuthenticationConverter());

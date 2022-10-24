@@ -22,7 +22,10 @@
       "@auth/*": ["auth/*"],
       "@validator/*": ["validator/*"],
       "@hooks/*": ["hooks/*"],
-      "@lib/*": ["lib/*"]
+      "@lib/*": ["lib/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@providers/*": ["providers/*"],
+      "@components/*": ["components/*"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],

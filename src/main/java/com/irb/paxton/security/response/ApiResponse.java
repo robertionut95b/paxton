@@ -9,5 +9,5 @@ public class ApiResponse {
 
     private String message;
 
-    private int errorCode;
+    private int status;
 }

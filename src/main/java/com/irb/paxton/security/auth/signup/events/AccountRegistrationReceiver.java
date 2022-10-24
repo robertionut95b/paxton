@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.signup.events;
 
 import com.irb.paxton.mail.PaxtonMailService;
 import com.irb.paxton.security.auth.signup.response.AccountRegistration;
-import com.irb.paxton.security.auth.token.RegistrationTokenService;
 import com.irb.paxton.security.auth.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,6 @@ public class AccountRegistrationReceiver {
 
     @Autowired
     private PaxtonMailService mailService;
-
-    @Autowired
-    private RegistrationTokenService tokenService;
 
     @JmsListener(destination = "userAccountRegistrationQueue")
     public void sendConfirmationEmail(AccountRegistration accountRegistration) {

@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.forgot.events;
 
 import com.irb.paxton.mail.PaxtonMailService;
 import com.irb.paxton.security.auth.forgot.response.ForgotPasswordRequest;
-import com.irb.paxton.security.auth.token.ForgotTokenService;
 import com.irb.paxton.security.auth.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,6 @@ public class ForgotPasswordRequestReceiver {
 
     @Autowired
     private PaxtonMailService mailService;
-
-    @Autowired
-    private ForgotTokenService tokenService;
 
     @JmsListener(destination = "userForgotRegistrationQueue")
     public void sendResetPasswordEmail(ForgotPasswordRequest forgotPasswordRequest) {

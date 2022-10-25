@@ -22,6 +22,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 
+import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+
 @Component
 public class JwtUtils {
 
@@ -74,7 +76,7 @@ public class JwtUtils {
     }
 
     public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
-        return generateCookie(jwtRefreshCookieName, refreshToken, "/auth/refreshtoken");
+        return generateCookie(jwtRefreshCookieName, refreshToken, "api/" + API_VERSION + "/auth/refreshtoken");
     }
 
     public String getUsernameFromToken(String token) throws BadJwtException {

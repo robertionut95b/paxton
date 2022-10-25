@@ -25,7 +25,8 @@
       "@lib/*": ["lib/*"],
       "@interfaces/*": ["interfaces/*"],
       "@providers/*": ["providers/*"],
-      "@components/*": ["components/*"]
+      "@components/*": ["components/*"],
+      "@constants/*": ["constants/*"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],

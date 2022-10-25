@@ -20,7 +20,7 @@ public class AccountWelcomeReceiver {
     public void sendWelcomeEmail(AccountWelcome accountWelcome) {
         Context context = new Context();
         User user = accountWelcome.getUser();
-        context.setVariable("requestUrl", "http://paxton.com");
+        context.setVariable("requestUrl", "http://localhost:8080/app");
         context.setVariable("userName", user.getFirstName() != null ? user.getFirstName() : user.getUsername());
         mailService.sendEmailByTemplate(user.getEmail(), "Welcome to Paxton!", "mails/signup-confirmation/welcome-email", context);
         log.info(String.format("Sent account welcome e-mail to user - %s", user.getUsername()));

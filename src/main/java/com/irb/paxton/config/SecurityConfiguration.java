@@ -97,10 +97,22 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(new PxAccessDeniedHandler()))
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
-//                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/assets/**").permitAll()
+                .antMatchers("/api/v*/auth/**").permitAll()
+                // front-end paths
+                .antMatchers("/app/**").permitAll()
+                .antMatchers("/",
+                        "/favicon.ico",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js")
+                .permitAll()
+                // h2 console, dev only
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/").permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()

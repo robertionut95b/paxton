@@ -2,6 +2,7 @@ package com.irb.paxton.security.auth;
 
 import com.irb.paxton.repository.RepositoryBootEventService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -18,7 +19,7 @@ public class SetupAuthDataLoader implements ApplicationListener<ContextRefreshed
 
     @Override
     @Transactional
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         this.repositoryBootEventService.setupApplicationRepository();
     }
 }

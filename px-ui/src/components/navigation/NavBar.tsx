@@ -143,7 +143,7 @@ const NavBar = ({ links }: NavBarProps) => {
             className="flex justify-center items-center gap-x-2"
             to="/app/feed"
           >
-            <BriefcaseIcon width={28} />
+            <BriefcaseIcon width={32} color={"#7950f2"} />
             <Title className="tracking-wider" mt={4} order={4}>
               Paxton
             </Title>
@@ -158,7 +158,12 @@ const NavBar = ({ links }: NavBarProps) => {
         </div>
         <Group className={classes.links} spacing={5}>
           {items}
-          <Avatar component={Link} to="/app/profile" radius={"xl"}>
+          <Avatar
+            component={Link}
+            to="/app/profile"
+            radius={"xl"}
+            color="violet"
+          >
             {user?.username[0].toUpperCase()}
           </Avatar>
         </Group>

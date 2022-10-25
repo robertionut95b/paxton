@@ -23,9 +23,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+
 @Validated
 @RestController
 @Slf4j
+@RequestMapping(path = "api/" + API_VERSION)
 public class SignupController {
     @Autowired
     JmsTemplate jmsTemplate;

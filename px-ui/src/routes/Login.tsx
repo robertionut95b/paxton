@@ -11,9 +11,9 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { useIsMutating } from "@tanstack/react-query";
 import FormLoginSchema from "@validator/FormLoginSchema";
 import { useEffect } from "react";
-import { useIsMutating } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -45,6 +45,8 @@ export default function Login() {
     });
     signin({ username, password }, () => navigate(from, { replace: true }));
   };
+
+  if (user) return null;
 
   return (
     <Container size={"xs"} py={40}>

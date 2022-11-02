@@ -1,16 +1,20 @@
 import { registerUser } from "@auth/authApi";
 import { RegisterUserMutationProps } from "@interfaces/signup.types";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useMutation } from "react-query";
 
-export default function useRegisterUser() {
-  return useMutation<null, AxiosError, RegisterUserMutationProps, null>(
-    (body) => registerUser(body),
-    {
-      mutationKey: "registerUser",
-      onSuccess: () => {
-        window.location.href = "/app/login";
-      },
-    }
+export default function useRegisterUser(
+  options: UseMutationOptions<
+    void,
+    AxiosError,
+    RegisterUserMutationProps,
+    null
+  > = {
+    mutationKey: ["registerUser"],
+  }
+) {
+  return useMutation<void, AxiosError, RegisterUserMutationProps, null>(
+    registerUser,
+    options
   );
 }

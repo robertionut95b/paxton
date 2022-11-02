@@ -2,15 +2,13 @@ package com.irb.paxton.security.auth.user;
 
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
+import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
 import com.irb.paxton.security.auth.user.credentials.CredentialsType;
-import com.irb.paxton.security.auth.user.dto.UserLoginDto;
 import com.irb.paxton.security.auth.user.dto.UserSignupDto;
-import com.irb.paxton.security.auth.user.exceptions.InvalidCredentialsException;
 import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
-import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +31,9 @@ public class UserService {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
@@ -53,6 +54,20 @@ public class UserService {
         return this.userRepository.findByUsername(username);
     }
 
+
+    public void logoutUser(String username) {
+        refreshTokenService.deleteByUsername(username);
+    }
+
+    public void updateUser(User user) {
+        this.userRepository.save(user);
+    }
+
+    public void confirmEmailUser(User user) {
+        user.setEmailConfirmed(true);
+        this.userRepository.save(user);
+    }
+
     public User registerNewUser(UserSignupDto user) throws UserAlreadyExistsException {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
@@ -66,23 +81,5 @@ public class UserService {
         log.info(String.format("Created user login %s, confirmation email message will initiate", user.getUsername()));
 
         return u;
-    }
-
-    public void loginUser(UserLoginDto userLoginDto) {
-        User user = this.userRepository.findByUsername(userLoginDto.getUsername()).orElseThrow(() -> new UserNotFoundException("User does not exist"));
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-        if (!bCryptPasswordEncoder.matches(userLoginDto.getPassword(), user.getCredentials().getValue())) {
-            throw new InvalidCredentialsException("Invalid username/password");
-        }
-    }
-
-    public User updateUser(User user) {
-        return this.userRepository.save(user);
-    }
-
-    public void confirmEmailUser(User user) {
-        user.setEmailConfirmed(true);
-        this.userRepository.save(user);
     }
 }

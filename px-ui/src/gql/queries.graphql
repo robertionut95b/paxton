@@ -1,5 +1,6 @@
 query GetAllJobListings {
   getAllJobListings {
+    id
     title
     description
     availableFrom
@@ -9,11 +10,13 @@ query GetAllJobListings {
     location
     numberOfVacancies
     job {
+      id
       name
       description
     }
     contractType
     organization {
+      id
       name
       industry
       location

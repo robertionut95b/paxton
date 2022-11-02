@@ -1,24 +1,21 @@
 import { forgotPassword } from "@auth/authApi";
+import { ResetPasswordRequestProps } from "@interfaces/reset-password.types";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useMutation, UseMutationOptions } from "react-query";
 
 export default function useForgotPasswordRequest(
-  options?:
-    | Omit<
-        UseMutationOptions<
-          null,
-          AxiosError<unknown, any>,
-          { email: string },
-          unknown
-        >,
-        "mutationFn"
-      >
-    | undefined
+  options: UseMutationOptions<
+    void,
+    AxiosError,
+    ResetPasswordRequestProps,
+    null
+  > = {
+    mutationKey: ["forgotPasswordRequest"],
+  }
 ) {
-  return useMutation<null, AxiosError, { email: string }>(
-    (body) => forgotPassword(body),
+  return useMutation<void, AxiosError, ResetPasswordRequestProps, null>(
+    forgotPassword,
     {
-      mutationKey: "forgotPassword",
       ...options,
     }
   );

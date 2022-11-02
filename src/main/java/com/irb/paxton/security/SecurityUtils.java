@@ -112,7 +112,7 @@ public class SecurityUtils {
         return hasCurrentUserAnyOfAuthorities(authority);
     }
 
-    private static Stream<String> getAuthorities(Authentication authentication) {
+    public static Stream<String> getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
     }
 }

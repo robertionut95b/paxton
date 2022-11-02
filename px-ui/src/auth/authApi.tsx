@@ -1,16 +1,24 @@
 import { APP_API_PATH } from "@constants/Properties";
-import { LoginUserMutationProps } from "@interfaces/login.types";
+import {
+  LoginUserMutationProps,
+  LoginUserMutationResponse,
+} from "@interfaces/login.types";
+import {
+  ResetPasswordProps,
+  ResetPasswordRequestProps,
+} from "@interfaces/reset-password.types";
 import { RegisterUserMutationProps } from "@interfaces/signup.types";
 import { api, apiRefresh } from "@lib/axiosClient";
-
 const AUTH_PATH = "auth";
 
-export const logoutUser = async () => {
+export const logoutUser = async (): Promise<void> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/logout`, null);
   return data;
 };
 
-export const submitLogin = async (body: LoginUserMutationProps) => {
+export const submitLogin = async (
+  body: LoginUserMutationProps
+): Promise<LoginUserMutationResponse> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login`, {
     ...body,
   });
@@ -33,7 +41,9 @@ export const refreshLogin = async () => {
   return data;
 };
 
-export const registerUser = async (body: RegisterUserMutationProps) => {
+export const registerUser = async (
+  body: RegisterUserMutationProps
+): Promise<void> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/signup`, {
     ...body,
   });
@@ -47,7 +57,9 @@ export const confirmRegisterUser = async (token: string) => {
   return data;
 };
 
-export const forgotPassword = async (body: { email: string }) => {
+export const forgotPassword = async (
+  body: ResetPasswordRequestProps
+): Promise<void> => {
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/forgot-password/request`,
     body
@@ -55,10 +67,8 @@ export const forgotPassword = async (body: { email: string }) => {
   return data;
 };
 
-export const resetPassword = async (
-  body: { newPassword: string; confirmPassword: string },
-  token: string
-) => {
+export const resetPassword = async (bodyData: ResetPasswordProps) => {
+  const { token, body } = bodyData;
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/forgot-password?token=` + token,
     body

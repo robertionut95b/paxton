@@ -44,6 +44,7 @@ public class JobListing extends BaseEntity {
     @NotBlank
     @NotEmpty
     @Length(min = 10, message = "Description must be longer than 10 characters")
+    @Lob
     private String description;
 
     @Column(nullable = false)

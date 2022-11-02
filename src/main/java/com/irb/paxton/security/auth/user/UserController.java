@@ -1,8 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
-import com.irb.paxton.security.response.ApiResponse;
+import com.irb.paxton.security.auth.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,11 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
 import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
-import static com.irb.paxton.security.SecurityUtils.isFullyAuthenticated;
+import static com.irb.paxton.security.SecurityUtils.getAuthorities;
 
 @RestController
 @RequestMapping(path = "api/" + API_VERSION + "/users")
@@ -28,6 +30,9 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     @GetMapping
     @Secured("ROLE_ADMINISTRATOR")
     List<User> getUsers(Authentication authentication) {
@@ -35,16 +40,15 @@ public class UserController {
     }
 
     @PostMapping(path = "/currentUser")
-    public ResponseEntity<?> getUserInformation() {
-        if (!isFullyAuthenticated()) {
-            return new ResponseEntity<>(new ApiResponse("Not authenticated", 401), HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<?> getUserInformation(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<String> authorities = auth.getAuthorities().stream().map(Object::toString).toList();
+        List<String> authorities = getAuthorities(auth).map(Object::toString).toList();
+        Instant expiresAt = jwtUtils.getExpiresAtFromToken(jwtUtils.getJwtFromCookies(request));
 
         HashMap<String, Object> resp = new HashMap<>();
         resp.put("permissions", authorities);
         resp.put("username", auth.getName());
+        resp.put("sessionTime", Duration.between(Instant.now(), expiresAt).toMillis());
 
         return ResponseEntity.ok().body(resp);
     }

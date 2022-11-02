@@ -1,25 +1,14 @@
+import { queryClient } from "@lib/queryClient";
 import { createEmotionCache, MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import AuthProvider from "@providers/AuthProvider";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 export default function AppProviders({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchOnMount: false,
-        refetchInterval: false,
-        retry: 0,
-      },
-    },
-  });
-
   return (
     <MantineProvider
       withGlobalStyles

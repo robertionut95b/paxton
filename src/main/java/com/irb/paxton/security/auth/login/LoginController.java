@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.login;
 
 import com.irb.paxton.security.auth.device.UserDevice;
 import com.irb.paxton.security.auth.device.UserDeviceService;
-import com.irb.paxton.security.auth.jwt.JwtResponse;
 import com.irb.paxton.security.auth.jwt.JwtUtils;
 import com.irb.paxton.security.auth.jwt.token.RefreshToken;
 import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
@@ -19,12 +18,12 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
@@ -58,6 +57,8 @@ public class LoginController {
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(), userLoginDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(authReq);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         User user = this.userService.findByUsername(userLoginDto.getUsername()).orElseThrow(() -> new UserNotFoundException("Username not found"));
         UserDevice userDevice = new UserDevice(getRequestIP(request), userAgent, user);
 
@@ -71,12 +72,13 @@ public class LoginController {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
         ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
 
-        List<String> authorities = authentication.getAuthorities().stream().map(Object::toString).toList();
-        log.info(String.format("Auth principal '%s' logged in, included authorities [%s]", authentication.getName(), authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", "))));
+        log.info(String.format("Auth principal '%s' logged in, included authorities [%s]",
+                authentication.getName(), authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", ")))
+        );
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(new JwtResponse(authorities));
+                .body(null);
     }
 }

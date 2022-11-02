@@ -1,3 +1,4 @@
+import { CheckIcon } from "@heroicons/react/24/outline";
 import useRegisterUser from "@hooks/useRegisterUser";
 import {
   Anchor,
@@ -9,8 +10,9 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import FormSignupSchema from "@validator/FormSignupSchema";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const form = useForm({
@@ -24,8 +26,26 @@ export default function SignUp() {
     },
     validate: zodResolver(FormSignupSchema),
   });
+  const navigate = useNavigate();
 
-  const { mutate: registerUser, isLoading } = useRegisterUser();
+  const {
+    mutate: registerUser,
+    isLoading,
+    isSuccess,
+  } = useRegisterUser({
+    onSuccess: () => {
+      showNotification({
+        title: "Successfully registered",
+        message:
+          "Before logging in, please check your e-mail inbox and follow the instructions from our message",
+        autoClose: 3000,
+        icon: <CheckIcon width={20} />,
+      });
+      setTimeout(() => {
+        navigate("/app/login", { replace: true });
+      }, 3000);
+    },
+  });
 
   const handleSubmit = async (values: typeof form["values"]) =>
     registerUser(values);
@@ -88,7 +108,13 @@ export default function SignUp() {
             withAsterisk
             {...form.getInputProps("confirmPassword")}
           />
-          <Button type="submit" fullWidth mt="xl" loading={isLoading}>
+          <Button
+            type="submit"
+            fullWidth
+            mt="xl"
+            loading={isLoading}
+            disabled={isSuccess}
+          >
             Register
           </Button>
         </form>

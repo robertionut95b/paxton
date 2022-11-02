@@ -1,16 +1,9 @@
 import { getCurrentUser } from "@auth/authApi";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useQuery } from "react-query";
 
-export default function useCurrentUser<T>({
-  setUser,
-}: {
-  setUser: (user: T) => void;
-}) {
-  return useQuery<T, AxiosError>(["currentUser"], getCurrentUser, {
-    staleTime: 1000 * 60 * 15,
-    onSuccess: (data) => {
-      setUser(data);
-    },
-  });
+export default function useCurrentUser<User>(
+  options?: UseQueryOptions<User, AxiosError>
+) {
+  return useQuery<User, AxiosError>(["currentUser"], getCurrentUser, options);
 }

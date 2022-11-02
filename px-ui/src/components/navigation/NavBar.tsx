@@ -1,7 +1,4 @@
-import {
-  BriefcaseIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { LogoWithSearch } from "@components/Logo";
 import {
   Avatar,
   Burger,
@@ -10,13 +7,11 @@ import {
   Group,
   Header,
   Paper,
-  TextInput,
-  Title,
   Transition,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 
 interface NavBarProps {
@@ -112,7 +107,8 @@ const useStyles = createStyles((theme) => ({
 
 const NavBar = ({ links }: NavBarProps) => {
   const [opened, { toggle, close }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
+  const location = useLocation();
+  const [active, setActive] = useState(location.pathname || links[0].link);
   const { classes, cx } = useStyles();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -138,24 +134,7 @@ const NavBar = ({ links }: NavBarProps) => {
   return (
     <Header height={HEADER_HEIGHT} mb={30}>
       <Container className={classes.header}>
-        <div className="px-logo flex justify-center items-center gap-x-2">
-          <Link
-            className="flex justify-center items-center gap-x-2"
-            to="/app/feed"
-          >
-            <BriefcaseIcon width={32} color={"#7950f2"} />
-            <Title className="tracking-wider" mt={4} order={4}>
-              Paxton
-            </Title>
-          </Link>
-          <TextInput
-            // className={classes.search}
-            size="sm"
-            ml="sm"
-            placeholder="Search anything"
-            icon={<MagnifyingGlassIcon width={16} />}
-          />
-        </div>
+        <LogoWithSearch />
         <Group className={classes.links} spacing={5}>
           {items}
           <Avatar

@@ -1,26 +1,22 @@
 import { submitLogin } from "@auth/authApi";
-import { LoginUserMutationProps } from "@interfaces/login.types";
+import {
+  LoginUserMutationProps,
+  LoginUserMutationResponse,
+} from "@interfaces/login.types";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useMutation, UseMutationOptions } from "react-query";
 
-export default function useLoginUser<U>(
-  options?:
-    | Omit<
-        UseMutationOptions<
-          U,
-          AxiosError<unknown, any>,
-          LoginUserMutationProps,
-          null
-        >,
-        "mutationFn"
-      >
-    | undefined
+export default function useLoginUser(
+  options: UseMutationOptions<
+    LoginUserMutationResponse,
+    AxiosError,
+    LoginUserMutationProps,
+    null
+  > = {
+    mutationKey: ["loginUser"],
+  }
 ) {
-  return useMutation<U, AxiosError, LoginUserMutationProps, null>(
-    (body) => submitLogin(body),
-    {
-      mutationKey: "loginUser",
-      ...options,
-    }
-  );
+  return useMutation(submitLogin, {
+    ...options,
+  });
 }

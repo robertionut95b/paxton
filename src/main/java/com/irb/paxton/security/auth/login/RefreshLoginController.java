@@ -38,7 +38,6 @@ public class RefreshLoginController {
                         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(user);
                         return ResponseEntity.ok()
                                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-//                                .header(HttpHeaders.SET_COOKIE, refreshToken)
                                 .body(new ApiResponse("Token refresh successful", 200));
                     })
                     .orElseThrow(() -> new TokenRefreshException("Token not found"));

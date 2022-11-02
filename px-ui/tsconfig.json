@@ -26,7 +26,8 @@
       "@interfaces/*": ["interfaces/*"],
       "@providers/*": ["providers/*"],
       "@components/*": ["components/*"],
-      "@constants/*": ["constants/*"]
+      "@constants/*": ["constants/*"],
+      "@gql/*": ["gql/*"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],

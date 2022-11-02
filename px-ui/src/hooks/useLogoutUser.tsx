@@ -1,6 +1,11 @@
 import { logoutUser } from "@auth/authApi";
-import { useMutation } from "react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
-export default function useLogoutUser<T>() {
-  return useMutation<T>(logoutUser);
+export default function useLogoutUser(
+  options: UseMutationOptions<void, AxiosError> = {
+    mutationKey: ["logoutUser"],
+  }
+) {
+  return useMutation(logoutUser, options);
 }

@@ -57,8 +57,10 @@ export default function ForgotPasswordReset() {
     const newPassword = values.newPassword;
     const confirmPassword = values.confirmPassword;
     reset({
-      newPassword,
-      confirmPassword,
+      body: {
+        newPassword,
+        confirmPassword,
+      },
       token: searchParams.get("token") || "",
     });
   };

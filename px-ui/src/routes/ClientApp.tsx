@@ -9,7 +9,7 @@ export default function ClientApp() {
         links={[
           { label: "Feed", link: "/app/feed" },
           { label: "Jobs", link: "/app/jobs" },
-          { label: "My candidature", link: "/app/candidature" },
+          { label: "Candidature", link: "/app/candidature" },
           { label: "Notifications", link: "/app/notifications" },
         ]}
       />

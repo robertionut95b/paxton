@@ -1,5 +1,8 @@
 import RequireAuth from "@auth/RequireAuth";
+import { RequirePermission } from "@auth/RequirePermission";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import AccessDenied from "./AccessDenied";
 import ClientApp from "./ClientApp";
 import ConfirmUserRegister from "./ConfirmUserRegister";
 import ErrorPage from "./ErrorPage";
@@ -43,6 +46,24 @@ export default function AppUI() {
               element={
                 <RequireAuth>
                   <JobsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/app/candidature"
+              element={
+                <RequireAuth>
+                  <RequirePermission permission={"ROLE_VIEWER"}>
+                    <JobsPage />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/app/access-denied"
+              element={
+                <RequireAuth>
+                  <AccessDenied />
                 </RequireAuth>
               }
             />

@@ -1,3 +1,5 @@
+import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -5,23 +7,8 @@ export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K]
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
-function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
-  return async (): Promise<TData> => {
-    const res = await fetch("http://localhost:8080/graphql", {
-    method: "POST",
-      body: JSON.stringify({ query, variables }),
-    });
-
-    const json = await res.json();
-
-    if (json.errors) {
-      const { message } = json.errors[0];
-
-      throw new Error(message);
-    }
-
-    return json.data;
-  }
+function fetcher<TData, TVariables>(client: GraphQLClient, query: string, variables?: TVariables, headers?: RequestInit['headers']) {
+  return async (): Promise<TData> => client.request<TData, TVariables>(query, variables, headers);
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -268,12 +255,13 @@ export type UserProfile = {
 export type GetAllJobListingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: Array<{ __typename?: 'JobListing', title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', name: string, description: string }, organization: { __typename?: 'Organization', name: string, industry: string, location: string, photography?: string | null } } | null> | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null };
 
 
 export const GetAllJobListingsDocument = `
     query GetAllJobListings {
   getAllJobListings {
+    id
     title
     description
     availableFrom
@@ -283,11 +271,13 @@ export const GetAllJobListingsDocument = `
     location
     numberOfVacancies
     job {
+      id
       name
       description
     }
     contractType
     organization {
+      id
       name
       industry
       location
@@ -300,11 +290,13 @@ export const useGetAllJobListingsQuery = <
       TData = GetAllJobListingsQuery,
       TError = unknown
     >(
+      client: GraphQLClient,
       variables?: GetAllJobListingsQueryVariables,
-      options?: UseQueryOptions<GetAllJobListingsQuery, TError, TData>
+      options?: UseQueryOptions<GetAllJobListingsQuery, TError, TData>,
+      headers?: RequestInit['headers']
     ) =>
     useQuery<GetAllJobListingsQuery, TError, TData>(
       variables === undefined ? ['GetAllJobListings'] : ['GetAllJobListings', variables],
-      fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(GetAllJobListingsDocument, variables),
+      fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers),
       options
     );

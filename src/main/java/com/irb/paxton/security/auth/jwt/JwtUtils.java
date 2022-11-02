@@ -121,6 +121,11 @@ public class JwtUtils {
         return getCookieValueByName(request, jwtAccessCookieName);
     }
 
+    public Instant getExpiresAtFromToken(String token) {
+        Jwt jwt = decodeToken(token);
+        return jwt.getExpiresAt();
+    }
+
     private String getCookieValueByName(HttpServletRequest request, String name) {
         Cookie cookie = WebUtils.getCookie(request, name);
         if (cookie != null) {

@@ -1,5 +1,11 @@
+export interface ResetPasswordRequestProps {
+  email: string;
+}
+
 export interface ResetPasswordProps {
-  newPassword: string;
-  confirmPassword: string;
+  body: {
+    newPassword: string;
+    confirmPassword: string;
+  };
   token: string;
 }

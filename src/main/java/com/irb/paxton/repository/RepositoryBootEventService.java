@@ -2,6 +2,7 @@ package com.irb.paxton.repository;
 
 import com.irb.paxton.core.jobs.Job;
 import com.irb.paxton.core.jobs.JobListing;
+import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.JobRepository;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
@@ -37,14 +38,19 @@ public class RepositoryBootEventService {
 
     @Autowired
     private RepositorySetupRepository setupRepository;
+
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private PrivilegeService privilegeService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private OrganizationRepository organizationRepository;
+
     @Autowired
     private JobCategoryRepository jobCategoryRepository;
 
@@ -62,6 +68,9 @@ public class RepositoryBootEventService {
 
     @Autowired
     private ProcessStepsRepository processStepsRepository;
+
+    @Autowired
+    private JobListingRepository jobListingRepository;
 
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
@@ -120,6 +129,7 @@ public class RepositoryBootEventService {
                 "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque tristique, diam quis posuere tincidunt, lacus risus molestie turpis, vel porta nunc libero sit amet risus. Integer sollicitudin dui sed justo laoreet pellentesque. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed porta vehicula augue. Etiam in placerat dolor. Vestibulum pharetra, mauris at volutpat auctor, diam felis tincidunt est, in commodo risus metus a tellus. Aenean a egestas odio.\n" +
                 "\n" +
                 "Morbi consectetur eu urna vel pellentesque. Etiam sodales egestas ante sed cursus. Duis ut lacinia lacus. Nunc a gravida sem, ac lobortis lectus. Cras ut efficitur ante. Mauris vel vulputate tellus. Duis a elementum libero, in condimentum metus. Nullam et dolor quam. Morbi finibus purus at libero aliquet ultricies. Phasellus tellus eros, sagittis ac orci non, sollicitudin efficitur metus. Quisque non accumsan ligula. Praesent suscipit nisl vel porttitor aliquam. Integer accumsan tellus eros, eget euismod nisi mollis eget. Donec nulla purus, dapibus in maximus finibus, vulputate ut libero. Nunc tellus quam, malesuada quis consectetur ac, blandit non tellus.Some job description as set by Paxton Inc", LocalDate.now(), LocalDate.of(5999, 1, 1), true, "Bucharest, Romania", 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null);
+//        jobListingRepository.save(jobListingPaxtonSoftwareDev);
         // Define a basic process as template
         Recruiter recruiter = new Recruiter(null, admin);
         this.recruiterRepository.save(recruiter);

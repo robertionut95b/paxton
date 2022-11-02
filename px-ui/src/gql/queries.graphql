@@ -1,0 +1,23 @@
+query GetAllJobListings {
+  getAllJobListings {
+    title
+    description
+    availableFrom
+    availableTo
+    location
+    isActive
+    location
+    numberOfVacancies
+    job {
+      name
+      description
+    }
+    contractType
+    organization {
+      name
+      industry
+      location
+      photography
+    }
+  }
+}

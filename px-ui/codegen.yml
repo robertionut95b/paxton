@@ -1,0 +1,12 @@
+overwrite: true
+schema: "../src/main/resources/schema/schema.graphqls"
+documents: "src/gql/*.graphql"
+generates:
+  src/gql/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-query
+    config:
+      fetcher:
+        endpoint: "http://localhost:8080/graphql"

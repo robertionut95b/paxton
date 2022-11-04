@@ -18,6 +18,7 @@ import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class UserDevice extends BaseEntity {
 
     @Setter(AccessLevel.NONE)

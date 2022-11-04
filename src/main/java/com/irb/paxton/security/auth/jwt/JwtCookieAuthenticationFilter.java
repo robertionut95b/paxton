@@ -1,5 +1,6 @@
 package com.irb.paxton.security.auth.jwt;
 
+import com.irb.paxton.cache.LoggedOutJwtTokenCache;
 import com.irb.paxton.security.auth.BasicUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,9 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
 
     @Autowired
+    private LoggedOutJwtTokenCache tokenCache;
+
+    @Autowired
     private BasicUserDetailsService customUserDetailsService;
 
     @Override
@@ -44,6 +48,9 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
             if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt, userDetails)) {
+                // check if token is not marked in the cache
+                tokenCache.validateTokenIsNotForALoggedOutDevice(jwt);
+                // otherwise, login as usual
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);

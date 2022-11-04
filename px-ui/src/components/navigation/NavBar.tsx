@@ -5,17 +5,21 @@ import {
   Container,
   createStyles,
   Group,
-  Header,
-  Paper,
-  Transition,
+  Header, Paper, Transition
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 
+export interface LinkItem {
+  link: string;
+  label: string,
+  icon?: ReactNode
+}
+
 interface NavBarProps {
-  links: { link: string; label: string }[];
+  links: LinkItem[];
 }
 
 const HEADER_HEIGHT = 56;
@@ -31,12 +35,11 @@ const useStyles = createStyles((theme) => ({
     top: HEADER_HEIGHT,
     left: 0,
     right: 0,
-    zIndex: 0,
+    zIndex: 1,
     borderTopRightRadius: 0,
     borderTopLeftRadius: 0,
     borderTopWidth: 0,
     overflow: "hidden",
-
     [theme.fn.largerThan("sm")]: {
       display: "none",
     },
@@ -127,7 +130,10 @@ const NavBar = ({ links }: NavBarProps) => {
         navigate(link.link);
       }}
     >
-      {link.label}
+      <Group align={"center"} spacing="xs">
+        {link.icon && link.icon}
+        {link.label}
+      </Group>
     </Link>
   ));
 

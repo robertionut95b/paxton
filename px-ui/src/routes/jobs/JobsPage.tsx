@@ -18,16 +18,14 @@ export default function JobsPage() {
 
   return (
     <>
-      <Title mb={20} order={3}>
-        Newest jobs in your area
+      <Title mb={10} order={4}>
+        Jobs of interest in [City Name]
       </Title>
       {(data?.getAllJobListings || []).map(
         (jl) =>
           jl && (
-            <div key={jl.id} className="mb-4">
-              <div className="pb-4">
-                <JobListingItem data={jl} />
-              </div>
+            <div key={jl.id}>
+              <JobListingItem data={jl} />
               <Divider />
             </div>
           )

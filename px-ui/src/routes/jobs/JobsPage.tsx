@@ -53,17 +53,33 @@ export default function JobsPage() {
             </div>
           )
       )}
-      <div className="px-jobs-pagination flex justify-between">
+      <div className="px-jobs-pagination flex justify-between items-center mt-4">
         <Select data={[
           { value: "5", label: "5" },
           { value: "10", label: "10" },
           { value: "20", label: "20" },
           { value: "50", label: "50" }
-        ]} label="Page size" defaultValue={ps.toString()} value={ps.toString()} onChange={(v) => {
-          setPs(parseInt(v ?? "10"));
-          setP(1);
-        }} />
-        <Pagination total={totalPages} page={p} onChange={setP} initialPage={0} position="right" />
+        ]}
+          styles={{
+            root: {
+              display: "flex",
+              alignItems: "center",
+            },
+            label: {
+              marginRight: "10px"
+            },
+            input: {
+              width: "5rem"
+            }
+          }}
+          label="Page size"
+          defaultValue={ps.toString()}
+          value={ps.toString()}
+          onChange={(v) => {
+            setPs(parseInt(v ?? "10"));
+            setP(1);
+          }} />
+        <Pagination total={totalPages} page={p} onChange={setP} initialPage={0} position="right" grow />
       </div>
     </div>
   );

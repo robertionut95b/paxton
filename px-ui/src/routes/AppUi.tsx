@@ -14,6 +14,7 @@ import JobsPage from "./jobs/JobsPage";
 import Login from "./Login";
 import Logout from "./Logout";
 import SignUp from "./SignUp";
+import UserProfile from "./user/UserProfile";
 
 export default function AppUI() {
   return (
@@ -56,6 +57,14 @@ export default function AppUI() {
                   <RequirePermission permission={"ROLE_VIEWER"}>
                     <JobsPage />
                   </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/app/profile"
+              element={
+                <RequireAuth>
+                  <UserProfile />
                 </RequireAuth>
               }
             />

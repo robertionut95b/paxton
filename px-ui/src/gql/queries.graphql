@@ -1,26 +1,31 @@
-query GetAllJobListings {
-  getAllJobListings {
-    id
-    title
-    description
-    availableFrom
-    availableTo
-    location
-    isActive
-    location
-    numberOfVacancies
-    job {
+query GetAllJobListings($searchQuery: SearchQueryInput) {
+  getAllJobListings(searchQuery: $searchQuery) {
+    list {
       id
-      name
+      title
       description
-    }
-    contractType
-    organization {
-      id
-      name
-      industry
+      availableFrom
+      availableTo
       location
-      photography
+      isActive
+      location
+      numberOfVacancies
+      job {
+        id
+        name
+        description
+      }
+      contractType
+      organization {
+        id
+        name
+        industry
+        location
+        photography
+      }
     }
+    page
+    totalPages
+    totalElements
   }
 }

@@ -36,7 +36,7 @@ export default function JobListingItem({
             <li>
               <Group spacing={2}>
                 <MapPinIcon width={14} color="indigo" />
-                <Text size={'sm'} color="dimmed">
+                <Text mt={2} size={'sm'}>
                   {location}
                 </Text>
               </Group>

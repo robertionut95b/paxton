@@ -8,7 +8,12 @@ import com.irb.paxton.core.jobs.input.JobListingInput;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.search.PaginatedResponse;
+import com.irb.paxton.core.search.SearchRequest;
+import com.irb.paxton.core.search.SearchSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +35,19 @@ public class JobListingService {
 
     public List<JobListing> getAllJobListings() {
         return this.jobListingRepository.findAll();
+    }
+
+    public PaginatedResponse<JobListing> getAllJobListingsPaginatedFiltered(SearchRequest searchRequest) {
+        if (searchRequest == null) searchRequest = new SearchRequest();
+        SearchSpecification<JobListing> jobListingSearchSpecification = new SearchSpecification<>(searchRequest);
+        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
+        Page<JobListing> results = this.jobListingRepository.findAll(jobListingSearchSpecification, pageable);
+        return new PaginatedResponse<>(
+                results,
+                searchRequest.getPage(),
+                results.getTotalPages(),
+                results.getTotalElements()
+        );
     }
 
     public JobListing publishJobListing(JobListingInput jobListingInput) {

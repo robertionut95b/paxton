@@ -64,6 +64,13 @@ export type Experience = {
   userProfile: UserProfile;
 };
 
+export type FiltersInput = {
+  field_type: Scalars['String'];
+  key: Scalars['String'];
+  operator: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type Job = {
   __typename?: 'Job';
   description: Scalars['String'];
@@ -111,6 +118,14 @@ export type JobListingInput = {
   numberOfVacancies: Scalars['Int'];
   organizationId: Scalars['ID'];
   title: Scalars['String'];
+};
+
+export type JobListingPage = {
+  __typename?: 'JobListingPage';
+  list?: Maybe<Array<Maybe<JobListing>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
 };
 
 export type Mutation = {
@@ -179,7 +194,7 @@ export type Query = {
   __typename?: 'Query';
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
   getAllJobCategories?: Maybe<Array<Maybe<JobCategory>>>;
-  getAllJobListings?: Maybe<Array<Maybe<JobListing>>>;
+  getAllJobListings?: Maybe<JobListingPage>;
   getAllJobs?: Maybe<Array<Maybe<Job>>>;
   getAllOrganizations?: Maybe<Array<Maybe<Organization>>>;
   getAllProcesses?: Maybe<Array<Maybe<Process>>>;
@@ -187,6 +202,11 @@ export type Query = {
   getAllUsers?: Maybe<Array<Maybe<User>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   healthCheck?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryGetAllJobListingsArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
 };
 
 
@@ -205,6 +225,23 @@ export type Role = {
   id: Scalars['ID'];
   name: Scalars['String'];
   privileges?: Maybe<Array<Maybe<Privilege>>>;
+};
+
+export type SearchQueryInput = {
+  filters?: InputMaybe<Array<InputMaybe<FiltersInput>>>;
+  page?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  sorts?: InputMaybe<Array<InputMaybe<SortsInput>>>;
+};
+
+export enum SortDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export type SortsInput = {
+  direction: SortDirection;
+  key: Scalars['String'];
 };
 
 export enum Status {
@@ -252,37 +289,44 @@ export type UserProfile = {
   user: User;
 };
 
-export type GetAllJobListingsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllJobListingsQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null } | null };
 
 
 export const GetAllJobListingsDocument = `
-    query GetAllJobListings {
-  getAllJobListings {
-    id
-    title
-    description
-    availableFrom
-    availableTo
-    location
-    isActive
-    location
-    numberOfVacancies
-    job {
+    query GetAllJobListings($searchQuery: SearchQueryInput) {
+  getAllJobListings(searchQuery: $searchQuery) {
+    list {
       id
-      name
+      title
       description
-    }
-    contractType
-    organization {
-      id
-      name
-      industry
+      availableFrom
+      availableTo
       location
-      photography
+      isActive
+      location
+      numberOfVacancies
+      job {
+        id
+        name
+        description
+      }
+      contractType
+      organization {
+        id
+        name
+        industry
+        location
+        photography
+      }
     }
+    page
+    totalPages
+    totalElements
   }
 }
     `;

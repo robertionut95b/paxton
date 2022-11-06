@@ -88,6 +88,13 @@ type JobListing {
     applications: [Application]
 }
 
+type JobListingPage {
+    list: [JobListing],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 type Organization {
     id: ID!
     name: String!
@@ -181,13 +188,37 @@ type UserProfile {
     experiences: [Experience]
 }
 
+input FiltersInput {
+    key: String!
+    operator: String!
+    field_type: String!
+    value: String!
+}
+
+enum SortDirection {
+    ASC,
+    DESC
+}
+
+input SortsInput {
+    key: String!
+    direction: SortDirection!
+}
+
+input SearchQueryInput {
+    filters: [FiltersInput]
+    sorts: [SortsInput]
+    page: Int
+    size: Int
+}
+
 type Query {
     healthCheck: String
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
     getAllJobs: [Job]
     getAllOrganizations: [Organization]
-    getAllJobListings: [JobListing]
+    getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
     getAllProcesses: [Process]
     getAllSteps: [Step]
     getStepsByProcess(processId: Int!): [Step]

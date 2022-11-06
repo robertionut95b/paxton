@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  background-color: #f9f5f9;
+  margin: 0px;
+  padding: 0px;
+}
+
 #root {
-  background-color: #f3eff3;
-  height: 100vh;
-  width: 100vw;
+  background-color: #f9f5f9;
+  padding-bottom: 25px;
+  height: 100%
 }

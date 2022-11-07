@@ -1,5 +1,6 @@
 import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
+import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AccessDenied from "./AccessDenied";
@@ -67,7 +68,16 @@ export default function AppUI() {
                   <UserProfile />
                 </RequireAuth>
               }
-            />
+            >
+              <Route
+                path="/app/profile/update/basic"
+                element={
+                  <RequireAuth>
+                    <BasicUpdateProfileModal />
+                  </RequireAuth>
+                }
+              ></Route>
+            </Route>
             <Route
               path="/app/access-denied"
               element={

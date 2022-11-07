@@ -182,10 +182,20 @@ type UserProfile {
     id: ID!
     user: User!
     photography: String
-    description: String
+    coverPhotography: String
+    description: String!
+    location: String!
     profileSlugUrl: String!
     profileTitle: String!
     experiences: [Experience]
+}
+
+input UserProfileInput {
+    firstName: String!
+    lastName: String!
+    description: String!
+    location: String!
+    profileTitle: String!
 }
 
 input FiltersInput {
@@ -223,10 +233,12 @@ type Query {
     getAllSteps: [Step]
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
+    getCurrentUserProfile: UserProfile
 }
 
 type Mutation {
     healthCheckPost: String
-    publishJob(JobInput: JobInput): Job
-    publishJobListing(JobListingInput: JobListingInput): JobListing
+    publishJob(JobInput: JobInput!): Job
+    publishJobListing(JobListingInput: JobListingInput!): JobListing
+    updateUserProfile(UserProfileInput: UserProfileInput!): UserProfile
 }

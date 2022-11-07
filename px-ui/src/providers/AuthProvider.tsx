@@ -72,6 +72,8 @@ export default function AuthProvider({
             sessionTime: data.sessionTime,
             username: data.username,
             permissions: data.permissions,
+            firstName: data.firstName,
+            lastName: data.lastName,
           });
           refetch();
         },
@@ -90,6 +92,7 @@ export default function AuthProvider({
     signin,
     signout,
     loading: getUserIsLoading,
+    setUser,
   };
 
   if (getUserIsLoading) return <AuthSpinner />;

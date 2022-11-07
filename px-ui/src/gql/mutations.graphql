@@ -1,0 +1,7 @@
+mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
+  updateUserProfile(UserProfileInput: $UserProfileInput) {
+    description
+    location
+    profileTitle
+  }
+}

@@ -5,7 +5,9 @@ import {
   Container,
   createStyles,
   Group,
-  Header, Paper, Transition
+  Header,
+  Paper,
+  Transition,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ReactNode, useState } from "react";
@@ -14,8 +16,8 @@ import { useAuth } from "../../auth/useAuth";
 
 export interface LinkItem {
   link: string;
-  label: string,
-  icon?: ReactNode
+  label: string;
+  icon?: ReactNode;
 }
 
 interface NavBarProps {
@@ -149,7 +151,7 @@ const NavBar = ({ links }: NavBarProps) => {
             radius={"xl"}
             color="violet"
           >
-            {user?.username[0].toUpperCase()}
+            {user?.username?.[0].toUpperCase()}
           </Avatar>
         </Group>
         <Burger

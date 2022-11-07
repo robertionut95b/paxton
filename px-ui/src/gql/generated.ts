@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 import { RequestInit } from 'graphql-request/dist/types.dom';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -133,16 +133,22 @@ export type Mutation = {
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
+  updateUserProfile?: Maybe<UserProfile>;
 };
 
 
 export type MutationPublishJobArgs = {
-  JobInput?: InputMaybe<JobInput>;
+  JobInput: JobInput;
 };
 
 
 export type MutationPublishJobListingArgs = {
-  JobListingInput?: InputMaybe<JobListingInput>;
+  JobListingInput: JobListingInput;
+};
+
+
+export type MutationUpdateUserProfileArgs = {
+  UserProfileInput: UserProfileInput;
 };
 
 export type Organization = {
@@ -200,6 +206,7 @@ export type Query = {
   getAllProcesses?: Maybe<Array<Maybe<Process>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
+  getCurrentUserProfile?: Maybe<UserProfile>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   healthCheck?: Maybe<Scalars['String']>;
 };
@@ -280,14 +287,31 @@ export type User = {
 
 export type UserProfile = {
   __typename?: 'UserProfile';
-  description?: Maybe<Scalars['String']>;
+  coverPhotography?: Maybe<Scalars['String']>;
+  description: Scalars['String'];
   experiences?: Maybe<Array<Maybe<Experience>>>;
   id: Scalars['ID'];
+  location: Scalars['String'];
   photography?: Maybe<Scalars['String']>;
   profileSlugUrl: Scalars['String'];
   profileTitle: Scalars['String'];
   user: User;
 };
+
+export type UserProfileInput = {
+  description: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  location: Scalars['String'];
+  profileTitle: Scalars['String'];
+};
+
+export type UpdateUserProfileMutationVariables = Exact<{
+  UserProfileInput: UserProfileInput;
+}>;
+
+
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, location: string, profileTitle: string } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -296,7 +320,34 @@ export type GetAllJobListingsQueryVariables = Exact<{
 
 export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null } | null };
 
+export type GetCurrentUserProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
+
+export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, location: string, profileSlugUrl: string, profileTitle: string, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+
+
+export const UpdateUserProfileDocument = `
+    mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
+  updateUserProfile(UserProfileInput: $UserProfileInput) {
+    description
+    location
+    profileTitle
+  }
+}
+    `;
+export const useUpdateUserProfileMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>(
+      ['UpdateUserProfile'],
+      (variables?: UpdateUserProfileMutationVariables) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers)(),
+      options
+    );
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -342,5 +393,47 @@ export const useGetAllJobListingsQuery = <
     useQuery<GetAllJobListingsQuery, TError, TData>(
       variables === undefined ? ['GetAllJobListings'] : ['GetAllJobListings', variables],
       fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers),
+      options
+    );
+export const GetCurrentUserProfileDocument = `
+    query GetCurrentUserProfile {
+  getCurrentUserProfile {
+    photography
+    coverPhotography
+    description
+    location
+    profileSlugUrl
+    profileTitle
+    experiences {
+      title
+      contractType
+      organization {
+        name
+        industry
+        photography
+      }
+      location
+      startDate
+      endDate
+      activitySector {
+        name
+      }
+      description
+    }
+  }
+}
+    `;
+export const useGetCurrentUserProfileQuery = <
+      TData = GetCurrentUserProfileQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetCurrentUserProfileQueryVariables,
+      options?: UseQueryOptions<GetCurrentUserProfileQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetCurrentUserProfileQuery, TError, TData>(
+      variables === undefined ? ['GetCurrentUserProfile'] : ['GetCurrentUserProfile', variables],
+      fetcher<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryVariables>(client, GetCurrentUserProfileDocument, variables, headers),
       options
     );

@@ -4,6 +4,7 @@ import { createContext } from "react";
 
 interface AuthContextType {
   user: User | null;
+  setUser: (data: User) => void;
   signin: (credentials: LoginUserMutationProps, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
   loading: boolean;

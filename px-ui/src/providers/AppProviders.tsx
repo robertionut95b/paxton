@@ -3,6 +3,7 @@ import { createEmotionCache, MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import AuthProvider from "@providers/AuthProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default function AppProviders({
   children,
@@ -28,6 +29,7 @@ export default function AppProviders({
       <NotificationsProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>{children}</AuthProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </NotificationsProvider>
     </MantineProvider>

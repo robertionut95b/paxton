@@ -1,30 +1,34 @@
-import { useAuth } from "@auth/useAuth";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import { Avatar, Button, Group, Text } from "@mantine/core";
+import { User } from "@interfaces/user.types";
+import { Avatar, Group, Text } from "@mantine/core";
 
-export default function ProfileCard() {
-    const { user } = useAuth();
-    return (
-        <div className="flex justify-between">
-            <Group align={"center"}>
-                <Avatar radius={"md"} size={100} color={"violet"}>{user?.username[0].toLocaleUpperCase() ?? "U"}</Avatar>
-                <div>
-                    <Text className="" color={"dimmed"}>
-                        Software Developer
-                    </Text>
-                    <Text className="uppercase font-semibold">
-                        {user?.username}
-                    </Text>
-                    <Text>
-                        Bucharest, Romania
-                    </Text>
-                </div>
-            </Group>
-            <div className="self-center">
-                <Button rightIcon={
-                    <PencilIcon width={16} />
-                }>Edit</Button>
-            </div>
-        </div>
-    )
+export default function ProfileCard({
+  photography,
+  title,
+  location,
+  user,
+}: {
+  photography?: string | null;
+  title?: string;
+  location?: string;
+  user?: User | null;
+}) {
+  return (
+    <Group align={"center"} spacing="xl">
+      <Avatar radius={"xl"} size={100} color={"violet"} src={photography}>
+        {`${user?.firstName?.[0]?.toLocaleUpperCase()}${user?.lastName?.[0]?.toLocaleUpperCase()}` ??
+          "U"}
+      </Avatar>
+      <div className="px-user-profile-headings">
+        <Text size="md" color={"dimmed"}>
+          {title ?? "No title available"}
+        </Text>
+        <Text size="md" className="capitalize font-semibold">
+          {user?.firstName && user?.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user?.username ?? "unknown"}
+        </Text>
+        <Text size="sm">{location ?? "No location available"}</Text>
+      </div>
+    </Group>
+  );
 }

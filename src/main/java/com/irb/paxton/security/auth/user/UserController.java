@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
 import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -44,11 +45,15 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<String> authorities = getAuthorities(auth).map(Object::toString).toList();
         Instant expiresAt = jwtUtils.getExpiresAtFromToken(jwtUtils.getJwtFromCookies(request));
+        User user = this.userService.findByUsername(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         HashMap<String, Object> resp = new HashMap<>();
         resp.put("permissions", authorities);
         resp.put("username", auth.getName());
         resp.put("sessionTime", Duration.between(Instant.now(), expiresAt).toMillis());
+        resp.put("firstName", user.getFirstName());
+        resp.put("lastName", user.getLastName());
 
         return ResponseEntity.ok().body(resp);
     }

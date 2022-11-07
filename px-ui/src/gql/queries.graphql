@@ -29,3 +29,30 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
     totalElements
   }
 }
+
+query GetCurrentUserProfile {
+  getCurrentUserProfile {
+    photography
+    coverPhotography
+    description
+    location
+    profileSlugUrl
+    profileTitle
+    experiences {
+      title
+      contractType
+      organization {
+        name
+        industry
+        photography
+      }
+      location
+      startDate
+      endDate
+      activitySector {
+        name
+      }
+      description
+    }
+  }
+}

@@ -5,7 +5,6 @@ import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.ProfileStudies;
 import com.irb.paxton.security.auth.user.User;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -32,10 +31,22 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Nullable
+    @Column(nullable = true)
     private String photography;
 
+    @Column(nullable = true)
+    private String coverPhotography;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    @Lob
     private String description;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    private String location;
 
     @NotNull
     @NotEmpty

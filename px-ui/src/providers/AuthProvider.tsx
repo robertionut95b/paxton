@@ -44,6 +44,20 @@ export default function AuthProvider({
         refetchInterval: data?.sessionTime ?? 5 * 60 * 1000,
       });
     },
+    onError: (err) => {
+      if (
+        err.response?.status === 400 &&
+        err.response?.data?.message === "Token not found"
+      ) {
+        showNotification({
+          title: "Authentication error",
+          message: "Your session has expired, please log in again",
+          autoClose: 5000,
+          icon: <LockClosedIcon width={20} />,
+        });
+        setUser(null);
+      }
+    },
   });
 
   const signin = (

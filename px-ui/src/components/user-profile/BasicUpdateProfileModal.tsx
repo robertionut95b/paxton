@@ -47,7 +47,7 @@ export default function BasicUpdateProfileModal() {
         const city = c?.cities?.map((ci) => ci?.name) || [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
-          value: `${c?.name}, ${ci}`,
+          value: ci,
         }));
         return locs;
       })
@@ -66,7 +66,7 @@ export default function BasicUpdateProfileModal() {
   const form = useForm({
     initialValues: {
       description: prevProfileData?.description ?? "",
-      location: prevProfileData?.location ?? "",
+      city: prevProfileData?.city.name ?? "",
       profileTitle: prevProfileData?.profileTitle ?? "",
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
@@ -154,7 +154,7 @@ export default function BasicUpdateProfileModal() {
             mb="md"
             withAsterisk
             data={locations}
-            {...form.getInputProps("location")}
+            {...form.getInputProps("city")}
           />
         )}
 

@@ -196,7 +196,7 @@ type UserProfile {
     photography: String
     coverPhotography: String
     description: String!
-    location: String!
+    city: City!
     profileSlugUrl: String!
     profileTitle: String!
     experiences: [Experience]
@@ -206,7 +206,7 @@ input UserProfileInput {
     firstName: String!
     lastName: String!
     description: String!
-    location: String!
+    city: String!
     profileTitle: String!
 }
 

@@ -37,7 +37,7 @@ export default function UserProfile() {
       <ProfileBanner coverPhoto={coverPhoto} />
       <div className="flex justify-between items-center">
         <ProfileCard
-          location={userProfile?.location}
+          location={`${userProfile?.city?.country.name}, ${userProfile?.city?.name}`}
           photography={userProfile?.photography}
           title={userProfile?.profileTitle}
           user={user}

@@ -41,7 +41,13 @@ query GetCurrentUserProfile {
     photography
     coverPhotography
     description
-    location
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
     profileSlugUrl
     profileTitle
     experiences {

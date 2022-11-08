@@ -27,7 +27,7 @@ public class UserProfileInput {
     @NotBlank
     @NotBlank
     @NotEmpty
-    private String location;
+    private String city;
 
     @NotBlank
     @NotBlank

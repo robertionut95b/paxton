@@ -302,11 +302,11 @@ export type User = {
 
 export type UserProfile = {
   __typename?: 'UserProfile';
+  city: City;
   coverPhotography?: Maybe<Scalars['String']>;
   description: Scalars['String'];
   experiences?: Maybe<Array<Maybe<Experience>>>;
   id: Scalars['ID'];
-  location: Scalars['String'];
   photography?: Maybe<Scalars['String']>;
   profileSlugUrl: Scalars['String'];
   profileTitle: Scalars['String'];
@@ -314,10 +314,10 @@ export type UserProfile = {
 };
 
 export type UserProfileInput = {
+  city: Scalars['String'];
   description: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
-  location: Scalars['String'];
   profileTitle: Scalars['String'];
 };
 
@@ -326,7 +326,7 @@ export type UpdateUserProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, location: string, profileTitle: string } | null };
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, profileTitle: string, city: { __typename?: 'City', id: string, name: string } } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -338,7 +338,7 @@ export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?:
 export type GetCurrentUserProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, location: string, profileSlugUrl: string, profileTitle: string, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } }, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -350,7 +350,10 @@ export const UpdateUserProfileDocument = `
     mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
   updateUserProfile(UserProfileInput: $UserProfileInput) {
     description
-    location
+    city {
+      id
+      name
+    }
     profileTitle
   }
 }
@@ -427,7 +430,13 @@ export const GetCurrentUserProfileDocument = `
     photography
     coverPhotography
     description
-    location
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
     profileSlugUrl
     profileTitle
     experiences {

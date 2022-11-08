@@ -1,5 +1,7 @@
 package com.irb.paxton.core.profile;
 
+import com.irb.paxton.core.location.City;
+import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.profile.input.UserProfileInput;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
@@ -20,6 +22,9 @@ public class UserProfileService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CityRepository cityRepository;
+
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
     }
@@ -27,6 +32,7 @@ public class UserProfileService {
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
         String username = getCurrentUserLogin().orElseThrow(() -> new UserNotFoundException("User not found"));
         User user = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        City city = cityRepository.findByName(userProfileInput.getCity()).orElseThrow(IllegalArgumentException::new);
 
         if (!userProfileInput.getLastName().equals(user.getLastName())
                 || !userProfileInput.getFirstName().equals(user.getFirstName())) {
@@ -40,12 +46,13 @@ public class UserProfileService {
             UserProfile userProfile = userProfileOptional.get();
             userProfile.setProfileTitle(userProfileInput.getProfileTitle());
             userProfile.setDescription(userProfileInput.getDescription());
-            userProfile.setLocation(userProfileInput.getLocation());
+            userProfile.setCity(city);
             return this.userProfileRepository.save(userProfile);
         }
 
         return this.userProfileRepository.save(
-                new UserProfile(null, user, "", "", userProfileInput.getDescription(), userProfileInput.getLocation(), username + System.currentTimeMillis(), null, userProfileInput.getProfileTitle(), null)
+                new UserProfile(null, user, "", "", userProfileInput.getDescription(), city,
+                        username + System.currentTimeMillis(), null, userProfileInput.getProfileTitle(), null)
         );
     }
 }

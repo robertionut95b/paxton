@@ -1,6 +1,7 @@
 package com.irb.paxton.core.profile;
 
 import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.ProfileStudies;
 import com.irb.paxton.security.auth.user.User;
@@ -43,10 +44,9 @@ public class UserProfile extends BaseEntity {
     @Lob
     private String description;
 
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
     @NotNull
     @NotEmpty

@@ -1,7 +1,10 @@
 mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
   updateUserProfile(UserProfileInput: $UserProfileInput) {
     description
-    location
+    city {
+      id
+      name
+    }
     profileTitle
   }
 }

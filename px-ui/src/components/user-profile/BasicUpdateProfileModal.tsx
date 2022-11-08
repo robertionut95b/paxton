@@ -1,12 +1,21 @@
 import {
   GetCurrentUserProfileQuery,
   useGetCountriesCitiesQuery,
-  useUpdateUserProfileMutation,
+  useUpdateUserProfileMutation
 } from "@gql/generated";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Button, Modal, Select, Textarea, TextInput } from "@mantine/core";
+import {
+  Button,
+  Loader,
+  Modal,
+  Select,
+  Textarea,
+  TextInput
+} from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import FormUpdateProfileSchema from "@validator/FormUpdateProfileSchema";
 import { useState } from "react";
@@ -19,7 +28,18 @@ export default function BasicUpdateProfileModal() {
   const { user, setUser } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: countries } = useGetCountriesCitiesQuery(graphqlRequestClient);
+  const { data: countries, isLoading: isCountryListLoading } =
+    useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {
+      onError: () => {
+        showNotification({
+          title: "Data error",
+          message:
+            "Could not retrieve values for location, please try again later",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      },
+    });
 
   const locations =
     countries?.getCountriesCities
@@ -122,16 +142,22 @@ export default function BasicUpdateProfileModal() {
           withAsterisk
           {...form.getInputProps("description")}
         />
-        <Select
-          label="Location"
-          placeholder="Your actual location"
-          description="This helps to suggest you job positions inside the app"
-          mt="md"
-          mb="md"
-          withAsterisk
-          data={locations}
-          {...form.getInputProps("location")}
-        />
+        {isCountryListLoading ? (
+          <Loader mt="md" size="sm" variant="dots" />
+        ) : (
+          <Select
+            label="Location"
+            placeholder="Your actual location"
+            description="This helps to suggest you job positions inside the app"
+            searchable
+            mt="md"
+            mb="md"
+            withAsterisk
+            data={locations}
+            {...form.getInputProps("location")}
+          />
+        )}
+
         <Button type="submit" fullWidth mt="xl" loading={isLoading}>
           Submit
         </Button>

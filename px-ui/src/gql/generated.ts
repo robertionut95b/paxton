@@ -33,6 +33,13 @@ export type Application = {
   id: Scalars['ID'];
 };
 
+export type City = {
+  __typename?: 'City';
+  country: Country;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
 export enum ContractType {
   FreeProfessional = 'FREE_PROFESSIONAL',
   FullTime = 'FULL_TIME',
@@ -42,6 +49,13 @@ export enum ContractType {
   Seasonal = 'SEASONAL',
   TemporaryEmployee = 'TEMPORARY_EMPLOYEE'
 }
+
+export type Country = {
+  __typename?: 'Country';
+  cities?: Maybe<Array<Maybe<City>>>;
+  code: Scalars['String'];
+  name: Scalars['String'];
+};
 
 export enum Domain {
   Arts = 'ARTS',
@@ -96,12 +110,12 @@ export type JobListing = {
   availableFrom: Scalars['Date'];
   availableTo: Scalars['Date'];
   category?: Maybe<JobCategory>;
+  city: City;
   contractType: ContractType;
   description: Scalars['String'];
   id: Scalars['ID'];
   isActive?: Maybe<Scalars['Boolean']>;
   job: Job;
-  location: Scalars['String'];
   numberOfVacancies: Scalars['Int'];
   organization: Organization;
   title: Scalars['String'];
@@ -206,6 +220,7 @@ export type Query = {
   getAllProcesses?: Maybe<Array<Maybe<Process>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
+  getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   healthCheck?: Maybe<Scalars['String']>;
@@ -318,12 +333,17 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, location: string, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } } | null> | null } | null };
 
 export type GetCurrentUserProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, location: string, profileSlugUrl: string, profileTitle: string, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+
+export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCountriesCitiesQuery = { __typename?: 'Query', getCountriesCities?: Array<{ __typename?: 'Country', code: string, name: string, cities?: Array<{ __typename?: 'City', id: string, name: string } | null> | null } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -357,9 +377,15 @@ export const GetAllJobListingsDocument = `
       description
       availableFrom
       availableTo
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       isActive
-      location
       numberOfVacancies
       job {
         id
@@ -435,5 +461,31 @@ export const useGetCurrentUserProfileQuery = <
     useQuery<GetCurrentUserProfileQuery, TError, TData>(
       variables === undefined ? ['GetCurrentUserProfile'] : ['GetCurrentUserProfile', variables],
       fetcher<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryVariables>(client, GetCurrentUserProfileDocument, variables, headers),
+      options
+    );
+export const GetCountriesCitiesDocument = `
+    query GetCountriesCities {
+  getCountriesCities {
+    code
+    name
+    cities {
+      id
+      name
+    }
+  }
+}
+    `;
+export const useGetCountriesCitiesQuery = <
+      TData = GetCountriesCitiesQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetCountriesCitiesQueryVariables,
+      options?: UseQueryOptions<GetCountriesCitiesQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetCountriesCitiesQuery, TError, TData>(
+      variables === undefined ? ['GetCountriesCities'] : ['GetCountriesCities', variables],
+      fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers),
       options
     );

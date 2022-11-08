@@ -7,6 +7,10 @@ import com.irb.paxton.core.jobs.JobRepository;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.location.City;
+import com.irb.paxton.core.location.CityRepository;
+import com.irb.paxton.core.location.Country;
+import com.irb.paxton.core.location.CountryRepository;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
@@ -22,6 +26,7 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
 import com.irb.paxton.security.auth.user.credentials.CredentialsType;
+import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -72,6 +78,12 @@ public class RepositoryBootEventService {
     @Autowired
     private JobListingRepository jobListingRepository;
 
+    @Autowired
+    private CountryRepository countryRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
 
@@ -81,7 +93,17 @@ public class RepositoryBootEventService {
         }
 
         log.info("Paxton app is building up, initiating repository start-up");
+        log.info("Paxton : creating auth objects");
 
+        this.setupUsersRolesRepository();
+        this.setupNomenclaturesRepository();
+        this.setupSampleOrganizationRepository();
+
+        this.setupRepository.save(new RepositorySetup(null, true, true, true));
+        log.info("Paxton app finished initializing repository, moving on ...");
+    }
+
+    public void setupUsersRolesRepository() {
         // create privileges
         Privilege readAllPrivilege = this.privilegeService.createPrivilegeIfNotFound("READ_ALL_PRIVILEGE");
         Privilege writeAllPrivilege = this.privilegeService.createPrivilegeIfNotFound("WRITE_ALL_PRIVILEGE");
@@ -114,26 +136,39 @@ public class RepositoryBootEventService {
         readOnly.setCredentials(userCredentials);
         userService.createUser(readOnly);
 
-        Organization paxtonOrg = new Organization(1L, "Paxton", "IT&C", "Bucharest, Ro", null, null);
-        JobCategory itcJobCategory = new JobCategory(1L, "IT&C", null);
+        // create recruiter user
+        User recruiter = new User(null, "pxRecruiter", "pxRecruiter", null, "pxRecruiter@paxton.com", "pxRecruiter", Collections.singletonList(userRole), null, true);
+        Credentials recruiterCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("pxRecruiter"), true, LocalDate.now(), null);
+        recruiter.setCredentials(recruiterCredentials);
+        userService.createUser(recruiter);
+    }
 
-        this.setupRepository.save(new RepositorySetup(null, true, true, true));
+    public void setupSampleOrganizationRepository() {
+        log.info("Paxton : creating organization objects");
+
+        Organization paxtonOrg = new Organization(null, "Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg");
+        JobCategory itcJobCategory = new JobCategory(null, "IT&C", null);
         this.organizationRepository.save(paxtonOrg);
         this.jobCategoryRepository.save(itcJobCategory);
 
         // define a job and job listing for Paxton organisation
         Job softwareDeveloper = new Job(null, "Software Developer", "Developers are often natural problem solvers who possess strong analytical skills and the ability to think outside the box", null);
         this.jobRepository.save(softwareDeveloper);
-        JobListing jobListingPaxtonSoftwareDev = new JobListing(null, "Java Software Developer", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget fermentum tortor. Etiam imperdiet ligula sem, in bibendum ligula egestas vel. Integer ac mi ac est convallis feugiat. Suspendisse faucibus scelerisque risus, a pellentesque eros pretium nec. Cras condimentum ante eu varius tincidunt. Nam elementum a nulla vel commodo. Mauris suscipit euismod vestibulum. Integer ac vestibulum tellus. Mauris vulputate nec lectus nec consequat.\n" +
-                "\n" +
-                "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque tristique, diam quis posuere tincidunt, lacus risus molestie turpis, vel porta nunc libero sit amet risus. Integer sollicitudin dui sed justo laoreet pellentesque. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed porta vehicula augue. Etiam in placerat dolor. Vestibulum pharetra, mauris at volutpat auctor, diam felis tincidunt est, in commodo risus metus a tellus. Aenean a egestas odio.\n" +
-                "\n" +
-                "Morbi consectetur eu urna vel pellentesque. Etiam sodales egestas ante sed cursus. Duis ut lacinia lacus. Nunc a gravida sem, ac lobortis lectus. Cras ut efficitur ante. Mauris vel vulputate tellus. Duis a elementum libero, in condimentum metus. Nullam et dolor quam. Morbi finibus purus at libero aliquet ultricies. Phasellus tellus eros, sagittis ac orci non, sollicitudin efficitur metus. Quisque non accumsan ligula. Praesent suscipit nisl vel porttitor aliquam. Integer accumsan tellus eros, eget euismod nisi mollis eget. Donec nulla purus, dapibus in maximus finibus, vulputate ut libero. Nunc tellus quam, malesuada quis consectetur ac, blandit non tellus.Some job description as set by Paxton Inc", LocalDate.now(), LocalDate.of(5999, 1, 1), true, "Bucharest, Romania", 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null);
-//        jobListingRepository.save(jobListingPaxtonSoftwareDev);
+
+        City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
+
+        JobListing jobListingPaxtonSoftwareDev = new JobListing(null, "Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
+                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null);
+
+        softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
+        jobListingRepository.save(jobListingPaxtonSoftwareDev);
+
         // Define a basic process as template
-        Recruiter recruiter = new Recruiter(null, admin);
+        User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
+        Recruiter recruiter = new Recruiter(null, pxRecruiter);
         this.recruiterRepository.save(recruiter);
-        Process paxtonProcess = new Process(null, "Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, null);
+        Process paxtonProcess = new Process(null, "Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
+
         // define steps
         Step applyStep = new Step(null, "Candidature", "During this step, candidates will send their profile reference. If they draw the recruiter's attention, the next steps will follow");
         Step candidatureAnalysisStep = new Step(null, "Analysis", "During this step, the recruiter will analysis the candidature and request more information if needed");
@@ -152,9 +187,32 @@ public class RepositoryBootEventService {
         this.processStepsRepository.saveAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
 
         paxtonProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
-        paxtonProcess.setJobListings(List.of(jobListingPaxtonSoftwareDev));
         this.processRepository.save(paxtonProcess);
+        jobListingPaxtonSoftwareDev.setProcess(paxtonProcess);
+    }
 
-        log.info("Paxton app finished initializing repository, moving on ...");
+    public void setupNomenclaturesRepository() {
+        log.info("Paxton : creating location objects");
+
+        City Buc = new City(null, "Bucharest", null);
+        City Cj = new City(null, "Cluj", null);
+        City Is = new City(null, "Iasi", null);
+        List<City> roCities = List.of(Buc, Cj, Is);
+        Country Ro = new Country("RO", "Romania", new HashSet<>(roCities));
+        roCities.forEach(c -> c.setCountry(Ro));
+
+        City Berlin = new City(null, "Berlin", null);
+        City Stuttgart = new City(null, "Stuttgart", null);
+        List<City> grCities = List.of(Berlin, Stuttgart);
+        Country Gr = new Country("GR", "Germany", new HashSet<>(grCities));
+        grCities.forEach(c -> c.setCountry(Gr));
+
+        City Rome = new City(null, "Rome", null);
+        City Napoli = new City(null, "Napoli", null);
+        List<City> itCities = List.of(Rome, Napoli);
+        Country It = new Country("IT", "Italy", new HashSet<>(itCities));
+        itCities.forEach(c -> c.setCountry(It));
+
+        countryRepository.saveAll(List.of(Ro, Gr, It));
     }
 }

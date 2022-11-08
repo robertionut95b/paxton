@@ -1,35 +1,35 @@
-package com.irb.paxton.core.jobs.category;
+package com.irb.paxton.core.location;
 
-import com.irb.paxton.core.base.BaseEntity;
-import com.irb.paxton.core.jobs.JobListing;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_JOB_CATEGORY")
+@Table(name = TABLE_PREFIX + "_CITY")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class JobCategory extends BaseEntity {
+public class City {
+
     @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotNull
-    @NotEmpty
     @NotBlank
+    @NotEmpty
+    @NotNull
+    @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Collection<JobListing> jobs;
+    @ManyToOne
+    @JoinColumn(name = "country_code")
+    private Country country;
 }

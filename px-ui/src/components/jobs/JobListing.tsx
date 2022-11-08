@@ -4,7 +4,7 @@ import { Avatar, Group, Paper, Text, Title } from "@mantine/core";
 import formatDistance from "date-fns/formatDistance";
 
 export default function JobListingItem({
-  data: { title, description, organization, location, availableFrom },
+  data: { title, description, organization, city, availableFrom },
 }: {
   data: JobListing;
 }) {
@@ -12,21 +12,26 @@ export default function JobListingItem({
     <Paper className="p-4">
       <div className="flex gap-x-6">
         <div className="px-job-card-heading mt-1.5">
-          <Avatar color={'violet'} size={48} src={organization?.photography} styles={{
-            image: {
-              objectFit: "contain"
-            }
-          }} >
+          <Avatar
+            color={"violet"}
+            size={48}
+            src={organization?.photography}
+            styles={{
+              image: {
+                objectFit: "contain",
+              },
+            }}
+          >
             {organization.name[0]}
           </Avatar>
         </div>
         <div className="px-job-card-details flex-grow">
-          <Title order={5} color="violet">{title}</Title>
+          <Title order={5} color="violet">
+            {title}
+          </Title>
           <ul>
             <li>
-              <Text size={'md'}>
-                {organization.name}
-              </Text>
+              <Text size={"md"}>{organization.name}</Text>
             </li>
             <li>
               <Text my={2} size={"sm"}>
@@ -36,8 +41,8 @@ export default function JobListingItem({
             <li>
               <Group spacing={2}>
                 <MapPinIcon width={14} color="indigo" />
-                <Text mt={2} size={'sm'}>
-                  {location}
+                <Text mt={2} size={"sm"}>
+                  {city.name} {city.country.name}
                 </Text>
               </Group>
             </li>

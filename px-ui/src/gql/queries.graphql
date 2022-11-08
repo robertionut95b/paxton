@@ -6,9 +6,15 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
       description
       availableFrom
       availableTo
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       isActive
-      location
       numberOfVacancies
       job {
         id
@@ -53,6 +59,17 @@ query GetCurrentUserProfile {
         name
       }
       description
+    }
+  }
+}
+
+query GetCountriesCities {
+  getCountriesCities {
+    code
+    name
+    cities {
+      id
+      name
     }
   }
 }

@@ -5,6 +5,8 @@ import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.category.exception.JobCategoryNotExistsException;
 import com.irb.paxton.core.jobs.exception.JobNotExistsException;
 import com.irb.paxton.core.jobs.input.JobListingInput;
+import com.irb.paxton.core.location.City;
+import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
@@ -33,6 +35,9 @@ public class JobListingService {
     @Autowired
     private JobCategoryRepository jobCategoryRepository;
 
+    @Autowired
+    private CityRepository cityRepository;
+
     public List<JobListing> getAllJobListings() {
         return this.jobListingRepository.findAll();
     }
@@ -58,10 +63,12 @@ public class JobListingService {
                 .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization by id %d does not exist", jobListingInput.getOrganizationId()), "organizationId"));
         JobCategory jobCategory = jobCategoryRepository.findById(jobListingInput.getCategoryId())
                 .orElseThrow(() -> new JobCategoryNotExistsException(String.format("Job Category by id %d does not exist", jobListingInput.getCategoryId()), "categoryId"));
+        City city = this.cityRepository.findByName(jobListingInput.getLocation())
+                .orElseThrow(IllegalArgumentException::new);
 
         JobListing jobListing = new JobListing(
                 null, jobListingInput.getTitle(), jobListingInput.getDescription(), jobListingInput.getAvailableFrom(),
-                jobListingInput.getAvailableTo(), false, jobListingInput.getLocation(), jobListingInput.getNumberOfVacancies(),
+                jobListingInput.getAvailableTo(), false, city, jobListingInput.getNumberOfVacancies(),
                 job, jobListingInput.getContractType(), organization, jobCategory, null, null
         );
         jobListingRepository.save(jobListing);

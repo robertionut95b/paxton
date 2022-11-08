@@ -1,10 +1,11 @@
 import {
   GetCurrentUserProfileQuery,
+  useGetCountriesCitiesQuery,
   useUpdateUserProfileMutation,
 } from "@gql/generated";
 import { User } from "@interfaces/user.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Button, Modal, Textarea, TextInput } from "@mantine/core";
+import { Button, Modal, Select, Textarea, TextInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useQueryClient } from "@tanstack/react-query";
 import FormUpdateProfileSchema from "@validator/FormUpdateProfileSchema";
@@ -17,6 +18,20 @@ export default function BasicUpdateProfileModal() {
   const [opened, setOpened] = useState(true);
   const { user, setUser } = useAuth();
   const queryClient = useQueryClient();
+
+  const { data: countries } = useGetCountriesCitiesQuery(graphqlRequestClient);
+
+  const locations =
+    countries?.getCountriesCities
+      ?.map((c) => {
+        const city = c?.cities?.map((ci) => ci?.name) || [];
+        const locs = city.map((ci) => ({
+          label: `${c?.name}, ${ci}`,
+          value: `${c?.name}, ${ci}`,
+        }));
+        return locs;
+      })
+      .flat(1) || [];
 
   const prevData = queryClient.getQueryData<GetCurrentUserProfileQuery>([
     "GetCurrentUserProfile",
@@ -107,13 +122,14 @@ export default function BasicUpdateProfileModal() {
           withAsterisk
           {...form.getInputProps("description")}
         />
-        <TextInput
+        <Select
           label="Location"
           placeholder="Your actual location"
           description="This helps to suggest you job positions inside the app"
           mt="md"
           mb="md"
           withAsterisk
+          data={locations}
           {...form.getInputProps("location")}
         />
         <Button type="submit" fullWidth mt="xl" loading={isLoading}>

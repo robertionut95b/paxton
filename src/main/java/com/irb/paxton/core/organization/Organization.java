@@ -41,7 +41,7 @@ public class Organization extends BaseEntity {
     @NotBlank
     private String location;
 
-    @OneToMany(mappedBy = "organization")
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private Collection<JobListing> jobs;
 
     @Nullable

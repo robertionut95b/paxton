@@ -22,6 +22,18 @@ enum ContractType {
     SEASONAL
 }
 
+type City {
+    id: ID!
+    name: String!
+    country: Country!
+}
+
+type Country {
+    code: String!
+    name: String!
+    cities: [City]
+}
+
 enum Domain {
     PSYCHOLOGY,
     COMPUTER_SCIENCE,
@@ -79,7 +91,7 @@ type JobListing {
     availableFrom: Date!
     availableTo: Date!
     isActive: Boolean
-    location: String!
+    city: City!
     numberOfVacancies: Int!
     job: Job!
     contractType: ContractType!
@@ -234,6 +246,7 @@ type Query {
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
     getCurrentUserProfile: UserProfile
+    getCountriesCities: [Country]
 }
 
 type Mutation {

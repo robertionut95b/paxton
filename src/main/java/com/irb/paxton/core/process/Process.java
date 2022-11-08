@@ -46,6 +46,6 @@ public class Process extends BaseEntity {
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;
 
-    @OneToMany(mappedBy = "process")
+    @OneToMany(mappedBy = "process", cascade = CascadeType.ALL)
     private Collection<JobListing> jobListings;
 }

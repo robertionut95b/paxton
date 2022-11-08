@@ -4,6 +4,7 @@ import com.irb.paxton.core.base.BaseEntity;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.process.Process;
 import lombok.AllArgsConstructor;
@@ -56,19 +57,17 @@ public class JobListing extends BaseEntity {
     private LocalDate availableTo;
 
     @Transient
-    @Column(nullable = true)
     private boolean isActive = false;
 
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
     @NotNull
     private Integer numberOfVacancies = 1;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "job_id")
     private Job job;
 
@@ -77,7 +76,7 @@ public class JobListing extends BaseEntity {
     @NotNull
     private ContractType contractType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "organization_id")
     private Organization organization;
 

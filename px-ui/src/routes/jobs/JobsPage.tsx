@@ -1,28 +1,33 @@
 import JobListingItem from "@components/jobs/JobListing";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import { useGetAllJobListingsQuery } from "@gql/generated";
-import { Divider, Loader, Pagination, Select, Text, Title } from "@mantine/core";
+import { Divider, Pagination, Select, Text, Title } from "@mantine/core";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
 
 export default function JobsPage() {
   const [p, setP] = useState<number>(1);
   const [ps, setPs] = useState<number>(5);
-  const { data, isLoading } = useGetAllJobListingsQuery(graphqlRequestClient, {
-    searchQuery: {
-      page: p - 1,
-      size: ps
+  const { data, isLoading } = useGetAllJobListingsQuery(
+    graphqlRequestClient,
+    {
+      searchQuery: {
+        page: p - 1,
+        size: ps,
+      },
+    },
+    {
+      queryKey: [`jobsListing${p}&${ps}`],
+      keepPreviousData: true,
+      staleTime: 1000 * 60,
     }
-  }, {
-    queryKey: [`jobsListing${p}&${ps}`],
-    keepPreviousData: true,
-    staleTime: 1000 * 60
-  });
+  );
 
   const totalPages = data?.getAllJobListings?.totalPages ?? 0;
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
 
-  if (isLoading) return <Loader size={"xs"} />;
+  if (isLoading) return <JobsListingsSkeleton />;
 
   if (jobs.length === 0) {
     return (
@@ -44,7 +49,7 @@ export default function JobsPage() {
         {totalElements} results
       </Text>
       <Divider />
-      {(jobs).map(
+      {jobs.map(
         (jl, idx) =>
           jl && (
             <div key={jl.id}>
@@ -54,23 +59,24 @@ export default function JobsPage() {
           )
       )}
       <div className="px-jobs-pagination flex justify-between items-center mt-4">
-        <Select data={[
-          { value: "5", label: "5" },
-          { value: "10", label: "10" },
-          { value: "20", label: "20" },
-          { value: "50", label: "50" }
-        ]}
+        <Select
+          data={[
+            { value: "5", label: "5" },
+            { value: "10", label: "10" },
+            { value: "20", label: "20" },
+            { value: "50", label: "50" },
+          ]}
           styles={{
             root: {
               display: "flex",
               alignItems: "center",
             },
             label: {
-              marginRight: "10px"
+              marginRight: "10px",
             },
             input: {
-              width: "5rem"
-            }
+              width: "5rem",
+            },
           }}
           label="Page size"
           defaultValue={ps.toString()}
@@ -78,8 +84,16 @@ export default function JobsPage() {
           onChange={(v) => {
             setPs(parseInt(v ?? "10"));
             setP(1);
-          }} />
-        <Pagination total={totalPages} page={p} onChange={setP} initialPage={0} position="right" grow />
+          }}
+        />
+        <Pagination
+          total={totalPages}
+          page={p}
+          onChange={setP}
+          initialPage={0}
+          position="right"
+          grow
+        />
       </div>
     </div>
   );

@@ -12,5 +12,14 @@ body {
 #root {
   background-color: #f9f5f9;
   padding-bottom: 25px;
-  height: 100%
+  height: 100%;
+}
+
+.px-user-resume-description ::-webkit-scrollbar {
+  width: 0.2rem;
+  background: rgb(235, 235, 235);
+}
+
+.px-user-resume-description ::-webkit-scrollbar-thumb {
+  background: #cdcdcd;
 }

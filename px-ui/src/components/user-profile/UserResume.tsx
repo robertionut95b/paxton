@@ -3,7 +3,7 @@ import ExperienceCard from "@components/cards/ExperienceCard";
 import StudyCard from "@components/cards/StudyCard";
 import { useGetUserProfileQuery } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Divider, Text, Title } from "@mantine/core";
+import { Divider, Textarea, Title } from "@mantine/core";
 
 export default function UserResume() {
   const { user } = useAuth();
@@ -17,11 +17,23 @@ export default function UserResume() {
   return (
     <div className="px-user-resume flex flex-col gap-y-5">
       <Title order={3}>About</Title>
-      <div className="px-user-description">
-        <Text size="sm">
-          {userProfile?.description ??
-            "No description was provided, you can update your profile."}
-        </Text>
+      <div className="px-user-resume-description">
+        <Textarea
+          size="sm"
+          readOnly
+          value={
+            userProfile?.description ??
+            "No description was provided, you can update your profile."
+          }
+          minRows={8}
+          variant="unstyled"
+          styles={{
+            input: {
+              overflow: "scroll",
+              overflowX: "hidden",
+            },
+          }}
+        />
       </div>
       <Divider color={"#ded9fd"} variant="solid" />
       <Title order={3}>Studies</Title>

@@ -102,14 +102,16 @@ export default function BasicUpdateProfileModal() {
             profileSlugUrl: user?.profileSlugUrl,
           },
         ]);
-        queryClient.removeQueries({
-          queryKey: [
-            "GetUserProfile",
-            {
-              profileSlugUrl: prevProfileData?.profileSlugUrl,
-            },
-          ],
-        });
+        if (prevProfileData?.profileSlugUrl !== profileSlugUrl) {
+          queryClient.removeQueries({
+            queryKey: [
+              "GetUserProfile",
+              {
+                profileSlugUrl: prevProfileData?.profileSlugUrl,
+              },
+            ],
+          });
+        }
         closeModalNewPath(
           `/app/up/${data.updateUserProfile?.profileSlugUrl}` ?? ""
         );

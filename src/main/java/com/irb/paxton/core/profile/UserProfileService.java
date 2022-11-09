@@ -1,8 +1,8 @@
 package com.irb.paxton.core.profile;
 
-import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.profile.input.UserProfileInput;
+import com.irb.paxton.core.profile.mapper.UserProfileMapper;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
@@ -25,10 +25,13 @@ public class UserProfileService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private UserProfileMapper userProfileMapper;
+
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
     }
-    
+
     public Optional<UserProfile> findBySlugUrl(String profileSlugUrl) {
         return this.userProfileRepository.findByProfileSlugUrl(profileSlugUrl);
     }
@@ -36,28 +39,19 @@ public class UserProfileService {
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
         String username = getCurrentUserLogin().orElseThrow(() -> new UserNotFoundException("User not found"));
         User user = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
-        City city = cityRepository.findByName(userProfileInput.getCity()).orElseThrow(IllegalArgumentException::new);
 
         if (!userProfileInput.getLastName().equals(user.getLastName())
                 || !userProfileInput.getFirstName().equals(user.getFirstName())) {
-            user.setFirstName(userProfileInput.getFirstName());
-            user.setLastName(userProfileInput.getLastName());
+            userProfileMapper.updateUserFields(user, userProfileInput);
             this.userService.updateUser(user);
         }
 
         Optional<UserProfile> userProfileOptional = this.userProfileRepository.findByUserUsername(username);
         if (userProfileOptional.isPresent()) {
             UserProfile userProfile = userProfileOptional.get();
-            userProfile.setProfileTitle(userProfileInput.getProfileTitle());
-            userProfile.setDescription(userProfileInput.getDescription());
-            userProfile.setProfileSlugUrl(userProfileInput.getProfileSlugUrl());
-            userProfile.setCity(city);
-            return this.userProfileRepository.save(userProfile);
+            return this.userProfileRepository.save(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
         }
 
-        return this.userProfileRepository.save(
-                new UserProfile(null, user, "", "", userProfileInput.getDescription(), city,
-                        username + System.currentTimeMillis(), null, userProfileInput.getProfileTitle(), null)
-        );
+        return this.userProfileRepository.save(userProfileMapper.userProfileInputToUserProfile(userProfileInput));
     }
 }

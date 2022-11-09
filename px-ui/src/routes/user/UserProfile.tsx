@@ -53,10 +53,12 @@ export default function UserProfile() {
         <NavLink
           to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
         >
-          <Button rightIcon={<PencilIcon width={16} />}>Edit</Button>
+          <Button rightIcon={<PencilIcon width={16} />} size="sm">
+            Edit
+          </Button>
         </NavLink>
       </div>
-      <UserResume />
+      <UserResume userProfile={userProfile} />
       <Outlet />
     </div>
   );

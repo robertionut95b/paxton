@@ -1,9 +1,13 @@
+import { useAuth } from "@auth/useAuth";
 import {
   GetUserProfileQuery,
   useGetCountriesCitiesQuery,
   useUpdateUserProfileMutation,
 } from "@gql/generated";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
@@ -20,7 +24,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import FormUpdateProfileSchema from "@validator/FormUpdateProfileSchema";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/useAuth";
 
 export default function BasicUpdateProfileModal() {
   const navigate = useNavigate();
@@ -115,6 +118,12 @@ export default function BasicUpdateProfileModal() {
         closeModalNewPath(
           `/app/up/${data.updateUserProfile?.profileSlugUrl}` ?? ""
         );
+        showNotification({
+          title: "Profile update",
+          message: "Successfully updated profile information",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
       },
     }
   );

@@ -46,12 +46,24 @@ type Experience {
     title: String!
     contractType: ContractType!
     organization: Organization
-    location: String
+    city: City
     startDate: Date!
     endDate: Date
     activitySector: ActivitySector!
     description: String!
     userProfile: UserProfile!
+}
+
+input ExperienceInput {
+    title: String!
+    contractType: ContractType!
+    organizationId: ID!
+    city: String
+    startDate: Date!
+    endDate: Date
+    activitySectorId: ID!
+    description: String!
+    userProfileId: ID!
 }
 
 type JobCategory {
@@ -256,4 +268,5 @@ type Mutation {
     publishJob(JobInput: JobInput!): Job
     publishJobListing(JobListingInput: JobListingInput!): JobListing
     updateUserProfile(UserProfileInput: UserProfileInput!): UserProfile
+    addUserProfileExperience(ExperienceInput: ExperienceInput!): Experience
 }

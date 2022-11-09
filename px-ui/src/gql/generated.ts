@@ -67,15 +67,27 @@ export enum Domain {
 export type Experience = {
   __typename?: 'Experience';
   activitySector: ActivitySector;
+  city?: Maybe<City>;
   contractType: ContractType;
   description: Scalars['String'];
   endDate?: Maybe<Scalars['Date']>;
   id: Scalars['ID'];
-  location?: Maybe<Scalars['String']>;
   organization?: Maybe<Organization>;
   startDate: Scalars['Date'];
   title: Scalars['String'];
   userProfile: UserProfile;
+};
+
+export type ExperienceInput = {
+  activitySectorId: Scalars['ID'];
+  city?: InputMaybe<Scalars['String']>;
+  contractType: ContractType;
+  description: Scalars['String'];
+  endDate?: InputMaybe<Scalars['Date']>;
+  organizationId: Scalars['ID'];
+  startDate: Scalars['Date'];
+  title: Scalars['String'];
+  userProfileId: Scalars['ID'];
 };
 
 export type FiltersInput = {
@@ -144,10 +156,16 @@ export type JobListingPage = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addUserProfileExperience?: Maybe<Experience>;
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
   updateUserProfile?: Maybe<UserProfile>;
+};
+
+
+export type MutationAddUserProfileExperienceArgs = {
+  ExperienceInput: ExperienceInput;
 };
 
 
@@ -335,6 +353,13 @@ export type UpdateUserProfileMutationVariables = Exact<{
 
 export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null } | null };
 
+export type AddUserProfileExperienceMutationVariables = Exact<{
+  ExperienceInput: ExperienceInput;
+}>;
+
+
+export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -345,14 +370,14 @@ export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?:
 export type GetCurrentUserProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -384,6 +409,47 @@ export const useUpdateUserProfileMutation = <
     useMutation<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>(
       ['UpdateUserProfile'],
       (variables?: UpdateUserProfileMutationVariables) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers)(),
+      options
+    );
+export const AddUserProfileExperienceDocument = `
+    mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
+  addUserProfileExperience(ExperienceInput: $ExperienceInput) {
+    id
+    title
+    contractType
+    organization {
+      id
+      name
+      photography
+    }
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
+    startDate
+    endDate
+    activitySector {
+      id
+      name
+    }
+    description
+  }
+}
+    `;
+export const useAddUserProfileExperienceMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>(
+      ['AddUserProfileExperience'],
+      (variables?: AddUserProfileExperienceMutationVariables) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers)(),
       options
     );
 export const GetAllJobListingsDocument = `
@@ -462,7 +528,14 @@ export const GetCurrentUserProfileDocument = `
         industry
         photography
       }
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       startDate
       endDate
       activitySector {
@@ -497,6 +570,7 @@ export const GetUserProfileDocument = `
       id
       name
       country {
+        code
         name
       }
     }
@@ -510,7 +584,14 @@ export const GetUserProfileDocument = `
         industry
         photography
       }
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       startDate
       endDate
       activitySector {

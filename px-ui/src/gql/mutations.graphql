@@ -9,3 +9,30 @@ mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
     profileSlugUrl
   }
 }
+
+mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
+  addUserProfileExperience(ExperienceInput: $ExperienceInput) {
+    id
+    title
+    contractType
+    organization {
+      id
+      name
+      photography
+    }
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
+    startDate
+    endDate
+    activitySector {
+      id
+      name
+    }
+    description
+  }
+}

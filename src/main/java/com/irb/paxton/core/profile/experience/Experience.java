@@ -3,6 +3,7 @@ package com.irb.paxton.core.profile.experience;
 import com.irb.paxton.core.activity.ActivitySector;
 import com.irb.paxton.core.base.BaseEntity;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.*;
@@ -43,7 +44,9 @@ public class Experience extends BaseEntity {
     @JoinColumn(name = "organization_id", referencedColumnName = "id")
     private Organization organization;
 
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
     @NotNull
     private LocalDate startDate = LocalDate.now();

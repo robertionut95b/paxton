@@ -1,18 +1,16 @@
-import { useAuth } from "@auth/useAuth";
 import ExperienceCard from "@components/cards/ExperienceCard";
 import StudyCard from "@components/cards/StudyCard";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { useGetUserProfileQuery } from "@gql/generated";
-import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Divider, Text, Title } from "@mantine/core";
+import { GetUserProfileQuery, UserProfile } from "@gql/generated";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { ActionIcon, Divider, Text, Title } from "@mantine/core";
+import { NavLink } from "react-router-dom";
 
-export default function UserResume() {
-  const { user } = useAuth();
-  const { data } = useGetUserProfileQuery(graphqlRequestClient, {
-    profileSlugUrl: user?.profileSlugUrl,
-  });
-  const userProfile = data?.getUserProfile;
-
+export default function UserResume({
+  userProfile,
+}: {
+  userProfile?: GetUserProfileQuery["getUserProfile"] | UserProfile | null;
+}) {
   const studies = [1, 2];
   const experiences = [1];
   return (
@@ -31,7 +29,12 @@ export default function UserResume() {
         </Text>
       </div>
       <Divider color={"#ded9fd"} variant="solid" />
-      <Title order={3}>Studies</Title>
+      <div className="px-user-resume-studies-heading flex justify-between">
+        <Title order={3}>Studies</Title>
+        <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
+          <PlusCircleIcon />
+        </ActionIcon>
+      </div>
       <div className="px-user-studies">
         {studies.map((s, idx) => (
           <div key={idx} className="px-user-study mb-8">
@@ -44,7 +47,14 @@ export default function UserResume() {
         ))}
       </div>
       <Divider color={"#ded9fd"} />
-      <Title order={3}>Experience</Title>
+      <div className="px-user-resume-experiences-heading flex justify-between">
+        <Title order={3}>Experience</Title>
+        <NavLink to={`/app/up/${userProfile?.profileSlugUrl}/experiences/new`}>
+          <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
+            <PlusCircleIcon />
+          </ActionIcon>
+        </NavLink>
+      </div>
       <div className="px-user-experiences">
         {experiences.map((e, idx) => (
           <div key={idx} className="px-user-experience mb-8">

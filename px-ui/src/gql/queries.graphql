@@ -58,7 +58,14 @@ query GetCurrentUserProfile {
         industry
         photography
       }
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       startDate
       endDate
       activitySector {
@@ -78,6 +85,7 @@ query GetUserProfile($profileSlugUrl: String) {
       id
       name
       country {
+        code
         name
       }
     }
@@ -91,7 +99,14 @@ query GetUserProfile($profileSlugUrl: String) {
         industry
         photography
       }
-      location
+      city {
+        id
+        name
+        country {
+          code
+          name
+        }
+      }
       startDate
       endDate
       activitySector {

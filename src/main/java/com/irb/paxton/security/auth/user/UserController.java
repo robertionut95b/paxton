@@ -1,26 +1,23 @@
 package com.irb.paxton.security.auth.user;
 
 import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.user.dto.UserLoginResponseDto;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import com.irb.paxton.security.auth.user.mapper.UserLoginMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.Duration;
+import java.security.Principal;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
-import static com.irb.paxton.security.SecurityUtils.getAuthorities;
 
 @RestController
 @RequestMapping(path = "api/" + API_VERSION + "/users")
@@ -29,10 +26,10 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private JwtUtils jwtUtils;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private UserLoginMapper mapper;
 
     @GetMapping
     @Secured("ROLE_ADMINISTRATOR")
@@ -41,21 +38,11 @@ public class UserController {
     }
 
     @PostMapping(path = "/currentUser")
-    public ResponseEntity<?> getUserInformation(HttpServletRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<String> authorities = getAuthorities(auth).map(Object::toString).toList();
+    public UserLoginResponseDto getUserInformation(HttpServletRequest request, Principal principal) {
         Instant expiresAt = jwtUtils.getExpiresAtFromToken(jwtUtils.getJwtFromCookies(request));
-        User user = this.userService.findByUsername(auth.getName())
+        User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        HashMap<String, Object> resp = new HashMap<>();
-        resp.put("username", auth.getName());
-        resp.put("firstName", user.getFirstName());
-        resp.put("lastName", user.getLastName());
-        resp.put("profileSlugUrl", user.getUserProfile().getProfileSlugUrl());
-        resp.put("permissions", authorities);
-        resp.put("sessionTime", Duration.between(Instant.now(), expiresAt).toMillis());
-
-        return ResponseEntity.ok().body(resp);
+        return mapper.userToUserLoginResponseDto(user, expiresAt);
     }
 }

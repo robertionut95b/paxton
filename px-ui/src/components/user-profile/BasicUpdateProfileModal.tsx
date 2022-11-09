@@ -89,10 +89,12 @@ export default function BasicUpdateProfileModal() {
       onSuccess(data) {
         const firstName = form.values.firstName;
         const lastName = form.values.lastName;
+        const profileSlugUrl = form.values.profileSlugUrl;
         setUser({
           ...(user as User),
           firstName,
           lastName,
+          profileSlugUrl,
         });
         queryClient.invalidateQueries([
           "GetUserProfile",

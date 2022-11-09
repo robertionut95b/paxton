@@ -5,6 +5,7 @@ import com.irb.paxton.security.auth.device.UserDeviceService;
 import com.irb.paxton.security.auth.jwt.JwtUtils;
 import com.irb.paxton.security.auth.jwt.token.RefreshToken;
 import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
+import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.dto.UserLoginDto;
@@ -73,7 +74,7 @@ public class LoginController {
         ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
 
         log.info(String.format("Auth principal '%s' logged in, included authorities [%s]",
-                authentication.getName(), authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", ")))
+                authentication.getName(), user.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")))
         );
 
         return ResponseEntity.ok()

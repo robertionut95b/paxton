@@ -1,18 +1,31 @@
 import { useAuth } from "@auth/useAuth";
 import ProfileBanner from "@components/user-profile/ProfileBanner";
 import ProfileCard from "@components/user-profile/ProfileCard";
+import ProfileLoadingSkeleton from "@components/user-profile/ProfileLoadingSkeleton";
 import UserResume from "@components/user-profile/UserResume";
-import { useGetCurrentUserProfileQuery } from "@gql/generated";
+import { useGetUserProfileQuery } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Button, Skeleton } from "@mantine/core";
-import { NavLink, Outlet } from "react-router-dom";
+import { Button } from "@mantine/core";
+import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const { data, isLoading } =
-    useGetCurrentUserProfileQuery(graphqlRequestClient);
-  const userProfile = data?.getCurrentUserProfile;
+  const params = useParams();
+  const navigate = useNavigate();
+
+  const { data, isLoading } = useGetUserProfileQuery(
+    graphqlRequestClient,
+    {
+      profileSlugUrl: params.profileSlug,
+    },
+    {
+      onSuccess: (data) => {
+        if (data.getUserProfile === null) navigate("/app");
+      },
+    }
+  );
+  const userProfile = data?.getUserProfile;
 
   const coverPhoto =
     userProfile?.coverPhotography !== undefined &&
@@ -21,28 +34,25 @@ export default function UserProfile() {
       ? userProfile.coverPhotography
       : "/bg-profile.jpg";
 
-  if (isLoading) {
-    return (
-      <>
-        <Skeleton height={240} mb="xl" />
-        <Skeleton height={8} radius="xl" />
-        <Skeleton height={8} mt={6} radius="xl" />
-        <Skeleton height={8} mt={6} width="70%" radius="xl" />
-      </>
-    );
-  }
+  if (isLoading) return <ProfileLoadingSkeleton />;
 
   return (
     <div className="px-user-profile flex flex-col gap-y-8">
       <ProfileBanner coverPhoto={coverPhoto} />
       <div className="flex justify-between items-center">
         <ProfileCard
-          location={`${userProfile?.city?.country.name}, ${userProfile?.city?.name}`}
+          location={
+            userProfile?.city?.country
+              ? `${userProfile?.city?.country.name}, ${userProfile?.city?.name}`
+              : undefined
+          }
           photography={userProfile?.photography}
           title={userProfile?.profileTitle}
           user={user}
         />
-        <NavLink to={"/app/profile/update/basic"}>
+        <NavLink
+          to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
+        >
           <Button rightIcon={<PencilIcon width={16} />}>Edit</Button>
         </NavLink>
       </div>

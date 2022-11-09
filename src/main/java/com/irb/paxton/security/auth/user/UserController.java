@@ -49,11 +49,12 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         HashMap<String, Object> resp = new HashMap<>();
-        resp.put("permissions", authorities);
         resp.put("username", auth.getName());
-        resp.put("sessionTime", Duration.between(Instant.now(), expiresAt).toMillis());
         resp.put("firstName", user.getFirstName());
         resp.put("lastName", user.getLastName());
+        resp.put("profileSlugUrl", user.getUserProfile().getProfileSlugUrl());
+        resp.put("permissions", authorities);
+        resp.put("sessionTime", Duration.between(Instant.now(), expiresAt).toMillis());
 
         return ResponseEntity.ok().body(resp);
     }

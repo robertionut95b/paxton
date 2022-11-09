@@ -77,9 +77,21 @@ public class UserService {
                 new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         userRepository.save(u);
-        userProfileRepository.save(new UserProfile(null, u, "", "", "No description provided.", null, u.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", u.getUsername()), null));
-        log.info(String.format("Created user login %s, confirmation email message will initiate", user.getUsername()));
-
+        userProfileRepository.save(
+                new UserProfile(null, u, "", "", "No description provided.", null,
+                        u.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", u.getUsername()), null)
+        );
         return u;
+    }
+
+    public void registerNewUser(User user) throws UserAlreadyExistsException {
+        if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
+            throw new UserAlreadyExistsException("Email or username already in use");
+        }
+        userRepository.save(user);
+        userProfileRepository.save(
+                new UserProfile(null, user, "", "", "No description provided.", null,
+                        user.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", user.getUsername()), null)
+        );
     }
 }

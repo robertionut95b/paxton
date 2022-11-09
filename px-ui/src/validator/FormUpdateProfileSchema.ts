@@ -12,6 +12,13 @@ const FormUpdateProfileSchema = z.object({
   profileTitle: z
     .string()
     .min(5, "Profile title must contain more than 5 characters"),
+  profileSlugUrl: z
+    .string()
+    .min(5, "Profile url must contain more than 5 characters")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+      message:
+        "Invalid url format, it can only contain special characters as hyphens ('-')",
+    }),
 });
 
 export default FormUpdateProfileSchema;

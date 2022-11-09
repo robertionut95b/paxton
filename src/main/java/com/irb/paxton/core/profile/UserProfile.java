@@ -16,7 +16,7 @@ import java.util.Collection;
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_USER_PROFILE")
+@Table(name = TABLE_PREFIX + "_USER_PROFILE", indexes = @Index(columnList = "profileSlugUrl"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -28,8 +28,9 @@ public class UserProfile extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
+    @NotNull
     private User user;
 
     @Column(nullable = true)
@@ -51,6 +52,7 @@ public class UserProfile extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Column(unique = true)
     private String profileSlugUrl;
 
     @OneToMany(mappedBy = "study")
@@ -65,5 +67,12 @@ public class UserProfile extends BaseEntity {
 
     public UserProfile(User user) {
         this.user = user;
+    }
+
+    @PrePersist
+    void preInsert() {
+        if (this.profileSlugUrl == null) {
+            this.profileSlugUrl = this.getUser().getUsername() + System.currentTimeMillis();
+        }
     }
 }

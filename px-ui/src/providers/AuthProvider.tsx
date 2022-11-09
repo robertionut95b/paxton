@@ -74,6 +74,7 @@ export default function AuthProvider({
             permissions: data.permissions,
             firstName: data.firstName,
             lastName: data.lastName,
+            profileSlugUrl: data.profileSlugUrl,
           });
           refetch();
         },

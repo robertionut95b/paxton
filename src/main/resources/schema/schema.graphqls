@@ -196,7 +196,7 @@ type UserProfile {
     photography: String
     coverPhotography: String
     description: String!
-    city: City!
+    city: City
     profileSlugUrl: String!
     profileTitle: String!
     experiences: [Experience]
@@ -208,6 +208,7 @@ input UserProfileInput {
     description: String!
     city: String!
     profileTitle: String!
+    profileSlugUrl: String!
 }
 
 input FiltersInput {
@@ -246,6 +247,7 @@ type Query {
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
     getCurrentUserProfile: UserProfile
+    getUserProfile(profileSlugUrl: String) : UserProfile
     getCountriesCities: [Country]
 }
 

@@ -17,6 +17,10 @@ public class UserProfileQueryResolver implements GraphQLQueryResolver {
     @Autowired
     private UserProfileService userProfileService;
 
+    public Optional<UserProfile> getUserProfile(String profileSlugUrl) {
+        return this.userProfileService.findBySlugUrl(profileSlugUrl);
+    }
+
     public Optional<UserProfile> getCurrentUserProfile() {
         String currentUser = getCurrentUserLogin().orElseThrow(() -> new UserNotFoundException("User not found"));
         return this.userProfileService.getCurrentUserProfileByUsername(currentUser);

@@ -6,5 +6,6 @@ mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
       name
     }
     profileTitle
+    profileSlugUrl
   }
 }

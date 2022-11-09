@@ -9,4 +9,5 @@ export interface LoginUserMutationResponse {
   permissions: string[];
   firstName: string;
   lastName: string;
+  profileSlugUrl: string;
 }

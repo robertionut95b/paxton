@@ -1,7 +1,7 @@
 import {
-  GetCurrentUserProfileQuery,
+  GetUserProfileQuery,
   useGetCountriesCitiesQuery,
-  useUpdateUserProfileMutation
+  useUpdateUserProfileMutation,
 } from "@gql/generated";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
@@ -12,7 +12,7 @@ import {
   Modal,
   Select,
   Textarea,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -53,21 +53,30 @@ export default function BasicUpdateProfileModal() {
       })
       .flat(1) || [];
 
-  const prevData = queryClient.getQueryData<GetCurrentUserProfileQuery>([
-    "GetCurrentUserProfile",
+  const prevData = queryClient.getQueryData<GetUserProfileQuery>([
+    "GetUserProfile",
+    {
+      profileSlugUrl: user?.profileSlugUrl,
+    },
   ]);
-  const prevProfileData = prevData?.getCurrentUserProfile;
+  const prevProfileData = prevData?.getUserProfile;
 
   const closeModal = () => {
     navigate(-1);
     setOpened(false);
   };
 
+  const closeModalNewPath = (path: string) => {
+    navigate(path);
+    setOpened(false);
+  };
+
   const form = useForm({
     initialValues: {
       description: prevProfileData?.description ?? "",
-      city: prevProfileData?.city.name ?? "",
+      city: prevProfileData?.city?.name ?? "",
       profileTitle: prevProfileData?.profileTitle ?? "",
+      profileSlugUrl: prevProfileData?.profileSlugUrl ?? "",
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
     },
@@ -77,7 +86,7 @@ export default function BasicUpdateProfileModal() {
   const { mutate, isLoading } = useUpdateUserProfileMutation(
     graphqlRequestClient,
     {
-      onSuccess() {
+      onSuccess(data) {
         const firstName = form.values.firstName;
         const lastName = form.values.lastName;
         setUser({
@@ -85,8 +94,15 @@ export default function BasicUpdateProfileModal() {
           firstName,
           lastName,
         });
-        queryClient.invalidateQueries(["GetCurrentUserProfile"]);
-        closeModal();
+        queryClient.invalidateQueries([
+          "GetUserProfile",
+          {
+            profileSlugUrl: user?.profileSlugUrl,
+          },
+        ]);
+        closeModalNewPath(
+          `/app/up/${data.updateUserProfile?.profileSlugUrl}` ?? ""
+        );
       },
     }
   );
@@ -124,6 +140,13 @@ export default function BasicUpdateProfileModal() {
           mt="md"
           withAsterisk
           {...form.getInputProps("lastName")}
+        />
+        <TextInput
+          label="Profile URL"
+          description="This is your profile unique url, it is unique for each user"
+          mt="md"
+          withAsterisk
+          {...form.getInputProps("profileSlugUrl")}
         />
         <TextInput
           label="Profile title"

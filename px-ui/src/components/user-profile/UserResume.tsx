@@ -1,12 +1,16 @@
+import { useAuth } from "@auth/useAuth";
 import ExperienceCard from "@components/cards/ExperienceCard";
 import StudyCard from "@components/cards/StudyCard";
-import { useGetCurrentUserProfileQuery } from "@gql/generated";
+import { useGetUserProfileQuery } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Divider, Text, Title } from "@mantine/core";
 
 export default function UserResume() {
-  const { data } = useGetCurrentUserProfileQuery(graphqlRequestClient);
-  const userProfile = data?.getCurrentUserProfile;
+  const { user } = useAuth();
+  const { data } = useGetUserProfileQuery(graphqlRequestClient, {
+    profileSlugUrl: user?.profileSlugUrl,
+  });
+  const userProfile = data?.getUserProfile;
 
   const studies = [1, 2];
   const experiences = [1];

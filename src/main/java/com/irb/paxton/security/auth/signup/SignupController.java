@@ -46,6 +46,7 @@ public class SignupController {
         jmsTemplate.convertAndSend("userAccountRegistrationQueue",
                 new AccountRegistration(user, token.getId().toString(), ServletUriComponentsBuilder.fromRequestUri(request).replacePath(null).build().toUriString())
         );
+        log.info(String.format("Created user login : %s - Confirmation email message will initiate", user.getUsername()));
         return user;
     }
 

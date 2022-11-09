@@ -122,25 +122,25 @@ public class RepositoryBootEventService {
         User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", Collections.singletonList(adminRole), null, true);
         Credentials credentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("paxton123"), true, LocalDate.now(), null);
         systemUser.setCredentials(credentials);
-        userService.createUser(systemUser);
+        userService.registerNewUser(systemUser);
 
         // create base admin user
         User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", Collections.singletonList(adminRole), null, true);
         Credentials adminCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("admin"), true, LocalDate.now(), null);
         admin.setCredentials(adminCredentials);
-        userService.createUser(admin);
+        userService.registerNewUser(admin);
 
         // create read-only user
         User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", Collections.singletonList(userRole), null, true);
         Credentials userCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
         readOnly.setCredentials(userCredentials);
-        userService.createUser(readOnly);
+        userService.registerNewUser(readOnly);
 
         // create recruiter user
         User recruiter = new User(null, "pxRecruiter", "pxRecruiter", null, "pxRecruiter@paxton.com", "pxRecruiter", Collections.singletonList(userRole), null, true);
         Credentials recruiterCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("pxRecruiter"), true, LocalDate.now(), null);
         recruiter.setCredentials(recruiterCredentials);
-        userService.createUser(recruiter);
+        userService.registerNewUser(recruiter);
     }
 
     public void setupSampleOrganizationRepository() {

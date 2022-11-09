@@ -4,4 +4,5 @@ export interface User {
   sessionTime: number;
   firstName: string;
   lastName: string;
+  profileSlugUrl: string;
 }

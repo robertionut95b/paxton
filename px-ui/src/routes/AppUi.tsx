@@ -62,7 +62,7 @@ export default function AppUI() {
               }
             />
             <Route
-              path="/app/profile"
+              path="/app/up/:profileSlug/"
               element={
                 <RequireAuth>
                   <UserProfile />
@@ -70,7 +70,7 @@ export default function AppUI() {
               }
             >
               <Route
-                path="/app/profile/update/basic"
+                path="/app/up/:profileSlug/update/intro"
                 element={
                   <RequireAuth>
                     <BasicUpdateProfileModal />

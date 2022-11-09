@@ -69,6 +69,39 @@ query GetCurrentUserProfile {
   }
 }
 
+query GetUserProfile($profileSlugUrl: String) {
+  getUserProfile(profileSlugUrl: $profileSlugUrl) {
+    photography
+    coverPhotography
+    description
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
+    profileSlugUrl
+    profileTitle
+    experiences {
+      title
+      contractType
+      organization {
+        name
+        industry
+        photography
+      }
+      location
+      startDate
+      endDate
+      activitySector {
+        name
+      }
+      description
+    }
+  }
+}
+
 query GetCountriesCities {
   getCountriesCities {
     code

@@ -2,6 +2,7 @@ package com.irb.paxton.security.auth.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
 import lombok.AllArgsConstructor;
@@ -73,4 +74,21 @@ public class User extends BaseEntity {
 
     @NotNull
     private boolean isEmailConfirmed = false;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    @JoinColumn(name = "user_profile_id")
+    @JsonIgnore
+    private UserProfile userProfile;
+
+    public User(Long id, String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.email = email;
+        this.username = username;
+        this.roles = roles;
+        this.credentials = credentials;
+        this.isEmailConfirmed = isEmailConfirmed;
+    }
 }

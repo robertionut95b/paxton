@@ -28,6 +28,10 @@ public class UserProfileService {
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
     }
+    
+    public Optional<UserProfile> findBySlugUrl(String profileSlugUrl) {
+        return this.userProfileRepository.findByProfileSlugUrl(profileSlugUrl);
+    }
 
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
         String username = getCurrentUserLogin().orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -46,6 +50,7 @@ public class UserProfileService {
             UserProfile userProfile = userProfileOptional.get();
             userProfile.setProfileTitle(userProfileInput.getProfileTitle());
             userProfile.setDescription(userProfileInput.getDescription());
+            userProfile.setProfileSlugUrl(userProfileInput.getProfileSlugUrl());
             userProfile.setCity(city);
             return this.userProfileRepository.save(userProfile);
         }

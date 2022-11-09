@@ -223,6 +223,7 @@ export type Query = {
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
+  getUserProfile?: Maybe<UserProfile>;
   healthCheck?: Maybe<Scalars['String']>;
 };
 
@@ -234,6 +235,11 @@ export type QueryGetAllJobListingsArgs = {
 
 export type QueryGetStepsByProcessArgs = {
   processId: Scalars['Int'];
+};
+
+
+export type QueryGetUserProfileArgs = {
+  profileSlugUrl?: InputMaybe<Scalars['String']>;
 };
 
 export type Recruiter = {
@@ -302,7 +308,7 @@ export type User = {
 
 export type UserProfile = {
   __typename?: 'UserProfile';
-  city: City;
+  city?: Maybe<City>;
   coverPhotography?: Maybe<Scalars['String']>;
   description: Scalars['String'];
   experiences?: Maybe<Array<Maybe<Experience>>>;
@@ -318,6 +324,7 @@ export type UserProfileInput = {
   description: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
+  profileSlugUrl: Scalars['String'];
   profileTitle: Scalars['String'];
 };
 
@@ -326,7 +333,7 @@ export type UpdateUserProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, profileTitle: string, city: { __typename?: 'City', id: string, name: string } } | null };
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -338,7 +345,14 @@ export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?:
 export type GetCurrentUserProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } }, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+export type GetCurrentUserProfileQuery = { __typename?: 'Query', getCurrentUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+
+export type GetUserProfileQueryVariables = Exact<{
+  profileSlugUrl?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, location?: string | null, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -355,6 +369,7 @@ export const UpdateUserProfileDocument = `
       name
     }
     profileTitle
+    profileSlugUrl
   }
 }
     `;
@@ -470,6 +485,54 @@ export const useGetCurrentUserProfileQuery = <
     useQuery<GetCurrentUserProfileQuery, TError, TData>(
       variables === undefined ? ['GetCurrentUserProfile'] : ['GetCurrentUserProfile', variables],
       fetcher<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryVariables>(client, GetCurrentUserProfileDocument, variables, headers),
+      options
+    );
+export const GetUserProfileDocument = `
+    query GetUserProfile($profileSlugUrl: String) {
+  getUserProfile(profileSlugUrl: $profileSlugUrl) {
+    photography
+    coverPhotography
+    description
+    city {
+      id
+      name
+      country {
+        name
+      }
+    }
+    profileSlugUrl
+    profileTitle
+    experiences {
+      title
+      contractType
+      organization {
+        name
+        industry
+        photography
+      }
+      location
+      startDate
+      endDate
+      activitySector {
+        name
+      }
+      description
+    }
+  }
+}
+    `;
+export const useGetUserProfileQuery = <
+      TData = GetUserProfileQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetUserProfileQueryVariables,
+      options?: UseQueryOptions<GetUserProfileQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetUserProfileQuery, TError, TData>(
+      variables === undefined ? ['GetUserProfile'] : ['GetUserProfile', variables],
+      fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, variables, headers),
       options
     );
 export const GetCountriesCitiesDocument = `

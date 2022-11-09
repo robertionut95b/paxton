@@ -33,4 +33,9 @@ public class UserProfileInput {
     @NotBlank
     @NotEmpty
     private String profileTitle;
+
+    @NotBlank
+    @NotEmpty
+    @NotNull
+    private String profileSlugUrl;
 }

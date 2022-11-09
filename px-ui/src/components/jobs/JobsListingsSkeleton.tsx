@@ -13,8 +13,8 @@ export default function JobsListingsSkeleton({
         <Skeleton height={15} mb="lg" width="15%" />
       </div>
       <Divider mb="md" />
-      {cards.map(() => (
-        <>
+      {cards.map((_, idx) => (
+        <div key={idx}>
           <div className="px-skeleton-logo">
             <Skeleton height={40} mb="lg" width="5%" />
           </div>
@@ -24,7 +24,7 @@ export default function JobsListingsSkeleton({
             <Skeleton height={6} width="90%" radius="xl" mt={6} />
             <Skeleton height={6} width="10%" radius="xl" mt={6} mb={12} />
           </div>
-        </>
+        </div>
       ))}
     </div>
   );

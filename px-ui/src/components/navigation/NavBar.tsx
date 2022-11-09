@@ -1,4 +1,5 @@
 import { LogoWithSearch } from "@components/Logo";
+import { User } from "@interfaces/user.types";
 import {
   Avatar,
   Burger,
@@ -12,7 +13,6 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/useAuth";
 
 export interface LinkItem {
   link: string;
@@ -22,6 +22,8 @@ export interface LinkItem {
 
 interface NavBarProps {
   links: LinkItem[];
+  user?: User | null;
+  profileLink?: string;
 }
 
 const HEADER_HEIGHT = 56;
@@ -110,12 +112,11 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const NavBar = ({ links }: NavBarProps) => {
+const NavBar = ({ links, user, profileLink }: NavBarProps) => {
   const [opened, { toggle, close }] = useDisclosure(false);
   const location = useLocation();
   const [active, setActive] = useState(location.pathname || links[0].link);
   const { classes, cx } = useStyles();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const items = links.map((link) => (
@@ -147,11 +148,11 @@ const NavBar = ({ links }: NavBarProps) => {
           {items}
           <Avatar
             component={Link}
-            to="/app/profile"
+            to={`/app/up/${profileLink}`}
             radius={"xl"}
             color="violet"
           >
-            {user?.username?.[0].toUpperCase()}
+            {user?.username?.[0].toUpperCase() ?? "U"}
           </Avatar>
         </Group>
         <Burger

@@ -63,7 +63,7 @@ input ExperienceInput {
     endDate: Date
     activitySectorId: ID!
     description: String!
-    userProfileId: ID!
+    userProfileSlugUrl: String!
 }
 
 type JobCategory {
@@ -268,5 +268,5 @@ type Mutation {
     publishJob(JobInput: JobInput!): Job
     publishJobListing(JobListingInput: JobListingInput!): JobListing
     updateUserProfile(UserProfileInput: UserProfileInput!): UserProfile
-    addUserProfileExperience(ExperienceInput: ExperienceInput!): Experience
+    addUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
 }

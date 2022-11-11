@@ -1,5 +1,7 @@
 package com.irb.paxton.repository;
 
+import com.irb.paxton.core.activity.ActivitySector;
+import com.irb.paxton.core.activity.ActivitySectorRepository;
 import com.irb.paxton.core.jobs.Job;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
@@ -84,6 +86,9 @@ public class RepositoryBootEventService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private ActivitySectorRepository activitySectorRepository;
+
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
 
@@ -148,6 +153,8 @@ public class RepositoryBootEventService {
 
         Organization paxtonOrg = new Organization(null, "Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg");
         JobCategory itcJobCategory = new JobCategory(null, "IT&C", null);
+        ActivitySector itFinance = new ActivitySector(null, "IT & Finance");
+        this.activitySectorRepository.save(itFinance);
         this.organizationRepository.save(paxtonOrg);
         this.jobCategoryRepository.save(itcJobCategory);
 

@@ -62,7 +62,7 @@ public class UserProfile extends BaseEntity {
     @NotEmpty
     private String profileTitle;
 
-    @OneToMany(mappedBy = "userProfile")
+    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
     private Collection<Experience> experiences;
 
     public UserProfile(User user) {

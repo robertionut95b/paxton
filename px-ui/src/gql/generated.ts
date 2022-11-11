@@ -87,7 +87,7 @@ export type ExperienceInput = {
   organizationId: Scalars['ID'];
   startDate: Scalars['Date'];
   title: Scalars['String'];
-  userProfileId: Scalars['ID'];
+  userProfileSlugUrl: Scalars['String'];
 };
 
 export type FiltersInput = {
@@ -156,7 +156,7 @@ export type JobListingPage = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addUserProfileExperience?: Maybe<Experience>;
+  addUserProfileExperience?: Maybe<UserProfile>;
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
@@ -358,7 +358,7 @@ export type AddUserProfileExperienceMutationVariables = Exact<{
 }>;
 
 
-export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null };
+export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -383,6 +383,16 @@ export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCountriesCitiesQuery = { __typename?: 'Query', getCountriesCities?: Array<{ __typename?: 'Country', code: string, name: string, cities?: Array<{ __typename?: 'City', id: string, name: string } | null> | null } | null> | null };
+
+export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } | null> | null };
+
+export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllActivitySectorsQuery = { __typename?: 'Query', getAllActivitySectors?: Array<{ __typename?: 'ActivitySector', id: string, name: string } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -415,27 +425,16 @@ export const AddUserProfileExperienceDocument = `
     mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
   addUserProfileExperience(ExperienceInput: $ExperienceInput) {
     id
-    title
-    contractType
-    organization {
-      id
-      name
-      photography
-    }
+    description
     city {
       id
       name
-      country {
-        name
-      }
     }
-    startDate
-    endDate
-    activitySector {
+    profileTitle
+    profileSlugUrl
+    experiences {
       id
-      name
     }
-    description
   }
 }
     `;
@@ -640,5 +639,52 @@ export const useGetCountriesCitiesQuery = <
     useQuery<GetCountriesCitiesQuery, TError, TData>(
       variables === undefined ? ['GetCountriesCities'] : ['GetCountriesCities', variables],
       fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers),
+      options
+    );
+export const GetAllOrganizationsDocument = `
+    query getAllOrganizations {
+  getAllOrganizations {
+    id
+    name
+    industry
+    location
+    photography
+  }
+}
+    `;
+export const useGetAllOrganizationsQuery = <
+      TData = GetAllOrganizationsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllOrganizationsQueryVariables,
+      options?: UseQueryOptions<GetAllOrganizationsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllOrganizationsQuery, TError, TData>(
+      variables === undefined ? ['getAllOrganizations'] : ['getAllOrganizations', variables],
+      fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, variables, headers),
+      options
+    );
+export const GetAllActivitySectorsDocument = `
+    query getAllActivitySectors {
+  getAllActivitySectors {
+    id
+    name
+  }
+}
+    `;
+export const useGetAllActivitySectorsQuery = <
+      TData = GetAllActivitySectorsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllActivitySectorsQueryVariables,
+      options?: UseQueryOptions<GetAllActivitySectorsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllActivitySectorsQuery, TError, TData>(
+      variables === undefined ? ['getAllActivitySectors'] : ['getAllActivitySectors', variables],
+      fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers),
       options
     );

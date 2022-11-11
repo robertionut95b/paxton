@@ -40,7 +40,7 @@ public class ExperienceInput {
     private String description;
 
     @NotNull
-    private Long userProfileId;
+    private String userProfileSlugUrl;
 
     @NotNull
     private String city;

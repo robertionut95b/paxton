@@ -13,26 +13,15 @@ mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
 mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
   addUserProfileExperience(ExperienceInput: $ExperienceInput) {
     id
-    title
-    contractType
-    organization {
-      id
-      name
-      photography
-    }
+    description
     city {
       id
       name
-      country {
-        name
-      }
     }
-    startDate
-    endDate
-    activitySector {
+    profileTitle
+    profileSlugUrl
+    experiences {
       id
-      name
     }
-    description
   }
 }

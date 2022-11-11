@@ -127,3 +127,20 @@ query GetCountriesCities {
     }
   }
 }
+
+query getAllOrganizations {
+  getAllOrganizations {
+    id
+    name
+    industry
+    location
+    photography
+  }
+}
+
+query getAllActivitySectors {
+  getAllActivitySectors {
+    id
+    name
+  }
+}

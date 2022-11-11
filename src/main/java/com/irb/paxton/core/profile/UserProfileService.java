@@ -58,15 +58,13 @@ public class UserProfileService {
         return this.userProfileRepository.save(userProfileMapper.userProfileInputToUserProfile(userProfileInput));
     }
 
-    public Experience saveExperience(ExperienceInput experienceInput) {
+    public UserProfile saveExperience(ExperienceInput experienceInput) {
         Experience newExperience = this.userProfileMapper.addUserProfileExperience(experienceInput);
         UserProfile userProfile = newExperience.getUserProfile();
         Collection<Experience> experiences = userProfile.getExperiences();
         experiences.add(newExperience);
 
         userProfile.setExperiences(experiences);
-        this.userProfileRepository.save(userProfile);
-
-        return newExperience;
+        return this.userProfileRepository.save(userProfile);
     }
 }

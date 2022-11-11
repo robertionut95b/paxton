@@ -55,8 +55,6 @@ public class Experience extends BaseEntity {
     private LocalDate endDate;
 
     @NotNull
-    @NotEmpty
-    @NotBlank
     @ManyToOne
     @JoinColumn(name = "activitySector_id")
     private ActivitySector activitySector;

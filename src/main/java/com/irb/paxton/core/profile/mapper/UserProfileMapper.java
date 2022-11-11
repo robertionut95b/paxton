@@ -92,7 +92,7 @@ public abstract class UserProfileMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     public abstract void updateUserFields(@MappingTarget User user, UserProfileInput userProfileInput);
 
-    @Mapping(target = "userProfile", source = "experienceInput.userProfileId")
+    @Mapping(target = "userProfile", source = "experienceInput.userProfileSlugUrl")
     @Mapping(target = "organization", source = "experienceInput.organizationId")
     @Mapping(target = "activitySector", source = "experienceInput.activitySectorId")
     @Mapping(target = "modifiedBy", ignore = true)
@@ -104,6 +104,11 @@ public abstract class UserProfileMapper {
     public UserProfile mapUserProfile(Long userProfileId) {
         return this.userProfileRepository.findById(userProfileId)
                 .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userProfileId), "userProfileId"));
+    }
+
+    public UserProfile mapUserProfileBySlugUrl(String userProfileSlugUrl) {
+        return this.userProfileRepository.findByProfileSlugUrl(userProfileSlugUrl)
+                .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userProfileSlugUrl), "userProfileId"));
     }
 
     public Organization mapOrganization(Long organizationId) {

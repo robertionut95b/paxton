@@ -62,6 +62,7 @@ public class Experience extends BaseEntity {
     @NotNull
     @NotBlank
     @NotEmpty
+    @Lob
     private String description;
 
     @ManyToOne

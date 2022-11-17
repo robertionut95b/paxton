@@ -15,6 +15,15 @@ import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.profile.experience.input.ExperienceInput;
 import com.irb.paxton.core.profile.input.UserProfileInput;
+import com.irb.paxton.core.study.Study;
+import com.irb.paxton.core.study.certification.Certification;
+import com.irb.paxton.core.study.certification.CertificationRepository;
+import com.irb.paxton.core.study.domain.Domain;
+import com.irb.paxton.core.study.domain.DomainRepository;
+import com.irb.paxton.core.study.input.StudyInput;
+import com.irb.paxton.core.study.input.StudyInputCreate;
+import com.irb.paxton.core.study.institution.Institution;
+import com.irb.paxton.core.study.institution.InstitutionRepository;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
@@ -35,6 +44,15 @@ public abstract class UserProfileMapper {
 
     @Autowired
     private ActivitySectorRepository activitySectorRepository;
+
+    @Autowired
+    private InstitutionRepository institutionRepository;
+
+    @Autowired
+    private DomainRepository domainRepository;
+
+    @Autowired
+    private CertificationRepository certificationRepository;
 
     @Autowired
     private UserService userService;
@@ -130,4 +148,47 @@ public abstract class UserProfileMapper {
     @Mapping(target = "createdAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     public abstract Experience updateUserProfileExperience(@MappingTarget Experience experience, ExperienceInput experienceInput);
+
+    @Mapping(target = "userProfile", source = "studyInput.userProfileSlugUrl")
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "institution", source = "studyInput.institutionId")
+    @Mapping(target = "domainStudy", source = "studyInput.domainStudyId")
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "certification", source = "studyInput.certificationId")
+    public abstract Study addUserProfileStudy(StudyInput studyInput);
+
+    @Mapping(target = "userProfile", source = "studyInputCreate.userProfileSlugUrl")
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    public abstract Study addUserProfileStudy(StudyInputCreate studyInputCreate);
+
+    public Institution mapInstitution(Long institutionId) {
+        return this.institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new IllegalArgumentException("Institution not found"));
+    }
+
+    public Domain mapDomain(Long domainId) {
+        return this.domainRepository.findById(domainId)
+                .orElseThrow(() -> new IllegalArgumentException("Domain not found"));
+    }
+
+    public Certification mapCertification(Long certificationId) {
+        return this.certificationRepository.findById(certificationId)
+                .orElseThrow(() -> new IllegalArgumentException("Certification not found"));
+    }
+
+    @Mapping(target = "userProfile", source = "studyInput.userProfileSlugUrl")
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "institution", source = "studyInput.institutionId")
+    @Mapping(target = "domainStudy", source = "studyInput.domainStudyId")
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "certification", source = "studyInput.certificationId")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    public abstract Study updateUserProfileStudy(@MappingTarget Study actualStudy, StudyInput studyInput);
 }

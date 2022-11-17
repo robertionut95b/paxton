@@ -3,7 +3,7 @@ package com.irb.paxton.core.profile;
 import com.irb.paxton.core.base.BaseEntity;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.profile.experience.Experience;
-import com.irb.paxton.core.study.ProfileStudies;
+import com.irb.paxton.core.study.Study;
 import com.irb.paxton.security.auth.user.User;
 import lombok.*;
 
@@ -55,8 +55,8 @@ public class UserProfile extends BaseEntity {
     @Column(unique = true)
     private String profileSlugUrl;
 
-    @OneToMany(mappedBy = "study")
-    private Collection<ProfileStudies> studies;
+    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    private Collection<Study> studies;
 
     @NotBlank
     @NotEmpty

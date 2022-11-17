@@ -1,13 +1,14 @@
 package com.irb.paxton.core.study;
 
 import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.core.profile.UserProfile;
+import com.irb.paxton.core.study.certification.Certification;
+import com.irb.paxton.core.study.domain.Domain;
+import com.irb.paxton.core.study.institution.Institution;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
@@ -24,13 +25,26 @@ public class Study extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany(mappedBy = "profile")
-    private Collection<ProfileStudies> profiles;
-
-    @NotBlank
+    @ManyToOne
+    @JoinColumn(name = "institution_id")
     @NotNull
-    @NotEmpty
-    private String name;
+    private Institution institution;
 
+    @ManyToOne
+    @JoinColumn(name = "domain_study_id")
+    private Domain domainStudy;
+
+    private String degree;
+
+    @ManyToOne
+    @JoinColumn(name = "certification_id")
+    private Certification certification;
+
+    @Column(length = 1000)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_profile_id")
+    @NotNull
+    private UserProfile userProfile;
 }

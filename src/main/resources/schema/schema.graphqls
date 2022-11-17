@@ -1,6 +1,5 @@
 # The root query of the application
 scalar Date
-scalar DateTime
 
 type ActivitySector {
     id: ID!
@@ -28,17 +27,43 @@ type City {
     country: Country!
 }
 
+type Certification {
+    id: ID!
+    name: String!
+}
+
+input CertificationInput {
+    name: String!
+}
+
 type Country {
     code: String!
     name: String!
     cities: [City]
 }
 
-enum Domain {
-    PSYCHOLOGY,
-    COMPUTER_SCIENCE,
-    ARTS,
-    MATHEMATICS
+type Domain {
+    id: ID!
+    name: String!
+    studies: [Study]
+}
+
+input DomainInput {
+    name: String!
+}
+
+type Institution {
+    id: ID!
+    name: String!
+    description: String!
+    photography: String
+    studies: [Study]
+}
+
+input InstitutionInput {
+    name: String!
+    description: String!
+    photography: String
 }
 
 type Experience {
@@ -163,22 +188,34 @@ type Privilege {
     name: String
 }
 
-type ProfileStudies {
-    id: ID!
-    study: Study
-    profile: UserProfile
-    startDate: Date!
-    endDate: Date
-    diploma: String
-    description: String
-    domain: Domain
-}
-
 type Study {
     id: ID!
-    name: String!
+    institution: Institution!
+    domainStudy: Domain
+    degree: String
+    certification: Certification!
     description: String
-    profiles: [ProfileStudies]
+    userProfile: UserProfile!
+}
+
+input StudyInput {
+    id: ID
+    institutionId: ID
+    domainStudyId: ID
+    degree: String
+    certificationId: ID
+    description: String
+    userProfileId: ID
+}
+
+input StudyInputCreate {
+    id: ID
+    institution: InstitutionInput
+    domainStudy: DomainInput
+    degree: String
+    certification: CertificationInput
+    description: String
+    userProfileId: ID
 }
 
 type Recruiter {
@@ -213,6 +250,7 @@ type UserProfile {
     profileSlugUrl: String!
     profileTitle: String!
     experiences: [Experience]
+    studies: [Study]
 }
 
 input UserProfileInput {
@@ -271,4 +309,7 @@ type Mutation {
     updateUserProfile(UserProfileInput: UserProfileInput!): UserProfile
     addUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     updateUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
+    addUserProfileStudy(StudyInput: StudyInput!): UserProfile
+    addUserProfileStudy(StudyInputCreate: StudyInputCreate!): UserProfile
+    updateUserProfileStudy(StudyInput: StudyInput!): UserProfile
 }

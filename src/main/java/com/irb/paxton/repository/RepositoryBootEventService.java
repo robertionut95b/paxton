@@ -19,6 +19,12 @@ import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.*;
+import com.irb.paxton.core.study.certification.Certification;
+import com.irb.paxton.core.study.certification.CertificationRepository;
+import com.irb.paxton.core.study.domain.Domain;
+import com.irb.paxton.core.study.domain.DomainRepository;
+import com.irb.paxton.core.study.institution.Institution;
+import com.irb.paxton.core.study.institution.InstitutionRepository;
 import com.irb.paxton.security.auth.privilege.Privilege;
 import com.irb.paxton.security.auth.privilege.PrivilegeService;
 import com.irb.paxton.security.auth.role.PaxtonRole;
@@ -88,6 +94,15 @@ public class RepositoryBootEventService {
 
     @Autowired
     private ActivitySectorRepository activitySectorRepository;
+
+    @Autowired
+    private DomainRepository domainRepository;
+
+    @Autowired
+    private CertificationRepository certificationRepository;
+
+    @Autowired
+    private InstitutionRepository institutionRepository;
 
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
@@ -221,5 +236,23 @@ public class RepositoryBootEventService {
         itCities.forEach(c -> c.setCountry(It));
 
         countryRepository.saveAll(List.of(Ro, Gr, It));
+
+        // create institutions, domains and certifications
+        log.info("Paxton : creating studies objects");
+
+        Certification bachelorsDegree = new Certification(null, "Bachelor's degree", null);
+        Certification highSchoolDegree = new Certification(null, "High school degree", null);
+        certificationRepository.saveAll(List.of(bachelorsDegree, highSchoolDegree));
+
+        Institution institutionCSIE = new Institution(null, "Faculty of Cybernetics Statistics and Economic Informatics", "The Undergraduate Program in Economic Informatics ensures the training for: analysis, design and implementation of information systems in enterprises; utilization and configuration of software packages with application in economy; development and introduction of the applied software; research and application of the new computer science technologies; computer programming skills.", "https://csie.ase.ro/wp-content/uploads/2020/10/cropped-CSIE_new-300x132.png", null);
+        Institution institutionASE = new Institution(null, "Bucharest University of economic studies", "ASE is the Leader of economic and public administration higher education in Romania and South-Eastern Europe, as confirmed by its key positioning in prestigious international rankings.", "https://upload.wikimedia.org/wikipedia/ro/a/a3/Logo_ASE.png", null);
+        institutionRepository.saveAll(List.of(institutionASE, institutionCSIE));
+
+        Domain computerScience = new Domain(null, "Computers Science", null);
+        Domain economics = new Domain(null, "Economics", null);
+        Domain mathematics = new Domain(null, "Mathematics", null);
+        Domain statistics = new Domain(null, "Statistics", null);
+        Domain agriculture = new Domain(null, "Agriculture", null);
+        domainRepository.saveAll(List.of(computerScience, economics, mathematics, statistics, agriculture));
     }
 }

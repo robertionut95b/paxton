@@ -7,6 +7,11 @@ import com.irb.paxton.core.profile.experience.exception.ExperienceNotFoundExcept
 import com.irb.paxton.core.profile.experience.input.ExperienceInput;
 import com.irb.paxton.core.profile.input.UserProfileInput;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
+import com.irb.paxton.core.study.Study;
+import com.irb.paxton.core.study.StudyRepository;
+import com.irb.paxton.core.study.exception.StudyNotFoundException;
+import com.irb.paxton.core.study.input.StudyInput;
+import com.irb.paxton.core.study.input.StudyInputCreate;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
@@ -35,6 +40,9 @@ public class UserProfileService {
 
     @Autowired
     private ExperienceRepository experienceRepository;
+
+    @Autowired
+    private StudyRepository studyRepository;
 
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
@@ -80,5 +88,34 @@ public class UserProfileService {
         experienceRepository.save(updatedExperience);
 
         return updatedExperience.getUserProfile();
+    }
+
+    public UserProfile saveStudy(StudyInput studyInput) {
+        Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInput);
+        UserProfile userProfile = newStudy.getUserProfile();
+        Collection<Study> studies = userProfile.getStudies();
+        studies.add(newStudy);
+
+        userProfile.setStudies(studies);
+        return this.userProfileRepository.save(userProfile);
+    }
+
+    public UserProfile saveStudy(StudyInputCreate studyInputCreate) {
+        Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInputCreate);
+        UserProfile userProfile = newStudy.getUserProfile();
+        Collection<Study> studies = userProfile.getStudies();
+        studies.add(newStudy);
+
+        userProfile.setStudies(studies);
+        return this.userProfileRepository.save(userProfile);
+    }
+
+    public UserProfile updateStudy(StudyInput studyInput) {
+        Study actualStudy = this.studyRepository.findById(studyInput.getId())
+                .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString()), "id"));
+        Study updatedStudy = this.userProfileMapper.updateUserProfileStudy(actualStudy, studyInput);
+        this.studyRepository.save(updatedStudy);
+
+        return updatedStudy.getUserProfile();
     }
 }

@@ -4,6 +4,8 @@ import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileService;
 import com.irb.paxton.core.profile.experience.input.ExperienceInput;
 import com.irb.paxton.core.profile.input.UserProfileInput;
+import com.irb.paxton.core.study.input.StudyInput;
+import com.irb.paxton.core.study.input.StudyInputCreate;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +33,17 @@ public class UserProfileMutationResolver implements GraphQLMutationResolver {
 
     public UserProfile updateUserProfileExperience(@Valid @NotNull ExperienceInput experienceInput) {
         return this.userProfileService.updateExperience(experienceInput);
+    }
+
+    public UserProfile addUserProfileStudy(@Valid @NotNull StudyInput studyInput) {
+        return this.userProfileService.saveStudy(studyInput);
+    }
+
+    public UserProfile addUserProfileStudy(@Valid @NotNull StudyInputCreate studyInputCreate) {
+        return this.userProfileService.saveStudy(studyInputCreate);
+    }
+
+    public UserProfile updateUserProfileStudy(@Valid @NotNull StudyInput studyInput) {
+        return this.userProfileService.updateStudy(studyInput);
     }
 }

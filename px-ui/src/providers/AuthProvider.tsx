@@ -42,6 +42,7 @@ export default function AuthProvider({
       queryClient.setQueryDefaults(["currentUser"], {
         staleTime: data?.sessionTime ?? 5 * 60 * 1000,
         refetchInterval: data?.sessionTime ?? 5 * 60 * 1000,
+        refetchIntervalInBackground: true,
       });
     },
     onError: (err) => {

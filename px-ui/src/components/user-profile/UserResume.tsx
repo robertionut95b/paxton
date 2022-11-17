@@ -4,6 +4,7 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { ActionIcon, Divider, Text, Title } from "@mantine/core";
+import groupBy from "lodash.groupby";
 import { NavLink } from "react-router-dom";
 
 export default function UserResume({
@@ -12,7 +13,9 @@ export default function UserResume({
   userProfile?: GetUserProfileQuery["getUserProfile"] | UserProfile | null;
 }) {
   const studies = [1, 2];
-  const experiences = [1];
+  const experiences =
+    groupBy(userProfile?.experiences, "organization.id") ?? [];
+
   return (
     <div className="px-user-resume flex flex-col gap-y-5">
       <Title order={3}>About</Title>
@@ -56,9 +59,16 @@ export default function UserResume({
         </NavLink>
       </div>
       <div className="px-user-experiences">
-        {experiences.map((e, idx) => (
+        {Object.entries(experiences).length === 0 && (
+          <Text size={"sm"}>
+            There are no experiences defined yet, start by adding some
+            information
+          </Text>
+        )}
+        {Object.entries(experiences).map((e, idx) => (
           <div key={idx} className="px-user-experience mb-8">
-            <ExperienceCard />
+            {/* @ts-expect-error("types error") */}
+            <ExperienceCard experience={e} />
           </div>
         ))}
       </div>

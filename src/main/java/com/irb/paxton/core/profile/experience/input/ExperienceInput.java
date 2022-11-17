@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @Data
 public class ExperienceInput {
 
+    private Long id;
+
     @NotNull
     @NotEmpty
     @NotBlank

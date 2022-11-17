@@ -120,4 +120,14 @@ public abstract class UserProfileMapper {
         return this.activitySectorRepository.findById(activitySectorId)
                 .orElseThrow(() -> new ActivitySectorNotExistsException(String.format("%s does not exist", activitySectorId), "activitySectorId"));
     }
+
+    @Mapping(target = "userProfile", source = "experienceInput.userProfileSlugUrl")
+    @Mapping(target = "organization", source = "experienceInput.organizationId")
+    @Mapping(target = "activitySector", source = "experienceInput.activitySectorId")
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    public abstract Experience updateUserProfileExperience(@MappingTarget Experience experience, ExperienceInput experienceInput);
 }

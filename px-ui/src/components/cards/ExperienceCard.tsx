@@ -1,18 +1,48 @@
-import { Avatar, Group, Paper, Text, Timeline } from "@mantine/core";
+import { Experience } from "@gql/generated";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import {
+  ActionIcon,
+  Avatar,
+  Group,
+  Paper,
+  Text,
+  Timeline,
+} from "@mantine/core";
+import {
+  getTimeBetweenInExperience,
+  getTotalTimeInOrganizationByExperiences,
+} from "@utils/experienceTime";
+import { format } from "date-fns";
+import { NavLink } from "react-router-dom";
 
-export default function ExperienceCard() {
+export default function ExperienceCard({
+  experience,
+}: {
+  experience: [string, Array<Experience>] | [string, null];
+}) {
+  const organization = experience?.[1]?.[0]!.organization;
+  const experiences = experience?.[1] ?? [];
+
   return (
     <Paper>
       <Group noWrap>
-        <Avatar className="self-start" size={"lg"} color={"gray"}>
-          P
+        <Avatar
+          className="self-start"
+          size={"lg"}
+          color={"gray"}
+          src={organization?.photography}
+          mx={"sm"}
+        >
+          {organization?.name[0]}
         </Avatar>
         <div className="px-experience-card">
           <div className="px-experience-heading mb-6">
-            <Text className="font-bold" size="md">
-              Paxton, Inc.
+            <Text className="font-bold" size="lg">
+              {organization?.name}
             </Text>
-            <Text className="px-study-summary-years">7 years and 4 months</Text>
+            <Text className="px-study-summary-years" size="sm">
+              {getTotalTimeInOrganizationByExperiences(experiences)}
+            </Text>
           </div>
           <div className="px-experience-timeline">
             <Timeline
@@ -24,105 +54,59 @@ export default function ExperienceCard() {
                 itemBullet: "mt-1.5",
               }}
             >
-              <Timeline.Item>
-                <Text size="md">Software Developer</Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-job-type"
-                  color="dimmed"
-                >
-                  Full time contract
-                </Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-years"
-                  color="dimmed"
-                  mb={8}
-                >
-                  aug. 2012 - present ·{" "}
-                  <span className="text-xs">10 years</span>
-                </Text>
-                <Text
-                  className="px-timeline-exp-description"
-                  color="dark"
-                  size="sm"
-                >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  ac arcu consectetur, cursus nulla sed, interdum lectus. Sed
-                  tristique nibh sit amet nulla gravida suscipit. Ut nec erat
-                  sem. Donec a arcu ex. Aliquam erat sapien, tincidunt non
-                  gravida et, porta sed metus. Curabitur consequat, ligula ac
-                  iaculis sodales, felis sem cursus metus, vel semper ipsum quam
-                  non enim. Morbi ut molestie sapien. Sed mollis accumsan lorem
-                  vel auctor.
-                </Text>
-              </Timeline.Item>
-              <Timeline.Item>
-                <Text size="md">Junior Software Developer</Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-job-type"
-                  color="dimmed"
-                >
-                  Full time contract
-                </Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-years"
-                  color="dimmed"
-                  mb={8}
-                >
-                  jan. 2010 - jul. 2012 ·{" "}
-                  <span className="text-xs">2 years 1 months</span>
-                </Text>
-                <Text
-                  className="px-timeline-exp-description"
-                  color="dark"
-                  size="sm"
-                >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  ac arcu consectetur, cursus nulla sed, interdum lectus. Sed
-                  tristique nibh sit amet nulla gravida suscipit. Ut nec erat
-                  sem. Donec a arcu ex. Aliquam erat sapien, tincidunt non
-                  gravida et, porta sed metus. Curabitur consequat, ligula ac
-                  iaculis sodales, felis sem cursus metus, vel semper ipsum quam
-                  non enim. Morbi ut molestie sapien. Sed mollis accumsan lorem
-                  vel auctor.
-                </Text>
-              </Timeline.Item>
-              <Timeline.Item>
-                <Text size="md">Trainee Software Developer</Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-job-type"
-                  color="dimmed"
-                >
-                  Part-time contract
-                </Text>
-                <Text
-                  size="sm"
-                  className="px-timeline-exp-years"
-                  color="dimmed"
-                  mb={8}
-                >
-                  ar mar. 2009 - dec. 2010 ·{" "}
-                  <span className="text-xs">1 years 11 months</span>
-                </Text>
-                <Text
-                  className="px-timeline-exp-description"
-                  color="dark"
-                  size="sm"
-                >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  ac arcu consectetur, cursus nulla sed, interdum lectus. Sed
-                  tristique nibh sit amet nulla gravida suscipit. Ut nec erat
-                  sem. Donec a arcu ex. Aliquam erat sapien, tincidunt non
-                  gravida et, porta sed metus. Curabitur consequat, ligula ac
-                  iaculis sodales, felis sem cursus metus, vel semper ipsum quam
-                  non enim. Morbi ut molestie sapien. Sed mollis accumsan lorem
-                  vel auctor.
-                </Text>
-              </Timeline.Item>
+              {experiences.map((e) => (
+                <Timeline.Item>
+                  <div className="px-experience-wrapper flex justify-between">
+                    <div className="px-erperience-timeline-item">
+                      <Text size="md">{e.title}</Text>
+                      <Text
+                        size="sm"
+                        className="px-timeline-item-experience-job-type first-letter:uppercase"
+                        color="dimmed"
+                      >
+                        {e.contractType.split("_").join(" ").toLowerCase()}
+                      </Text>
+                      <Text
+                        size="sm"
+                        className="px-timeline-item-experience-years"
+                        color="dimmed"
+                        mb={8}
+                      >
+                        {format(
+                          new Date(e.startDate),
+                          "MMM. yyyy"
+                        )?.toLowerCase()}{" "}
+                        -{" "}
+                        {e.endDate
+                          ? format(
+                              new Date(e.endDate),
+                              "MMM. yyyy"
+                            )?.toLowerCase()
+                          : "present"}{" "}
+                        ·{" "}
+                        <span className="text-sm">
+                          {getTimeBetweenInExperience(
+                            new Date(e.startDate),
+                            e.endDate ? new Date(e.endDate) : new Date()
+                          )}
+                        </span>
+                      </Text>
+                      <Text
+                        className="px-timeline-item-experience-description"
+                        color="dark"
+                        size="sm"
+                      >
+                        {e.description}
+                      </Text>
+                    </div>
+                    <NavLink to={`experiences/${e.id}/update`}>
+                      <ActionIcon variant="subtle" color={"violet"}>
+                        <PencilIcon width={16} />
+                      </ActionIcon>
+                    </NavLink>
+                  </div>
+                </Timeline.Item>
+              ))}
             </Timeline>
           </div>
         </div>

@@ -92,9 +92,11 @@ query GetUserProfile($profileSlugUrl: String) {
     profileSlugUrl
     profileTitle
     experiences {
+      id
       title
       contractType
       organization {
+        id
         name
         industry
         photography
@@ -110,6 +112,7 @@ query GetUserProfile($profileSlugUrl: String) {
       startDate
       endDate
       activitySector {
+        id
         name
       }
       description

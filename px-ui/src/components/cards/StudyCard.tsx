@@ -8,7 +8,7 @@ export default function StudyCard({
   return (
     <Paper>
       <Group noWrap>
-        <Avatar className="self-start" size={"lg"} color={"gray"}>
+        <Avatar className="self-start" size={"lg"} color={"gray"} mx="sm">
           S
         </Avatar>
         <div className="study-card">

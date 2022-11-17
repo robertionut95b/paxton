@@ -28,4 +28,8 @@ public class UserProfileMutationResolver implements GraphQLMutationResolver {
     public UserProfile addUserProfileExperience(@Valid @NotNull ExperienceInput experienceInput) {
         return this.userProfileService.saveExperience(experienceInput);
     }
+
+    public UserProfile updateUserProfileExperience(@Valid @NotNull ExperienceInput experienceInput) {
+        return this.userProfileService.updateExperience(experienceInput);
+    }
 }

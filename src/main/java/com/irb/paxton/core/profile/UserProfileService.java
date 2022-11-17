@@ -2,6 +2,8 @@ package com.irb.paxton.core.profile;
 
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.profile.experience.Experience;
+import com.irb.paxton.core.profile.experience.ExperienceRepository;
+import com.irb.paxton.core.profile.experience.exception.ExperienceNotFoundException;
 import com.irb.paxton.core.profile.experience.input.ExperienceInput;
 import com.irb.paxton.core.profile.input.UserProfileInput;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
@@ -30,6 +32,9 @@ public class UserProfileService {
 
     @Autowired
     private UserProfileMapper userProfileMapper;
+
+    @Autowired
+    private ExperienceRepository experienceRepository;
 
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
@@ -66,5 +71,14 @@ public class UserProfileService {
 
         userProfile.setExperiences(experiences);
         return this.userProfileRepository.save(userProfile);
+    }
+
+    public UserProfile updateExperience(ExperienceInput experienceInput) {
+        Experience actualExperience = this.experienceRepository.findById(experienceInput.getId())
+                .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString()), "id"));
+        Experience updatedExperience = this.userProfileMapper.updateUserProfileExperience(actualExperience, experienceInput);
+        experienceRepository.save(updatedExperience);
+
+        return updatedExperience.getUserProfile();
     }
 }

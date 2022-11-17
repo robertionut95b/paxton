@@ -25,3 +25,19 @@ mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
     }
   }
 }
+
+mutation UpdateUserProfileExperience($ExperienceInput: ExperienceInput!) {
+  updateUserProfileExperience(ExperienceInput: $ExperienceInput) {
+    id
+    description
+    city {
+      id
+      name
+    }
+    profileTitle
+    profileSlugUrl
+    experiences {
+      id
+    }
+  }
+}

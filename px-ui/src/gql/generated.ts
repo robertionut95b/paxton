@@ -84,6 +84,7 @@ export type ExperienceInput = {
   contractType: ContractType;
   description: Scalars['String'];
   endDate?: InputMaybe<Scalars['Date']>;
+  id?: InputMaybe<Scalars['ID']>;
   organizationId: Scalars['ID'];
   startDate: Scalars['Date'];
   title: Scalars['String'];
@@ -161,6 +162,7 @@ export type Mutation = {
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
   updateUserProfile?: Maybe<UserProfile>;
+  updateUserProfileExperience?: Maybe<UserProfile>;
 };
 
 
@@ -181,6 +183,11 @@ export type MutationPublishJobListingArgs = {
 
 export type MutationUpdateUserProfileArgs = {
   UserProfileInput: UserProfileInput;
+};
+
+
+export type MutationUpdateUserProfileExperienceArgs = {
+  ExperienceInput: ExperienceInput;
 };
 
 export type Organization = {
@@ -360,6 +367,13 @@ export type AddUserProfileExperienceMutationVariables = Exact<{
 
 export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
 
+export type UpdateUserProfileExperienceMutationVariables = Exact<{
+  ExperienceInput: ExperienceInput;
+}>;
+
+
+export type UpdateUserProfileExperienceMutation = { __typename?: 'Mutation', updateUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -377,7 +391,7 @@ export type GetUserProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', name: string } } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -449,6 +463,36 @@ export const useAddUserProfileExperienceMutation = <
     useMutation<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>(
       ['AddUserProfileExperience'],
       (variables?: AddUserProfileExperienceMutationVariables) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers)(),
+      options
+    );
+export const UpdateUserProfileExperienceDocument = `
+    mutation UpdateUserProfileExperience($ExperienceInput: ExperienceInput!) {
+  updateUserProfileExperience(ExperienceInput: $ExperienceInput) {
+    id
+    description
+    city {
+      id
+      name
+    }
+    profileTitle
+    profileSlugUrl
+    experiences {
+      id
+    }
+  }
+}
+    `;
+export const useUpdateUserProfileExperienceMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>(
+      ['UpdateUserProfileExperience'],
+      (variables?: UpdateUserProfileExperienceMutationVariables) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers)(),
       options
     );
 export const GetAllJobListingsDocument = `
@@ -576,9 +620,11 @@ export const GetUserProfileDocument = `
     profileSlugUrl
     profileTitle
     experiences {
+      id
       title
       contractType
       organization {
+        id
         name
         industry
         photography
@@ -594,6 +640,7 @@ export const GetUserProfileDocument = `
       startDate
       endDate
       activitySector {
+        id
         name
       }
       description

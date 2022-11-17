@@ -55,6 +55,7 @@ type Experience {
 }
 
 input ExperienceInput {
+    id: ID
     title: String!
     contractType: ContractType!
     organizationId: ID!
@@ -269,4 +270,5 @@ type Mutation {
     publishJobListing(JobListingInput: JobListingInput!): JobListing
     updateUserProfile(UserProfileInput: UserProfileInput!): UserProfile
     addUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
+    updateUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
 }

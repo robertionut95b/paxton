@@ -1,15 +1,24 @@
+import { useAuth } from "@auth/useAuth";
+import { SelectItem } from "@components/select-items/SelectItem";
+import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   ContractType,
+  GetUserProfileQuery,
   useAddUserProfileExperienceMutation,
   useGetAllActivitySectorsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
+  useUpdateUserProfileExperienceMutation,
 } from "@gql/generated";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
+  Checkbox,
   Loader,
   Modal,
   Select,
@@ -17,16 +26,36 @@ import {
   TextInput,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { useForm } from "@mantine/form";
+import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
+import { capitalizeFirstLetter } from "@utils/capitalizeString";
+import FormAddExperienceSchema from "@validator/FormAddExperienceSchema";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function ProfileExperienceAddModal() {
-  const navigate = useNavigate();
   const [opened, setOpened] = useState(true);
+  const navigate = useNavigate();
   const params = useParams();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const prevData = queryClient.getQueryData<GetUserProfileQuery>([
+    "GetUserProfile",
+    {
+      profileSlugUrl: user?.profileSlugUrl,
+    },
+  ]);
+
+  const initialExperienceSelected = prevData?.getUserProfile?.experiences?.find(
+    (e) => e?.id === params.experienceId
+  );
+
+  const [activeJob, setActiveJob] = useState(
+    initialExperienceSelected?.endDate ? false : true
+  );
 
   const { data: countries, isLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {
@@ -67,8 +96,59 @@ export default function ProfileExperienceAddModal() {
       },
     });
 
-  const { isLoading, mutate } =
-    useAddUserProfileExperienceMutation(graphqlRequestClient);
+  const { isLoading, mutate } = useAddUserProfileExperienceMutation(
+    graphqlRequestClient,
+    {
+      onError: (err) => {
+        showNotification({
+          title: "Unknown error",
+          message:
+            "Could not add experience information, please try again later",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          "GetUserProfile",
+          { profileSlugUrl: params.profileSlug },
+        ]);
+        closeModal();
+        showNotification({
+          title: "Experiences update",
+          message: "Successfully updated experiences information",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+      },
+    }
+  );
+
+  const { isLoading: updateLoading, mutate: mutateUpdate } =
+    useUpdateUserProfileExperienceMutation(graphqlRequestClient, {
+      onError: (err) => {
+        showNotification({
+          title: "Unknown error",
+          message:
+            "Could not update experience information, please try again later",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          "GetUserProfile",
+          { profileSlugUrl: params.profileSlug },
+        ]);
+        closeModal();
+        showNotification({
+          title: "Experiences update",
+          message: "Successfully updated experiences information",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+      },
+    });
 
   const locations =
     countries?.getCountriesCities
@@ -89,29 +169,49 @@ export default function ProfileExperienceAddModal() {
 
   const form = useForm({
     initialValues: {
-      title: "",
-      description: "",
-      contractType: "",
-      organizationId: "",
-      city: "",
-      startDate: new Date(),
-      endDate: null,
-      activitySectorId: "",
+      id: initialExperienceSelected?.id ?? null,
+      title: initialExperienceSelected?.title ?? "",
+      description: initialExperienceSelected?.description ?? "",
+      contractType: initialExperienceSelected?.contractType ?? "",
+      organizationId: initialExperienceSelected?.organization?.id ?? "",
+      city: initialExperienceSelected?.city?.name ?? "",
+      startDate: initialExperienceSelected?.startDate
+        ? new Date(initialExperienceSelected?.startDate)
+        : new Date(),
+      endDate: initialExperienceSelected?.endDate
+        ? new Date(initialExperienceSelected?.endDate)
+        : null,
+      activitySectorId: initialExperienceSelected?.activitySector.id ?? "",
       userProfileSlugUrl: params.profileSlug ?? "",
     },
-    // validate: zodResolver(FormUpdateProfileSchema),
+    validate: zodResolver(FormAddExperienceSchema),
   });
 
   const handleSubmit = async (values: typeof form["values"]) => {
     const contractType = values.contractType as ContractType;
     const startDate = values.startDate;
-    mutate({
-      ExperienceInput: {
-        ...values,
-        contractType,
-        startDate: format(startDate, "yyyy-MM-dd"),
-      },
-    });
+    const endDate = values?.endDate;
+    const id = values.id;
+
+    if (id)
+      mutateUpdate({
+        ExperienceInput: {
+          ...values,
+          id,
+          contractType,
+          startDate: format(startDate, "yyyy-MM-dd"),
+          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+        },
+      });
+    else
+      mutate({
+        ExperienceInput: {
+          ...values,
+          contractType,
+          startDate: format(startDate, "yyyy-MM-dd"),
+          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+        },
+      });
   };
 
   return (
@@ -141,6 +241,7 @@ export default function ProfileExperienceAddModal() {
           description="Describe as accurately as possible your experience"
           mt="md"
           withAsterisk
+          minRows={9}
           {...form.getInputProps("description")}
         />
         <ShowIfElse
@@ -152,9 +253,12 @@ export default function ProfileExperienceAddModal() {
             description="The company at which you held this experience"
             mt="md"
             withAsterisk
+            itemComponent={SelectItem}
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
               value: o?.id,
+              image: o?.photography,
+              description: o?.industry,
             }))}
             {...form.getInputProps("organizationId")}
           />
@@ -179,7 +283,9 @@ export default function ProfileExperienceAddModal() {
           mt="md"
           withAsterisk
           data={(Object.entries(ContractType) ?? [])?.map(([key, value]) => ({
-            label: key,
+            label: capitalizeFirstLetter(
+              value.toLowerCase().split("_").join(" ")
+            ),
             value: value,
           }))}
           {...form.getInputProps("contractType")}
@@ -187,18 +293,27 @@ export default function ProfileExperienceAddModal() {
         <DatePicker
           withAsterisk
           mt="md"
-          label="Starting from"
+          label="From"
           description="The starting date of employment"
           maxDate={new Date()}
           {...form.getInputProps("startDate")}
         />
-        <DatePicker
+        <Checkbox
           mt="md"
-          label="Starting from"
-          description="The ending date of employment"
-          maxDate={new Date()}
-          {...form.getInputProps("endDate")}
+          label="I currently work on this position"
+          checked={activeJob}
+          onChange={(event) => setActiveJob(event.currentTarget.checked)}
         />
+        <ShowIf if={!activeJob}>
+          <DatePicker
+            mt="md"
+            label="Until"
+            description="The ending date of employment"
+            disabled={activeJob}
+            maxDate={new Date()}
+            {...form.getInputProps("endDate")}
+          />
+        </ShowIf>
         <ShowIfElse
           if={!isActivitySectorsLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
@@ -216,7 +331,12 @@ export default function ProfileExperienceAddModal() {
             {...form.getInputProps("activitySectorId")}
           />
         </ShowIfElse>
-        <Button type="submit" fullWidth mt="xl" loading={isLoading}>
+        <Button
+          type="submit"
+          fullWidth
+          mt="xl"
+          loading={isLoading || updateLoading}
+        >
           Submit
         </Button>
       </form>

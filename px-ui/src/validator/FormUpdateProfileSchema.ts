@@ -9,7 +9,7 @@ const FormUpdateProfileSchema = z.object({
     .string()
     .min(10, "Description must contain more than 10 characters")
     .max(500, "Description must not exceed more than 500 characters"),
-  city: z.string().min(3, "Location must contain more than 3 characters"),
+  city: z.string().min(1, "Location must be filled"),
   profileTitle: z
     .string()
     .min(5, "Profile title must contain more than 5 characters"),

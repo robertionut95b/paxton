@@ -6,21 +6,17 @@ import com.irb.paxton.core.study.institution.input.InstitutionInput;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
-public class StudyInputCreate {
-
-    private Long id;
+public class StudyInputCreate implements Serializable {
 
     @NotNull
-    private InstitutionInput institution;
-
-    private DomainInput domainStudy;
-
+    public InstitutionInput institution;
+    public DomainInput domainStudy;
+    public CertificationInput certification;
+    private Long id;
     private String degree;
-
-    private CertificationInput certification;
-
     private String description;
 
     @NotNull

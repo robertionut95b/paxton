@@ -200,7 +200,7 @@ type Study {
 
 input StudyInput {
     id: ID
-    institutionId: ID
+    institutionId: ID!
     domainStudyId: ID
     degree: String
     certificationId: ID
@@ -310,6 +310,6 @@ type Mutation {
     addUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     updateUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     addUserProfileStudy(StudyInput: StudyInput!): UserProfile
-    addUserProfileStudy(StudyInputCreate: StudyInputCreate!): UserProfile
+    addUserProfileStudyCreate(StudyInputCreate: StudyInputCreate!): UserProfile
     updateUserProfileStudy(StudyInput: StudyInput!): UserProfile
 }

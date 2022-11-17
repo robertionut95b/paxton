@@ -7,8 +7,10 @@ import com.irb.paxton.core.profile.input.UserProfileInput;
 import com.irb.paxton.core.study.input.StudyInput;
 import com.irb.paxton.core.study.input.StudyInputCreate;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import graphql.kickstart.tools.SchemaParserDictionary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
@@ -39,7 +41,12 @@ public class UserProfileMutationResolver implements GraphQLMutationResolver {
         return this.userProfileService.saveStudy(studyInput);
     }
 
-    public UserProfile addUserProfileStudy(@Valid @NotNull StudyInputCreate studyInputCreate) {
+    @Bean
+    public SchemaParserDictionary schemaParserDictionary() {
+        return new SchemaParserDictionary().add(StudyInputCreate.class);
+    }
+
+    public UserProfile addUserProfileStudyCreate(@Valid @NotNull StudyInputCreate studyInputCreate) {
         return this.userProfileService.saveStudy(studyInputCreate);
     }
 

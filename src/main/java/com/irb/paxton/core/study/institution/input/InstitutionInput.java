@@ -14,10 +14,7 @@ public class InstitutionInput implements Serializable {
     @NotEmpty
     @NotBlank
     private String name;
-
-    @NotNull
-    @NotEmpty
-    @NotBlank
+    
     private String description;
 
     private String photography;

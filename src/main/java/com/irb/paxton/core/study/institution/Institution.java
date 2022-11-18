@@ -31,9 +31,6 @@ public class Institution extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @NotNull
-    @NotEmpty
-    @NotBlank
     @Column(length = 1000)
     private String description;
 

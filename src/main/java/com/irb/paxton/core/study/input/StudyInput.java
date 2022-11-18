@@ -1,8 +1,10 @@
 package com.irb.paxton.core.study.input;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Data
 public class StudyInput {
@@ -19,6 +21,12 @@ public class StudyInput {
     private Long certification;
 
     private String description;
+
+    @NotNull
+    private LocalDate startDate = LocalDate.now();
+
+    @Nullable
+    private LocalDate endDate;
 
     @NotNull
     private String userProfileSlugUrl;

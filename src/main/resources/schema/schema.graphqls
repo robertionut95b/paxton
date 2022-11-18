@@ -195,6 +195,8 @@ type Study {
     degree: String
     certification: Certification!
     description: String
+    startDate: Date!
+    endDate: Date
     userProfile: UserProfile!
 }
 
@@ -205,7 +207,9 @@ input StudyInput {
     degree: String
     certification: ID
     description: String
-    userProfileId: ID
+    startDate: Date!
+    endDate: Date
+    userProfileSlugUrl: String!
 }
 
 input StudyInputCreate {
@@ -215,7 +219,9 @@ input StudyInputCreate {
     degree: String
     certification: CertificationInput
     description: String
-    userProfileId: ID
+    startDate: Date!
+    endDate: Date
+    userProfileSlugUrl: String!
 }
 
 type Recruiter {

@@ -6,9 +6,11 @@ import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.institution.Institution;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 
@@ -42,6 +44,12 @@ public class Study extends BaseEntity {
 
     @Column(length = 1000)
     private String description;
+
+    @NotNull
+    private LocalDate startDate = LocalDate.now();
+
+    @Nullable
+    private LocalDate endDate;
 
     @ManyToOne
     @JoinColumn(name = "user_profile_id")

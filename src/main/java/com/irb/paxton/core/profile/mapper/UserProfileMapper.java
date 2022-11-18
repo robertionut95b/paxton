@@ -152,11 +152,11 @@ public abstract class UserProfileMapper {
     @Mapping(target = "userProfile", source = "studyInput.userProfileSlugUrl")
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "institution", source = "studyInput.institutionId")
-    @Mapping(target = "domainStudy", source = "studyInput.domainStudyId")
+    @Mapping(target = "institution", source = "studyInput.institution")
+    @Mapping(target = "domainStudy", source = "studyInput.domainStudy")
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "certification", source = "studyInput.certificationId")
+    @Mapping(target = "certification", source = "studyInput.certification")
     public abstract Study addUserProfileStudy(StudyInput studyInput);
 
     @Mapping(target = "userProfile", source = "studyInputCreate.userProfileSlugUrl")
@@ -184,11 +184,11 @@ public abstract class UserProfileMapper {
     @Mapping(target = "userProfile", source = "studyInput.userProfileSlugUrl")
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "institution", source = "studyInput.institutionId")
-    @Mapping(target = "domainStudy", source = "studyInput.domainStudyId")
+    @Mapping(target = "institution", source = "studyInput.institution")
+    @Mapping(target = "domainStudy", source = "studyInput.domainStudy")
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "certification", source = "studyInput.certificationId")
+    @Mapping(target = "certification", source = "studyInput.certification")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     public abstract Study updateUserProfileStudy(@MappingTarget Study actualStudy, StudyInput studyInput);
 }

@@ -28,6 +28,7 @@ public class Institution extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Column(unique = true)
     private String name;
 
     @NotNull

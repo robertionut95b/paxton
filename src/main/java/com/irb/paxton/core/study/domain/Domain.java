@@ -28,6 +28,7 @@ public class Domain extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "domainStudy")

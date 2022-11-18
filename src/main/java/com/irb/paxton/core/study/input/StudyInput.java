@@ -10,13 +10,13 @@ public class StudyInput {
     private Long id;
 
     @NotNull
-    private Long institutionId;
+    private Long institution;
 
-    private Long domainStudyId;
+    private Long domainStudy;
 
     private String degree;
 
-    private Long certificationId;
+    private Long certification;
 
     private String description;
 

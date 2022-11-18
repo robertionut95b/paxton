@@ -29,6 +29,7 @@ public class Certification extends BaseEntity {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "certification")

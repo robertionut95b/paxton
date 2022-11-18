@@ -27,18 +27,18 @@ public class Study extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "institution_id")
     @NotNull
     private Institution institution;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "domain_study_id")
     private Domain domainStudy;
 
     private String degree;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "certification_id")
     private Certification certification;
 

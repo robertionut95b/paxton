@@ -200,10 +200,10 @@ type Study {
 
 input StudyInput {
     id: ID
-    institutionId: ID!
-    domainStudyId: ID
+    institution: ID!
+    domainStudy: ID
     degree: String
-    certificationId: ID
+    certification: ID
     description: String
     userProfileId: ID
 }

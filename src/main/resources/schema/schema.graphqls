@@ -55,7 +55,7 @@ input DomainInput {
 type Institution {
     id: ID!
     name: String!
-    description: String!
+    description: String
     photography: String
     studies: [Study]
 }

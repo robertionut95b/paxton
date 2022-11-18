@@ -300,6 +300,9 @@ type Query {
     getCurrentUserProfile: UserProfile
     getUserProfile(profileSlugUrl: String) : UserProfile
     getCountriesCities: [Country]
+    getAllInstitutions: [Institution]
+    getAllDomains: [Domain]
+    getAllCertifications: [Certification]
 }
 
 type Mutation {

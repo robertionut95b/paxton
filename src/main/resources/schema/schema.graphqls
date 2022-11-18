@@ -193,7 +193,7 @@ type Study {
     institution: Institution!
     domainStudy: Domain
     degree: String
-    certification: Certification!
+    certification: Certification
     description: String
     startDate: Date!
     endDate: Date

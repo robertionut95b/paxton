@@ -160,17 +160,19 @@ public abstract class UserProfileMapper {
 
     public Institution mapInstitution(Long institutionId) {
         return this.institutionRepository.findById(institutionId)
-                .orElseThrow(() -> new IllegalArgumentException("Institution not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Institution id was not found"));
     }
 
     public Domain mapDomain(Long domainId) {
-        return this.domainRepository.findById(domainId)
-                .orElseThrow(() -> new IllegalArgumentException("Domain not found"));
+        if (domainId != null) {
+            return this.domainRepository.findById(domainId).orElse(null);
+        } else return null;
     }
 
     public Certification mapCertification(Long certificationId) {
-        return this.certificationRepository.findById(certificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Certification not found"));
+        if (certificationId != null) {
+            return this.certificationRepository.findById(certificationId).orElse(null);
+        } else return null;
     }
 
     @Mapping(target = "userProfile", source = "studyInput.userProfileSlugUrl")

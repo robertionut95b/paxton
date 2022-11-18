@@ -14,12 +14,16 @@ public class StudyInput {
     @NotNull
     private Long institution;
 
+    @Nullable
     private Long domainStudy;
 
+    @Nullable
     private String degree;
 
+    @Nullable
     private Long certification;
 
+    @Nullable
     private String description;
 
     @NotNull

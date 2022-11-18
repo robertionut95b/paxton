@@ -212,18 +212,6 @@ input StudyInput {
     userProfileSlugUrl: String!
 }
 
-input StudyInputCreate {
-    id: ID
-    institution: InstitutionInput
-    domainStudy: DomainInput
-    degree: String
-    certification: CertificationInput
-    description: String
-    startDate: Date!
-    endDate: Date
-    userProfileSlugUrl: String!
-}
-
 type Recruiter {
     id: ID!
     user: User!
@@ -304,7 +292,7 @@ type Query {
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
     getCurrentUserProfile: UserProfile
-    getUserProfile(profileSlugUrl: String) : UserProfile
+    getUserProfile(profileSlugUrl: String): UserProfile
     getCountriesCities: [Country]
     getAllInstitutions: [Institution]
     getAllDomains: [Domain]
@@ -319,6 +307,8 @@ type Mutation {
     addUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     updateUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     addUserProfileStudy(StudyInput: StudyInput!): UserProfile
-    addUserProfileStudyCreate(StudyInputCreate: StudyInputCreate!): UserProfile
     updateUserProfileStudy(StudyInput: StudyInput!): UserProfile
+    addInstitution(InstitutionInput: InstitutionInput!): Institution
+    addDomain(DomainInput: DomainInput!): Domain
+    addCertification(CertificationInput: CertificationInput!): Certification
 }

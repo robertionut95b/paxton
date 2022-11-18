@@ -21,7 +21,6 @@ import com.irb.paxton.core.study.certification.CertificationRepository;
 import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.domain.DomainRepository;
 import com.irb.paxton.core.study.input.StudyInput;
-import com.irb.paxton.core.study.input.StudyInputCreate;
 import com.irb.paxton.core.study.institution.Institution;
 import com.irb.paxton.core.study.institution.InstitutionRepository;
 import com.irb.paxton.security.auth.user.User;
@@ -158,13 +157,6 @@ public abstract class UserProfileMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "certification", source = "studyInput.certification")
     public abstract Study addUserProfileStudy(StudyInput studyInput);
-
-    @Mapping(target = "userProfile", source = "studyInputCreate.userProfileSlugUrl")
-    @Mapping(target = "modifiedBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    public abstract Study addUserProfileStudy(StudyInputCreate studyInputCreate);
 
     public Institution mapInstitution(Long institutionId) {
         return this.institutionRepository.findById(institutionId)

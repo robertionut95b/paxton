@@ -11,7 +11,6 @@ import com.irb.paxton.core.study.Study;
 import com.irb.paxton.core.study.StudyRepository;
 import com.irb.paxton.core.study.exception.StudyNotFoundException;
 import com.irb.paxton.core.study.input.StudyInput;
-import com.irb.paxton.core.study.input.StudyInputCreate;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
@@ -92,16 +91,6 @@ public class UserProfileService {
 
     public UserProfile saveStudy(StudyInput studyInput) {
         Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInput);
-        UserProfile userProfile = newStudy.getUserProfile();
-        Collection<Study> studies = userProfile.getStudies();
-        studies.add(newStudy);
-
-        userProfile.setStudies(studies);
-        return this.userProfileRepository.save(userProfile);
-    }
-
-    public UserProfile saveStudy(StudyInputCreate studyInputCreate) {
-        Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInputCreate);
         UserProfile userProfile = newStudy.getUserProfile();
         Collection<Study> studies = userProfile.getStudies();
         studies.add(newStudy);

@@ -2,6 +2,7 @@ import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileExperienceAddModal from "@components/user-profile/ProfileExperienceAddModal";
+import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AccessDenied from "./AccessDenied";
@@ -91,6 +92,22 @@ export default function AppUI() {
                 element={
                   <RequireAuth>
                     <ProfileExperienceAddModal />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/up/:profileSlug/studies/new"
+                element={
+                  <RequireAuth>
+                    <ProfileStudyModal />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/up/:profileSlug/studies/:studyId/update"
+                element={
+                  <RequireAuth>
+                    <ProfileStudyModal />
                   </RequireAuth>
                 }
               />

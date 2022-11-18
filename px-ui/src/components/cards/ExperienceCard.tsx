@@ -35,7 +35,7 @@ export default function ExperienceCard({
         >
           {organization?.name[0]}
         </Avatar>
-        <div className="px-experience-card">
+        <div className="px-experience-card w-full">
           <div className="px-experience-heading mb-6">
             <Text className="font-bold" size="lg">
               {organization?.name}
@@ -55,10 +55,16 @@ export default function ExperienceCard({
               }}
             >
               {experiences.map((e) => (
-                <Timeline.Item>
+                <Timeline.Item key={e.id}>
                   <div className="px-experience-wrapper flex justify-between">
                     <div className="px-erperience-timeline-item">
                       <Text size="md">{e.title}</Text>
+                      <Text
+                        size="sm"
+                        className="px-timeline-item-experience-location"
+                      >
+                        {`${e.city?.name}, ${e.city?.country.name}`}
+                      </Text>
                       <Text
                         size="sm"
                         className="px-timeline-item-experience-job-type first-letter:uppercase"

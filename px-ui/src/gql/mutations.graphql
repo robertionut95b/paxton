@@ -41,3 +41,48 @@ mutation UpdateUserProfileExperience($ExperienceInput: ExperienceInput!) {
     }
   }
 }
+
+mutation AddUserProfileStudy($StudyInput: StudyInput!) {
+  addUserProfileStudy(StudyInput: $StudyInput) {
+    id
+    description
+    profileSlugUrl
+    studies {
+      id
+    }
+  }
+}
+
+mutation UpdateUserProfileStudy($StudyInput: StudyInput!) {
+  updateUserProfileStudy(StudyInput: $StudyInput) {
+    id
+    description
+    profileSlugUrl
+    studies {
+      id
+    }
+  }
+}
+
+mutation AddInstitution($InstitutionInput: InstitutionInput!) {
+  addInstitution(InstitutionInput: $InstitutionInput) {
+    id
+    name
+    description
+    photography
+  }
+}
+
+mutation AddDomain($DomainInput: DomainInput!) {
+  addDomain(DomainInput: $DomainInput) {
+    id
+    name
+  }
+}
+
+mutation AddCertification($CertificationInput: CertificationInput!) {
+  addCertification(CertificationInput: $CertificationInput) {
+    id
+    name
+  }
+}

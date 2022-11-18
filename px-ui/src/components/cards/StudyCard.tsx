@@ -1,45 +1,62 @@
-import { Avatar, Divider, Group, Paper, Text } from "@mantine/core";
+import ShowIf from "@components/visibility/ShowIf";
+import ShowIfElse from "@components/visibility/ShowIfElse";
+import { Study } from "@gql/generated";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import { ActionIcon, Avatar, Divider, Group, Paper, Text } from "@mantine/core";
+import { format } from "date-fns";
+import { NavLink } from "react-router-dom";
 
 export default function StudyCard({
+  study,
   withDivider = false,
 }: {
+  study: Omit<Study, "userProfile"> | null;
   withDivider?: boolean;
 }) {
   return (
     <Paper>
       <Group noWrap>
-        <Avatar className="self-start" size={"lg"} color={"gray"} mx="sm">
-          S
+        <Avatar
+          className="self-start object-cover"
+          size={"lg"}
+          color={"gray"}
+          mx="sm"
+          src={study?.institution.photography}
+        >
+          {study?.institution.name[0]}
         </Avatar>
-        <div className="study-card">
-          <div className="px-study-heading">
+        <div className="px-study-card flex justify-between w-full">
+          <div className="px-study-card-content">
             <Text className="font-bold" size="md">
-              Stanford University
+              {study?.institution.name ?? "No title provided"}
             </Text>
             <Text size="sm" className="px-study-diploma">
-              Bachelor&apos;s degree in Computer Science, 9.5 / 10
+              <ShowIf if={study?.certification?.name}>
+                {study?.certification?.name ?? "No license provided"}
+              </ShowIf>{" "}
+              <ShowIf if={study?.domainStudy}>
+                in {study?.domainStudy?.name}
+              </ShowIf>
+              <ShowIf if={study?.degree}> · {study?.degree}</ShowIf>
             </Text>
-            <Text size="sm" className="px-study-years" color="dimmed">
-              2012-2016
-            </Text>
-            <Text
-              size="sm"
-              className="px-study-specialization mb-4"
-              color="dimmed"
-            >
-              Computer Sciences and Informatics & Data Communication strategy
+            <Text size="sm" className="px-study-years" color="dimmed" mb={8}>
+              {format(new Date(study?.startDate), "yyyy")} -{" "}
+              {
+                <ShowIfElse if={study?.endDate} else="present">
+                  {format(new Date(study?.endDate), "yyyy")}
+                </ShowIfElse>
+              }
             </Text>
             <Text size="sm" className="px-study-description" color="dark">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac
-              arcu consectetur, cursus nulla sed, interdum lectus. Sed tristique
-              nibh sit amet nulla gravida suscipit. Ut nec erat sem. Donec a
-              arcu ex. Aliquam erat sapien, tincidunt non gravida et, porta sed
-              metus. Curabitur consequat, ligula ac iaculis sodales, felis sem
-              cursus metus, vel semper ipsum quam non enim. Morbi ut molestie
-              sapien. Sed mollis accumsan lorem vel auctor.
+              {study?.description ?? "No description provided"}
             </Text>
+            {withDivider && <Divider mt={16} />}
           </div>
-          {withDivider && <Divider mt={16} />}
+          <NavLink to={`studies/${study?.id}/update`}>
+            <ActionIcon variant="subtle" color={"violet"}>
+              <PencilIcon width={16} />
+            </ActionIcon>
+          </NavLink>
         </div>
       </Group>
     </Paper>

@@ -12,8 +12,15 @@ import {
   useUpdateUserProfileExperienceMutation,
 } from "@gql/generated";
 import {
+  BuildingOffice2Icon,
+  CalendarIcon,
+  ChatBubbleBottomCenterTextIcon,
   CheckCircleIcon,
+  ClipboardDocumentIcon,
+  CogIcon,
+  CubeIcon,
   ExclamationTriangleIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
@@ -225,6 +232,7 @@ export default function ProfileExperienceAddModal() {
       closeOnClickOutside={false}
       closeOnEscape={false}
       trapFocus
+      size={520}
     >
       <form
         className="px-mantine-form"
@@ -234,6 +242,7 @@ export default function ProfileExperienceAddModal() {
           label="Title"
           mt="md"
           withAsterisk
+          icon={<CubeIcon width={18} />}
           {...form.getInputProps("title")}
         />
         <Textarea
@@ -242,6 +251,7 @@ export default function ProfileExperienceAddModal() {
           mt="md"
           withAsterisk
           minRows={9}
+          icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
         />
         <ShowIfElse
@@ -260,6 +270,7 @@ export default function ProfileExperienceAddModal() {
               image: o?.photography,
               description: o?.industry,
             }))}
+            icon={<BuildingOffice2Icon width={18} />}
             {...form.getInputProps("organizationId")}
           />
         </ShowIfElse>
@@ -274,6 +285,7 @@ export default function ProfileExperienceAddModal() {
             mt="md"
             withAsterisk
             data={locations}
+            icon={<MapPinIcon width={18} />}
             {...form.getInputProps("city")}
           />
         </ShowIfElse>
@@ -282,6 +294,7 @@ export default function ProfileExperienceAddModal() {
           description="The type of contract during your work time"
           mt="md"
           withAsterisk
+          icon={<ClipboardDocumentIcon width={18} />}
           data={(Object.entries(ContractType) ?? [])?.map(([key, value]) => ({
             label: capitalizeFirstLetter(
               value.toLowerCase().split("_").join(" ")
@@ -290,30 +303,6 @@ export default function ProfileExperienceAddModal() {
           }))}
           {...form.getInputProps("contractType")}
         />
-        <DatePicker
-          withAsterisk
-          mt="md"
-          label="From"
-          description="The starting date of employment"
-          maxDate={new Date()}
-          {...form.getInputProps("startDate")}
-        />
-        <Checkbox
-          mt="md"
-          label="I currently work on this position"
-          checked={activeJob}
-          onChange={(event) => setActiveJob(event.currentTarget.checked)}
-        />
-        <ShowIf if={!activeJob}>
-          <DatePicker
-            mt="md"
-            label="Until"
-            description="The ending date of employment"
-            disabled={activeJob}
-            maxDate={new Date()}
-            {...form.getInputProps("endDate")}
-          />
-        </ShowIf>
         <ShowIfElse
           if={!isActivitySectorsLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
@@ -324,6 +313,7 @@ export default function ProfileExperienceAddModal() {
             searchable
             mt="md"
             withAsterisk
+            icon={<CogIcon width={18} />}
             data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
               label: a?.name,
               value: a?.id,
@@ -331,6 +321,37 @@ export default function ProfileExperienceAddModal() {
             {...form.getInputProps("activitySectorId")}
           />
         </ShowIfElse>
+        <DatePicker
+          withAsterisk
+          mt="md"
+          label="From"
+          description="The starting date of employment"
+          clearable={false}
+          icon={<CalendarIcon width={18} />}
+          maxDate={new Date()}
+          {...form.getInputProps("startDate")}
+        />
+        <Checkbox
+          mt="md"
+          label="I currently work on this position"
+          checked={activeJob}
+          onChange={(event) => {
+            setActiveJob(event.currentTarget.checked);
+            form.setFieldValue("endDate", null);
+          }}
+        />
+        <ShowIf if={!activeJob}>
+          <DatePicker
+            mt="md"
+            label="Until"
+            description="The ending date of employment"
+            icon={<CalendarIcon width={18} />}
+            disabled={activeJob}
+            maxDate={new Date()}
+            {...form.getInputProps("endDate")}
+          />
+        </ShowIf>
+
         <Button
           type="submit"
           fullWidth

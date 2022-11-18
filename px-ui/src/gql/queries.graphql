@@ -117,6 +117,27 @@ query GetUserProfile($profileSlugUrl: String) {
       }
       description
     }
+    studies {
+      id
+      institution {
+        id
+        name
+        description
+        photography
+      }
+      domainStudy {
+        id
+        name
+      }
+      degree
+      certification {
+        id
+        name
+      }
+      description
+      startDate
+      endDate
+    }
   }
 }
 
@@ -143,6 +164,29 @@ query getAllOrganizations {
 
 query getAllActivitySectors {
   getAllActivitySectors {
+    id
+    name
+  }
+}
+
+query getAllInstitutions {
+  getAllInstitutions {
+    id
+    name
+    description
+    photography
+  }
+}
+
+query getAllDomains {
+  getAllDomains {
+    id
+    name
+  }
+}
+
+query getAllCertifications {
+  getAllCertifications {
     id
     name
   }

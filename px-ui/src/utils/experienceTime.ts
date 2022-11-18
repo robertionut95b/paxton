@@ -33,12 +33,16 @@ const daysFmt = (days: number) => {
 
   let res = [];
   if (years > 0) {
-    res.push(years + " years");
+    if (years === 1) {
+      res.push(years + " year");
+    } else res.push(years + " years");
   }
   if (months > 0) {
-    res.push(months + " months");
+    if (months === 1) {
+      res.push(months + " month");
+    } else res.push(months + " months");
   }
-  if (d > 0 && months <= 0) {
+  if (d >= 0 && months <= 0) {
     res.push("1 month");
   }
 

@@ -18,7 +18,6 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: any;
-  DateTime: any;
 };
 
 export type ActivitySector = {
@@ -31,6 +30,16 @@ export type Application = {
   __typename?: 'Application';
   dateOfApplication: Scalars['Date'];
   id: Scalars['ID'];
+};
+
+export type Certification = {
+  __typename?: 'Certification';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type CertificationInput = {
+  name: Scalars['String'];
 };
 
 export type City = {
@@ -57,12 +66,16 @@ export type Country = {
   name: Scalars['String'];
 };
 
-export enum Domain {
-  Arts = 'ARTS',
-  ComputerScience = 'COMPUTER_SCIENCE',
-  Mathematics = 'MATHEMATICS',
-  Psychology = 'PSYCHOLOGY'
-}
+export type Domain = {
+  __typename?: 'Domain';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  studies?: Maybe<Array<Maybe<Study>>>;
+};
+
+export type DomainInput = {
+  name: Scalars['String'];
+};
 
 export type Experience = {
   __typename?: 'Experience';
@@ -96,6 +109,21 @@ export type FiltersInput = {
   key: Scalars['String'];
   operator: Scalars['String'];
   value: Scalars['String'];
+};
+
+export type Institution = {
+  __typename?: 'Institution';
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  photography?: Maybe<Scalars['String']>;
+  studies?: Maybe<Array<Maybe<Study>>>;
+};
+
+export type InstitutionInput = {
+  description?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  photography?: InputMaybe<Scalars['String']>;
 };
 
 export type Job = {
@@ -157,17 +185,42 @@ export type JobListingPage = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCertification?: Maybe<Certification>;
+  addDomain?: Maybe<Domain>;
+  addInstitution?: Maybe<Institution>;
   addUserProfileExperience?: Maybe<UserProfile>;
+  addUserProfileStudy?: Maybe<UserProfile>;
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
   updateUserProfile?: Maybe<UserProfile>;
   updateUserProfileExperience?: Maybe<UserProfile>;
+  updateUserProfileStudy?: Maybe<UserProfile>;
+};
+
+
+export type MutationAddCertificationArgs = {
+  CertificationInput: CertificationInput;
+};
+
+
+export type MutationAddDomainArgs = {
+  DomainInput: DomainInput;
+};
+
+
+export type MutationAddInstitutionArgs = {
+  InstitutionInput: InstitutionInput;
 };
 
 
 export type MutationAddUserProfileExperienceArgs = {
   ExperienceInput: ExperienceInput;
+};
+
+
+export type MutationAddUserProfileStudyArgs = {
+  StudyInput: StudyInput;
 };
 
 
@@ -188,6 +241,11 @@ export type MutationUpdateUserProfileArgs = {
 
 export type MutationUpdateUserProfileExperienceArgs = {
   ExperienceInput: ExperienceInput;
+};
+
+
+export type MutationUpdateUserProfileStudyArgs = {
+  StudyInput: StudyInput;
 };
 
 export type Organization = {
@@ -223,21 +281,12 @@ export type ProcessSteps = {
   step: Step;
 };
 
-export type ProfileStudies = {
-  __typename?: 'ProfileStudies';
-  description?: Maybe<Scalars['String']>;
-  diploma?: Maybe<Scalars['String']>;
-  domain?: Maybe<Domain>;
-  endDate?: Maybe<Scalars['Date']>;
-  id: Scalars['ID'];
-  profile?: Maybe<UserProfile>;
-  startDate: Scalars['Date'];
-  study?: Maybe<Study>;
-};
-
 export type Query = {
   __typename?: 'Query';
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
+  getAllCertifications?: Maybe<Array<Maybe<Certification>>>;
+  getAllDomains?: Maybe<Array<Maybe<Domain>>>;
+  getAllInstitutions?: Maybe<Array<Maybe<Institution>>>;
   getAllJobCategories?: Maybe<Array<Maybe<JobCategory>>>;
   getAllJobListings?: Maybe<JobListingPage>;
   getAllJobs?: Maybe<Array<Maybe<Job>>>;
@@ -313,10 +362,27 @@ export type Step = {
 
 export type Study = {
   __typename?: 'Study';
+  certification: Certification;
+  degree?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  domainStudy?: Maybe<Domain>;
+  endDate?: Maybe<Scalars['Date']>;
   id: Scalars['ID'];
-  name: Scalars['String'];
-  profiles?: Maybe<Array<Maybe<ProfileStudies>>>;
+  institution: Institution;
+  startDate: Scalars['Date'];
+  userProfile: UserProfile;
+};
+
+export type StudyInput = {
+  certification?: InputMaybe<Scalars['ID']>;
+  degree?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  domainStudy?: InputMaybe<Scalars['ID']>;
+  endDate?: InputMaybe<Scalars['Date']>;
+  id?: InputMaybe<Scalars['ID']>;
+  institution: Scalars['ID'];
+  startDate: Scalars['Date'];
+  userProfileSlugUrl: Scalars['String'];
 };
 
 export type User = {
@@ -341,6 +407,7 @@ export type UserProfile = {
   photography?: Maybe<Scalars['String']>;
   profileSlugUrl: Scalars['String'];
   profileTitle: Scalars['String'];
+  studies?: Maybe<Array<Maybe<Study>>>;
   user: User;
 };
 
@@ -374,6 +441,41 @@ export type UpdateUserProfileExperienceMutationVariables = Exact<{
 
 export type UpdateUserProfileExperienceMutation = { __typename?: 'Mutation', updateUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
 
+export type AddUserProfileStudyMutationVariables = Exact<{
+  StudyInput: StudyInput;
+}>;
+
+
+export type AddUserProfileStudyMutation = { __typename?: 'Mutation', addUserProfileStudy?: { __typename?: 'UserProfile', id: string, description: string, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
+
+export type UpdateUserProfileStudyMutationVariables = Exact<{
+  StudyInput: StudyInput;
+}>;
+
+
+export type UpdateUserProfileStudyMutation = { __typename?: 'Mutation', updateUserProfileStudy?: { __typename?: 'UserProfile', id: string, description: string, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
+
+export type AddInstitutionMutationVariables = Exact<{
+  InstitutionInput: InstitutionInput;
+}>;
+
+
+export type AddInstitutionMutation = { __typename?: 'Mutation', addInstitution?: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null } | null };
+
+export type AddDomainMutationVariables = Exact<{
+  DomainInput: DomainInput;
+}>;
+
+
+export type AddDomainMutation = { __typename?: 'Mutation', addDomain?: { __typename?: 'Domain', id: string, name: string } | null };
+
+export type AddCertificationMutationVariables = Exact<{
+  CertificationInput: CertificationInput;
+}>;
+
+
+export type AddCertificationMutation = { __typename?: 'Mutation', addCertification?: { __typename?: 'Certification', id: string, name: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -391,7 +493,7 @@ export type GetUserProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: any, endDate?: any | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification: { __typename?: 'Certification', id: string, name: string } } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -407,6 +509,21 @@ export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; 
 
 
 export type GetAllActivitySectorsQuery = { __typename?: 'Query', getAllActivitySectors?: Array<{ __typename?: 'ActivitySector', id: string, name: string } | null> | null };
+
+export type GetAllInstitutionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllInstitutionsQuery = { __typename?: 'Query', getAllInstitutions?: Array<{ __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null } | null> | null };
+
+export type GetAllDomainsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllDomainsQuery = { __typename?: 'Query', getAllDomains?: Array<{ __typename?: 'Domain', id: string, name: string } | null> | null };
+
+export type GetAllCertificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCertificationsQuery = { __typename?: 'Query', getAllCertifications?: Array<{ __typename?: 'Certification', id: string, name: string } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -493,6 +610,121 @@ export const useUpdateUserProfileExperienceMutation = <
     useMutation<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>(
       ['UpdateUserProfileExperience'],
       (variables?: UpdateUserProfileExperienceMutationVariables) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers)(),
+      options
+    );
+export const AddUserProfileStudyDocument = `
+    mutation AddUserProfileStudy($StudyInput: StudyInput!) {
+  addUserProfileStudy(StudyInput: $StudyInput) {
+    id
+    description
+    profileSlugUrl
+    studies {
+      id
+    }
+  }
+}
+    `;
+export const useAddUserProfileStudyMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddUserProfileStudyMutation, TError, AddUserProfileStudyMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddUserProfileStudyMutation, TError, AddUserProfileStudyMutationVariables, TContext>(
+      ['AddUserProfileStudy'],
+      (variables?: AddUserProfileStudyMutationVariables) => fetcher<AddUserProfileStudyMutation, AddUserProfileStudyMutationVariables>(client, AddUserProfileStudyDocument, variables, headers)(),
+      options
+    );
+export const UpdateUserProfileStudyDocument = `
+    mutation UpdateUserProfileStudy($StudyInput: StudyInput!) {
+  updateUserProfileStudy(StudyInput: $StudyInput) {
+    id
+    description
+    profileSlugUrl
+    studies {
+      id
+    }
+  }
+}
+    `;
+export const useUpdateUserProfileStudyMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateUserProfileStudyMutation, TError, UpdateUserProfileStudyMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateUserProfileStudyMutation, TError, UpdateUserProfileStudyMutationVariables, TContext>(
+      ['UpdateUserProfileStudy'],
+      (variables?: UpdateUserProfileStudyMutationVariables) => fetcher<UpdateUserProfileStudyMutation, UpdateUserProfileStudyMutationVariables>(client, UpdateUserProfileStudyDocument, variables, headers)(),
+      options
+    );
+export const AddInstitutionDocument = `
+    mutation AddInstitution($InstitutionInput: InstitutionInput!) {
+  addInstitution(InstitutionInput: $InstitutionInput) {
+    id
+    name
+    description
+    photography
+  }
+}
+    `;
+export const useAddInstitutionMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddInstitutionMutation, TError, AddInstitutionMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddInstitutionMutation, TError, AddInstitutionMutationVariables, TContext>(
+      ['AddInstitution'],
+      (variables?: AddInstitutionMutationVariables) => fetcher<AddInstitutionMutation, AddInstitutionMutationVariables>(client, AddInstitutionDocument, variables, headers)(),
+      options
+    );
+export const AddDomainDocument = `
+    mutation AddDomain($DomainInput: DomainInput!) {
+  addDomain(DomainInput: $DomainInput) {
+    id
+    name
+  }
+}
+    `;
+export const useAddDomainMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddDomainMutation, TError, AddDomainMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddDomainMutation, TError, AddDomainMutationVariables, TContext>(
+      ['AddDomain'],
+      (variables?: AddDomainMutationVariables) => fetcher<AddDomainMutation, AddDomainMutationVariables>(client, AddDomainDocument, variables, headers)(),
+      options
+    );
+export const AddCertificationDocument = `
+    mutation AddCertification($CertificationInput: CertificationInput!) {
+  addCertification(CertificationInput: $CertificationInput) {
+    id
+    name
+  }
+}
+    `;
+export const useAddCertificationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddCertificationMutation, TError, AddCertificationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddCertificationMutation, TError, AddCertificationMutationVariables, TContext>(
+      ['AddCertification'],
+      (variables?: AddCertificationMutationVariables) => fetcher<AddCertificationMutation, AddCertificationMutationVariables>(client, AddCertificationDocument, variables, headers)(),
       options
     );
 export const GetAllJobListingsDocument = `
@@ -645,6 +877,27 @@ export const GetUserProfileDocument = `
       }
       description
     }
+    studies {
+      id
+      institution {
+        id
+        name
+        description
+        photography
+      }
+      domainStudy {
+        id
+        name
+      }
+      degree
+      certification {
+        id
+        name
+      }
+      description
+      startDate
+      endDate
+    }
   }
 }
     `;
@@ -733,5 +986,73 @@ export const useGetAllActivitySectorsQuery = <
     useQuery<GetAllActivitySectorsQuery, TError, TData>(
       variables === undefined ? ['getAllActivitySectors'] : ['getAllActivitySectors', variables],
       fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers),
+      options
+    );
+export const GetAllInstitutionsDocument = `
+    query getAllInstitutions {
+  getAllInstitutions {
+    id
+    name
+    description
+    photography
+  }
+}
+    `;
+export const useGetAllInstitutionsQuery = <
+      TData = GetAllInstitutionsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllInstitutionsQueryVariables,
+      options?: UseQueryOptions<GetAllInstitutionsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllInstitutionsQuery, TError, TData>(
+      variables === undefined ? ['getAllInstitutions'] : ['getAllInstitutions', variables],
+      fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, variables, headers),
+      options
+    );
+export const GetAllDomainsDocument = `
+    query getAllDomains {
+  getAllDomains {
+    id
+    name
+  }
+}
+    `;
+export const useGetAllDomainsQuery = <
+      TData = GetAllDomainsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllDomainsQueryVariables,
+      options?: UseQueryOptions<GetAllDomainsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllDomainsQuery, TError, TData>(
+      variables === undefined ? ['getAllDomains'] : ['getAllDomains', variables],
+      fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, variables, headers),
+      options
+    );
+export const GetAllCertificationsDocument = `
+    query getAllCertifications {
+  getAllCertifications {
+    id
+    name
+  }
+}
+    `;
+export const useGetAllCertificationsQuery = <
+      TData = GetAllCertificationsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllCertificationsQueryVariables,
+      options?: UseQueryOptions<GetAllCertificationsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllCertificationsQuery, TError, TData>(
+      variables === undefined ? ['getAllCertifications'] : ['getAllCertifications', variables],
+      fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, variables, headers),
       options
     );

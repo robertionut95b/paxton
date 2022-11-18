@@ -62,7 +62,7 @@ type Institution {
 
 input InstitutionInput {
     name: String!
-    description: String!
+    description: String
     photography: String
 }
 

@@ -26,9 +26,11 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
   Checkbox,
+  Group,
   Loader,
   Modal,
   Select,
+  Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -61,6 +63,16 @@ export default function ProfileStudyModal() {
 
   const [activeStudy, setActiveStudy] = useState(
     initialStudySelected?.endDate ? false : true
+  );
+
+  const [desc, setDesc] = useState<string>(
+    initialStudySelected?.description ?? ""
+  );
+
+  const [startDate, setStartDate] = useState<Date>(
+    initialStudySelected?.startDate
+      ? new Date(initialStudySelected?.startDate)
+      : new Date()
   );
 
   const closeModal = () => {
@@ -462,7 +474,21 @@ export default function ProfileStudyModal() {
           minRows={6}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
+          value={desc}
+          onChange={(e) => {
+            setDesc(e.currentTarget.value);
+            form.setFieldValue("description", e.currentTarget.value);
+          }}
         />
+        <Group position="right">
+          <Text
+            size="xs"
+            color={!form.errors.description ? "dimmed" : "red"}
+            mt={4}
+          >
+            {desc.length}/1.000
+          </Text>
+        </Group>
         <DatePicker
           withAsterisk
           mt="md"
@@ -471,6 +497,13 @@ export default function ProfileStudyModal() {
           icon={<CalendarIcon width={18} />}
           maxDate={new Date()}
           {...form.getInputProps("startDate")}
+          value={startDate}
+          onChange={(d) => {
+            if (d) {
+              setStartDate(d);
+              form.setFieldValue("startDate", d);
+            } else new Date();
+          }}
         />
         <Checkbox
           mt="md"
@@ -488,6 +521,7 @@ export default function ProfileStudyModal() {
             description="The ending date of the study"
             disabled={activeStudy}
             icon={<CalendarIcon width={18} />}
+            minDate={startDate}
             maxDate={new Date()}
             {...form.getInputProps("endDate")}
           />

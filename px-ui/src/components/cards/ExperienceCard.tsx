@@ -1,3 +1,4 @@
+import ExpandableText from "@components/visibility/ExpandableText";
 import { Experience } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import {
@@ -97,13 +98,13 @@ export default function ExperienceCard({
                           )}
                         </span>
                       </Text>
-                      <Text
+                      <ExpandableText
                         className="px-timeline-item-experience-description"
                         color="dark"
                         size="sm"
                       >
                         {e.description}
-                      </Text>
+                      </ExpandableText>
                     </div>
                     <NavLink to={`experiences/${e.id}/update`}>
                       <ActionIcon variant="subtle" color={"violet"}>

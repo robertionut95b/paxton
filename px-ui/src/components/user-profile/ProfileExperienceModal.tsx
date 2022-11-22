@@ -26,9 +26,11 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
   Checkbox,
+  Group,
   Loader,
   Modal,
   Select,
+  Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -42,7 +44,7 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-export default function ProfileExperienceAddModal() {
+export default function ProfileExperienceModal() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
   const params = useParams();
@@ -62,6 +64,16 @@ export default function ProfileExperienceAddModal() {
 
   const [activeJob, setActiveJob] = useState(
     initialExperienceSelected?.endDate ? false : true
+  );
+
+  const [desc, setDesc] = useState<string>(
+    initialExperienceSelected?.description ?? ""
+  );
+
+  const [startDate, setStartDate] = useState<Date>(
+    initialExperienceSelected?.startDate
+      ? new Date(initialExperienceSelected?.startDate)
+      : new Date()
   );
 
   const { data: countries, isLoading: isCountryListLoading } =
@@ -253,7 +265,21 @@ export default function ProfileExperienceAddModal() {
           minRows={9}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
+          value={desc}
+          onChange={(e) => {
+            setDesc(e.currentTarget.value);
+            form.setFieldValue("description", e.currentTarget.value);
+          }}
         />
+        <Group position="right">
+          <Text
+            size="xs"
+            color={!form.errors.description ? "dimmed" : "red"}
+            mt={4}
+          >
+            {desc.length}/1.000
+          </Text>
+        </Group>
         <ShowIfElse
           if={!isOrganizationsLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
@@ -330,6 +356,13 @@ export default function ProfileExperienceAddModal() {
           icon={<CalendarIcon width={18} />}
           maxDate={new Date()}
           {...form.getInputProps("startDate")}
+          value={startDate}
+          onChange={(d) => {
+            if (d) {
+              setStartDate(d);
+              form.setFieldValue("startDate", d);
+            } else new Date();
+          }}
         />
         <Checkbox
           mt="md"
@@ -347,11 +380,11 @@ export default function ProfileExperienceAddModal() {
             description="The ending date of employment"
             icon={<CalendarIcon width={18} />}
             disabled={activeJob}
+            minDate={startDate}
             maxDate={new Date()}
             {...form.getInputProps("endDate")}
           />
         </ShowIf>
-
         <Button
           type="submit"
           fullWidth

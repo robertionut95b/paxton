@@ -1,3 +1,4 @@
+import ExpandableText from "@components/visibility/ExpandableText";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { Study } from "@gql/generated";
@@ -47,9 +48,13 @@ export default function StudyCard({
                 </ShowIfElse>
               }
             </Text>
-            <Text size="sm" className="px-study-description" color="dark">
+            <ExpandableText
+              size="sm"
+              className="px-study-description"
+              color="dark"
+            >
               {study?.description ?? "No description provided"}
-            </Text>
+            </ExpandableText>
             {withDivider && <Divider mt={16} />}
           </div>
           <NavLink to={`studies/${study?.id}/update`}>

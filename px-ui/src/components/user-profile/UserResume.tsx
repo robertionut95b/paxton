@@ -1,5 +1,6 @@
 import ExperienceCard from "@components/cards/ExperienceCard";
 import StudyCard from "@components/cards/StudyCard";
+import ExpandableText from "@components/visibility/ExpandableText";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
@@ -21,7 +22,7 @@ export default function UserResume({
     <div className="px-user-resume flex flex-col gap-y-5 px-2">
       <Title order={3}>About</Title>
       <div className="px-user-resume-description">
-        <Text size={15}>
+        <ExpandableText size={15}>
           <ShowIfElse
             if={userProfile?.description}
             else={
@@ -30,7 +31,7 @@ export default function UserResume({
           >
             {userProfile?.description}
           </ShowIfElse>
-        </Text>
+        </ExpandableText>
       </div>
       <Divider color={"#ded9fd"} variant="solid" />
       <div className="px-user-resume-studies-heading flex justify-between">

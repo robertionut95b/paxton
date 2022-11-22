@@ -5,16 +5,23 @@ import {
   useUpdateUserProfileMutation,
 } from "@gql/generated";
 import {
+  ChatBubbleBottomCenterTextIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
+  GlobeAltIcon,
+  HashtagIcon,
+  MapPinIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
+  Group,
   Loader,
   Modal,
   Select,
+  Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -63,6 +70,8 @@ export default function BasicUpdateProfileModal() {
     },
   ]);
   const prevProfileData = prevData?.getUserProfile;
+
+  const [desc, setDesc] = useState<string>(prevProfileData?.description ?? "");
 
   const closeModal = () => {
     navigate(-1);
@@ -145,6 +154,7 @@ export default function BasicUpdateProfileModal() {
       closeOnClickOutside={false}
       closeOnEscape={false}
       trapFocus
+      size={520}
     >
       <form
         className="px-mantine-form"
@@ -154,48 +164,68 @@ export default function BasicUpdateProfileModal() {
           label="First name"
           mt="md"
           withAsterisk
+          icon={<TagIcon width={18} />}
           {...form.getInputProps("firstName")}
         />
         <TextInput
           label="Last name"
           mt="md"
           withAsterisk
+          icon={<TagIcon width={18} />}
           {...form.getInputProps("lastName")}
         />
         <TextInput
           label="Profile URL"
-          description="This is your profile unique url, it is unique for each user"
+          description="This is your profile's personalized URL, it is unique for each user"
           mt="md"
           withAsterisk
+          icon={<GlobeAltIcon width={18} />}
           {...form.getInputProps("profileSlugUrl")}
         />
         <TextInput
           label="Profile title"
-          description="Your current job"
+          description="Your job or occupation in present"
           placeholder="Awesome job at Acme Inc."
           mt="md"
           withAsterisk
+          icon={<HashtagIcon width={18} />}
           {...form.getInputProps("profileTitle")}
         />
         <Textarea
           label="Description"
-          description="Tell everyone more about you and recruiters might recognize you!"
+          description="Tell everyone more about you and recruiters might recognize you"
           placeholder="This is pretty much a description of your profile"
           minRows={6}
           mt="md"
           withAsterisk
+          icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
+          value={desc}
+          onChange={(e) => {
+            setDesc(e.currentTarget.value);
+            form.setFieldValue("description", e.currentTarget.value);
+          }}
         />
+        <Group position="right">
+          <Text
+            size="xs"
+            color={!form.errors.description ? "dimmed" : "red"}
+            mt={4}
+          >
+            {desc.length}/1000
+          </Text>
+        </Group>
         {isCountryListLoading ? (
           <Loader mt="md" size="sm" variant="dots" />
         ) : (
           <Select
             label="Location"
             placeholder="Your actual location"
-            description="This helps to suggest you job positions inside the app"
+            description="This helps suggest you job positions inside the platform"
             searchable
             mt="md"
             mb="md"
+            icon={<MapPinIcon width={18} />}
             withAsterisk
             data={locations}
             {...form.getInputProps("city")}

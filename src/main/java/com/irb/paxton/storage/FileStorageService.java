@@ -2,6 +2,7 @@ package com.irb.paxton.storage;
 
 import com.irb.paxton.storage.exception.FileNotFoundException;
 import com.irb.paxton.storage.exception.FileStorageException;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -19,15 +20,17 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 import static com.irb.paxton.storage.FileStorageProperties.FILES_URL_MAPPING;
+import static com.irb.paxton.storage.FileStorageProperties.USER_STORAGE_UPLOAD_PATH;
 
 @Service
+@Slf4j
 public class FileStorageService {
 
     private final Path filesUserUploadsStorageLoc;
 
     @Autowired
     public FileStorageService() {
-        this.filesUserUploadsStorageLoc = Paths.get(FileStorageProperties.USER_STORAGE_UPLOAD_PATH)
+        this.filesUserUploadsStorageLoc = Paths.get(USER_STORAGE_UPLOAD_PATH)
                 .toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.filesUserUploadsStorageLoc);
@@ -72,5 +75,16 @@ public class FileStorageService {
         } catch (MalformedURLException ex) {
             throw new FileNotFoundException("File not found " + fileName, ex);
         }
+    }
+
+    public boolean removeFile(@NotNull String currentBannerPath) {
+        Path targetPath = Path.of(USER_STORAGE_UPLOAD_PATH, currentBannerPath.split(FILES_URL_MAPPING + "/")[1]);
+        try {
+            System.out.println(targetPath);
+            return Files.deleteIfExists(targetPath);
+        } catch (IOException e) {
+            log.warn(String.format("Could not delete : File not found %s", targetPath), e);
+        }
+        return false;
     }
 }

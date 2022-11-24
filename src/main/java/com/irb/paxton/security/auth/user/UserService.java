@@ -78,7 +78,7 @@ public class UserService {
 
         userRepository.save(u);
         userProfileRepository.save(
-                new UserProfile(null, u, "", "", "No description provided.", null,
+                new UserProfile(null, u, null, null, "No description provided.", null,
                         u.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", u.getUsername()), null)
         );
         return u;
@@ -90,7 +90,7 @@ public class UserService {
         }
         userRepository.save(user);
         userProfileRepository.save(
-                new UserProfile(null, user, "", "", "No description provided.", null,
+                new UserProfile(null, user, null, null, "No description provided.", null,
                         user.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", user.getUsername()), null)
         );
     }

@@ -27,4 +27,9 @@ public class UploadController {
     public Photography changeProfileBanner(@NotNull @Valid PhotographyInput photographyInput) throws IOException {
         return this.photographyService.changeProfileBanner(photographyInput);
     }
+
+    @PostMapping(path = "/upload/profile-avatar")
+    public Photography changeProfileAvatar(@NotNull @Valid PhotographyInput photographyInput) throws IOException {
+        return this.photographyService.changeProfileAvatar(photographyInput);
+    }
 }

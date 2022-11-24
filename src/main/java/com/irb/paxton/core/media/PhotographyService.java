@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+
 @Service
 @Slf4j
 public class PhotographyService {
@@ -25,10 +27,13 @@ public class PhotographyService {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Transactional
     public Photography changeProfileBanner(@NotNull PhotographyInput photographyInput) {
         MultipartFile part = photographyInput.getPhotography();
         Photography photography = userProfileMapper.updateUserProfileBanner(photographyInput);
         UserProfile userProfile = photography.getUserProfile();
+        String currentBannerPath = userProfile.getCoverPhotography();
+
         String id = userProfile.getUser().getId().toString();
 
         FileResponse fr = fileStorageService.storeFile(part, id);
@@ -39,14 +44,21 @@ public class PhotographyService {
 
         photographyRepository.save(photography);
         userProfileRepository.save(userProfile);
+        if (currentBannerPath != null) {
+            fileStorageService.removeFile(currentBannerPath);
+            log.info("Successfully cleaned old media file with file service");
+        }
 
         return photography;
     }
 
+    @Transactional
     public Photography changeProfileAvatar(@NotNull PhotographyInput photographyInput) {
         MultipartFile part = photographyInput.getPhotography();
         Photography photography = userProfileMapper.updateUserProfileBanner(photographyInput);
         UserProfile userProfile = photography.getUserProfile();
+        String currentAvatarPath = userProfile.getPhotography();
+
         String id = userProfile.getUser().getId().toString();
 
         FileResponse fr = fileStorageService.storeFile(part, id);
@@ -57,6 +69,10 @@ public class PhotographyService {
 
         photographyRepository.save(photography);
         userProfileRepository.save(userProfile);
+        if (currentAvatarPath != null) {
+            fileStorageService.removeFile(currentAvatarPath);
+            log.info("Successfully cleaned old media file with file service");
+        }
 
         return photography;
     }

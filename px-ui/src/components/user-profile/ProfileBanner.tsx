@@ -17,7 +17,7 @@ export default function ProfileBanner({ coverPhoto }: { coverPhoto?: string }) {
         >
           <img
             className="px-profile-banner-img h-60 w-full object-cover rounded-md"
-            src={"/bg-profile.jpg"}
+            src={coverPhoto}
             loading="lazy"
           />
         </Indicator>

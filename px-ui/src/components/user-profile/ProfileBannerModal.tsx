@@ -1,8 +1,15 @@
 import { useAuth } from "@auth/useAuth";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  PhotoIcon,
+} from "@heroicons/react/24/outline";
+import useChangeProfileBanner from "@hooks/useChangeProfileBanner";
 import { Button, FileInput, Modal } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import { FormBannerChangeSchema } from "@validator/FormBannerChangeSchema";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -23,11 +30,43 @@ export default function ProfileBannerModal() {
       photography: null,
       profileSlugUrl: profileSlug,
     },
-    // validate: zodResolver(FormAddStudySchema),
+    validate: zodResolver(FormBannerChangeSchema),
   });
 
-  const handleSubmit = (values: typeof form["values"]) => {
-    const photoFile = values.photography;
+  const { mutate } = useChangeProfileBanner({
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        "GetUserProfile",
+        { profileSlugUrl: profileSlug },
+      ]);
+      closeModal();
+      showNotification({
+        title: "Cover update",
+        message: "Successfully updated cover picture",
+        autoClose: 5000,
+        icon: <CheckCircleIcon width={20} />,
+      });
+    },
+    onError: (err) => {
+      showNotification({
+        title: "Upload error",
+        message: "Something went wrong! Could not update cover",
+        autoClose: 5000,
+        icon: <ExclamationTriangleIcon width={20} />,
+      });
+    },
+  });
+
+  const handleSubmit = (values: typeof form.values) => {
+    const photography = values.photography;
+    const profileSlugUrl = user?.profileSlugUrl as string;
+
+    if (photography && profileSlugUrl) {
+      const formData = new FormData();
+      formData.append("photography", photography);
+      formData.append("userProfileSlugUrl", profileSlugUrl);
+      mutate(formData);
+    }
   };
 
   return (

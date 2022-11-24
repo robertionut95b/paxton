@@ -1,17 +1,18 @@
 import { refreshLogin } from "@auth/authApi";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
 const api = axios.create({
   withCredentials: true,
-  baseURL: "http://localhost:8080",
+  baseURL: APP_API_BASE_URL,
 });
 
 api.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
 
 const apiRefresh = axios.create({
   withCredentials: true,
-  baseURL: "http://localhost:8080",
+  baseURL: APP_API_BASE_URL,
 });
 apiRefresh.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
 

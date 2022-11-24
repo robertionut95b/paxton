@@ -75,3 +75,29 @@ export const resetPassword = async (bodyData: ResetPasswordProps) => {
   );
   return data;
 };
+
+export const changeProfileCover = async (bodyData: FormData) => {
+  const { data } = await api.post(
+    `${APP_API_PATH}/users/upload/profile-banner`,
+    bodyData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return data;
+};
+
+export const changeProfileAvatar = async (bodyData: FormData) => {
+  const { data } = await api.post(
+    `${APP_API_PATH}/users/upload/profile-avatar`,
+    bodyData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return data;
+};

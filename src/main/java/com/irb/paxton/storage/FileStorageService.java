@@ -80,7 +80,6 @@ public class FileStorageService {
     public boolean removeFile(@NotNull String currentBannerPath) {
         Path targetPath = Path.of(USER_STORAGE_UPLOAD_PATH, currentBannerPath.split(FILES_URL_MAPPING + "/")[1]);
         try {
-            System.out.println(targetPath);
             return Files.deleteIfExists(targetPath);
         } catch (IOException e) {
             log.warn(String.format("Could not delete : File not found %s", targetPath), e);

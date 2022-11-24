@@ -217,6 +217,12 @@ type Recruiter {
     user: User!
 }
 
+type Photography {
+    id: ID!
+    path: String!
+    userProfile: UserProfile
+}
+
 type Role {
     id: ID!
     name: String!

@@ -15,7 +15,7 @@ import { Outlet } from "react-router-dom";
 export default function ClientApp() {
   const { user } = useAuth();
   const { data: profileData } = useGetUserProfileQuery(graphqlRequestClient, {
-    profileSlugUrl: user?.profileSlugUrl,
+    profileSlugUrl: user?.profileSlugUrl ?? user?.profileSlugUrl,
   });
   const permissions = user?.permissions || [];
 

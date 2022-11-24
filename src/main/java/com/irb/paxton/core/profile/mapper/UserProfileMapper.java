@@ -6,6 +6,8 @@ import com.irb.paxton.core.activity.exception.ActivitySectorNotExistsException;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.exception.CityNotFoundException;
+import com.irb.paxton.core.media.Photography;
+import com.irb.paxton.core.media.input.PhotographyInput;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
@@ -185,4 +187,8 @@ public abstract class UserProfileMapper {
     @Mapping(target = "certification", source = "studyInput.certification")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     public abstract Study updateUserProfileStudy(@MappingTarget Study actualStudy, StudyInput studyInput);
+
+    @Mapping(target = "userProfile", source = "photographyInput.userProfileSlugUrl")
+    @Mapping(target = "path", ignore = true)
+    public abstract Photography updateUserProfileBanner(PhotographyInput photographyInput);
 }

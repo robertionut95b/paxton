@@ -4,10 +4,13 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 import java.util.List;
 
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class UserProfileNotFoundException extends RuntimeException implements GraphQLError {
 
     @Serial

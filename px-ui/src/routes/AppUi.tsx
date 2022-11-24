@@ -1,6 +1,7 @@
 import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
+import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
 import ProfileExperienceModal from "@components/user-profile/ProfileExperienceModal";
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -71,6 +72,22 @@ export default function AppUI() {
                 </RequireAuth>
               }
             >
+              <Route
+                path="/app/up/:profileSlug/update/banner"
+                element={
+                  <RequireAuth>
+                    <ProfileBannerModal />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/app/up/:profileSlug/update/avatar"
+                element={
+                  <RequireAuth>
+                    <BasicUpdateProfileModal />
+                  </RequireAuth>
+                }
+              />
               <Route
                 path="/app/up/:profileSlug/update/intro"
                 element={

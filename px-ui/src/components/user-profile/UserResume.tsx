@@ -22,16 +22,14 @@ export default function UserResume({
     <div className="px-user-resume flex flex-col gap-y-5 px-2">
       <Title order={3}>About</Title>
       <div className="px-user-resume-description">
-        <ExpandableText size={15}>
-          <ShowIfElse
-            if={userProfile?.description}
-            else={
-              <>{"No description was provided, you can update your profile."}</>
-            }
-          >
-            {userProfile?.description}
-          </ShowIfElse>
-        </ExpandableText>
+        <ShowIfElse
+          if={userProfile?.description}
+          else={
+            <p>{"No description was provided, you can update your profile."}</p>
+          }
+        >
+          <ExpandableText size={15}>{userProfile?.description}</ExpandableText>
+        </ShowIfElse>
       </div>
       <Divider color={"#ded9fd"} variant="solid" />
       <div className="px-user-resume-studies-heading flex justify-between">

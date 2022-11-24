@@ -1,5 +1,6 @@
 package com.irb.paxton.core.media;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.*;
 
@@ -27,9 +28,15 @@ public class Photography {
     @NotNull
     @NotEmpty
     @NotBlank
+    private String name;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String path;
 
     @ManyToOne
     @JoinColumn(name = "user_profile_id")
+    @JsonBackReference
     private UserProfile userProfile;
 }

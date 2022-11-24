@@ -39,6 +39,7 @@ public class PhotographyService {
         FileResponse fr = fileStorageService.storeFile(part, id);
         String filePath = fr.getPath();
 
+        photography.setName(fr.getName());
         photography.setPath(filePath);
         userProfile.setCoverPhotography(filePath);
 
@@ -64,6 +65,7 @@ public class PhotographyService {
         FileResponse fr = fileStorageService.storeFile(part, id);
         String filePath = fr.getPath();
 
+        photography.setName(fr.getName());
         photography.setPath(filePath);
         userProfile.setPhotography(filePath);
 

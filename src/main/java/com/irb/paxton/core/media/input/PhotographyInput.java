@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PhotographyInput {
 
+    public Long id;
+
     @NotNull
     public MultipartFile photography;
 

@@ -20,10 +20,13 @@ public class PhotographyService {
 
     @Autowired
     private PhotographyRepository photographyRepository;
+
     @Autowired
     private UserProfileMapper userProfileMapper;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
+
     @Autowired
     private FileStorageService fileStorageService;
 
@@ -32,7 +35,7 @@ public class PhotographyService {
         MultipartFile part = photographyInput.getPhotography();
         Photography photography = userProfileMapper.updateUserProfileBanner(photographyInput);
         UserProfile userProfile = photography.getUserProfile();
-        String currentBannerPath = userProfile.getCoverPhotography();
+        String currentBanner = userProfile.getCoverPhotography();
 
         String id = userProfile.getUser().getId().toString();
 
@@ -41,24 +44,23 @@ public class PhotographyService {
 
         photography.setName(fr.getName());
         photography.setPath(filePath);
-        userProfile.setCoverPhotography(filePath);
+        userProfile.setCoverPhotography(null);
 
-        photographyRepository.save(photography);
-        userProfileRepository.save(userProfile);
-        if (currentBannerPath != null) {
-            fileStorageService.removeFile(currentBannerPath);
-            log.info("Successfully cleaned old media file with file service");
+        if (currentBanner != null && !currentBanner.equals(filePath)) {
+            fileStorageService.removeFile(currentBanner);
+            log.info("Cleaned old cover photography file within service");
         }
-
+        photographyRepository.save(photography);
+        userProfile.setCoverPhotography(photography.getPath());
         return photography;
     }
 
     @Transactional
     public Photography changeProfileAvatar(@NotNull PhotographyInput photographyInput) {
         MultipartFile part = photographyInput.getPhotography();
-        Photography photography = userProfileMapper.updateUserProfileBanner(photographyInput);
+        Photography photography = userProfileMapper.updateUserProfileAvatar(photographyInput);
         UserProfile userProfile = photography.getUserProfile();
-        String currentAvatarPath = userProfile.getPhotography();
+        String currentAvatar = userProfile.getPhotography();
 
         String id = userProfile.getUser().getId().toString();
 
@@ -67,15 +69,14 @@ public class PhotographyService {
 
         photography.setName(fr.getName());
         photography.setPath(filePath);
-        userProfile.setPhotography(filePath);
+        userProfile.setPhotography(null);
 
-        photographyRepository.save(photography);
-        userProfileRepository.save(userProfile);
-        if (currentAvatarPath != null) {
-            fileStorageService.removeFile(currentAvatarPath);
-            log.info("Successfully cleaned old media file with file service");
+        if (currentAvatar != null && !currentAvatar.equals(filePath)) {
+            fileStorageService.removeFile(currentAvatar);
+            log.info("Cleaned old avatar photography file within service");
         }
-
+        photographyRepository.save(photography);
+        userProfile.setPhotography(photography.getPath());
         return photography;
     }
 }

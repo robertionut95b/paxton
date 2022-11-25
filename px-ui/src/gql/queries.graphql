@@ -36,46 +36,6 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
   }
 }
 
-query GetCurrentUserProfile {
-  getCurrentUserProfile {
-    photography
-    coverPhotography
-    description
-    city {
-      id
-      name
-      country {
-        name
-      }
-    }
-    profileSlugUrl
-    profileTitle
-    experiences {
-      title
-      contractType
-      organization {
-        name
-        industry
-        photography
-      }
-      city {
-        id
-        name
-        country {
-          code
-          name
-        }
-      }
-      startDate
-      endDate
-      activitySector {
-        name
-      }
-      description
-    }
-  }
-}
-
 query GetUserProfile($profileSlugUrl: String) {
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
     photography

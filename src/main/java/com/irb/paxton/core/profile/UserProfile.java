@@ -33,10 +33,8 @@ public class UserProfile extends BaseEntity {
     @NotNull
     private User user;
 
-    @Column(nullable = true)
     private String photography;
 
-    @Column(nullable = true)
     private String coverPhotography;
 
     @NotNull

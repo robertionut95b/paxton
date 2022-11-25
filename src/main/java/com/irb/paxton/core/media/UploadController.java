@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 
 import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
 
@@ -24,12 +23,12 @@ public class UploadController {
     private PhotographyService photographyService;
 
     @PostMapping(path = "/upload/profile-banner")
-    public Photography changeProfileBanner(@NotNull @Valid PhotographyInput photographyInput) throws IOException {
+    public Photography changeProfileBanner(@NotNull @Valid PhotographyInput photographyInput) {
         return this.photographyService.changeProfileBanner(photographyInput);
     }
 
     @PostMapping(path = "/upload/profile-avatar")
-    public Photography changeProfileAvatar(@NotNull @Valid PhotographyInput photographyInput) throws IOException {
+    public Photography changeProfileAvatar(@NotNull @Valid PhotographyInput photographyInput) {
         return this.photographyService.changeProfileAvatar(photographyInput);
     }
 }

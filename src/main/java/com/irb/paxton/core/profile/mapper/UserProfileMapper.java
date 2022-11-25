@@ -189,6 +189,12 @@ public abstract class UserProfileMapper {
     public abstract Study updateUserProfileStudy(@MappingTarget Study actualStudy, StudyInput studyInput);
 
     @Mapping(target = "userProfile", source = "photographyInput.userProfileSlugUrl")
+    @Mapping(target = "name", ignore = true)
     @Mapping(target = "path", ignore = true)
     public abstract Photography updateUserProfileBanner(PhotographyInput photographyInput);
+
+    @Mapping(target = "userProfile", source = "photographyInput.userProfileSlugUrl")
+    @Mapping(target = "name", ignore = true)
+    @Mapping(target = "path", ignore = true)
+    public abstract Photography updateUserProfileAvatar(PhotographyInput photographyInput);
 }

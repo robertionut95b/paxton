@@ -17,6 +17,6 @@ public class MvcConfig implements WebMvcConfigurer {
         registry
                 .addResourceHandler("/" + FILES_URL_MAPPING + "/**")
                 .addResourceLocations("file:" + USER_STORAGE_UPLOAD_PATH)
-                .setCachePeriod(3600);
+                .setCachePeriod(60);
     }
 }

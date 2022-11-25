@@ -18,19 +18,15 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
 
-function fetcher<TData, TVariables extends { [key: string]: any }>(
+function fetcher<TData, TVariables>(
   client: GraphQLClient,
   query: string,
   variables?: TVariables,
-  requestHeaders?: RequestInit["headers"]
+  headers?: RequestInit["headers"]
 ) {
   return async (): Promise<TData> =>
-    client.request({
-      // @ts-ignore
-      document: query,
-      variables,
-      requestHeaders,
-    });
+    // @ts-ignore
+    client.request<TData, TVariables>(query, variables, headers);
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -273,6 +269,7 @@ export type Organization = {
 export type Photography = {
   __typename?: "Photography";
   id: Scalars["ID"];
+  name: Scalars["String"];
   path: Scalars["String"];
   userProfile?: Maybe<UserProfile>;
 };
@@ -599,49 +596,6 @@ export type GetAllJobListingsQuery = {
         location: string;
         photography?: string | null;
       };
-    } | null> | null;
-  } | null;
-};
-
-export type GetCurrentUserProfileQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type GetCurrentUserProfileQuery = {
-  __typename?: "Query";
-  getCurrentUserProfile?: {
-    __typename?: "UserProfile";
-    photography?: string | null;
-    coverPhotography?: string | null;
-    description: string;
-    profileSlugUrl: string;
-    profileTitle: string;
-    city?: {
-      __typename?: "City";
-      id: string;
-      name: string;
-      country: { __typename?: "Country"; name: string };
-    } | null;
-    experiences?: Array<{
-      __typename?: "Experience";
-      title: string;
-      contractType: ContractType;
-      startDate: any;
-      endDate?: any | null;
-      description: string;
-      organization?: {
-        __typename?: "Organization";
-        name: string;
-        industry: string;
-        photography?: string | null;
-      } | null;
-      city?: {
-        __typename?: "City";
-        id: string;
-        name: string;
-        country: { __typename?: "Country"; code: string; name: string };
-      } | null;
-      activitySector: { __typename?: "ActivitySector"; name: string };
     } | null> | null;
   } | null;
 };
@@ -1161,68 +1115,6 @@ export const useGetAllJobListingsQuery = <
     fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(
       client,
       GetAllJobListingsDocument,
-      variables,
-      headers
-    ),
-    options
-  );
-export const GetCurrentUserProfileDocument = `
-    query GetCurrentUserProfile {
-  getCurrentUserProfile {
-    photography
-    coverPhotography
-    description
-    city {
-      id
-      name
-      country {
-        name
-      }
-    }
-    profileSlugUrl
-    profileTitle
-    experiences {
-      title
-      contractType
-      organization {
-        name
-        industry
-        photography
-      }
-      city {
-        id
-        name
-        country {
-          code
-          name
-        }
-      }
-      startDate
-      endDate
-      activitySector {
-        name
-      }
-      description
-    }
-  }
-}
-    `;
-export const useGetCurrentUserProfileQuery = <
-  TData = GetCurrentUserProfileQuery,
-  TError = unknown
->(
-  client: GraphQLClient,
-  variables?: GetCurrentUserProfileQueryVariables,
-  options?: UseQueryOptions<GetCurrentUserProfileQuery, TError, TData>,
-  headers?: RequestInit["headers"]
-) =>
-  useQuery<GetCurrentUserProfileQuery, TError, TData>(
-    variables === undefined
-      ? ["GetCurrentUserProfile"]
-      : ["GetCurrentUserProfile", variables],
-    fetcher<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryVariables>(
-      client,
-      GetCurrentUserProfileDocument,
       variables,
       headers
     ),

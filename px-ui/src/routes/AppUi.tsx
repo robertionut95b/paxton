@@ -1,6 +1,7 @@
 import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
+import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
 import ProfileExperienceModal from "@components/user-profile/ProfileExperienceModal";
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
@@ -84,7 +85,7 @@ export default function AppUI() {
                 path="/app/up/:profileSlug/update/avatar"
                 element={
                   <RequireAuth>
-                    <BasicUpdateProfileModal />
+                    <ProfileAvatarModal />
                   </RequireAuth>
                 }
               />

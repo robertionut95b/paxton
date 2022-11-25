@@ -1,5 +1,6 @@
 import { User } from "@interfaces/user.types";
 import { Avatar, Group, Text } from "@mantine/core";
+import { NavLink } from "react-router-dom";
 
 export default function ProfileCard({
   photography,
@@ -14,10 +15,12 @@ export default function ProfileCard({
 }) {
   return (
     <Group align={"center"} spacing="xl">
-      <Avatar radius={"xl"} size={100} color={"violet"} src={photography}>
-        {`${user?.firstName?.[0]?.toLocaleUpperCase()}${user?.lastName?.[0]?.toLocaleUpperCase()}` ??
-          "U"}
-      </Avatar>
+      <NavLink to="update/avatar">
+        <Avatar radius={"xl"} size={100} color={"violet"} src={photography}>
+          {`${user?.firstName?.[0]?.toLocaleUpperCase()}${user?.lastName?.[0]?.toLocaleUpperCase()}` ??
+            "U"}
+        </Avatar>
+      </NavLink>
       <div className="px-user-profile-headings">
         <Text size="md" color={"dimmed"}>
           {title ?? "No title available"}

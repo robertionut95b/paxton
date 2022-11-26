@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.jwt;
 
 import com.irb.paxton.security.auth.user.User;
+import com.irb.paxton.security.auth.utils.AuthoritiesUtils;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -10,7 +11,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
@@ -20,27 +21,26 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
 
 @Component
-public class JwtUtils {
+public class JwtTokenProvider {
 
     @Value("${px.auth.token.expiry:900}")
     public long expiry;
-
     @Value("${px.auth.token.public.key}")
     RSAPublicKey key;
-
     @Value("${px.auth.token.private.key}")
     RSAPrivateKey priv;
-
-    @Value("${px.auth.token.cookieName:PXSESSION}")
-    String jwtAccessCookieName;
-
     @Value("${px.auth.token.refreshCookieName:PX_REFRESH_TOKEN}")
     String jwtRefreshCookieName;
+    @Value("${px.auth.token.expiryRefresh:3600}")
+    private Long refreshExpiry;
 
     @Bean
     JwtDecoder jwtDecoder() {
@@ -54,25 +54,45 @@ public class JwtUtils {
         return new NimbusJwtEncoder(jwks);
     }
 
-    private String generateTokenFromUsername(String username) {
+    public String generateTokenFromUserDetails(UserDetails userDetails) {
         Instant now = Instant.now();
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                .issuer("PaxtonApp")
+                .issuer("paxton")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiry))
-                .subject(username)
+                .subject(userDetails.getUsername())
+                .claim("authorities", establishScope(userDetails.getAuthorities()))
                 .build();
         return this.jwtEncoder().encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
     }
 
-    public ResponseCookie generateJwtCookie(Authentication authentication) {
-        String jwt = this.generateTokenFromUsername(authentication.getName());
-        return this.generateCookie(jwtAccessCookieName, jwt, "/");
+    public String generateTokenFromUser(User user) {
+        Instant now = Instant.now();
+        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                .issuer("paxton")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expiry))
+                .subject(user.getUsername())
+                .claim("authorities", establishScope(AuthoritiesUtils.getAuthorities(user.getRoles())))
+                .build();
+        return this.jwtEncoder().encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
     }
 
-    public ResponseCookie generateJwtCookie(User user) {
-        String jwt = generateTokenFromUsername(user.getUsername());
-        return generateCookie(jwtAccessCookieName, jwt, "/");
+    public String generateRefreshTokenFromUser(UserDetails userDetails) {
+        Instant now = Instant.now();
+        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                .issuer("paxton")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expiry))
+                .subject(userDetails.getUsername())
+                .build();
+        return this.jwtEncoder().encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
+    }
+
+    private String establishScope(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
     }
 
     public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
@@ -101,10 +121,6 @@ public class JwtUtils {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public ResponseCookie getCleanJwtCookie() {
-        return ResponseCookie.from(jwtAccessCookieName, null).path("/").maxAge(0).build();
-    }
-
     public ResponseCookie getCleanJwtRefreshCookie() {
         return ResponseCookie.from(jwtRefreshCookieName, null).path("/auth/refreshtoken").maxAge(0).build();
     }
@@ -117,13 +133,22 @@ public class JwtUtils {
         return getCookieValueByName(request, jwtRefreshCookieName);
     }
 
-    public String getJwtFromCookies(HttpServletRequest request) {
-        return getCookieValueByName(request, jwtAccessCookieName);
+    public String resolveToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public Instant getExpiresAtFromToken(String token) {
         Jwt jwt = decodeToken(token);
         return jwt.getExpiresAt();
+    }
+
+    public Long getExpiresAtFromTokenAsLong(String token) {
+        Jwt jwt = decodeToken(token);
+        return Duration.between(Instant.now(), jwt.getExpiresAt()).toMillis();
     }
 
     private String getCookieValueByName(HttpServletRequest request, String name) {

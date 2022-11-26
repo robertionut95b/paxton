@@ -2,9 +2,10 @@ package com.irb.paxton.security.auth.login;
 
 import com.irb.paxton.security.auth.device.UserDevice;
 import com.irb.paxton.security.auth.device.UserDeviceService;
-import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.jwt.token.RefreshToken;
 import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
+import com.irb.paxton.security.auth.login.response.LoginResponse;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
@@ -36,7 +37,7 @@ import static com.irb.paxton.utils.HttpUtils.getRequestIP;
 public class LoginController {
 
     @Autowired
-    JwtUtils jwtUtils;
+    JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -69,17 +70,19 @@ public class LoginController {
             jmsTemplate.convertAndSend("userDeviceRegistrationQueue", userDevice);
         }
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(authentication);
+        String token = jwtTokenProvider.generateTokenFromUserDetails(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
-        ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
+        ResponseCookie jwtRefreshCookie = jwtTokenProvider.generateRefreshJwtCookie(refreshToken.getToken());
 
         log.info(String.format("Auth principal '%s' logged in, included authorities [%s]",
                 authentication.getName(), user.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")))
         );
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(null);
+                .body(
+                        new LoginResponse(token, jwtTokenProvider.getExpiresAtFromTokenAsLong(token),
+                                refreshToken.getToken(), jwtTokenProvider.getExpiresAtFromTokenAsLong(refreshToken.getToken()))
+                );
     }
 }

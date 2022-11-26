@@ -26,7 +26,7 @@ public class RefreshToken {
     @NotNull
     @NotBlank
     @Id
-    @Column(unique = true)
+    @Column(unique = true, length = 4000)
     private String token;
 
     @OneToOne

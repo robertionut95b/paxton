@@ -1,7 +1,7 @@
 package com.irb.paxton.security.auth.logout;
 
 import com.irb.paxton.security.auth.device.UserDevice;
-import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.logout.event.OnUserLogoutSuccess;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
@@ -29,7 +29,7 @@ import static com.irb.paxton.utils.HttpUtils.getRequestIP;
 public class SignOutController {
 
     @Autowired
-    JwtUtils jwtUtils;
+    JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -40,20 +40,19 @@ public class SignOutController {
     @PostMapping(path = "/auth/logout")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> signOut(HttpServletRequest request, Principal principal, @RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent) {
-        String token = jwtUtils.getJwtFromCookies(request);
+        String token = jwtTokenProvider.resolveToken(request);
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         this.userService.logoutUser(principal.getName());
-        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
-        ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+        ResponseCookie jwtRefreshCookie = jwtTokenProvider.getCleanJwtRefreshCookie();
 
         jmsTemplate.convertAndSend("userAuthLogout",
                 new OnUserLogoutSuccess(principal.getName(), token, new UserDevice(getRequestIP(request), userAgent, user))
         );
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+                .header(HttpHeaders.AUTHORIZATION, "")
                 .body(new ApiResponse("Successfully signed out", 200));
     }
 }

@@ -1,7 +1,7 @@
 package com.irb.paxton.config;
 
 import com.irb.paxton.security.auth.BasicUserDetailsService;
-import com.irb.paxton.security.auth.jwt.JwtCookieAuthenticationFilter;
+import com.irb.paxton.security.auth.jwt.JwtAuthenticationFilter;
 import com.irb.paxton.security.auth.jwt.PaxtonJwtAuthenticationConverter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.response.PxAccessDeniedHandler;
@@ -22,7 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -74,16 +73,16 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public JwtCookieAuthenticationFilter tokenAuthenticationFilter() {
-        return new JwtCookieAuthenticationFilter();
+    public JwtAuthenticationFilter tokenAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())
-                .csrf((csrf) -> csrf.ignoringAntMatchers(new String[]{"/h2-console/**"}))
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                 .and()
                 .httpBasic(withDefaults())
@@ -109,8 +108,6 @@ public class SecurityConfiguration {
                 .permitAll()
                 // h2 console, dev only
                 .antMatchers("/h2-console/**").permitAll()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated()

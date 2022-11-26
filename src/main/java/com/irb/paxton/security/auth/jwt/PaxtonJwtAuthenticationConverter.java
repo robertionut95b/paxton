@@ -9,6 +9,7 @@ public class PaxtonJwtAuthenticationConverter {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         // create a custom JWT converter to map the roles from the token as granted authorities
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();

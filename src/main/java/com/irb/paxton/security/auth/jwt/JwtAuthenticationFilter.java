@@ -5,7 +5,6 @@ import com.irb.paxton.security.auth.BasicUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
-
-    @Value("${px.auth.token.cookieName:PXSESSION}")
-    private String accessTokenCookieName;
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private LoggedOutJwtTokenCache tokenCache;
@@ -43,15 +39,17 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = jwtUtils.getJwtFromCookies(httpServletRequest);
-            String username = jwtUtils.getUsernameFromToken(jwt);
+            String jwt = jwtTokenProvider.resolveToken(httpServletRequest);
+            String username = jwtTokenProvider.getUsernameFromToken(jwt);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt, userDetails)) {
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt, userDetails)) {
                 // check if token is not marked in the cache
                 tokenCache.validateTokenIsNotForALoggedOutDevice(jwt);
                 // otherwise, login as usual
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
@@ -60,4 +58,6 @@ public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
+
+
 }

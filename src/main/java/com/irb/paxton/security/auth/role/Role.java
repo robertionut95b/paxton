@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -26,12 +28,14 @@ public class Role extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
+
     @NotNull
     @NotBlank
     @NotEmpty
     @Column(unique = true)
     private String name;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(
             name = TABLE_PREFIX + "_ROLE_PRIVILEGES",
             joinColumns = @JoinColumn(

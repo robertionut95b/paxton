@@ -40,7 +40,7 @@ public class UserController {
     @PostMapping(path = "/currentUser")
     public UserLoginResponseDto getUserInformation(HttpServletRequest request, Principal principal) {
         String token = jwtTokenProvider.resolveToken(request);
-        Instant expiresAt = jwtTokenProvider.getExpiresAtFromToken(token);
+        Instant expiresAt = jwtTokenProvider.getExpirationDateFromToken(token);
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 

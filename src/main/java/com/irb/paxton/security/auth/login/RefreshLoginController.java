@@ -3,12 +3,11 @@ package com.irb.paxton.security.auth.login;
 import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.jwt.token.RefreshToken;
 import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
-import com.irb.paxton.security.auth.jwt.token.exceptions.TokenRefreshException;
+import com.irb.paxton.security.auth.jwt.token.exceptions.TokenRefreshNotFoundException;
 import com.irb.paxton.security.auth.login.response.LoginResponse;
 import com.irb.paxton.security.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,12 +27,15 @@ public class RefreshLoginController {
     private RefreshTokenService refreshTokenService;
 
     @PostMapping("/auth/refreshtoken")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.getJwtRefreshFromCookies(request);
         if ((refreshToken != null) && (refreshToken.length() > 0)) {
             return refreshTokenService.findByToken(refreshToken)
-                    .map(refreshTokenService::verifyExpiration)
+                    .map(refreshToken1 -> {
+                        refreshTokenService.verifyExpiration(refreshToken1);
+                        refreshTokenService.increaseCount(refreshToken1);
+                        return refreshToken1;
+                    })
                     .map(RefreshToken::getUser)
                     .map(user -> {
                         String token = jwtTokenProvider.generateTokenFromUser(user);
@@ -42,7 +44,7 @@ public class RefreshLoginController {
                                         refreshToken, jwtTokenProvider.getExpiresAtFromTokenAsLong(refreshToken))
                                 );
                     })
-                    .orElseThrow(() -> new TokenRefreshException("Token not found"));
+                    .orElseThrow(() -> new TokenRefreshNotFoundException("Token not found"));
         }
         return ResponseEntity.badRequest().body(new ApiResponse("Refresh token is empty", 400));
     }

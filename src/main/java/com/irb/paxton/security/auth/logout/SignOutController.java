@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,17 +36,17 @@ public class SignOutController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(path = "/auth/logout")
-    @PreAuthorize("isAuthenticated()")
+    @PostMapping(path = "/users/logout")
     public ResponseEntity<?> signOut(HttpServletRequest request, Principal principal, @RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent) {
         String token = jwtTokenProvider.resolveToken(request);
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        this.userService.logoutUser(principal.getName());
+        this.userService.logoutUser(user.getUsername());
         ResponseCookie jwtRefreshCookie = jwtTokenProvider.getCleanJwtRefreshCookie();
+        userService.logoutUser(user.getUsername());
 
         jmsTemplate.convertAndSend("userAuthLogout",
-                new OnUserLogoutSuccess(principal.getName(), token, new UserDevice(getRequestIP(request), userAgent, user))
+                new OnUserLogoutSuccess(user.getUsername(), token, new UserDevice(getRequestIP(request), userAgent, user))
         );
 
         return ResponseEntity.ok()

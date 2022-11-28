@@ -33,7 +33,13 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private Long refreshCount = 0L;
+
     @NotNull
     @Column(nullable = false)
     private LocalDateTime expiresAt;
+
+    public void incrementRefreshCount() {
+        refreshCount = refreshCount + 1;
+    }
 }

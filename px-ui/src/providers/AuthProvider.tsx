@@ -58,7 +58,8 @@ export default function AuthProvider({
       onError: (err) => {
         if (
           err.response?.status === 400 &&
-          err.response?.data?.message === "Token not found"
+          err.response?.data?.message ===
+            "Refresh token was expired. Please make a new sign-in request"
         ) {
           showNotification({
             title: "Authentication error",

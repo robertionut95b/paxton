@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,7 +81,7 @@ public class UserService {
         userRepository.save(u);
         userProfileRepository.save(
                 new UserProfile(null, u, null, null, "No description provided.", null,
-                        u.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", u.getUsername()), null)
+                        URLEncoder.encode(u.getUsername() + System.currentTimeMillis(), StandardCharsets.UTF_8), null, String.format("%s's Profile", u.getUsername()), null)
         );
         return u;
     }

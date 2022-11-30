@@ -1,6 +1,5 @@
 import { refreshLogin } from "@auth/authApi";
 import { APP_API_BASE_URL } from "@constants/Properties";
-import { LoginUserMutationResponseP } from "@interfaces/login.types";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import graphqlRequestClient from "./graphqlRequestClient";
 
@@ -10,7 +9,6 @@ const api = axios.create({
 });
 
 let access_token: string | null = null;
-let refreshing_token: Promise<LoginUserMutationResponseP> | null = null;
 
 api.interceptors.request.use((config: AxiosRequestConfig) => {
   config.headers = config.headers ?? {};
@@ -32,9 +30,7 @@ api.interceptors.response.use(
     if (err.response && err.response.status === 401 && !config._retry) {
       originalReq._retry = true;
       try {
-        refreshing_token = refreshing_token ? refreshing_token : refreshLogin();
-        const resp = await refreshing_token;
-        refreshing_token = null;
+        const resp = await refreshLogin();
         if (resp) {
           access_token = resp.access_token;
           graphqlRequestClient.setHeader(

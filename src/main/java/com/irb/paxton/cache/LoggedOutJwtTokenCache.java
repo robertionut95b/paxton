@@ -1,6 +1,6 @@
 package com.irb.paxton.cache;
 
-import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.logout.event.OnUserLogoutSuccess;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpiringMap;
@@ -20,11 +20,11 @@ public class LoggedOutJwtTokenCache {
 
     private final ExpiringMap<String, OnUserLogoutSuccess> tokenEventMap;
 
-    private final JwtUtils jwtUtils;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public LoggedOutJwtTokenCache(@Value("${px.app.cache.logoutToken.maxSize:100}") int maxSize, JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    public LoggedOutJwtTokenCache(@Value("${px.app.cache.logoutToken.maxSize:100}") int maxSize, JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
         this.tokenEventMap = ExpiringMap.builder()
                 .variableExpiration()
                 .maxSize(maxSize)
@@ -37,7 +37,7 @@ public class LoggedOutJwtTokenCache {
             log.info(String.format("Log out token for user [%s] is already present in the cache", event.getUser()));
 
         } else {
-            Date tokenExpiryDate = Date.from(jwtUtils.getExpirationDateFromToken(token));
+            Date tokenExpiryDate = Date.from(jwtTokenProvider.getExpirationDateFromToken(token));
             long ttlForToken = getTTLForToken(tokenExpiryDate);
             log.info(String.format("Logout token cache set for [%s] with a TTL of [%s] seconds. Token is due expiry at [%s]", event.getUser(), ttlForToken, tokenExpiryDate));
             tokenEventMap.put(token, event, ttlForToken, TimeUnit.SECONDS);

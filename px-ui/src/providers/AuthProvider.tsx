@@ -6,6 +6,8 @@ import useLoginUser from "@hooks/useLoginUser";
 import useLogoutUser from "@hooks/useLogoutUser";
 import { LoginUserMutationProps } from "@interfaces/login.types";
 import { User } from "@interfaces/user.types";
+import { api } from "@lib/axiosClient";
+import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -18,11 +20,16 @@ export default function AuthProvider({
   const [user, setUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
   const { mutate: logIn } = useLoginUser({
+    onSuccess: (data) => {
+      const bearer = `Bearer ${data.access_token}`;
+      api.defaults.headers.Authorization = bearer;
+      graphqlRequestClient.setHeader("Authorization", bearer);
+    },
     onError: (err) => {
       let msg = "Unknown error encountered, please try again later";
       if (
-        err.response?.status === 401 &&
-        // @ts-expect-error("types-error")
+        err.response &&
+        err.response.status === 401 &&
         err.response.data.message
       ) {
         msg = "Invalid username or password combination";
@@ -36,30 +43,34 @@ export default function AuthProvider({
     },
   });
   const { mutate: logOut } = useLogoutUser();
-  const { refetch, isLoading: getUserIsLoading } = useCurrentUser({
-    onSuccess: (data: User) => {
-      setUser(data);
-      queryClient.setQueryDefaults(["currentUser"], {
-        staleTime: data?.sessionTime ?? 5 * 60 * 1000,
-        refetchInterval: data?.sessionTime ?? 5 * 60 * 1000,
-        refetchIntervalInBackground: true,
-      });
-    },
-    onError: (err) => {
-      if (
-        err.response?.status === 400 &&
-        err.response?.data?.message === "Token not found"
-      ) {
-        showNotification({
-          title: "Authentication error",
-          message: "Your session has expired, please log in again",
-          autoClose: 5000,
-          icon: <LockClosedIcon width={20} />,
-        });
-        setUser(null);
-      }
-    },
-  });
+  const { refetch: getCurrentUser, isLoading: getUserIsLoading } =
+    useCurrentUser({
+      onSuccess: (data) => {
+        setUser(data);
+        if (data) {
+          queryClient.setQueryDefaults(["currentUser"], {
+            staleTime: data.sessionTime,
+            refetchInterval: data.sessionTime,
+            refetchIntervalInBackground: true,
+          });
+        }
+      },
+      onError: (err) => {
+        if (
+          err.response?.status === 400 &&
+          err.response?.data?.message ===
+            "Refresh token was expired. Please make a new sign-in request"
+        ) {
+          showNotification({
+            title: "Authentication error",
+            message: "Your session has expired, please log in again",
+            autoClose: 5000,
+            icon: <LockClosedIcon width={20} />,
+          });
+          setUser(null);
+        }
+      },
+    });
 
   const signin = (
     { username, password }: LoginUserMutationProps,
@@ -68,17 +79,7 @@ export default function AuthProvider({
     logIn(
       { username, password },
       {
-        onSuccess: (data) => {
-          setUser({
-            sessionTime: data.sessionTime,
-            username: data.username,
-            permissions: data.permissions,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            profileSlugUrl: data.profileSlugUrl,
-          });
-          refetch();
-        },
+        onSuccess: () => getCurrentUser(),
       }
     );
     callback?.();

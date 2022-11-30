@@ -23,6 +23,7 @@ import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 @Getter
 @Setter
 public class Privilege extends BaseEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

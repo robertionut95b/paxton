@@ -1,15 +1,15 @@
 package com.irb.paxton.security.auth.jwt;
 
 import com.irb.paxton.cache.LoggedOutJwtTokenCache;
-import com.irb.paxton.security.auth.BasicUserDetailsService;
+import com.irb.paxton.security.auth.PaxtonUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,41 +21,41 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class JwtCookieAuthenticationFilter extends OncePerRequestFilter {
-
-    @Value("${px.auth.token.cookieName:PXSESSION}")
-    private String accessTokenCookieName;
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private JwtTokenValidator jwtTokenValidator;
 
     @Autowired
     private LoggedOutJwtTokenCache tokenCache;
 
     @Autowired
-    private BasicUserDetailsService customUserDetailsService;
+    private PaxtonUserDetailsService customUserDetailsService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().startsWith("/auth");
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().contains("/auth");
     }
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = jwtUtils.getJwtFromCookies(httpServletRequest);
-            String username = jwtUtils.getUsernameFromToken(jwt);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            String jwt = jwtTokenProvider.resolveToken(httpServletRequest);
 
-            if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt, userDetails)) {
-                // check if token is not marked in the cache
-                tokenCache.validateTokenIsNotForALoggedOutDevice(jwt);
-                // otherwise, login as usual
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+            if (StringUtils.hasText(jwt) && jwtTokenValidator.validateToken(jwt)) {
+                String username = jwtTokenProvider.getUsernameFromToken(jwt);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (JwtException jwtException) {
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException jwtException) {
+            SecurityContextHolder.getContext().setAuthentication(null);
             log.debug(jwtException.getMessage());
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);

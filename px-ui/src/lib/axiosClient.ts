@@ -1,37 +1,50 @@
 import { refreshLogin } from "@auth/authApi";
 import { APP_API_BASE_URL } from "@constants/Properties";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import graphqlRequestClient from "./graphqlRequestClient";
 
 const api = axios.create({
   withCredentials: true,
   baseURL: APP_API_BASE_URL,
 });
 
-api.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
+let access_token: string | null = null;
 
-const apiRefresh = axios.create({
-  withCredentials: true,
-  baseURL: APP_API_BASE_URL,
+api.interceptors.request.use((config: AxiosRequestConfig) => {
+  config.headers = config.headers ?? {};
+  if (access_token) {
+    config.headers.Authorization = `Bearer ${access_token}`;
+  }
+  return config;
 });
-apiRefresh.defaults.headers.common["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
 
 // refresh jwt cookie
-apiRefresh.interceptors.response.use(
+api.interceptors.response.use(
   (resp) => {
     return resp;
   },
   async (err: AxiosError) => {
-    const originalReq = err.config;
-    if (err.response?.status === 401) {
-      // @ts-expect-error("types error")
+    const config: AxiosRequestConfig & { _retry?: boolean } = err.config ?? {};
+    const originalReq: AxiosRequestConfig & { _retry?: boolean } =
+      err.config ?? {};
+    if (err.response && err.response.status === 401 && !config._retry) {
       originalReq._retry = true;
-      await refreshLogin();
-      // @ts-expect-error("types error")
-      return api(originalReq);
+      try {
+        const resp = await refreshLogin();
+        if (resp) {
+          access_token = resp.access_token;
+          graphqlRequestClient.setHeader(
+            "Authorization",
+            `Bearer ${access_token}`
+          );
+        }
+        return api(originalReq);
+      } catch (err) {
+        return Promise.reject(err);
+      }
     }
     return Promise.reject(err);
   }
 );
 
-export { api, apiRefresh };
+export { api };

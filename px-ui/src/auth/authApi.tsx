@@ -1,24 +1,24 @@
 import { APP_API_PATH } from "@constants/Properties";
 import {
   LoginUserMutationProps,
-  LoginUserMutationResponse,
+  LoginUserMutationResponseP,
 } from "@interfaces/login.types";
 import {
   ResetPasswordProps,
   ResetPasswordRequestProps,
 } from "@interfaces/reset-password.types";
 import { RegisterUserMutationProps } from "@interfaces/signup.types";
-import { api, apiRefresh } from "@lib/axiosClient";
+import { api } from "@lib/axiosClient";
 const AUTH_PATH = "auth";
 
 export const logoutUser = async (): Promise<void> => {
-  const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/logout`, null);
+  const { data } = await api.post(`${APP_API_PATH}/users/logout`, null);
   return data;
 };
 
 export const submitLogin = async (
   body: LoginUserMutationProps
-): Promise<LoginUserMutationResponse> => {
+): Promise<LoginUserMutationResponseP> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login`, {
     ...body,
   });
@@ -26,14 +26,11 @@ export const submitLogin = async (
 };
 
 export const getCurrentUser = async () => {
-  const { data } = await apiRefresh.post(
-    `${APP_API_PATH}/users/currentUser`,
-    null
-  );
+  const { data } = await api.post(`${APP_API_PATH}/users/currentUser`, null);
   return data;
 };
 
-export const refreshLogin = async () => {
+export const refreshLogin = async (): Promise<LoginUserMutationResponseP> => {
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/refreshtoken`,
     null

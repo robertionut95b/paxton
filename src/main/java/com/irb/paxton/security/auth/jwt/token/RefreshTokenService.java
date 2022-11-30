@@ -1,5 +1,6 @@
 package com.irb.paxton.security.auth.jwt.token;
 
+import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.jwt.token.exceptions.TokenRefreshException;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class RefreshTokenService {
@@ -21,6 +21,9 @@ public class RefreshTokenService {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private UserRepository userRepository;
@@ -34,19 +37,25 @@ public class RefreshTokenService {
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User does not exist"));
         return this.refreshTokenRepository
                 .findByUserIdAndExpiresAtAfter(user.getId(), LocalDateTime.now())
-                .orElseGet(() -> refreshTokenRepository.save(new RefreshToken(UUID.randomUUID().toString(), user, LocalDateTime.now().plusSeconds(expiryTime))));
+                .orElseGet(() -> refreshTokenRepository.save(
+                        new RefreshToken(jwtTokenProvider.generateRefreshTokenFromUser(), user, 0L, LocalDateTime.now().plusSeconds(expiryTime)))
+                );
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public void verifyExpiration(RefreshToken token) {
         if (LocalDateTime.now().isAfter(token.getExpiresAt())) {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException("Refresh token was expired. Please make a new sign-in request");
         }
-        return token;
     }
 
     @Transactional
     public void deleteByUsername(String userName) {
         refreshTokenRepository.deleteByUserUsername(userName);
+    }
+
+    public void increaseCount(RefreshToken refreshToken) {
+        refreshToken.incrementRefreshCount();
+        refreshTokenRepository.save(refreshToken);
     }
 }

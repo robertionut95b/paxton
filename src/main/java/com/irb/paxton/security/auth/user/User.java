@@ -58,7 +58,7 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String username;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = TABLE_PREFIX + "_USER_ROLES",
             joinColumns = @JoinColumn(
@@ -90,5 +90,18 @@ public class User extends BaseEntity {
         this.roles = roles;
         this.credentials = credentials;
         this.isEmailConfirmed = isEmailConfirmed;
+    }
+
+    public User(User user) {
+        id = user.getId();
+        firstName = user.getFirstName();
+        lastName = user.getLastName();
+        birthDate = user.getBirthDate();
+        email = user.getEmail();
+        username = user.getUsername();
+        roles = user.getRoles();
+        credentials = user.getCredentials();
+        userProfile = user.getUserProfile();
+        isEmailConfirmed = user.isEmailConfirmed();
     }
 }

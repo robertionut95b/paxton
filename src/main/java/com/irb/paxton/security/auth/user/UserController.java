@@ -1,6 +1,6 @@
 package com.irb.paxton.security.auth.user;
 
-import com.irb.paxton.security.auth.jwt.JwtUtils;
+import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.user.dto.UserLoginResponseDto;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.irb.paxton.security.auth.user.mapper.UserLoginMapper;
@@ -26,7 +26,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private UserLoginMapper mapper;
@@ -39,7 +39,8 @@ public class UserController {
 
     @PostMapping(path = "/currentUser")
     public UserLoginResponseDto getUserInformation(HttpServletRequest request, Principal principal) {
-        Instant expiresAt = jwtUtils.getExpiresAtFromToken(jwtUtils.getJwtFromCookies(request));
+        String token = jwtTokenProvider.resolveToken(request);
+        Instant expiresAt = jwtTokenProvider.getExpirationDateFromToken(token);
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 

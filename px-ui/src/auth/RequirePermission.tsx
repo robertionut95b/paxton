@@ -11,20 +11,15 @@ const isAllowed = (
     .map((p) => p.toLowerCase())
     .includes(permission.toString().toLowerCase());
 
-const isAdmin = (permissions: string[]) =>
-  permissions.some(
-    (p) =>
-      p === RoleType.ROLE_ADMINISTRATOR.toString() ||
-      (p === PermissionType.READ_PRIVILEGE.toString() &&
-        p === PermissionType.WRITE_PRIVILEGE.toString())
-  );
+export const isAdmin = (permissions: string[]) =>
+  permissions.some((p) => p === RoleType.ROLE_ADMINISTRATOR);
 
 export function RequirePermission({
   children,
   permission,
 }: {
   children: JSX.Element;
-  permission: PermissionType | string;
+  permission: PermissionType | string | (() => boolean);
 }) {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -32,10 +27,20 @@ export function RequirePermission({
 
   if (loading) return null;
 
-  if (!isAdmin(permissions) || !isAllowed(permission, permissions)) {
-    return (
-      <Navigate to="/app/access-denied" state={{ from: location }} replace />
-    );
+  if (isAdmin(permissions)) return children;
+
+  if (typeof permission === "function") {
+    if (!permission()) {
+      return (
+        <Navigate to="/app/access-denied" state={{ from: location }} replace />
+      );
+    }
+  } else {
+    if (!isAllowed(permission, permissions)) {
+      return (
+        <Navigate to="/app/access-denied" state={{ from: location }} replace />
+      );
+    }
   }
 
   return children;
@@ -46,13 +51,20 @@ export function RequirePermissionOrNull({
   permission,
 }: {
   children: JSX.Element;
-  permission: PermissionType | string;
+  permission: PermissionType | string | (() => boolean);
 }) {
   const { user, loading } = useAuth();
   const permissions = user?.permissions ?? [];
 
-  if (loading || !isAdmin(permissions) || !isAllowed(permission, permissions))
-    return null;
+  if (loading) return null;
 
-  return children;
+  if (isAdmin(permissions)) return children;
+
+  if (typeof permission === "function") {
+    if (permission()) return children;
+  } else {
+    if (isAllowed(permission, permissions)) return children;
+  }
+
+  return null;
 }

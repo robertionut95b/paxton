@@ -1,7 +1,6 @@
 import { LogoWithSearch } from "@components/Logo";
 import { User } from "@interfaces/user.types";
 import {
-  Avatar,
   Burger,
   Container,
   createStyles,
@@ -13,6 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import AvatarMenu from "./AvatarMenu";
 
 export interface LinkItem {
   link: string;
@@ -67,12 +67,6 @@ const useStyles = createStyles((theme) => ({
       display: "none",
     },
   },
-
-  // search: {
-  //   [theme.fn.smallerThan("xs")]: {
-  //     display: "none",
-  //   },
-  // },
 
   link: {
     display: "block",
@@ -144,30 +138,29 @@ const NavBar = ({ links, user, profileLink }: NavBarProps) => {
     <Header height={HEADER_HEIGHT} mb={30}>
       <Container className={classes.header}>
         <LogoWithSearch />
-        <Group className={classes.links} spacing={5}>
-          {items}
-          <Avatar
-            component={Link}
-            to={`/app/up/${profileLink}`}
-            radius={"xl"}
-            color="violet"
+        <Group spacing={"sm"}>
+          <Group className={classes.links} spacing={5}>
+            {items}
+          </Group>
+          <AvatarMenu user={user} profileLink={profileLink} />
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            className={classes.burger}
+            size="sm"
+          />
+          <Transition
+            transition="pop-top-right"
+            duration={300}
+            mounted={opened}
           >
-            {user?.username?.[0].toUpperCase() ?? "U"}
-          </Avatar>
+            {(styles) => (
+              <Paper className={classes.dropdown} withBorder style={styles}>
+                {items}
+              </Paper>
+            )}
+          </Transition>
         </Group>
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          className={classes.burger}
-          size="sm"
-        />
-        <Transition transition="pop-top-right" duration={200} mounted={opened}>
-          {(styles) => (
-            <Paper className={classes.dropdown} withBorder style={styles}>
-              {items}
-            </Paper>
-          )}
-        </Transition>
       </Container>
     </Header>
   );

@@ -38,6 +38,12 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
 
 query GetUserProfile($profileSlugUrl: String) {
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
+    id
+    user {
+      firstName
+      lastName
+      username
+    }
     photography
     coverPhotography
     description

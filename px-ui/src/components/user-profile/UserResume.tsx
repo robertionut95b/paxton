@@ -11,8 +11,10 @@ import { NavLink } from "react-router-dom";
 
 export default function UserResume({
   userProfile,
+  editable = false,
 }: {
   userProfile?: GetUserProfileQuery["getUserProfile"] | UserProfile | null;
+  editable?: boolean;
 }) {
   const studies = userProfile?.studies ?? [];
   const experiences =
@@ -36,11 +38,13 @@ export default function UserResume({
         <Title order={3} mb={8}>
           Studies
         </Title>
-        <NavLink to={`/app/up/${userProfile?.profileSlugUrl}/studies/new`}>
-          <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
-            <PlusCircleIcon />
-          </ActionIcon>
-        </NavLink>
+        <ShowIf if={editable}>
+          <NavLink to={`/app/up/${userProfile?.profileSlugUrl}/studies/new`}>
+            <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
+              <PlusCircleIcon />
+            </ActionIcon>
+          </NavLink>
+        </ShowIf>
       </div>
       <div className="px-user-studies">
         <ShowIf if={studies.length === 0}>
@@ -57,11 +61,15 @@ export default function UserResume({
       <Divider color={"#ded9fd"} />
       <div className="px-user-resume-experiences-heading flex justify-between">
         <Title order={3}>Experience</Title>
-        <NavLink to={`/app/up/${userProfile?.profileSlugUrl}/experiences/new`}>
-          <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
-            <PlusCircleIcon />
-          </ActionIcon>
-        </NavLink>
+        <ShowIf if={editable}>
+          <NavLink
+            to={`/app/up/${userProfile?.profileSlugUrl}/experiences/new`}
+          >
+            <ActionIcon variant="subtle" size="lg" color={"violet"} radius="xl">
+              <PlusCircleIcon />
+            </ActionIcon>
+          </NavLink>
+        </ShowIf>
       </div>
       <div className="px-user-experiences">
         <ShowIf if={Object.entries(experiences).length === 0}>

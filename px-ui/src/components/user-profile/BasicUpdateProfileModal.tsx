@@ -30,13 +30,14 @@ import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import FormUpdateProfileSchema from "@validator/FormUpdateProfileSchema";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function BasicUpdateProfileModal() {
   const navigate = useNavigate();
   const [opened, setOpened] = useState(true);
   const { user, setUser } = useAuth();
   const queryClient = useQueryClient();
+  const { profileSlug } = useParams();
 
   const { data: countries, isLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {
@@ -66,7 +67,7 @@ export default function BasicUpdateProfileModal() {
   const prevData = queryClient.getQueryData<GetUserProfileQuery>([
     "GetUserProfile",
     {
-      profileSlugUrl: user?.profileSlugUrl,
+      profileSlugUrl: profileSlug,
     },
   ]);
   const prevProfileData = prevData?.getUserProfile;
@@ -85,12 +86,13 @@ export default function BasicUpdateProfileModal() {
 
   const form = useForm({
     initialValues: {
+      id: prevProfileData?.id ?? 0,
       description: prevProfileData?.description ?? "",
       city: prevProfileData?.city?.name ?? "",
       profileTitle: prevProfileData?.profileTitle ?? "",
       profileSlugUrl: prevProfileData?.profileSlugUrl ?? "",
-      firstName: user?.firstName ?? "",
-      lastName: user?.lastName ?? "",
+      firstName: prevProfileData?.user?.firstName ?? "",
+      lastName: prevProfileData?.user?.lastName ?? "",
     },
     validate: zodResolver(FormUpdateProfileSchema),
   });
@@ -111,7 +113,7 @@ export default function BasicUpdateProfileModal() {
         queryClient.invalidateQueries([
           "GetUserProfile",
           {
-            profileSlugUrl: user?.profileSlugUrl,
+            profileSlugUrl: profileSlug,
           },
         ]);
         if (prevProfileData?.profileSlugUrl !== profileSlugUrl) {

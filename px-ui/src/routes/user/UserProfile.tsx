@@ -1,3 +1,8 @@
+import {
+  isAdmin,
+  RequirePermission,
+  RequirePermissionOrNull,
+} from "@auth/RequirePermission";
 import { useAuth } from "@auth/useAuth";
 import ProfileBanner from "@components/user-profile/ProfileBanner";
 import ProfileCard from "@components/user-profile/ProfileCard";
@@ -11,14 +16,14 @@ import { Button } from "@mantine/core";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 
 export default function UserProfile() {
-  const { user } = useAuth();
-  const params = useParams();
+  const { profileSlug } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data, isLoading } = useGetUserProfileQuery(
     graphqlRequestClient,
     {
-      profileSlugUrl: params.profileSlug,
+      profileSlugUrl: profileSlug,
     },
     {
       onSuccess: (data) => {
@@ -34,9 +39,14 @@ export default function UserProfile() {
 
   if (isLoading) return <ProfileLoadingSkeleton />;
 
+  const isCurrentUser = userProfile?.user.username === user?.username;
+
   return (
     <div className="px-user-profile flex flex-col gap-y-8">
-      <ProfileBanner coverPhoto={coverPhoto} />
+      <ProfileBanner
+        coverPhoto={coverPhoto}
+        editable={isCurrentUser || isAdmin(user?.permissions || [])}
+      />
       <div className="flex justify-between items-center">
         <ProfileCard
           location={
@@ -49,18 +59,27 @@ export default function UserProfile() {
             `${APP_API_BASE_URL}/${userProfile.photography}`
           }
           title={userProfile?.profileTitle}
-          user={user}
+          firstName={userProfile?.user?.firstName}
+          lastName={userProfile?.user?.lastName}
+          username={userProfile?.user.username as string}
         />
-        <NavLink
-          to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
-        >
-          <Button rightIcon={<PencilIcon width={16} />} size="sm">
-            Edit
-          </Button>
-        </NavLink>
+        <RequirePermissionOrNull permission={() => isCurrentUser}>
+          <NavLink
+            to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
+          >
+            <Button rightIcon={<PencilIcon width={16} />} size="sm">
+              Edit
+            </Button>
+          </NavLink>
+        </RequirePermissionOrNull>
       </div>
-      <UserResume userProfile={userProfile} />
-      <Outlet />
+      <UserResume
+        userProfile={userProfile}
+        editable={isCurrentUser || isAdmin(user?.permissions || [])}
+      />
+      <RequirePermission permission={() => isCurrentUser}>
+        <Outlet />
+      </RequirePermission>
     </div>
   );
 }

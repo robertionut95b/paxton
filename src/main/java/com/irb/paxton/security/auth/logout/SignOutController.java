@@ -43,7 +43,6 @@ public class SignOutController {
 
         this.userService.logoutUser(user.getUsername());
         ResponseCookie jwtRefreshCookie = jwtTokenProvider.getCleanJwtRefreshCookie();
-        userService.logoutUser(user.getUsername());
 
         jmsTemplate.convertAndSend("userAuthLogout",
                 new OnUserLogoutSuccess(user.getUsername(), token, new UserDevice(getRequestIP(request), userAgent, user))

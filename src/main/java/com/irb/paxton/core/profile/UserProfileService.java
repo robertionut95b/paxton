@@ -1,6 +1,7 @@
 package com.irb.paxton.core.profile;
 
 import com.irb.paxton.core.location.CityRepository;
+import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.profile.experience.ExperienceRepository;
 import com.irb.paxton.core.profile.experience.exception.ExperienceNotFoundException;
@@ -13,14 +14,13 @@ import com.irb.paxton.core.study.exception.StudyNotFoundException;
 import com.irb.paxton.core.study.input.StudyInput;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
-import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
-
-import static com.irb.paxton.security.SecurityUtils.getCurrentUserLogin;
 
 @Service
 public class UserProfileService {
@@ -51,25 +51,23 @@ public class UserProfileService {
         return this.userProfileRepository.findByProfileSlugUrl(profileSlugUrl);
     }
 
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
-        String username = getCurrentUserLogin().orElseThrow(() -> new UserNotFoundException("User not found"));
-        User user = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        UserProfile userProfile = this.userProfileRepository.findById(userProfileInput.getId())
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile does not exist", "id"));
 
+        User user = userProfile.getUser();
         if (!userProfileInput.getLastName().equals(user.getLastName())
                 || !userProfileInput.getFirstName().equals(user.getFirstName())) {
             userProfileMapper.updateUserFields(user, userProfileInput);
             this.userService.updateUser(user);
         }
-
-        Optional<UserProfile> userProfileOptional = this.userProfileRepository.findByUserUsername(username);
-        if (userProfileOptional.isPresent()) {
-            UserProfile userProfile = userProfileOptional.get();
-            return this.userProfileRepository.save(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
-        }
-
-        return this.userProfileRepository.save(userProfileMapper.userProfileInputToUserProfile(userProfileInput));
+        return this.userProfileRepository.save(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
     }
 
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
     public UserProfile saveExperience(ExperienceInput experienceInput) {
         Experience newExperience = this.userProfileMapper.addUserProfileExperience(experienceInput);
         UserProfile userProfile = newExperience.getUserProfile();
@@ -80,6 +78,8 @@ public class UserProfileService {
         return this.userProfileRepository.save(userProfile);
     }
 
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
     public UserProfile updateExperience(ExperienceInput experienceInput) {
         Experience actualExperience = this.experienceRepository.findById(experienceInput.getId())
                 .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString()), "id"));
@@ -89,6 +89,8 @@ public class UserProfileService {
         return updatedExperience.getUserProfile();
     }
 
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
     public UserProfile saveStudy(StudyInput studyInput) {
         Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInput);
         UserProfile userProfile = newStudy.getUserProfile();
@@ -99,6 +101,8 @@ public class UserProfileService {
         return this.userProfileRepository.save(userProfile);
     }
 
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
     public UserProfile updateStudy(StudyInput studyInput) {
         Study actualStudy = this.studyRepository.findById(studyInput.getId())
                 .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString()), "id"));

@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class UserProfileInput {
 
+    @NotNull
+    private Long id;
+
     @NotBlank
     @NotEmpty
     @NotNull

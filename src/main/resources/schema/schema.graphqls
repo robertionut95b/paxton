@@ -255,6 +255,7 @@ type UserProfile {
 }
 
 input UserProfileInput {
+    id: ID!
     firstName: String!
     lastName: String!
     description: String!

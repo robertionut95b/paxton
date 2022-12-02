@@ -5,7 +5,10 @@ import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.Study;
 import com.irb.paxton.security.auth.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,7 +25,6 @@ import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 @Getter
 @Setter
 public class UserProfile extends BaseEntity {
-    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

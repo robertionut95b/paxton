@@ -6,7 +6,6 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +14,6 @@ import java.util.Optional;
 
 @Service
 public class RefreshTokenService {
-
-    @Value("${px.auth.token.expiryRefresh:3600}")
-    private Long expiryTime;
-
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
@@ -37,8 +32,11 @@ public class RefreshTokenService {
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User does not exist"));
         return this.refreshTokenRepository
                 .findByUserIdAndExpiresAtAfter(user.getId(), LocalDateTime.now())
-                .orElseGet(() -> refreshTokenRepository.save(
-                        new RefreshToken(jwtTokenProvider.generateRefreshTokenFromUser(), user, 0L, LocalDateTime.now().plusSeconds(expiryTime)))
+                .orElseGet(() ->
+                        refreshTokenRepository.save(
+                                new RefreshToken(jwtTokenProvider.generateRefreshTokenFromUser(), user, 0L,
+                                        LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshExpiry()))
+                        )
                 );
     }
 

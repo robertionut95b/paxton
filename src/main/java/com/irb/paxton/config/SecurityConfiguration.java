@@ -1,5 +1,8 @@
 package com.irb.paxton.config;
 
+import com.irb.paxton.config.properties.ApplicationProperties;
+import com.irb.paxton.config.properties.CorsProperties;
+import com.irb.paxton.config.properties.FrontendProperties;
 import com.irb.paxton.security.auth.PaxtonUserDetailsService;
 import com.irb.paxton.security.auth.jwt.JwtAuthenticationFilter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
@@ -28,6 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -39,6 +43,15 @@ public class SecurityConfiguration {
 
     @Autowired
     PaxtonUserDetailsService paxtonUserDetailsService;
+
+    @Autowired
+    FrontendProperties frontendProperties;
+
+    @Autowired
+    ApplicationProperties applicationProperties;
+
+    @Autowired
+    CorsProperties corsProperties;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -123,8 +136,13 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        List<String> allowedOrigins = Stream.concat(
+                Stream.of("http://localhost:" + applicationProperties.getServerPort(),
+                        "https://localhost:" + applicationProperties.getServerPort(),
+                        frontendProperties.getFrontendUrl())
+                , corsProperties.getAllowedOrigins().stream()).toList();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

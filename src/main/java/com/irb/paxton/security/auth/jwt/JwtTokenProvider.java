@@ -1,5 +1,7 @@
 package com.irb.paxton.security.auth.jwt;
 
+import com.irb.paxton.config.properties.AuthenticationProperties;
+import com.irb.paxton.config.properties.JwtProperties;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.utils.AuthoritiesUtils;
 import io.jsonwebtoken.Claims;
@@ -8,9 +10,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
@@ -21,27 +26,22 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @Component
 @Slf4j
 public class JwtTokenProvider {
 
-    @Value("${px.auth.token.expiry:900}")
-    public long expiry;
+    @Autowired
+    private AuthenticationProperties authenticationProperties;
 
-    @Value("${px.auth.token.jwt-secret}")
-    String jwtSecret;
-
-    @Value("${px.auth.token.refreshCookieName:PX_REFRESH_TOKEN}")
-    String jwtRefreshCookieName;
-
-    @Value("${px.auth.token.expiryRefresh:3600}")
-    private Long refreshExpiry;
+    @Autowired
+    private JwtProperties jwtProperties;
 
     private Key key;
 
@@ -55,12 +55,12 @@ public class JwtTokenProvider {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateTokenFromUserDetails(UserDetails userDetails) {
-        Instant expiryDate = Instant.now().plusSeconds(expiry);
+        Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiryInSeconds());
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
@@ -72,7 +72,7 @@ public class JwtTokenProvider {
     }
 
     public String generateTokenFromUser(User user) {
-        Instant expiryDate = Instant.now().plusSeconds(expiry);
+        Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiryInSeconds());
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
@@ -84,7 +84,7 @@ public class JwtTokenProvider {
     }
 
     public String generateRefreshTokenFromUser() {
-        Instant expiryDate = Instant.now().plusSeconds(refreshExpiry);
+        Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getRefreshTokenExpiryInSeconds());
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
@@ -96,11 +96,19 @@ public class JwtTokenProvider {
     private String establishScope(Collection<? extends GrantedAuthority> authorities) {
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining(","));
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+                .map(SimpleGrantedAuthority::new).toList();
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
-        return generateCookie(jwtRefreshCookieName, refreshToken, "api/" + API_VERSION + "/auth/refreshtoken");
+        return generateCookie(jwtProperties.getJwtRefreshCookieName(), refreshToken, "api/" + API_VERSION + "/auth/refreshtoken");
     }
 
     public String getUsernameFromToken(String token) {
@@ -112,7 +120,7 @@ public class JwtTokenProvider {
     }
 
     public ResponseCookie getCleanJwtRefreshCookie() {
-        return ResponseCookie.from(jwtRefreshCookieName, null).path("/auth/refreshtoken").maxAge(0).build();
+        return ResponseCookie.from(jwtProperties.getJwtRefreshCookieName(), null).path("/auth/refreshtoken").maxAge(0).build();
     }
 
     private ResponseCookie generateCookie(String name, String value, String path) {
@@ -120,12 +128,12 @@ public class JwtTokenProvider {
     }
 
     public String getJwtRefreshFromCookies(HttpServletRequest request) {
-        return getCookieValueByName(request, jwtRefreshCookieName);
+        return getCookieValueByName(request, jwtProperties.getJwtRefreshCookieName());
     }
 
     public String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader("Authorization");
-        return bearerToken != null && bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : null;
+        String bearerToken = req.getHeader(authenticationProperties.getHeaderName());
+        return bearerToken != null && bearerToken.startsWith(authenticationProperties.getHeaderPrefix()) ? bearerToken.substring(7) : null;
     }
 
     public Long getExpiresAtFromTokenAsLong(String token) {
@@ -142,6 +150,6 @@ public class JwtTokenProvider {
     }
 
     public Long getRefreshExpiry() {
-        return refreshExpiry;
+        return jwtProperties.getRefreshTokenExpiryInSeconds();
     }
 }

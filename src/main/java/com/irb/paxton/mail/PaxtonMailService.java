@@ -1,8 +1,8 @@
 package com.irb.paxton.mail;
 
+import com.irb.paxton.config.properties.MailProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,26 +24,15 @@ import static com.irb.paxton.utils.SocketUtils.pingHost;
 public class PaxtonMailService implements EmailService {
 
     @Autowired
+    MailProperties mailProperties;
+    @Autowired
     private JavaMailSender emailSender;
-
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${px.smtp.emailAddress}")
-    private String emailFrom;
-
-    @Value("${px.smtp.emailFrom}")
-    private String emailPersonal;
-
-    @Value("${spring.mail.host}")
-    private String smtpHost;
-
-    @Value("${spring.mail.port}")
-    private int smtpPort;
-
     @PostConstruct
     public void checkConnection() {
-        if (!pingHost(smtpHost, smtpPort, 3000)) {
+        if (!pingHost(mailProperties.getSmtpHost(), mailProperties.getSmtpPort(), 3000)) {
             log.error("Smtp connection refused, please check application properties. This connection is required for user management activities");
         }
     }
@@ -54,8 +43,8 @@ public class PaxtonMailService implements EmailService {
             msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
             msg.addHeader("format", "flowed");
             msg.addHeader("Content-Transfer-Encoding", "8bit");
-            msg.setFrom(new InternetAddress(emailFrom, emailPersonal));
-            msg.setReplyTo(InternetAddress.parse(emailFrom, false));
+            msg.setFrom(new InternetAddress(mailProperties.getEmailAddress(), mailProperties.getEmailFrom()));
+            msg.setReplyTo(InternetAddress.parse(mailProperties.getEmailFrom(), false));
             msg.setSubject(subject, "UTF-8");
             msg.setText(body, "UTF-8");
             msg.setSentDate(new Date());
@@ -76,7 +65,7 @@ public class PaxtonMailService implements EmailService {
             helper.setSubject(subject);
             helper.setText(process, true);
             helper.setTo(to);
-            helper.setFrom(new InternetAddress(emailFrom, emailPersonal));
+            helper.setFrom(new InternetAddress(mailProperties.getEmailAddress(), mailProperties.getEmailFrom()));
             helper.setSentDate(new Date());
             emailSender.send(mimeMessage);
         } catch (MessagingException | UnsupportedEncodingException e) {

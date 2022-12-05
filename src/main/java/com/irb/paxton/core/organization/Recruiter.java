@@ -6,7 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
+import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
 @Table(name = TABLE_PREFIX + "_RECRUITER")

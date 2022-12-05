@@ -1,5 +1,6 @@
 package com.irb.paxton.security.auth.signup.events;
 
+import com.irb.paxton.config.properties.FrontendProperties;
 import com.irb.paxton.mail.PaxtonMailService;
 import com.irb.paxton.security.auth.signup.response.AccountRegistration;
 import com.irb.paxton.security.auth.user.User;
@@ -16,13 +17,15 @@ public class AccountRegistrationReceiver {
     @Autowired
     private PaxtonMailService mailService;
 
+    @Autowired
+    private FrontendProperties frontendProperties;
+
     @JmsListener(destination = "userAccountRegistrationQueue")
     public void sendConfirmationEmail(AccountRegistration accountRegistration) {
         User user = accountRegistration.getUser();
         String token = accountRegistration.getToken();
         String subject = "Complete your Paxton sign-up";
-//        String confirmationUrl = accountRegistration.getRequestUrl() + "/auth/signup/confirmation?token=" + token;
-        String confirmationUrl = "http://localhost:3000/app/signup/confirmation?token=" + token;
+        String confirmationUrl = frontendProperties.getFrontendUrl() + "/app/signup/confirmation?token=" + token;
         Context context = new Context();
 
         context.setVariable("requestUrl", confirmationUrl);

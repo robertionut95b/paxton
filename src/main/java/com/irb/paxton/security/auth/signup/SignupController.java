@@ -23,7 +23,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @Validated
 @RestController

@@ -17,7 +17,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
 
-import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @RestController
 @RequestMapping(path = "api/" + API_VERSION + "/users")

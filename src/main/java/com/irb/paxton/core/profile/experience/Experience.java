@@ -15,7 +15,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
+import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
 @Table(name = TABLE_PREFIX + "_USER_EXPERIENCE")

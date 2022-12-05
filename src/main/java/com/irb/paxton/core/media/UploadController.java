@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @RestController
 @Slf4j

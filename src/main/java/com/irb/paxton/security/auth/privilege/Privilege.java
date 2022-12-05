@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
+import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
 @Table(name = TABLE_PREFIX + "_PRIVILEGE")
@@ -23,7 +23,7 @@ import static com.irb.paxton.config.ApplicationProperties.TABLE_PREFIX;
 @Getter
 @Setter
 public class Privilege extends BaseEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

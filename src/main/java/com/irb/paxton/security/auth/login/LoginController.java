@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.stream.Collectors;
 
-import static com.irb.paxton.config.ApplicationProperties.API_VERSION;
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 import static com.irb.paxton.utils.HttpUtils.getRequestIP;
 
 @RestController

@@ -1,5 +1,6 @@
 package com.irb.paxton.security.auth.forgot.events;
 
+import com.irb.paxton.config.properties.FrontendProperties;
 import com.irb.paxton.mail.PaxtonMailService;
 import com.irb.paxton.security.auth.forgot.response.ForgotPasswordRequest;
 import com.irb.paxton.security.auth.user.User;
@@ -16,13 +17,15 @@ public class ForgotPasswordRequestReceiver {
     @Autowired
     private PaxtonMailService mailService;
 
+    @Autowired
+    private FrontendProperties frontendProperties;
+
     @JmsListener(destination = "userForgotRegistrationQueue")
     public void sendResetPasswordEmail(ForgotPasswordRequest forgotPasswordRequest) {
         User user = forgotPasswordRequest.getUser();
         String token = forgotPasswordRequest.getToken();
         String subject = "Recover your Paxton password";
-//        String confirmationUrl = forgotPasswordRequest.getRequestUrl() + "/auth/forgot-password?token=" + token;
-        String confirmationUrl = "http://localhost:3000/app/forgot-password/reset?token=" + token;
+        String confirmationUrl = frontendProperties.getFrontendUrl() + "/app/forgot-password/reset?token=" + token;
 
         Context context = new Context();
         context.setVariable("requestUrl", confirmationUrl);

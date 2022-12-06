@@ -28,4 +28,6 @@ public class JwtProperties {
     @Length(min = 52, max = 126)
     private String secret;
 
+    private String permissionsClaimName = "authorities";
+
 }

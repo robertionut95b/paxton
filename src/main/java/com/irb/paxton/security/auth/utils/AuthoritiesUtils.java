@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class AuthoritiesUtils {
 
@@ -19,5 +20,9 @@ public class AuthoritiesUtils {
                     .forEach(authorities::add);
         }
         return authorities;
+    }
+
+    public static boolean isGrantedThisAuthority(String authority, Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream().anyMatch(a -> Objects.equals(a.getAuthority(), authority));
     }
 }

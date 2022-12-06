@@ -2,6 +2,9 @@ package com.irb.paxton.security.auth.jwt;
 
 import com.irb.paxton.config.properties.AuthenticationProperties;
 import com.irb.paxton.config.properties.JwtProperties;
+import com.irb.paxton.security.SecurityUtils;
+import com.irb.paxton.security.auth.role.PaxtonRole;
+import com.irb.paxton.security.auth.user.PaxtonUserDetails;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.utils.AuthoritiesUtils;
 import io.jsonwebtoken.Claims;
@@ -66,19 +69,38 @@ public class JwtTokenProvider {
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(userDetails.getUsername())
-                .claim("authorities", establishScope(userDetails.getAuthorities()))
+                .claim(jwtProperties.getPermissionsClaimName(), establishScope(userDetails.getAuthorities()))
+                .claim("firstName", ((PaxtonUserDetails) userDetails).getFirstName())
+                .claim("lastName", ((PaxtonUserDetails) userDetails).getLastName())
+                .claim("birthDate", ((PaxtonUserDetails) userDetails).getBirthDate())
+                .claim("profileId", ((PaxtonUserDetails) userDetails).getUserProfile().getId())
+                .claim("profileSlugUrl", ((PaxtonUserDetails) userDetails).getUserProfile().getProfileSlugUrl())
+                .claim("email", ((PaxtonUserDetails) userDetails).getEmail())
+                .claim("isEmailConfirmed", ((PaxtonUserDetails) userDetails).isEmailConfirmed())
+                .claim("isActive", userDetails.isAccountNonLocked())
+                .claim("isAdmin", SecurityUtils.hasCurrentUserThisAuthority(PaxtonRole.ROLE_ADMINISTRATOR.name()))
                 .signWith(this.key)
                 .compact();
     }
 
     public String generateTokenFromUser(User user) {
         Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiryInSeconds());
+        PaxtonUserDetails userDetails = new PaxtonUserDetails(user);
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(user.getUsername())
-                .claim("authorities", establishScope(AuthoritiesUtils.getAuthorities(user.getRoles())))
+                .claim(jwtProperties.getPermissionsClaimName(), establishScope(userDetails.getAuthorities()))
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
+                .claim("birthDate", user.getBirthDate())
+                .claim("profileId", userDetails.getUserProfile().getId())
+                .claim("profileSlugUrl", userDetails.getUserProfile().getProfileSlugUrl())
+                .claim("email", user.getEmail())
+                .claim("isEmailConfirmed", userDetails.isEmailConfirmed())
+                .claim("isActive", userDetails.isAccountNonLocked())
+                .claim("isAdmin", AuthoritiesUtils.isGrantedThisAuthority(PaxtonRole.ROLE_ADMINISTRATOR.name(), userDetails.getAuthorities()))
                 .signWith(this.key)
                 .compact();
     }
@@ -101,18 +123,14 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(jwtProperties.getPermissionsClaimName()).toString().split(","))
                 .map(SimpleGrantedAuthority::new).toList();
         org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
-        return generateCookie(jwtProperties.getJwtRefreshCookieName(), refreshToken, "api/" + API_VERSION + "/auth/refreshtoken");
-    }
-
-    public String getUsernameFromToken(String token) {
-        return decodeToken(token).getBody().getSubject();
+        return generateCookie(jwtProperties.getJwtRefreshCookieName(), refreshToken);
     }
 
     public Instant getExpirationDateFromToken(String token) {
@@ -123,8 +141,8 @@ public class JwtTokenProvider {
         return ResponseCookie.from(jwtProperties.getJwtRefreshCookieName(), null).path("/auth/refreshtoken").maxAge(0).build();
     }
 
-    private ResponseCookie generateCookie(String name, String value, String path) {
-        return ResponseCookie.from(name, value).path(path).maxAge(24 * 60 * 60).httpOnly(true).build();
+    private ResponseCookie generateCookie(String name, String value) {
+        return ResponseCookie.from(name, value).path("api/" + API_VERSION + "/auth/refreshtoken").maxAge(jwtProperties.getRefreshTokenExpiryInSeconds()).httpOnly(true).build();
     }
 
     public String getJwtRefreshFromCookies(HttpServletRequest request) {

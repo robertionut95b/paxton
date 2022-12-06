@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
@@ -69,6 +70,9 @@ public class JwtTokenProvider {
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(userDetails.getUsername())
+                .setNotBefore(Date.from(Instant.now()))
+                .setAudience("paxton-ui")
+                .setId(UUID.randomUUID().toString())
                 .claim(jwtProperties.getPermissionsClaimName(), establishScope(userDetails.getAuthorities()))
                 .claim("firstName", ((PaxtonUserDetails) userDetails).getFirstName())
                 .claim("lastName", ((PaxtonUserDetails) userDetails).getLastName())
@@ -91,6 +95,9 @@ public class JwtTokenProvider {
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(user.getUsername())
+                .setNotBefore(Date.from(Instant.now()))
+                .setAudience("paxton-ui")
+                .setId(UUID.randomUUID().toString())
                 .claim(jwtProperties.getPermissionsClaimName(), establishScope(userDetails.getAuthorities()))
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())

@@ -37,7 +37,7 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @PostMapping(path = "/currentUser")
+    @PostMapping(path = "/current")
     public UserLoginResponseDto getUserInformation(HttpServletRequest request, Principal principal) {
         String token = jwtTokenProvider.resolveToken(request);
         Instant expiresAt = jwtTokenProvider.getExpirationDateFromToken(token);

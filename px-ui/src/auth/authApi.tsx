@@ -26,8 +26,8 @@ export const submitLogin = async (
 };
 
 export const getCurrentUser = async () => {
-  const { data } = await api.post(`${APP_API_PATH}/users/current`, null);
-  return data;
+  const resp = await api.post(`${APP_API_PATH}/users/current`, null);
+  return resp;
 };
 
 export const refreshLogin = async (): Promise<LoginUserMutationResponseP> => {

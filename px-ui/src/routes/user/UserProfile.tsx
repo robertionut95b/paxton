@@ -62,6 +62,7 @@ export default function UserProfile() {
           firstName={userProfile?.user?.firstName}
           lastName={userProfile?.user?.lastName}
           username={userProfile?.user.username as string}
+          isEmailConfirmed={user?.isEmailConfirmed}
         />
         <RequirePermissionOrNull permission={() => isCurrentUser}>
           <NavLink

@@ -5,4 +5,6 @@ export interface User {
   firstName: string;
   lastName: string;
   profileSlugUrl: string;
+  profileId: number;
+  isEmailConfirmed: boolean;
 }

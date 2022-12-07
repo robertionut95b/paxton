@@ -86,7 +86,7 @@ export default function BasicUpdateProfileModal() {
 
   const form = useForm({
     initialValues: {
-      id: prevProfileData?.id ?? 0,
+      id: prevProfileData?.id ?? "0",
       description: prevProfileData?.description ?? "",
       city: prevProfileData?.city?.name ?? "",
       profileTitle: prevProfileData?.profileTitle ?? "",

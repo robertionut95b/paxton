@@ -4,13 +4,32 @@ import { LockClosedIcon } from "@heroicons/react/24/outline";
 import useCurrentUser from "@hooks/useCurrentUser";
 import useLoginUser from "@hooks/useLoginUser";
 import useLogoutUser from "@hooks/useLogoutUser";
-import { LoginUserMutationProps } from "@interfaces/login.types";
+import {
+  AccessTokenDecode,
+  LoginUserMutationProps,
+} from "@interfaces/login.types";
 import { User } from "@interfaces/user.types";
 import { api } from "@lib/axiosClient";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import jwtDecode from "jwt-decode";
 import { useState } from "react";
+
+const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
+  return {
+    firstName: userDecode.firstName,
+    lastName: userDecode.lastName,
+    permissions: userDecode.authorities.split(","),
+    profileSlugUrl: userDecode.profileSlugUrl,
+    sessionTime: userDecode.exp,
+    username: userDecode.sub,
+    profileId: userDecode.profileId,
+    isEmailConfirmed: userDecode.isEmailConfirmed,
+  };
+};
+
+const expToMillis = (exp: number) => exp * 1000;
 
 export default function AuthProvider({
   children,
@@ -19,9 +38,11 @@ export default function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
+
   const { mutate: logIn } = useLoginUser({
-    onSuccess: (data) => {
-      const bearer = `Bearer ${data.access_token}`;
+    onSuccess: ({ access_token }) => {
+      const bearer = `Bearer ${access_token}`;
+      // set authorization headers
       api.defaults.headers.Authorization = bearer;
       graphqlRequestClient.setHeader("Authorization", bearer);
     },
@@ -40,17 +61,30 @@ export default function AuthProvider({
         autoClose: 5000,
         icon: <LockClosedIcon width={20} />,
       });
+      setUser(null);
     },
   });
+
   const { mutate: logOut } = useLogoutUser();
+
   const { refetch: getCurrentUser, isLoading: getUserIsLoading } =
     useCurrentUser({
       onSuccess: (data) => {
-        setUser(data);
-        if (data) {
+        if (data && data.config.headers) {
+          // @ts-expect-error(types-error)
+          const bearer = data.config.headers.get("Authorization");
+          const accessToken = bearer.split("Bearer ")[1];
+          const decodedAccessToken = jwtDecode(
+            accessToken
+          ) as AccessTokenDecode;
+
+          // set user instance
+          setUser(userDecodeToUser(decodedAccessToken));
+
+          // set query client stale time and refetch
           queryClient.setQueryDefaults(["currentUser"], {
-            staleTime: data.sessionTime,
-            refetchInterval: data.sessionTime,
+            staleTime: expToMillis(decodedAccessToken.exp) - Date.now(),
+            refetchInterval: expToMillis(decodedAccessToken.exp) - Date.now(),
             refetchIntervalInBackground: true,
           });
         }

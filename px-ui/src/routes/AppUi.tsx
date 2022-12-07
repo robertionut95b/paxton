@@ -27,7 +27,7 @@ export default function AppUI() {
       <Routes>
         <Route>
           {/* Landing section of the app */}
-          <Route index element={<Index />} />
+          <Route index element={<Index />} errorElement={<ErrorPage />} />
         </Route>
         <Route>
           {/* Actual client app, where auth is required */}
@@ -38,6 +38,7 @@ export default function AppUI() {
                 <ClientApp />
               </RequireAuth>
             }
+            errorElement={<ErrorPage />}
           >
             <Route
               path="/app/feed"
@@ -135,14 +136,6 @@ export default function AppUI() {
               element={
                 <RequireAuth>
                   <AccessDenied />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/app/*"
-              errorElement={
-                <RequireAuth>
-                  <ErrorPage />
                 </RequireAuth>
               }
             />

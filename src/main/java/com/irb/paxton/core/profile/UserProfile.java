@@ -71,5 +71,7 @@ public class UserProfile extends BaseEntity {
         if (this.profileSlugUrl == null) {
             this.profileSlugUrl = this.getUser().getUsername() + System.currentTimeMillis();
         }
+        this.setCreatedBy(this.user.getUsername());
+        this.setModifiedBy(this.user.getUsername());
     }
 }

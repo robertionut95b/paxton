@@ -2,6 +2,7 @@ package com.irb.paxton.security.auth.logout;
 
 import com.irb.paxton.security.auth.device.UserDevice;
 import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
+import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
 import com.irb.paxton.security.auth.logout.event.OnUserLogoutSuccess;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
@@ -36,14 +37,17 @@ public class SignOutController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @PostMapping(path = "/users/logout")
     public ResponseEntity<?> signOut(HttpServletRequest request, Principal principal, @RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent) {
         String token = jwtTokenProvider.resolveToken(request);
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        this.userService.logoutUser(user.getUsername());
         ResponseCookie jwtRefreshCookie = jwtTokenProvider.getCleanJwtRefreshCookie();
 
+        refreshTokenService.deleteByUserId(user.getId());
         jmsTemplate.convertAndSend("userAuthLogout",
                 new OnUserLogoutSuccess(user.getUsername(), token, new UserDevice(getRequestIP(request), userAgent, user))
         );

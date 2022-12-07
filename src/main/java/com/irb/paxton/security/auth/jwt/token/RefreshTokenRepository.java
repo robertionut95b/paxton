@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
     Optional<RefreshToken> findByToken(String token);
 
-    void deleteByUserUsername(String userName);
+    Optional<RefreshToken> findByUser_Username(String username);
 
     Optional<RefreshToken> findByUserIdAndExpiresAtAfter(Long userId, LocalDateTime localDateTime);
+
+    void deleteByUser_Id(Long userId);
 }

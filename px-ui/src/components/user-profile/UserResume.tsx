@@ -27,7 +27,9 @@ export default function UserResume({
         <ShowIfElse
           if={userProfile?.description}
           else={
-            <p>{"No description was provided, you can update your profile."}</p>
+            <Text size="sm">
+              {"No description was provided, you can update your profile."}
+            </Text>
           }
         >
           <ExpandableText size={15}>{userProfile?.description}</ExpandableText>

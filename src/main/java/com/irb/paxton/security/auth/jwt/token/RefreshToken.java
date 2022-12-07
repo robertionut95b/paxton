@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,11 +23,16 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Setter
 public class RefreshToken {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refresh_token_id_seq")
+    @SequenceGenerator(name = "refresh_token_id_seq", allocationSize = 1)
+    private Long id;
+
     @NotEmpty
     @NotNull
     @NotBlank
-    @Id
-    @Column(unique = true, length = 4000)
+    @Column(unique = true, length = 4000, nullable = false)
+    @NaturalId(mutable = true)
     private String token;
 
     @OneToOne

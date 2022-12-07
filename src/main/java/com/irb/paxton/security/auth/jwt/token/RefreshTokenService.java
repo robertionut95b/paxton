@@ -7,8 +7,8 @@ import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -27,6 +27,11 @@ public class RefreshTokenService {
         return this.refreshTokenRepository.findByToken(token);
     }
 
+    public Optional<RefreshToken> findByUserName(String username) {
+        return this.refreshTokenRepository.findByUser_Username(username);
+    }
+
+
     public RefreshToken createRefreshToken(String username) {
         // check if for this login already exists a non-expired token
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User does not exist"));
@@ -34,7 +39,7 @@ public class RefreshTokenService {
                 .findByUserIdAndExpiresAtAfter(user.getId(), LocalDateTime.now())
                 .orElseGet(() ->
                         refreshTokenRepository.save(
-                                new RefreshToken(jwtTokenProvider.generateRefreshTokenFromUser(), user, 0L,
+                                new RefreshToken(null, jwtTokenProvider.generateRefreshTokenFromUser(), user, 0L,
                                         LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshExpiry()))
                         )
                 );
@@ -47,9 +52,13 @@ public class RefreshTokenService {
         }
     }
 
+    public void deleteById(Long tokenId) {
+        this.refreshTokenRepository.deleteById(tokenId);
+    }
+
     @Transactional
-    public void deleteByUsername(String userName) {
-        refreshTokenRepository.deleteByUserUsername(userName);
+    public void deleteByUserId(Long userId) {
+        this.refreshTokenRepository.deleteByUser_Id(userId);
     }
 
     public void increaseCount(RefreshToken refreshToken) {

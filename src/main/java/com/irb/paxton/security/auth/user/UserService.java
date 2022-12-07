@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.user;
 
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
-import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
@@ -26,15 +25,10 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UserProfileRepository userProfileRepository;
-
     @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
 
     public List<User> getUsers() {
         return this.userRepository.findAll();
@@ -56,11 +50,6 @@ public class UserService {
         return this.userRepository.findByUsername(username);
     }
 
-
-    public void logoutUser(String username) {
-        refreshTokenService.deleteByUsername(username);
-    }
-
     public void updateUser(User user) {
         this.userRepository.save(user);
     }
@@ -70,29 +59,32 @@ public class UserService {
         this.userRepository.save(user);
     }
 
+    @Transactional
     public User registerNewUser(UserSignupDto user) throws UserAlreadyExistsException {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
-        User u = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
+        User returnUser = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
                 List.of(roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString()), roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
                 new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
-        userRepository.save(u);
-        userProfileRepository.save(
-                new UserProfile(null, u, null, null, "No description provided.", null,
-                        URLEncoder.encode(u.getUsername() + System.currentTimeMillis(), StandardCharsets.UTF_8), null, String.format("%s's Profile", u.getUsername()), null)
-        );
-        return u;
+        UserProfile userProfile = new UserProfile(null, returnUser, null, null, null, null,
+                URLEncoder.encode(returnUser.getUsername() + System.currentTimeMillis(), StandardCharsets.UTF_8), null, String.format("%s's Profile", returnUser.getUsername()), null);
+
+        userRepository.save(returnUser);
+        userProfileRepository.save(userProfile);
+
+        return returnUser;
     }
 
+    @Transactional
     public void registerNewUser(User user) throws UserAlreadyExistsException {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
         userRepository.save(user);
         userProfileRepository.save(
-                new UserProfile(null, user, null, null, "No description provided.", null,
+                new UserProfile(null, user, null, null, null, null,
                         user.getUsername() + System.currentTimeMillis(), null, String.format("%s's Profile", user.getUsername()), null)
         );
     }

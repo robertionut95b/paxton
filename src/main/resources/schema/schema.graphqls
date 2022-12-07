@@ -246,7 +246,7 @@ type UserProfile {
     user: User!
     photography: String
     coverPhotography: String
-    description: String!
+    description: String
     city: City
     profileSlugUrl: String!
     profileTitle: String!

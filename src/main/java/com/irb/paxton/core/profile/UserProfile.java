@@ -39,10 +39,7 @@ public class UserProfile extends BaseEntity {
 
     private String coverPhotography;
 
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    @Lob
+    @Column(length = 1000)
     private String description;
 
     @ManyToOne

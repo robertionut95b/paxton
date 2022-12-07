@@ -52,7 +52,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
         UserProfile userProfile = this.userProfileRepository.findById(userProfileInput.getId())
                 .orElseThrow(() -> new UserProfileNotFoundException("User profile does not exist", "id"));
@@ -67,7 +67,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile saveExperience(ExperienceInput experienceInput) {
         Experience newExperience = this.userProfileMapper.addUserProfileExperience(experienceInput);
         UserProfile userProfile = newExperience.getUserProfile();
@@ -79,7 +79,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateExperience(ExperienceInput experienceInput) {
         Experience actualExperience = this.experienceRepository.findById(experienceInput.getId())
                 .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString()), "id"));
@@ -90,7 +90,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile saveStudy(StudyInput studyInput) {
         Study newStudy = this.userProfileMapper.addUserProfileStudy(studyInput);
         UserProfile userProfile = newStudy.getUserProfile();
@@ -102,7 +102,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or returnObject.user.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateStudy(StudyInput studyInput) {
         Study actualStudy = this.studyRepository.findById(studyInput.getId())
                 .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString()), "id"));

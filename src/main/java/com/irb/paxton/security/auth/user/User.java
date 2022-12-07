@@ -104,4 +104,10 @@ public class User extends BaseEntity {
         userProfile = user.getUserProfile();
         isEmailConfirmed = user.isEmailConfirmed();
     }
+
+    @PrePersist
+    public void updateCreatedModifiedBy() {
+        this.setCreatedBy(this.getUsername());
+        this.setModifiedBy(this.getUsername());
+    }
 }

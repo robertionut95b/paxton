@@ -5,6 +5,7 @@ import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.Study;
 import com.irb.paxton.security.auth.user.User;
+import com.irb.paxton.utils.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,7 +70,7 @@ public class UserProfile extends BaseEntity {
     @PrePersist
     void preInsert() {
         if (this.profileSlugUrl == null) {
-            this.profileSlugUrl = this.getUser().getUsername() + System.currentTimeMillis();
+            this.profileSlugUrl = StringUtils.slugifyString(this.getUser().getUsername() + System.currentTimeMillis());
         }
         this.setCreatedBy(this.user.getUsername());
         this.setModifiedBy(this.user.getUsername());

@@ -29,7 +29,8 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_user_id_seq")
+    @SequenceGenerator(name = "px_user_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -23,7 +23,8 @@ public class UserDevice extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_user_device_id_seq")
+    @SequenceGenerator(name = "px_user_device_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -1,6 +1,7 @@
 package com.irb.paxton.core.media;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.irb.paxton.core.base.BaseEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +21,11 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Photography {
+public class Photography extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_photography_id_seq")
+    @SequenceGenerator(name = "px_photography_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

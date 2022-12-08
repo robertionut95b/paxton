@@ -1,5 +1,6 @@
 package com.irb.paxton.core.location;
 
+import com.irb.paxton.core.base.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,11 +16,12 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class City {
+public class City extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_city_id_seq")
+    @SequenceGenerator(name = "px_city_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

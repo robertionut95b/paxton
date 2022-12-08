@@ -19,7 +19,8 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class ActivitySector extends BaseEntity {
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_activity_sector_id_seq")
+    @SequenceGenerator(name = "px_activity_sector_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

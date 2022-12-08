@@ -22,8 +22,10 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 public class Job extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_job_id_seq")
+    @SequenceGenerator(name = "px_job_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -24,8 +24,8 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refresh_token_id_seq")
-    @SequenceGenerator(name = "refresh_token_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_refresh_token_id_seq")
+    @SequenceGenerator(name = "px_refresh_token_id_seq", allocationSize = 1)
     private Long id;
 
     @NotEmpty

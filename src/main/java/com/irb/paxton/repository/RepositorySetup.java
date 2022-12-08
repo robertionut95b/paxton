@@ -20,7 +20,8 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class RepositorySetup extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_repository_setup_id_seq")
+    @SequenceGenerator(name = "px_repository_setup_id_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

@@ -166,7 +166,7 @@ public class RepositoryBootEventService {
     public void setupSampleOrganizationRepository() {
         log.info("Paxton : creating organization objects");
 
-        Organization paxtonOrg = new Organization(null, "Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg");
+        Organization paxtonOrg = new Organization(null, "Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
         JobCategory itcJobCategory = new JobCategory(null, "IT&C", null);
         ActivitySector itFinance = new ActivitySector(null, "IT & Finance");
         this.activitySectorRepository.save(itFinance);
@@ -187,7 +187,7 @@ public class RepositoryBootEventService {
 
         // Define a basic process as template
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
-        Recruiter recruiter = new Recruiter(null, pxRecruiter);
+        Recruiter recruiter = new Recruiter(null, pxRecruiter, paxtonOrg, true, null);
         this.recruiterRepository.save(recruiter);
         Process paxtonProcess = new Process(null, "Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
 

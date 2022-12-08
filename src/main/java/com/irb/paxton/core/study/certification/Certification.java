@@ -22,7 +22,8 @@ public class Certification extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_certification_id_seq")
+    @SequenceGenerator(name = "px_certification_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

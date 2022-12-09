@@ -38,7 +38,7 @@ export default function ExperienceCard({
         </Avatar>
         <div className="px-experience-card w-full">
           <div className="px-experience-heading mb-6">
-            <Text className="font-bold" size="lg">
+            <Text className="font-semibold" size="md">
               {organization?.name}
             </Text>
             <Text className="px-study-summary-years" size="sm">
@@ -58,7 +58,7 @@ export default function ExperienceCard({
               {experiences.map((e) => (
                 <Timeline.Item key={e.id}>
                   <div className="px-experience-wrapper flex justify-between">
-                    <div className="px-erperience-timeline-item">
+                    <div className="px-erperience-timeline-item grow">
                       <Text size="md">{e.title}</Text>
                       <Text
                         size="sm"

@@ -1,7 +1,17 @@
+import { RoleType } from "@auth/permission.types";
+import { RequirePermission } from "@auth/RequirePermission";
 import JobListingItem from "@components/jobs/JobListing";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import { useGetAllJobListingsQuery } from "@gql/generated";
-import { Divider, Pagination, Select, Text, Title } from "@mantine/core";
+import {
+  Container,
+  Divider,
+  Pagination,
+  Paper,
+  Select,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
 
@@ -41,60 +51,67 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="px-jobs">
-      <Title mb={2} order={4}>
-        Jobs of interest in [City Name]
-      </Title>
-      <Text mb={10} color="dimmed" size={13}>
-        {totalElements} results
-      </Text>
-      <Divider />
-      {jobs.map(
-        (jl, idx) =>
-          jl && (
-            <div key={jl.id}>
-              <JobListingItem data={jl} />
-              {idx !== jobs.length - 1 && <Divider />}
-            </div>
-          )
-      )}
-      <div className="px-jobs-pagination flex justify-between items-center mt-4">
-        <Select
-          data={[
-            { value: "5", label: "5" },
-            { value: "10", label: "10" },
-            { value: "20", label: "20" },
-            { value: "50", label: "50" },
-          ]}
-          styles={{
-            root: {
-              display: "flex",
-              alignItems: "center",
-            },
-            label: {
-              marginRight: "10px",
-            },
-            input: {
-              width: "5rem",
-            },
-          }}
-          label="Page size"
-          defaultValue={ps.toString()}
-          value={ps.toString()}
-          onChange={(v) => {
-            setPs(parseInt(v ?? "10"));
-            setP(1);
-          }}
-        />
-        <Pagination
-          total={totalPages}
-          page={p}
-          onChange={setP}
-          initialPage={0}
-          position="right"
-          grow
-        />
-      </div>
+    <div className="px-jobs grid gap-8">
+      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+        <Paper shadow={"xs"} p="md">
+          <p>pssst</p>
+        </Paper>
+      </RequirePermission>
+      <Container className="px-container-wrapper">
+        <Title mb={2} order={4}>
+          Jobs of interest in [City Name]
+        </Title>
+        <Text mb={10} color="dimmed" size={13}>
+          {totalElements} results
+        </Text>
+        <Divider />
+        {jobs.map(
+          (jl, idx) =>
+            jl && (
+              <div key={jl.id}>
+                <JobListingItem data={jl} />
+                {idx !== jobs.length - 1 && <Divider />}
+              </div>
+            )
+        )}
+        <div className="px-jobs-pagination flex justify-between items-center mt-4">
+          <Select
+            data={[
+              { value: "5", label: "5" },
+              { value: "10", label: "10" },
+              { value: "20", label: "20" },
+              { value: "50", label: "50" },
+            ]}
+            styles={{
+              root: {
+                display: "flex",
+                alignItems: "center",
+              },
+              label: {
+                marginRight: "10px",
+              },
+              input: {
+                width: "5rem",
+              },
+            }}
+            label="Page size"
+            defaultValue={ps.toString()}
+            value={ps.toString()}
+            onChange={(v) => {
+              setPs(parseInt(v ?? "10"));
+              setP(1);
+            }}
+          />
+          <Pagination
+            total={totalPages}
+            page={p}
+            onChange={setP}
+            initialPage={0}
+            position="right"
+            grow
+          />
+        </div>
+      </Container>
     </div>
   );
 }

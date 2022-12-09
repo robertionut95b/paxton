@@ -5,9 +5,8 @@ import { useGetUserProfileQuery } from "@gql/generated";
 import {
   BriefcaseIcon,
   ClipboardDocumentCheckIcon,
-  HomeIcon,
   NewspaperIcon,
-  UserGroupIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Container } from "@mantine/core";
@@ -21,22 +20,20 @@ export default function ClientApp() {
   const permissions = user?.permissions || [];
 
   const editorLinks: LinkItem[] = [
-    { label: "Home", link: "/app/feed", icon: <HomeIcon width={16} /> },
     { label: "Jobs", link: "/app/jobs", icon: <BriefcaseIcon width={16} /> },
     {
-      label: "Users",
-      link: "/app/recruitment/users",
-      icon: <UserGroupIcon width={16} />,
+      label: "Network",
+      link: "/app/network",
+      icon: <UsersIcon width={16} />,
     },
     {
-      label: "Recruitment",
+      label: "Recruit",
       link: "/app/recruitment",
       icon: <ClipboardDocumentCheckIcon width={16} />,
     },
   ];
 
   const userLinks = [
-    { label: "Home", link: "/app/feed", icon: <HomeIcon width={16} /> },
     { label: "Jobs", link: "/app/jobs", icon: <BriefcaseIcon width={16} /> },
     {
       label: "Application",
@@ -56,7 +53,7 @@ export default function ClientApp() {
         user={user}
         profileLink={profileData?.getUserProfile?.profileSlugUrl}
       />
-      <Container className="p-4 bg-white border rounded-lg border-solid">
+      <Container>
         <Outlet />
       </Container>
     </>

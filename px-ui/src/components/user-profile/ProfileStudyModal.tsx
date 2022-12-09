@@ -387,7 +387,7 @@ export default function ProfileStudyModal() {
       closeOnClickOutside={false}
       closeOnEscape={false}
       trapFocus
-      size={520}
+      size={620}
     >
       <form
         className="px-mantine-form"

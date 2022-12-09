@@ -1,4 +1,4 @@
-import { isAdmin, RequirePermissionOrNull } from "@auth/RequirePermission";
+import { isAdmin, RequirePermission } from "@auth/RequirePermission";
 import { useAuth } from "@auth/useAuth";
 import ProfileBanner from "@components/user-profile/ProfileBanner";
 import ProfileCard from "@components/user-profile/ProfileCard";
@@ -63,7 +63,10 @@ export default function UserProfile() {
             username={userProfile?.user.username as string}
             isEmailConfirmed={user?.isEmailConfirmed}
           />
-          <RequirePermissionOrNull permission={() => isCurrentUser}>
+          <RequirePermission
+            returnValue="null"
+            permission={() => isCurrentUser}
+          >
             <NavLink
               to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
             >
@@ -71,16 +74,16 @@ export default function UserProfile() {
                 Edit
               </Button>
             </NavLink>
-          </RequirePermissionOrNull>
+          </RequirePermission>
         </div>
       </Container>
       <UserResume
         userProfile={userProfile}
         editable={isCurrentUser || isAdmin(user?.permissions || [])}
       />
-      <RequirePermissionOrNull permission={() => isCurrentUser}>
+      <RequirePermission returnValue="null" permission={() => isCurrentUser}>
         <Outlet />
-      </RequirePermissionOrNull>
+      </RequirePermission>
     </div>
   );
 }

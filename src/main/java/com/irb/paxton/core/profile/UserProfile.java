@@ -50,6 +50,7 @@ public class UserProfile extends PaxtonEntity<Long> {
     private String profileSlugUrl;
 
     @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    @OrderBy(value = "startDate DESC")
     private Collection<Study> studies;
 
     @NotBlank
@@ -57,6 +58,7 @@ public class UserProfile extends PaxtonEntity<Long> {
     private String profileTitle;
 
     @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    @OrderBy(value = "startDate DESC")
     private Collection<Experience> experiences;
 
     public UserProfile(User user) {

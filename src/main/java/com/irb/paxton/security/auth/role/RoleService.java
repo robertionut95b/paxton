@@ -17,7 +17,7 @@ public class RoleService {
     public Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
         Role role = this.roleRepository.findByName(name);
         if (role == null) {
-            role = new Role(null, name, null);
+            role = new Role(name, null);
             role.setPrivileges(privileges);
             this.roleRepository.save(role);
         }

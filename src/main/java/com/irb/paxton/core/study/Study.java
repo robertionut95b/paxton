@@ -1,6 +1,7 @@
 package com.irb.paxton.core.study;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.domain.Domain;
@@ -20,14 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Study extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_study_id_seq")
-    @SequenceGenerator(name = "px_study_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Study extends PaxtonEntity<Long> {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "institution_id")

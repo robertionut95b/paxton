@@ -1,6 +1,7 @@
 package com.irb.paxton.core.location;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,14 +17,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class City extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_city_id_seq")
-    @SequenceGenerator(name = "px_city_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class City extends PaxtonEntity<Long> {
 
     @NotBlank
     @NotEmpty

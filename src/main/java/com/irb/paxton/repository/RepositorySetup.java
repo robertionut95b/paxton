@@ -1,6 +1,7 @@
 package com.irb.paxton.repository;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class RepositorySetup extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_repository_setup_id_seq")
-    @SequenceGenerator(name = "px_repository_setup_id_seq", allocationSize = 1)
-    private Long id;
+public class RepositorySetup extends PaxtonEntity<Long> {
 
     @NotNull
     private boolean isActive;

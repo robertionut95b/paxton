@@ -20,7 +20,7 @@ public class PrivilegeService {
     public Privilege createPrivilegeIfNotFound(String name) {
         Privilege privilege = this.privilegeRepository.findByName(name);
         if (privilege == null) {
-            privilege = new Privilege(null, name, null);
+            privilege = new Privilege(name, null);
             this.privilegeRepository.save(privilege);
         }
         return privilege;

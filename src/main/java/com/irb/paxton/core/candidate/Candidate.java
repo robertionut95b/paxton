@@ -1,6 +1,7 @@
 package com.irb.paxton.core.candidate;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
 import lombok.*;
 
@@ -15,14 +16,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Candidate extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_candidate_id_seq")
-    @SequenceGenerator(name = "px_candidate_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Candidate extends PaxtonEntity<Long> {
 
     @OneToOne
     @JoinColumn(name = "user_id")

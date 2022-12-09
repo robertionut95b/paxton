@@ -1,9 +1,13 @@
 package com.irb.paxton.core.activity;
 
-import com.irb.paxton.core.base.BaseEntity;
-import lombok.*;
+import com.irb.paxton.core.model.PaxtonEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -16,13 +20,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class ActivitySector extends BaseEntity {
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_activity_sector_id_seq")
-    @SequenceGenerator(name = "px_activity_sector_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class ActivitySector extends PaxtonEntity<Long> {
 
     @NotNull
     @NotEmpty

@@ -26,7 +26,7 @@ public class JobService {
     private JobCategoryRepository jobCategoryRepository;
 
     public Job publishJob(JobDto jobDto) {
-        Job job = new Job(null, jobDto.getName(), jobDto.getDescription(), null);
+        Job job = new Job(jobDto.getName(), jobDto.getDescription(), null);
         Optional<Job> jobOptional = jobRepository.findByName(jobDto.getName());
         if (jobOptional.isPresent()) {
             throw new JobAlreadyExistsException("Job already is already defined", "name");
@@ -36,7 +36,7 @@ public class JobService {
     }
 
     public Job publishJob(JobInput jobInput) {
-        Job job = new Job(null, jobInput.getName(), jobInput.getDescription(), null);
+        Job job = new Job(jobInput.getName(), jobInput.getDescription(), null);
         Optional<Job> jobOptional = jobRepository.findByName(jobInput.getName());
         if (jobOptional.isPresent()) {
             throw new JobAlreadyExistsException("Job already is already defined", "name");

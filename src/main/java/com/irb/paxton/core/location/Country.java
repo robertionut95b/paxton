@@ -1,10 +1,11 @@
 package com.irb.paxton.core.location;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -21,10 +22,13 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Country extends BaseEntity {
+public class Country extends PaxtonEntity<Long> {
 
-    @Id
-    @Column(name = "code", nullable = false)
+    @NaturalId
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    @Column(unique = true)
     private String code;
 
     @NotNull

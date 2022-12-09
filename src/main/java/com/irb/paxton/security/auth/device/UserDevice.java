@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.device;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
 import lombok.*;
 
@@ -19,14 +20,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 @ToString
-public class UserDevice extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_user_device_id_seq")
-    @SequenceGenerator(name = "px_user_device_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class UserDevice extends PaxtonEntity<Long> {
 
     @NotBlank
     @NotEmpty

@@ -64,9 +64,9 @@ public class UserService {
         }
         User returnUser = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
                 List.of(roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString()), roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
-                new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
+                new Credentials(CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
-        UserProfile userProfile = new UserProfile(null, returnUser, null, null, null, null,
+        UserProfile userProfile = new UserProfile(returnUser, null, null, null, null,
                 null, null, String.format("%s's Profile", returnUser.getUsername()), null);
 
         userRepository.save(returnUser);
@@ -82,7 +82,7 @@ public class UserService {
         }
         userRepository.save(user);
         userProfileRepository.save(
-                new UserProfile(null, user, null, null, null, null,
+                new UserProfile(user, null, null, null, null,
                         null, null, String.format("%s's Profile", user.getUsername()), null)
         );
     }

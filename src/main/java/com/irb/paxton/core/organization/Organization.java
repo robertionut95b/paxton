@@ -1,8 +1,9 @@
 package com.irb.paxton.core.organization;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.JobListing;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -20,14 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Organization extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_organization_id_seq")
-    @SequenceGenerator(name = "px_organization_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Organization extends PaxtonEntity<Long> {
 
     @NotNull
     @NotBlank

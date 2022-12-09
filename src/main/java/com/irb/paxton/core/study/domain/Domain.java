@@ -1,6 +1,7 @@
 package com.irb.paxton.core.study.domain;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.study.Study;
 import lombok.*;
 
@@ -18,14 +19,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Domain extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_domain_id_seq")
-    @SequenceGenerator(name = "px_domain_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Domain extends PaxtonEntity<Long> {
 
     @NotNull
     @NotEmpty

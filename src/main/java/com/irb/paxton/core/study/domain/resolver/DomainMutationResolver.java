@@ -20,7 +20,7 @@ public class DomainMutationResolver implements GraphQLMutationResolver {
 
     public Domain addDomain(@Valid @NotNull DomainInput domainInput) {
         return this.domainRepository.save(
-                new Domain(null, domainInput.getName(), null)
+                new Domain(domainInput.getName(), null)
         );
     }
 }

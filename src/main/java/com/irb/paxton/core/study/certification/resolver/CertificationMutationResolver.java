@@ -20,7 +20,7 @@ public class CertificationMutationResolver implements GraphQLMutationResolver {
 
     public Certification addCertification(@Valid @NotNull CertificationInput certificationInput) {
         return this.certificationRepository.save(
-                new Certification(null, certificationInput.getName(), null)
+                new Certification(certificationInput.getName(), null)
         );
     }
 }

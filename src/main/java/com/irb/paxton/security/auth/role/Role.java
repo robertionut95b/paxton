@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.role;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.privilege.Privilege;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,13 +24,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Role extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_role_id_seq")
-    @SequenceGenerator(name = "px_role_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Role extends PaxtonEntity<Long> {
 
     @NotNull
     @NotBlank

@@ -1,9 +1,10 @@
 package com.irb.paxton.core.profile.experience;
 
 import com.irb.paxton.core.activity.ActivitySector;
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.contract.ContractType;
 import com.irb.paxton.core.location.City;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.*;
@@ -23,14 +24,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Experience extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_experience_id_seq")
-    @SequenceGenerator(name = "px_experience_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Experience extends PaxtonEntity<Long> {
 
     @NotNull
     @NotEmpty

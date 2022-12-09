@@ -75,7 +75,7 @@ public class ForgotController {
         }
 
         User user = forgotPasswordToken.getUser();
-        user.setCredentials(new Credentials(null, CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(passwordChangeDto.getNewPassword()), false, null, null));
+        user.setCredentials(new Credentials(CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(passwordChangeDto.getNewPassword()), false, null, null));
         userService.updateUser(user);
         forgotTokenService.expireToken(forgotPasswordToken);
     }

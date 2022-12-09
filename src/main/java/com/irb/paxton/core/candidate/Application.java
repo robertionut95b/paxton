@@ -1,7 +1,8 @@
 package com.irb.paxton.core.candidate;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.JobListing;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.*;
 
@@ -20,14 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Application extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_application_id_seq")
-    @SequenceGenerator(name = "px_application_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Application extends PaxtonEntity<Long> {
 
     @NotNull
     private LocalDateTime dateOfApplication = LocalDateTime.now();

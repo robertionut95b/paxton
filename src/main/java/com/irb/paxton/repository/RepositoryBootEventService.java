@@ -119,7 +119,7 @@ public class RepositoryBootEventService {
         this.setupNomenclaturesRepository();
         this.setupSampleOrganizationRepository();
 
-        this.setupRepository.save(new RepositorySetup(null, true, true, true));
+        this.setupRepository.save(new RepositorySetup(true, true, true));
         log.info("Paxton app finished initializing repository, moving on ...");
     }
 
@@ -131,34 +131,37 @@ public class RepositoryBootEventService {
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_ADMINISTRATOR.toString(), adminPrivileges);
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_READ_ONLY.toString(), Collections.singletonList(readAllPrivilege));
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_EVERYONE.toString(), null);
+        this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_RECRUITER.toString(), null);
 
         // define roles
         Role adminRole = this.roleService.findByName(PaxtonRole.ROLE_ADMINISTRATOR.toString());
         Role userRole = this.roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString());
+        Role everyOneRole = this.roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString());
+        Role recruiterRole = this.roleService.findByName(PaxtonRole.ROLE_RECRUITER.toString());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         // create system user (root)
-        User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", Collections.singletonList(adminRole), null, true);
-        Credentials credentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("paxton123"), true, LocalDate.now(), null);
+        User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", List.of(adminRole, everyOneRole), null, true);
+        Credentials credentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("paxton123"), true, LocalDate.now(), null);
         systemUser.setCredentials(credentials);
         userService.registerNewUser(systemUser);
 
         // create base admin user
-        User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", Collections.singletonList(adminRole), null, true);
-        Credentials adminCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("admin"), true, LocalDate.now(), null);
+        User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", List.of(adminRole, everyOneRole), null, true);
+        Credentials adminCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("admin"), true, LocalDate.now(), null);
         admin.setCredentials(adminCredentials);
         userService.registerNewUser(admin);
 
         // create read-only user
-        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", Collections.singletonList(userRole), null, true);
-        Credentials userCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
+        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", List.of(userRole, everyOneRole), null, true);
+        Credentials userCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
         readOnly.setCredentials(userCredentials);
         userService.registerNewUser(readOnly);
 
         // create recruiter user
-        User recruiter = new User(null, "pxRecruiter", "pxRecruiter", null, "pxRecruiter@paxton.com", "pxRecruiter", Collections.singletonList(userRole), null, true);
-        Credentials recruiterCredentials = new Credentials(null, CredentialsType.PASSWORD, passwordEncoder.encode("pxRecruiter"), true, LocalDate.now(), null);
+        User recruiter = new User(null, "pxRecruiter", "pxRecruiter", null, "pxRecruiter@paxton.com", "pxRecruiter", List.of(recruiterRole, everyOneRole), null, true);
+        Credentials recruiterCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("pxRecruiter"), true, LocalDate.now(), null);
         recruiter.setCredentials(recruiterCredentials);
         userService.registerNewUser(recruiter);
     }
@@ -166,20 +169,20 @@ public class RepositoryBootEventService {
     public void setupSampleOrganizationRepository() {
         log.info("Paxton : creating organization objects");
 
-        Organization paxtonOrg = new Organization(null, "Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
-        JobCategory itcJobCategory = new JobCategory(null, "IT&C", null);
-        ActivitySector itFinance = new ActivitySector(null, "IT & Finance");
+        Organization paxtonOrg = new Organization("Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
+        JobCategory itcJobCategory = new JobCategory("IT&C", null);
+        ActivitySector itFinance = new ActivitySector("IT & Finance");
         this.activitySectorRepository.save(itFinance);
         this.organizationRepository.save(paxtonOrg);
         this.jobCategoryRepository.save(itcJobCategory);
 
         // define a job and job listing for Paxton organisation
-        Job softwareDeveloper = new Job(null, "Software Developer", "Developers are often natural problem solvers who possess strong analytical skills and the ability to think outside the box", null);
+        Job softwareDeveloper = new Job("Software Developer", "Developers are often natural problem solvers who possess strong analytical skills and the ability to think outside the box", null);
         this.jobRepository.save(softwareDeveloper);
 
         City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
 
-        JobListing jobListingPaxtonSoftwareDev = new JobListing(null, "Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
+        JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
                 LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
@@ -187,9 +190,9 @@ public class RepositoryBootEventService {
 
         // Define a basic process as template
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
-        Recruiter recruiter = new Recruiter(null, pxRecruiter, paxtonOrg, true, null);
+        Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
         this.recruiterRepository.save(recruiter);
-        Process paxtonProcess = new Process(null, "Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
+        Process paxtonProcess = new Process("Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
 
         // define steps
         Step applyStep = new Step(null, "Candidature", "During this step, candidates will send their profile reference. If they draw the recruiter's attention, the next steps will follow");
@@ -200,12 +203,12 @@ public class RepositoryBootEventService {
         Step conclusionStep = new Step(null, "Conclusion", "This is the final step of the process, which will end up with a reject or accept from the employee/employer");
         this.stepRepository.saveAll(List.of(applyStep, candidatureAnalysisStep, interviewStep, responseStep, offerNegotiationStep, conclusionStep));
         // link steps to process
-        ProcessSteps processStepsApply = new ProcessSteps(null, paxtonProcess, applyStep, Status.FINISHED, 1);
-        ProcessSteps processStepsAnalysis = new ProcessSteps(null, paxtonProcess, candidatureAnalysisStep, Status.FINISHED, 2);
-        ProcessSteps processStepsInterview = new ProcessSteps(null, paxtonProcess, interviewStep, Status.FINISHED, 3);
-        ProcessSteps processStepsResponse = new ProcessSteps(null, paxtonProcess, responseStep, Status.FINISHED, 4);
-        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(null, paxtonProcess, offerNegotiationStep, Status.FINISHED, 5);
-        ProcessSteps processStepsConclusion = new ProcessSteps(null, paxtonProcess, conclusionStep, Status.FINISHED, 6);
+        ProcessSteps processStepsApply = new ProcessSteps(paxtonProcess, applyStep, Status.FINISHED, 1);
+        ProcessSteps processStepsAnalysis = new ProcessSteps(paxtonProcess, candidatureAnalysisStep, Status.FINISHED, 2);
+        ProcessSteps processStepsInterview = new ProcessSteps(paxtonProcess, interviewStep, Status.FINISHED, 3);
+        ProcessSteps processStepsResponse = new ProcessSteps(paxtonProcess, responseStep, Status.FINISHED, 4);
+        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(paxtonProcess, offerNegotiationStep, Status.FINISHED, 5);
+        ProcessSteps processStepsConclusion = new ProcessSteps(paxtonProcess, conclusionStep, Status.FINISHED, 6);
         this.processStepsRepository.saveAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
 
         paxtonProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
@@ -216,21 +219,21 @@ public class RepositoryBootEventService {
     public void setupNomenclaturesRepository() {
         log.info("Paxton : creating location objects");
 
-        City Buc = new City(null, "Bucharest", null);
-        City Cj = new City(null, "Cluj", null);
-        City Is = new City(null, "Iasi", null);
+        City Buc = new City("Bucharest", null);
+        City Cj = new City("Cluj", null);
+        City Is = new City("Iasi", null);
         List<City> roCities = List.of(Buc, Cj, Is);
         Country Ro = new Country("RO", "Romania", new HashSet<>(roCities));
         roCities.forEach(c -> c.setCountry(Ro));
 
-        City Berlin = new City(null, "Berlin", null);
-        City Stuttgart = new City(null, "Stuttgart", null);
+        City Berlin = new City("Berlin", null);
+        City Stuttgart = new City("Stuttgart", null);
         List<City> grCities = List.of(Berlin, Stuttgart);
         Country Gr = new Country("GR", "Germany", new HashSet<>(grCities));
         grCities.forEach(c -> c.setCountry(Gr));
 
-        City Rome = new City(null, "Rome", null);
-        City Napoli = new City(null, "Napoli", null);
+        City Rome = new City("Rome", null);
+        City Napoli = new City("Napoli", null);
         List<City> itCities = List.of(Rome, Napoli);
         Country It = new Country("IT", "Italy", new HashSet<>(itCities));
         itCities.forEach(c -> c.setCountry(It));
@@ -240,19 +243,19 @@ public class RepositoryBootEventService {
         // create institutions, domains and certifications
         log.info("Paxton : creating studies objects");
 
-        Certification bachelorsDegree = new Certification(null, "Bachelor's degree", null);
-        Certification highSchoolDegree = new Certification(null, "High school degree", null);
+        Certification bachelorsDegree = new Certification("Bachelor's degree", null);
+        Certification highSchoolDegree = new Certification("High school degree", null);
         certificationRepository.saveAll(List.of(bachelorsDegree, highSchoolDegree));
 
-        Institution institutionCSIE = new Institution(null, "Faculty of Cybernetics Statistics and Economic Informatics", "The Undergraduate Program in Economic Informatics ensures the training for: analysis, design and implementation of information systems in enterprises; utilization and configuration of software packages with application in economy; development and introduction of the applied software; research and application of the new computer science technologies; computer programming skills.", "https://csie.ase.ro/wp-content/uploads/2020/10/cropped-CSIE_new-300x132.png", null);
-        Institution institutionASE = new Institution(null, "Bucharest University of economic studies", "ASE is the Leader of economic and public administration higher education in Romania and South-Eastern Europe, as confirmed by its key positioning in prestigious international rankings.", "https://upload.wikimedia.org/wikipedia/ro/a/a3/Logo_ASE.png", null);
+        Institution institutionCSIE = new Institution("Faculty of Cybernetics Statistics and Economic Informatics", "The Undergraduate Program in Economic Informatics ensures the training for: analysis, design and implementation of information systems in enterprises; utilization and configuration of software packages with application in economy; development and introduction of the applied software; research and application of the new computer science technologies; computer programming skills.", "https://csie.ase.ro/wp-content/uploads/2020/10/cropped-CSIE_new-300x132.png", null);
+        Institution institutionASE = new Institution("Bucharest University of economic studies", "ASE is the Leader of economic and public administration higher education in Romania and South-Eastern Europe, as confirmed by its key positioning in prestigious international rankings.", "https://upload.wikimedia.org/wikipedia/ro/a/a3/Logo_ASE.png", null);
         institutionRepository.saveAll(List.of(institutionASE, institutionCSIE));
 
-        Domain computerScience = new Domain(null, "Computers Science", null);
-        Domain economics = new Domain(null, "Economics", null);
-        Domain mathematics = new Domain(null, "Mathematics", null);
-        Domain statistics = new Domain(null, "Statistics", null);
-        Domain agriculture = new Domain(null, "Agriculture", null);
+        Domain computerScience = new Domain("Computers Science", null);
+        Domain economics = new Domain("Economics", null);
+        Domain mathematics = new Domain("Mathematics", null);
+        Domain statistics = new Domain("Statistics", null);
+        Domain agriculture = new Domain("Agriculture", null);
         domainRepository.saveAll(List.of(computerScience, economics, mathematics, statistics, agriculture));
     }
 }

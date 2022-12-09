@@ -20,7 +20,7 @@ public class InstitutionMutationResolver implements GraphQLMutationResolver {
 
     public Institution addInstitution(@Valid @NotNull InstitutionInput institutionInput) {
         return this.institutionRepository.save(
-                new Institution(null,
+                new Institution(
                         institutionInput.getName(),
                         institutionInput.getDescription(),
                         institutionInput.getPhotography(), null)

@@ -1,7 +1,8 @@
 package com.irb.paxton.core.jobs.category;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.JobListing;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,14 +19,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class JobCategory extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_job_category_id_seq")
-    @SequenceGenerator(name = "px_job_category_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class JobCategory extends PaxtonEntity<Long> {
 
     @NotNull
     @NotEmpty

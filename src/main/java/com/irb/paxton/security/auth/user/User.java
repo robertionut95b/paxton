@@ -1,7 +1,8 @@
 package com.irb.paxton.security.auth.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
@@ -26,13 +27,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class User extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_user_id_seq")
-    @SequenceGenerator(name = "px_user_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class User extends PaxtonEntity<Long> {
 
     @NotBlank
     @NotEmpty

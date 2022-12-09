@@ -1,6 +1,7 @@
 package com.irb.paxton.core.process;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,14 +15,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProcessSteps extends BaseEntity {
-
-    @Setter(AccessLevel.NONE)
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_process_steps_id_seq")
-    @SequenceGenerator(name = "px_process_steps_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class ProcessSteps extends PaxtonEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "process_id")

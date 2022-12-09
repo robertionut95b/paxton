@@ -67,7 +67,7 @@ public class JobListingService {
                 .orElseThrow(IllegalArgumentException::new);
 
         JobListing jobListing = new JobListing(
-                null, jobListingInput.getTitle(), jobListingInput.getDescription(), jobListingInput.getAvailableFrom(),
+                jobListingInput.getTitle(), jobListingInput.getDescription(), jobListingInput.getAvailableFrom(),
                 jobListingInput.getAvailableTo(), false, city, jobListingInput.getNumberOfVacancies(),
                 job, jobListingInput.getContractType(), organization, jobCategory, null, null
         );

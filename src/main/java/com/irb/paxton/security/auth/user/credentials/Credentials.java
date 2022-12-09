@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.user.credentials;
 
-import com.irb.paxton.core.base.BaseEntity;
+import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,13 +23,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Credentials extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "px_credentials_id_seq")
-    @SequenceGenerator(name = "px_credentials_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Credentials extends PaxtonEntity<Long> {
 
     @NotNull
     @Enumerated(EnumType.STRING)

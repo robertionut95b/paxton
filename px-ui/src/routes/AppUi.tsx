@@ -1,3 +1,4 @@
+import { RoleType } from "@auth/permission.types";
 import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
@@ -18,7 +19,9 @@ import Index from "./IndexPage";
 import JobsPage from "./jobs/JobsPage";
 import Login from "./Login";
 import Logout from "./Logout";
+import NetworkPage from "./NetworkPage";
 import SignUp from "./SignUp";
+import RecruitmentPage from "./user/RecruitmentPage";
 import UserProfile from "./user/UserProfile";
 
 export default function AppUI() {
@@ -60,7 +63,7 @@ export default function AppUI() {
               path="/app/candidature"
               element={
                 <RequireAuth>
-                  <RequirePermission permission={"ROLE_VIEWER"}>
+                  <RequirePermission permission={RoleType.ROLE_VIEWER}>
                     <JobsPage />
                   </RequirePermission>
                 </RequireAuth>
@@ -131,6 +134,24 @@ export default function AppUI() {
                 }
               />
             </Route>
+            <Route
+              path="/app/network"
+              element={
+                <RequireAuth>
+                  <NetworkPage />
+                </RequireAuth>
+              }
+            ></Route>
+            <Route
+              path="/app/recruitment"
+              element={
+                <RequireAuth>
+                  <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                    <RecruitmentPage />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            ></Route>
             <Route
               path="/app/access-denied"
               element={

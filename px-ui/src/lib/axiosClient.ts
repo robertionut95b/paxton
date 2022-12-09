@@ -1,5 +1,6 @@
 import { refreshLogin } from "@auth/authApi";
 import { APP_API_BASE_URL } from "@constants/Properties";
+import { FullAPiResponse } from "@interfaces/api.resp.types";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import graphqlRequestClient from "./graphqlRequestClient";
 
@@ -23,15 +24,18 @@ api.interceptors.response.use(
   (resp) => {
     return resp;
   },
-  async (err: AxiosError) => {
+  async (err: AxiosError<FullAPiResponse>) => {
     const config: AxiosRequestConfig & { _retry?: boolean } = err.config ?? {};
     const originalReq: AxiosRequestConfig & { _retry?: boolean } =
       err.config ?? {};
+    const notAuthMSg =
+      err.response?.data.message ===
+      "Full authentication is required to access this resource";
     if (
       err.response &&
       err.response.status === 401 &&
       !config._retry &&
-      originalReq.url?.endsWith("/current")
+      notAuthMSg
     ) {
       originalReq._retry = true;
       try {

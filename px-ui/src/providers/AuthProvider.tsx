@@ -15,6 +15,7 @@ import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import jwtDecode from "jwt-decode";
 import { useState } from "react";
+import { AuthErrorMessages } from "./messages";
 
 const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
   return {
@@ -48,12 +49,10 @@ export default function AuthProvider({
     },
     onError: (err) => {
       let msg = "Unknown error encountered, please try again later";
-      if (
-        err.response &&
-        err.response.status === 401 &&
-        err.response.data.message
-      ) {
-        msg = "Invalid username or password combination";
+      if (err.response && err.response.status === 401) {
+        msg =
+          AuthErrorMessages[err.response.data.message] ??
+          AuthErrorMessages["Unknown"];
       }
       showNotification({
         title: "Authentication error",

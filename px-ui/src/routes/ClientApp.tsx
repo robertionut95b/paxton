@@ -1,3 +1,4 @@
+import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
 import { useGetUserProfileQuery } from "@gql/generated";
@@ -48,7 +49,7 @@ export default function ClientApp() {
     <>
       <NavBar
         links={
-          permissions.includes("ROLE_ORGANIZATION_RECRUITER")
+          permissions.includes(RoleType.ROLE_RECRUITER)
             ? editorLinks
             : userLinks
         }

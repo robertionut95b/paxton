@@ -9,6 +9,7 @@ import {
 } from "@interfaces/reset-password.types";
 import { RegisterUserMutationProps } from "@interfaces/signup.types";
 import { api } from "@lib/axiosClient";
+import { AxiosResponse } from "axios";
 const AUTH_PATH = "auth";
 
 export const logoutUser = async (): Promise<void> => {
@@ -30,12 +31,14 @@ export const getCurrentUser = async () => {
   return resp;
 };
 
-export const refreshLogin = async (): Promise<LoginUserMutationResponseP> => {
-  const { data } = await api.post(
+export const refreshLogin = async (): Promise<
+  AxiosResponse<LoginUserMutationResponseP>
+> => {
+  const resp = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/refreshtoken`,
     null
   );
-  return data;
+  return resp;
 };
 
 export const registerUser = async (

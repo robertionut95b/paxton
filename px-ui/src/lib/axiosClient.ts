@@ -27,13 +27,17 @@ api.interceptors.response.use(
     const config: AxiosRequestConfig & { _retry?: boolean } = err.config ?? {};
     const originalReq: AxiosRequestConfig & { _retry?: boolean } =
       err.config ?? {};
-    if (!originalReq.url?.endsWith("/current")) return;
-    if (err.response && err.response.status === 401 && !config._retry) {
+    if (
+      err.response &&
+      err.response.status === 401 &&
+      !config._retry &&
+      originalReq.url?.endsWith("/current")
+    ) {
       originalReq._retry = true;
       try {
         const resp = await refreshLogin();
         if (resp) {
-          access_token = resp.access_token;
+          access_token = resp.data.access_token;
           graphqlRequestClient.setHeader(
             "Authorization",
             `Bearer ${access_token}`

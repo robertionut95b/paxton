@@ -1,7 +1,6 @@
 import RequireAuth from "@auth/RequireAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import RoleType from "@auth/RoleType";
-import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
@@ -32,7 +31,7 @@ const UserProfile = lazy(() => import("./user/UserProfile"));
 export default function AppUI() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<ApplicationSpinner />}>
+      <Suspense>
         <Routes>
           <Route>
             {/* Landing section of the app */}

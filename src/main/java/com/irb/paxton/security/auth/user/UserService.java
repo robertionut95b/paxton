@@ -1,5 +1,8 @@
 package com.irb.paxton.security.auth.user;
 
+import com.irb.paxton.core.organization.Organization;
+import com.irb.paxton.core.organization.Recruiter;
+import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
 import com.irb.paxton.security.auth.role.PaxtonRole;
@@ -8,6 +11,8 @@ import com.irb.paxton.security.auth.user.credentials.Credentials;
 import com.irb.paxton.security.auth.user.credentials.CredentialsType;
 import com.irb.paxton.security.auth.user.dto.UserSignupDto;
 import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
+import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import com.irb.paxton.security.auth.user.response.CurrentUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,19 +26,21 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
+
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private RecruiterRepository recruiterRepository;
+
     public List<User> getUsers() {
         return this.userRepository.findAll();
-    }
-
-    public void createUser(User user) {
-        this.userRepository.save(user);
     }
 
     public User findByEmailOrUsername(String email, String username) {
@@ -85,5 +92,16 @@ public class UserService {
                 new UserProfile(user, null, null, null, null,
                         null, null, String.format("%s's Profile", user.getUsername()), null)
         );
+    }
+
+    public CurrentUserDetails getCurrentUserDetails(String username) {
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Optional<Recruiter> recruiterOptional = this.recruiterRepository.findByUser_Username(user.getUsername());
+        if (recruiterOptional.isPresent()) {
+            Recruiter recruiter = recruiterOptional.get();
+            Organization organization = recruiter.getOrganization();
+            return new CurrentUserDetails(organization);
+        }
+        return new CurrentUserDetails();
     }
 }

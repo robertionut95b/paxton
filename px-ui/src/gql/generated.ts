@@ -413,7 +413,7 @@ export type UserProfile = {
   __typename?: 'UserProfile';
   city?: Maybe<City>;
   coverPhotography?: Maybe<Scalars['String']>;
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   experiences?: Maybe<Array<Maybe<Experience>>>;
   id: Scalars['ID'];
   photography?: Maybe<Scalars['String']>;
@@ -438,35 +438,35 @@ export type UpdateUserProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null } | null };
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile?: { __typename?: 'UserProfile', description?: string | null, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null } | null };
 
 export type AddUserProfileExperienceMutationVariables = Exact<{
   ExperienceInput: ExperienceInput;
 }>;
 
 
-export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
+export type AddUserProfileExperienceMutation = { __typename?: 'Mutation', addUserProfileExperience?: { __typename?: 'UserProfile', id: string, description?: string | null, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
 
 export type UpdateUserProfileExperienceMutationVariables = Exact<{
   ExperienceInput: ExperienceInput;
 }>;
 
 
-export type UpdateUserProfileExperienceMutation = { __typename?: 'Mutation', updateUserProfileExperience?: { __typename?: 'UserProfile', id: string, description: string, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
+export type UpdateUserProfileExperienceMutation = { __typename?: 'Mutation', updateUserProfileExperience?: { __typename?: 'UserProfile', id: string, description?: string | null, profileTitle: string, profileSlugUrl: string, city?: { __typename?: 'City', id: string, name: string } | null, experiences?: Array<{ __typename?: 'Experience', id: string } | null> | null } | null };
 
 export type AddUserProfileStudyMutationVariables = Exact<{
   StudyInput: StudyInput;
 }>;
 
 
-export type AddUserProfileStudyMutation = { __typename?: 'Mutation', addUserProfileStudy?: { __typename?: 'UserProfile', id: string, description: string, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
+export type AddUserProfileStudyMutation = { __typename?: 'Mutation', addUserProfileStudy?: { __typename?: 'UserProfile', id: string, description?: string | null, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
 
 export type UpdateUserProfileStudyMutationVariables = Exact<{
   StudyInput: StudyInput;
 }>;
 
 
-export type UpdateUserProfileStudyMutation = { __typename?: 'Mutation', updateUserProfileStudy?: { __typename?: 'UserProfile', id: string, description: string, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
+export type UpdateUserProfileStudyMutation = { __typename?: 'Mutation', updateUserProfileStudy?: { __typename?: 'UserProfile', id: string, description?: string | null, profileSlugUrl: string, studies?: Array<{ __typename?: 'Study', id: string } | null> | null } | null };
 
 export type AddInstitutionMutationVariables = Exact<{
   InstitutionInput: InstitutionInput;
@@ -501,7 +501,7 @@ export type GetUserProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description: string, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: any, endDate?: any | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: any, endDate?: any | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 

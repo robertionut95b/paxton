@@ -1,6 +1,7 @@
 import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
+import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
   BriefcaseIcon,
@@ -10,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Container } from "@mantine/core";
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 
 const renderLinksByPermission = (permissions: string[]) => {
@@ -57,7 +59,9 @@ export default function ClientApp() {
         profileLink={profileData?.getUserProfile?.profileSlugUrl}
       />
       <Container>
-        <Outlet />
+        <Suspense fallback={<GenericLoadingSkeleton />}>
+          <Outlet />
+        </Suspense>
       </Container>
     </>
   );

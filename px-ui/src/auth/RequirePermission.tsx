@@ -1,7 +1,6 @@
-import { PermissionType } from "@auth/permission.types";
+import { PermissionType, RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
-import { RoleType } from "./permission.types";
 
 const isAllowed = (
   permission: PermissionType | string,
@@ -14,17 +13,19 @@ const isAllowed = (
 export const isAdmin = (permissions: string[]) =>
   permissions.some((p) => p === RoleType.ROLE_ADMINISTRATOR);
 
+type RequireProps = {
+  children: JSX.Element;
+  permission: PermissionType | string | (() => boolean);
+  strict?: boolean;
+  returnValue?: "navigate" | "null";
+};
+
 export function RequirePermission({
   children,
   permission,
   strict = false,
   returnValue = "navigate",
-}: {
-  children: JSX.Element;
-  permission: PermissionType | string | (() => boolean);
-  strict?: boolean;
-  returnValue?: "navigate" | "null";
-}) {
+}: RequireProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
   const permissions = user?.permissions ?? [];

@@ -7,7 +7,7 @@ export default function JobsListingsSkeleton({
 }) {
   const cards = Array.from(Array(cardsNo).keys());
   return (
-    <div className="px-loading-skeleton">
+    <div className="px-loading-skeleton px-container-wrapper">
       <div className="px-loading-skeleton-heading">
         <Skeleton height={30} mb="sm" width="25%" />
         <Skeleton height={15} mb="lg" width="15%" />

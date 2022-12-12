@@ -49,7 +49,11 @@ export default function AuthProvider({
     graphqlRequestClient.setHeader("Authorization", bearer);
     const decodedAccessToken = jwtDecode(accessToken) as AccessTokenDecode;
     // set refresh interval
-    setRefreshIntervalInSec(expToMillis(decodedAccessToken.exp) - Date.now());
+    setRefreshIntervalInSec(
+      decodedAccessToken.exp < 1000
+        ? expToMillis(decodedAccessToken.exp) - Date.now()
+        : expToMillis(decodedAccessToken.exp) - 1000 - Date.now()
+    );
     // set user instance
     setUser(userDecodeToUser(decodedAccessToken));
   };

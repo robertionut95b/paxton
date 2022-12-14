@@ -19,7 +19,6 @@ import {
   ClipboardDocumentIcon,
   CogIcon,
   CubeIcon,
-  ExclamationTriangleIcon,
   MapPinIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -77,56 +76,17 @@ export default function ProfileExperienceModal() {
   );
 
   const { data: countries, isLoading: isCountryListLoading } =
-    useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for location, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
-    });
+    useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {});
 
   const { data: organizations, isLoading: isOrganizationsLoading } =
-    useGetAllOrganizationsQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for organizations, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
-    });
+    useGetAllOrganizationsQuery(graphqlRequestClient, undefined, {});
 
   const { data: activitySectors, isLoading: isActivitySectorsLoading } =
-    useGetAllActivitySectorsQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for activity sectors, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
-    });
+    useGetAllActivitySectorsQuery(graphqlRequestClient, undefined, {});
 
   const { isLoading, mutate } = useAddUserProfileExperienceMutation(
     graphqlRequestClient,
     {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message:
-            "Could not add experience information, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
@@ -145,15 +105,6 @@ export default function ProfileExperienceModal() {
 
   const { isLoading: updateLoading, mutate: mutateUpdate } =
     useUpdateUserProfileExperienceMutation(graphqlRequestClient, {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message:
-            "Could not update experience information, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
@@ -321,7 +272,7 @@ export default function ProfileExperienceModal() {
           mt="md"
           withAsterisk
           icon={<ClipboardDocumentIcon width={18} />}
-          data={(Object.entries(ContractType) ?? [])?.map(([key, value]) => ({
+          data={(Object.entries(ContractType) ?? [])?.map(([, value]) => ({
             label: capitalizeFirstLetter(
               value.toLowerCase().split("_").join(" ")
             ),

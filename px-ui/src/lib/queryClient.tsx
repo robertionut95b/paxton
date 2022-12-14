@@ -10,6 +10,24 @@ export const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchInterval: false,
       retry: 0,
+      onError: () => {
+        showNotification({
+          title: "Application error",
+          message: "Oops, something went wrong!",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      },
+    },
+    mutations: {
+      onError: () => {
+        showNotification({
+          title: "Application error",
+          message: "Oops, something went wrong!",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      },
     },
   },
   queryCache: new QueryCache({

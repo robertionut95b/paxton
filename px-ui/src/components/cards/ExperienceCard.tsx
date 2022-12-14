@@ -21,7 +21,7 @@ export default function ExperienceCard({
 }: {
   experience: [string, Array<Experience>] | [string, null];
 }) {
-  const organization = experience?.[1]?.[0]!.organization;
+  const organization = experience?.[1]?.[0]?.organization;
   const experiences = experience?.[1] ?? [];
 
   return (

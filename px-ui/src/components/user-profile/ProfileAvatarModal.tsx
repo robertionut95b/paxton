@@ -1,9 +1,5 @@
 import { useAuth } from "@auth/useAuth";
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  PhotoIcon,
-} from "@heroicons/react/24/outline";
+import { CheckCircleIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import useChangeProfileAvatar from "@hooks/useChangeProfileAvatar";
 import { Button, FileInput, Modal } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -45,14 +41,6 @@ export default function ProfileAvatarModal() {
         message: "Successfully profile avatar picture",
         autoClose: 5000,
         icon: <CheckCircleIcon width={20} />,
-      });
-    },
-    onError: (err) => {
-      showNotification({
-        title: "Upload error",
-        message: "Something went wrong! Could not update avatar picture",
-        autoClose: 5000,
-        icon: <ExclamationTriangleIcon width={20} />,
       });
     },
   });

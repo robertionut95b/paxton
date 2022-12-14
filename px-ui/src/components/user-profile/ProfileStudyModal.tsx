@@ -20,7 +20,6 @@ import {
   CogIcon,
   DocumentCheckIcon,
   DocumentDuplicateIcon,
-  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
@@ -94,15 +93,6 @@ export default function ProfileStudyModal() {
 
   const { data: institutionsData, isLoading: isInstitutionsLoading } =
     useGetAllInstitutionsQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for institutions, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: (data) => {
         setInstitutions(
           data.getAllInstitutions?.map((i) => ({
@@ -124,15 +114,6 @@ export default function ProfileStudyModal() {
 
   const { data: domainsData, isLoading: isDomainsLoading } =
     useGetAllDomainsQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for domains, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: (data) => {
         setDomains(
           data.getAllDomains?.map((d) => ({
@@ -152,15 +133,6 @@ export default function ProfileStudyModal() {
 
   const { data: certificationsData, isLoading: isCertificationsLoading } =
     useGetAllCertificationsQuery(graphqlRequestClient, undefined, {
-      onError: () => {
-        showNotification({
-          title: "Data error",
-          message:
-            "Could not retrieve values for certifications, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: (data) => {
         setCertifications(
           data.getAllCertifications?.map((c) => ({
@@ -201,15 +173,6 @@ export default function ProfileStudyModal() {
 
   const { mutate: addStudy, isLoading: isAddStudyLoading } =
     useAddUserProfileStudyMutation(graphqlRequestClient, {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message:
-            "Could not update studies information, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
@@ -227,15 +190,6 @@ export default function ProfileStudyModal() {
 
   const { mutate: updateStudy, isLoading: isUpdateStudyLoading } =
     useUpdateUserProfileStudyMutation(graphqlRequestClient, {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message:
-            "Could not update studies information, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
@@ -285,95 +239,62 @@ export default function ProfileStudyModal() {
   };
 
   const { mutateAsync: addInstitution, isLoading: isAddInstitutionLoading } =
-    useAddInstitutionMutation(graphqlRequestClient, {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message: "Could not update institutions list, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
-    });
+    useAddInstitutionMutation(graphqlRequestClient, {});
 
   const { mutateAsync: addDomain, isLoading: isAddDomainLoading } =
-    useAddDomainMutation(graphqlRequestClient, {
-      onError: (err) => {
-        showNotification({
-          title: "Unknown error",
-          message: "Could not update domains list, please try again later",
-          autoClose: 5000,
-          icon: <ExclamationTriangleIcon width={20} />,
-        });
-      },
-    });
+    useAddDomainMutation(graphqlRequestClient, {});
 
   const {
     mutateAsync: addCertification,
     isLoading: isAddCertificationLoading,
-  } = useAddCertificationMutation(graphqlRequestClient, {
-    onError: (err) => {
-      showNotification({
-        title: "Unknown error",
-        message: "Could not update certifications list, please try again later",
-        autoClose: 5000,
-        icon: <ExclamationTriangleIcon width={20} />,
-      });
-    },
-  });
+  } = useAddCertificationMutation(graphqlRequestClient, {});
 
   const createInstitutionCb = async (query: string) => {
-    try {
-      const institution = await addInstitution({
-        InstitutionInput: {
-          name: query,
-        },
-      });
-      const item = {
-        value: institution.addInstitution?.id,
-        label: institution.addInstitution?.name,
-      };
-      setInstitutions((prev) => [...prev, item]);
-      setSelectedInstitution(item.value as string);
-      form.setFieldValue("institution", item.value as string);
-      return item;
-    } catch (err) {}
+    const institution = await addInstitution({
+      InstitutionInput: {
+        name: query,
+      },
+    });
+    const item = {
+      value: institution.addInstitution?.id,
+      label: institution.addInstitution?.name,
+    };
+    setInstitutions((prev) => [...prev, item]);
+    setSelectedInstitution(item.value as string);
+    form.setFieldValue("institution", item.value as string);
+    return item;
   };
 
   const createDomainCb = async (query: string) => {
-    try {
-      const domain = await addDomain({
-        DomainInput: {
-          name: query,
-        },
-      });
-      const item = {
-        value: domain.addDomain?.id,
-        label: domain.addDomain?.name,
-      };
-      setDomains((prev) => [...prev, item]);
-      setSelectedDomain(item.value as string);
-      form.setFieldValue("domainStudy", item.value as string);
-      return item;
-    } catch (err) {}
+    const domain = await addDomain({
+      DomainInput: {
+        name: query,
+      },
+    });
+    const item = {
+      value: domain.addDomain?.id,
+      label: domain.addDomain?.name,
+    };
+    setDomains((prev) => [...prev, item]);
+    setSelectedDomain(item.value as string);
+    form.setFieldValue("domainStudy", item.value as string);
+    return item;
   };
 
   const createCertificationCb = async (query: string) => {
-    try {
-      const certification = await addCertification({
-        CertificationInput: {
-          name: query,
-        },
-      });
-      const item = {
-        value: certification.addCertification?.id,
-        label: certification.addCertification?.name,
-      };
-      setCertifications((prev) => [...prev, item]);
-      setSelectedCertification(item.value as string);
-      form.setFieldValue("certification", item.value as string);
-      return item;
-    } catch (err) {}
+    const certification = await addCertification({
+      CertificationInput: {
+        name: query,
+      },
+    });
+    const item = {
+      value: certification.addCertification?.id,
+      label: certification.addCertification?.name,
+    };
+    setCertifications((prev) => [...prev, item]);
+    setSelectedCertification(item.value as string);
+    form.setFieldValue("certification", item.value as string);
+    return item;
   };
 
   return (

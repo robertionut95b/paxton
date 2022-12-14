@@ -31,7 +31,7 @@ const daysFmt = (days: number) => {
   const months = Math.floor((days - years * 365) / 30);
   const d = Math.round(days - years * 365 - months * 30);
 
-  let res = [];
+  const res = [];
   if (years > 0) {
     if (years === 1) {
       res.push(years + " year");

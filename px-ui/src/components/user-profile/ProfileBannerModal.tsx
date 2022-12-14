@@ -1,9 +1,5 @@
 import { useAuth } from "@auth/useAuth";
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  PhotoIcon,
-} from "@heroicons/react/24/outline";
+import { CheckCircleIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import useChangeProfileBanner from "@hooks/useChangeProfileBanner";
 import { Button, FileInput, Modal } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -45,14 +41,6 @@ export default function ProfileBannerModal() {
         message: "Successfully updated cover picture",
         autoClose: 5000,
         icon: <CheckCircleIcon width={20} />,
-      });
-    },
-    onError: (err) => {
-      showNotification({
-        title: "Upload error",
-        message: "Something went wrong! Could not update cover",
-        autoClose: 5000,
-        icon: <ExclamationTriangleIcon width={20} />,
       });
     },
   });

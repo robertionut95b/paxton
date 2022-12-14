@@ -22,3 +22,5 @@ export const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
     </div>
   )
 );
+
+SelectItem.displayName = "SelectItem";

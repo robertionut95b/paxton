@@ -1,4 +1,5 @@
 import { useAuth } from "@auth/useAuth";
+import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
@@ -21,6 +22,8 @@ export default function OrganizationRecruiterDashboard() {
   const lastOrganization =
     userProfile?.getUserProfile?.experiences?.[0]?.organization;
 
+  if (isLoadingUserProfile) return <GenericLoadingSkeleton />;
+
   return (
     <div className="px-recruiter-org-dashboard flex flex-col flex-wrap">
       <Paper shadow={"xs"} p="md">
@@ -31,7 +34,7 @@ export default function OrganizationRecruiterDashboard() {
                 leftIcon={<BuildingOfficeIcon width={16} />}
                 variant="light"
               >
-                Company's jobs
+                Company&apos;s jobs
               </Button>
             </NavLink>
             <NavLink

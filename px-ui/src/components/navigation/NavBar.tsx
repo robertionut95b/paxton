@@ -24,6 +24,7 @@ interface NavBarProps {
   links: LinkItem[];
   user?: User | null;
   profileLink?: string;
+  avatarSrc?: string | null;
 }
 
 const HEADER_HEIGHT = 56;
@@ -106,7 +107,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const NavBar = ({ links, user, profileLink }: NavBarProps) => {
+const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
   const [opened, { toggle, close }] = useDisclosure(false);
   const location = useLocation();
   const [active, setActive] = useState(location.pathname || links[0].link);
@@ -142,7 +143,7 @@ const NavBar = ({ links, user, profileLink }: NavBarProps) => {
           <Group className={classes.links} spacing={5}>
             {items}
           </Group>
-          <AvatarMenu user={user} profileLink={profileLink} />
+          <AvatarMenu user={user} profileLink={profileLink} src={avatarSrc} />
           <Burger
             opened={opened}
             onClick={toggle}

@@ -2,6 +2,7 @@ import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
   BriefcaseIcon,
@@ -57,6 +58,10 @@ export default function ClientApp() {
         links={renderLinksByPermission(permissions)}
         user={user}
         profileLink={profileData?.getUserProfile?.profileSlugUrl}
+        avatarSrc={
+          profileData?.getUserProfile &&
+          `${APP_API_BASE_URL}/${profileData?.getUserProfile?.photography}`
+        }
       />
       <Container>
         <Suspense fallback={<GenericLoadingSkeleton />}>

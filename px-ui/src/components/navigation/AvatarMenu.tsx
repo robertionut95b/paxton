@@ -14,15 +14,22 @@ import { Link } from "react-router-dom";
 const AvatarMenu = ({
   user,
   profileLink,
+  src,
 }: {
   user?: User | null;
   profileLink?: string;
+  src?: string | null;
 }) => {
   const link = `/app/up/${profileLink}`;
   return (
     <Menu shadow="md" width={200} transitionDuration={300}>
       <Menu.Target>
-        <Avatar className="cursor-pointer" radius={"xl"} color="violet">
+        <Avatar
+          className="cursor-pointer"
+          radius={"xl"}
+          color="violet"
+          src={src}
+        >
           {user?.username?.[0].toUpperCase() ?? "U"}
         </Avatar>
       </Menu.Target>

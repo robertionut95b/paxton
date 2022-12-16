@@ -2,6 +2,7 @@ import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
+import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
@@ -11,7 +12,7 @@ import {
   NewspaperIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Container } from "@mantine/core";
+import { Center, Container, Skeleton } from "@mantine/core";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 
@@ -48,21 +49,35 @@ const renderLinksByPermission = (permissions: string[]) => {
 
 export default function ClientApp() {
   const { user } = useAuth();
-  const { data: profileData } = useGetUserProfileQuery(graphqlRequestClient, {
-    profileSlugUrl: user?.profileSlugUrl ?? user?.profileSlugUrl,
-  });
+  const { data: profileData, isLoading } = useGetUserProfileQuery(
+    graphqlRequestClient,
+    {
+      profileSlugUrl: user?.profileSlugUrl ?? user?.profileSlugUrl,
+    }
+  );
   const permissions = user?.permissions || [];
   return (
     <>
-      <NavBar
-        links={renderLinksByPermission(permissions)}
-        user={user}
-        profileLink={profileData?.getUserProfile?.profileSlugUrl}
-        avatarSrc={
-          profileData?.getUserProfile &&
-          `${APP_API_BASE_URL}/${profileData?.getUserProfile?.photography}`
+      <ShowIfElse
+        if={isLoading}
+        else={
+          <NavBar
+            links={renderLinksByPermission(permissions)}
+            user={user}
+            profileLink={profileData?.getUserProfile?.profileSlugUrl}
+            avatarSrc={
+              profileData?.getUserProfile &&
+              `${APP_API_BASE_URL}/${profileData?.getUserProfile?.photography}`
+            }
+          />
         }
-      />
+      >
+        <div className="p-4 bg-white w-full mb-6">
+          <Center>
+            <Skeleton width={"58%"} height={12} radius="xl" />
+          </Center>
+        </div>
+      </ShowIfElse>
       <Container>
         <Suspense fallback={<GenericLoadingSkeleton />}>
           <Outlet />

@@ -23,5 +23,11 @@
       1,
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     ]
-  }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "root": true
 }

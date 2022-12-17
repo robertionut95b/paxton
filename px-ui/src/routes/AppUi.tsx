@@ -27,6 +27,10 @@ const OrganizationRecruiterDashboard = lazy(
 const SignUp = lazy(() => import("./SignUp"));
 const RecruitmentPage = lazy(() => import("./user/RecruitmentPage"));
 const UserProfile = lazy(() => import("./user/UserProfile"));
+const OrganizationPostJobForm = lazy(
+  () => import("./organization/OrganizationPostJobForm")
+);
+const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
 
 export default function AppUI() {
   return (
@@ -69,7 +73,7 @@ export default function AppUI() {
                 element={
                   <RequireAuth>
                     <RequirePermission permission={RoleType.ROLE_VIEWER}>
-                      <JobsPage />
+                      <></>
                     </RequirePermission>
                   </RequireAuth>
                 }
@@ -166,7 +170,26 @@ export default function AppUI() {
                     </RequirePermission>
                   </RequireAuth>
                 }
-              ></Route>
+              />
+              <Route
+                path="/app/organizations"
+                element={
+                  <RequireAuth>
+                    <OrganizationPage />
+                  </RequireAuth>
+                }
+              >
+                <Route
+                  path="/app/organizations/:organizationId/jobs/publish-job/form"
+                  element={
+                    <RequireAuth>
+                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                        <OrganizationPostJobForm />
+                      </RequirePermission>
+                    </RequireAuth>
+                  }
+                />
+              </Route>
               <Route
                 path="/app/access-denied"
                 element={

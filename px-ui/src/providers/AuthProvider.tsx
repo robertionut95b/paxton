@@ -41,6 +41,7 @@ export default function AuthProvider({
   const [refreshIntervalInSec, setRefreshIntervalInSec] = useState(
     expToMillis(60)
   );
+  const [loading, setLoading] = useState(true);
 
   const loadMetaFromToken = (accessToken: string) => {
     const bearer = `Bearer ${accessToken}`;
@@ -81,29 +82,26 @@ export default function AuthProvider({
 
   const { mutate: logOut } = useLogoutUser();
 
-  const { isLoading: refreshIsLoading, mutate: refreshLogin } = useRefreshLogin(
-    {
-      onSuccess: (data) => {
-        loadMetaFromToken(data.data.access_token);
-      },
-      onError: (err) => {
-        if (
-          err.response?.status === 400 &&
-          err.response?.data?.message ===
-            "Refresh token was expired. Please make a new sign-in request"
-        ) {
-          showNotification({
-            title: "Authentication error",
-            message: "Your session has expired, please log in again",
-            autoClose: 5000,
-            icon: <LockClosedIcon width={20} />,
-          });
-          setRefreshIntervalInSec(Number.MAX_SAFE_INTEGER);
-        }
-        setUser(null);
-      },
-    }
-  );
+  const { mutate: refreshLogin } = useRefreshLogin({
+    onSuccess: (data) => loadMetaFromToken(data.data.access_token),
+    onError: (err) => {
+      if (
+        err.response?.status === 400 &&
+        err.response?.data?.message ===
+          "Refresh token was expired. Please make a new sign-in request"
+      ) {
+        showNotification({
+          title: "Authentication error",
+          message: "Your session has expired, please log in again",
+          autoClose: 5000,
+          icon: <LockClosedIcon width={20} />,
+        });
+        setRefreshIntervalInSec(Number.MAX_SAFE_INTEGER);
+      }
+      setUser(null);
+    },
+    onSettled: () => setLoading(false),
+  });
 
   const signin = (
     { username, password }: LoginUserMutationProps,
@@ -126,12 +124,11 @@ export default function AuthProvider({
     user,
     signin,
     signout,
-    loading: (!user || user === null) && refreshIsLoading,
+    loading: (!user || user === null) && loading,
     setUser,
   };
 
-  if ((!user || user === null) && refreshIsLoading)
-    return <ApplicationSpinner />;
+  if ((!user || user === null) && loading) return <ApplicationSpinner />;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

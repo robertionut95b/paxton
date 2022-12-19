@@ -268,10 +268,28 @@ input UserProfileInput {
     profileSlugUrl: String!
 }
 
+enum FieldType {
+    BOOLEAN
+    CHAR
+    DATE
+    DOUBLE
+    INTEGER
+    LONG
+    STRING
+}
+
+enum Operator {
+    EQUAL
+    NOT_EQUAL
+    LIKE
+    IN
+    BETWEEN
+}
+
 input FiltersInput {
     key: String!
-    operator: String!
-    field_type: String!
+    operator: Operator!
+    fieldType: FieldType!
     value: String!
 }
 

@@ -1,9 +1,11 @@
 package com.irb.paxton.core.jobs.category;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +26,7 @@ public class JobCategory extends PaxtonEntity<Long> {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

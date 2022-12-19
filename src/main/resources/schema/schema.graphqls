@@ -97,6 +97,10 @@ type JobCategory {
     name: String!
 }
 
+input JobCategoryInput {
+    name: String!
+}
+
 type Job {
     id: ID!
     name: String!
@@ -319,4 +323,5 @@ type Mutation {
     addInstitution(InstitutionInput: InstitutionInput!): Institution
     addDomain(DomainInput: DomainInput!): Domain
     addCertification(CertificationInput: CertificationInput!): Certification
+    addJobCategory(JobCategoryInput: JobCategoryInput!): JobCategory
 }

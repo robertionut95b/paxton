@@ -1,5 +1,6 @@
 package com.irb.paxton.security.service;
 
+import com.irb.paxton.core.organization.Organization;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -11,5 +12,15 @@ public class PaxtonSecurityService {
 
     public boolean isOwner(Authentication authentication, String userName) {
         return authentication.getName().equals(userName);
+    }
+
+    public boolean isOrganizationRecruiter(Authentication authentication, Organization organization) {
+        return organization
+                .getRecruiters()
+                .stream()
+                .anyMatch(
+                        recruiter -> recruiter.getUser().getUsername()
+                                .equals(authentication.getName())
+                );
     }
 }

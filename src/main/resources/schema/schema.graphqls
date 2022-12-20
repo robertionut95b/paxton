@@ -272,6 +272,7 @@ enum FieldType {
     BOOLEAN
     CHAR
     DATE
+    DATETIME
     DOUBLE
     INTEGER
     LONG
@@ -284,6 +285,10 @@ enum Operator {
     LIKE
     IN
     BETWEEN
+    LESS_THAN
+    LESS_THAN_EQUAL
+    GREATER_THAN
+    GREATER_THAN_EQUAL
 }
 
 input FiltersInput {

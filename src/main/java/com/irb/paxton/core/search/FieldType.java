@@ -2,8 +2,7 @@ package com.irb.paxton.core.search;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.OffsetDateTime;
 
 @Slf4j
 public enum FieldType {
@@ -23,10 +22,24 @@ public enum FieldType {
         public Object parse(String value) {
             Object date = null;
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                date = LocalDateTime.parse(value, formatter);
+                OffsetDateTime formatter = OffsetDateTime.parse(value);
+                date = formatter.toLocalDate();
             } catch (Exception e) {
                 log.info("Failed parse field type DATE {}", e.getMessage());
+            }
+
+            return date;
+        }
+    },
+
+    DATETIME {
+        public Object parse(String value) {
+            Object date = null;
+            try {
+                OffsetDateTime formatter = OffsetDateTime.parse(value);
+                date = formatter.toLocalDateTime();
+            } catch (Exception e) {
+                log.info("Failed parse field type DATETIME {}", e.getMessage());
             }
 
             return date;

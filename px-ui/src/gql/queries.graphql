@@ -157,3 +157,18 @@ query getAllCertifications {
     name
   }
 }
+
+query getAllJobCategories {
+  getAllJobCategories {
+    id
+    name
+  }
+}
+
+query getAllJobs {
+  getAllJobs {
+    id
+    name
+    description
+  }
+}

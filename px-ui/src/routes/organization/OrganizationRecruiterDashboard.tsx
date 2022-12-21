@@ -1,14 +1,32 @@
 import { useAuth } from "@auth/useAuth";
+import JobListingItem from "@components/jobs/JobListing";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
-import { useGetUserProfileQuery } from "@gql/generated";
+import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
-  BuildingOfficeIcon,
-  ClipboardDocumentIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
+  FieldType,
+  Operator,
+  SortDirection,
+  useGetAllJobListingsQuery,
+  useGetUserProfileQuery,
+} from "@gql/generated";
+import { ClipboardDocumentIcon, UserIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Avatar, Button, Group, Paper, Text } from "@mantine/core";
+import {
+  Avatar,
+  Button,
+  Container,
+  Divider,
+  Group,
+  Pagination,
+  Paper,
+  Select,
+  Text,
+  Title,
+} from "@mantine/core";
+import { formatISO } from "date-fns";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 export default function OrganizationRecruiterDashboard() {
@@ -22,21 +40,109 @@ export default function OrganizationRecruiterDashboard() {
   const lastOrganization =
     userProfile?.getUserProfile?.experiences?.[0]?.organization;
 
+  const todayIsoFmt = formatISO(new Date());
+
+  const [p, setP] = useState(1);
+  const [ps, setPs] = useState(5);
+  const [pi, setPi] = useState(1);
+  const [psi, setPsi] = useState(5);
+  const { data: orgJobs, isLoading: isOrgJobsLoading } =
+    useGetAllJobListingsQuery(
+      graphqlRequestClient,
+      {
+        searchQuery: {
+          page: p - 1,
+          size: ps,
+          filters: [
+            {
+              key: "organization",
+              fieldType: FieldType.Long,
+              value: lastOrganization?.id.toString() ?? "0",
+              operator: Operator.Equal,
+            },
+            {
+              key: "availableTo",
+              fieldType: FieldType.Date,
+              value: todayIsoFmt,
+              operator: Operator.GreaterThan,
+            },
+            {
+              key: "availableFrom",
+              fieldType: FieldType.Date,
+              value: todayIsoFmt,
+              operator: Operator.LessThan,
+            },
+          ],
+          sorts: [
+            {
+              direction: SortDirection.Desc,
+              key: "createdAt",
+            },
+          ],
+        },
+      },
+      {
+        queryKey: [`jobsActiveOrgListing${p}&${ps}`],
+        keepPreviousData: true,
+        staleTime: 1000 * 60,
+        enabled: !!lastOrganization,
+      }
+    );
+
+  const { data: orgJobsInactive, isLoading: isOrgJobsLoadingInactive } =
+    useGetAllJobListingsQuery(
+      graphqlRequestClient,
+      {
+        searchQuery: {
+          page: p - 1,
+          size: ps,
+          filters: [
+            {
+              key: "organization",
+              fieldType: FieldType.Long,
+              value: lastOrganization?.id.toString() ?? "0",
+              operator: Operator.Equal,
+            },
+            {
+              key: "availableFrom",
+              fieldType: FieldType.Date,
+              value: todayIsoFmt,
+              operator: Operator.GreaterThan,
+            },
+          ],
+          sorts: [
+            {
+              direction: SortDirection.Desc,
+              key: "createdAt",
+            },
+          ],
+        },
+      },
+      {
+        queryKey: [`jobsActiveOrgListing${p}&${ps}`],
+        keepPreviousData: true,
+        staleTime: 1000 * 60,
+        enabled: !!lastOrganization,
+      }
+    );
+
+  const totalPages = orgJobs?.getAllJobListings?.totalPages ?? 0;
+  const totalElements = orgJobs?.getAllJobListings?.totalElements ?? 0;
+  const orgJobsData = orgJobs?.getAllJobListings?.list || [];
+
+  const totalPagesInactive =
+    orgJobsInactive?.getAllJobListings?.totalPages ?? 0;
+  const totalElementsInactive =
+    orgJobsInactive?.getAllJobListings?.totalElements ?? 0;
+  const orgJobsDataInactive = orgJobsInactive?.getAllJobListings?.list || [];
+
   if (isLoadingUserProfile) return <GenericLoadingSkeleton />;
 
   return (
-    <div className="px-recruiter-org-dashboard flex flex-col flex-wrap">
+    <div className="px-recruiter-org-dashboard flex flex-col flex-wrap gap-y-4">
       <Paper shadow={"xs"} p="md">
         <Group position="apart">
           <Group spacing="xs">
-            <NavLink to={`/app/organizations/${lastOrganization?.id}/jobs`}>
-              <Button
-                leftIcon={<BuildingOfficeIcon width={16} />}
-                variant="light"
-              >
-                Company&apos;s jobs
-              </Button>
-            </NavLink>
             <NavLink
               to={`/app/organizations/${lastOrganization?.id}/jobs/publish-job/form`}
             >
@@ -71,6 +177,125 @@ export default function OrganizationRecruiterDashboard() {
           </ShowIf>
         </Group>
       </Paper>
+      <ShowIfElse if={!isOrgJobsLoading} else={<JobsListingsSkeleton />}>
+        <Paper shadow={"xs"} p="md">
+          <Title mb={"xs"} order={4}>
+            Organization&apos;s active jobs
+          </Title>
+          <Text color="dimmed" size={13}>
+            {totalElements} results
+          </Text>
+          <Container>
+            {orgJobsData.map(
+              (jl, idx) =>
+                jl && (
+                  <div key={jl.id}>
+                    <JobListingItem data={jl} />
+                    {idx !== orgJobsData.length - 1 && <Divider />}
+                  </div>
+                )
+            )}
+            <div className="px-org-jobs-pagination flex justify-between items-center mt-4">
+              <Select
+                data={[
+                  { value: "5", label: "5" },
+                  { value: "10", label: "10" },
+                  { value: "20", label: "20" },
+                  { value: "50", label: "50" },
+                ]}
+                styles={{
+                  root: {
+                    display: "flex",
+                    alignItems: "center",
+                  },
+                  label: {
+                    marginRight: "10px",
+                  },
+                  input: {
+                    width: "5rem",
+                  },
+                }}
+                label="Page size"
+                defaultValue={ps.toString()}
+                value={ps.toString()}
+                onChange={(v) => {
+                  setPs(parseInt(v ?? "10"));
+                  setP(1);
+                }}
+              />
+              <Pagination
+                total={totalPages}
+                page={p}
+                onChange={setP}
+                initialPage={0}
+                position="right"
+                grow
+              />
+            </div>
+          </Container>
+        </Paper>
+      </ShowIfElse>
+      <ShowIfElse
+        if={!isOrgJobsLoadingInactive}
+        else={<JobsListingsSkeleton />}
+      >
+        <Paper shadow={"xs"} p="md">
+          <Title mb={"xs"} order={4}>
+            Organization&apos;s inactive jobs
+          </Title>
+          <Text color="dimmed" size={13}>
+            {totalElementsInactive} results
+          </Text>
+          <Container>
+            {orgJobsDataInactive.map(
+              (jl, idx) =>
+                jl && (
+                  <div className="opacity-50" key={jl.id}>
+                    <JobListingItem data={jl} />
+                    {idx !== orgJobsDataInactive.length - 1 && <Divider />}
+                  </div>
+                )
+            )}
+            <div className="px-org-jobs-pagination flex justify-between items-center mt-4">
+              <Select
+                data={[
+                  { value: "5", label: "5" },
+                  { value: "10", label: "10" },
+                  { value: "20", label: "20" },
+                  { value: "50", label: "50" },
+                ]}
+                styles={{
+                  root: {
+                    display: "flex",
+                    alignItems: "center",
+                  },
+                  label: {
+                    marginRight: "10px",
+                  },
+                  input: {
+                    width: "5rem",
+                  },
+                }}
+                label="Page size"
+                defaultValue={psi.toString()}
+                value={psi.toString()}
+                onChange={(v) => {
+                  setPsi(parseInt(v ?? "10"));
+                  setPi(1);
+                }}
+              />
+              <Pagination
+                total={totalPagesInactive}
+                page={pi}
+                onChange={setPi}
+                initialPage={0}
+                position="right"
+                grow
+              />
+            </div>
+          </Container>
+        </Paper>
+      </ShowIfElse>
     </div>
   );
 }

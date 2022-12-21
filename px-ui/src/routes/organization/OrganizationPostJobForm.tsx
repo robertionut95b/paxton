@@ -1,34 +1,44 @@
-import { useAuth } from "@auth/useAuth";
 import { SelectItem } from "@components/select-items/SelectItem";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   ContractType,
+  useAddJobCategoryMutation,
+  useGetAllJobCategoriesQuery,
+  useGetAllJobsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
+  usePublishJobListingMutation,
 } from "@gql/generated";
 import {
   BuildingOffice2Icon,
   CalendarIcon,
   ChatBubbleBottomCenterTextIcon,
+  CheckCircleIcon,
   ClipboardDocumentIcon,
   CubeIcon,
+  LifebuoyIcon,
   MapPinIcon,
   UsersIcon,
+  WrenchIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
+  Button,
+  Group,
   Loader,
   Modal,
   NumberInput,
   Select,
+  Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
-import { useQueryClient } from "@tanstack/react-query";
-import { capitalizeFirstLetter } from "@utils/capitalizeString";
+import { showNotification } from "@mantine/notifications";
+import { prettyEnumValue } from "@utils/enumUtils";
 import { FormJobListingSchema } from "@validator/FormJobListingSchema";
+import { addDays, format } from "date-fns";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -36,8 +46,6 @@ export default function OrganizationPostJobForm() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
   const { organizationId } = useParams();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   // const prevData = queryClient.getQueryData<GetUserProfileQuery>([
   //   "GetUserProfile",
@@ -55,10 +63,70 @@ export default function OrganizationPostJobForm() {
   const [startDate, setStartDate] = useState<Date>(new Date());
 
   const { data: countries, isLoading: isCountryListLoading } =
-    useGetCountriesCitiesQuery(graphqlRequestClient, undefined, {});
+    useGetCountriesCitiesQuery(graphqlRequestClient);
 
   const { data: organizations, isLoading: isOrganizationsLoading } =
-    useGetAllOrganizationsQuery(graphqlRequestClient, undefined, {});
+    useGetAllOrganizationsQuery(graphqlRequestClient);
+
+  const { data: jobCategoriesData, isLoading: isJobCategoriesLoading } =
+    useGetAllJobCategoriesQuery(graphqlRequestClient, undefined, {
+      onSuccess: ({ getAllJobCategories }) => {
+        setJobCategories(
+          getAllJobCategories?.map((j) => ({ label: j?.name, value: j?.id })) ??
+            []
+        );
+      },
+    });
+
+  const { data: jobs, isLoading: isJobsLoading } =
+    useGetAllJobsQuery(graphqlRequestClient);
+
+  const [jobCategories, setJobCategories] = useState<
+    { label?: string; value?: string }[]
+  >(
+    jobCategoriesData?.getAllJobCategories?.map((j) => ({
+      label: j?.name,
+      value: j?.id,
+    })) ?? []
+  );
+
+  const [selectedJobCategory, setSelectedJobCategory] = useState<string | null>(
+    null
+  );
+
+  const { mutateAsync: addJobCategory, isLoading: isAddJobCategoryLoading } =
+    useAddJobCategoryMutation(graphqlRequestClient);
+
+  const createJobCategoryCb = async (query: string) => {
+    const jobCategory = await addJobCategory({
+      JobCategoryInput: {
+        name: query,
+      },
+    });
+    const item = {
+      value: jobCategory.addJobCategory?.id,
+      label: jobCategory.addJobCategory?.name,
+    };
+    setJobCategories((prev) => [...prev, item]);
+    setSelectedJobCategory(item.value as string);
+    form.setFieldValue("categoryId", item.value as string);
+    return item;
+  };
+
+  const { mutate: publishJob } = usePublishJobListingMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: () => {
+        showNotification({
+          title: "Organization updates",
+          message: "Successfully published job listing",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+        closeModal();
+      },
+    }
+  );
 
   const locations =
     countries?.getCountriesCities
@@ -82,19 +150,26 @@ export default function OrganizationPostJobForm() {
       title: "",
       description: "",
       availableFrom: new Date(),
-      availableTo: new Date(),
+      availableTo: addDays(new Date(), 1),
       location: "",
-      jobId: null,
+      jobId: "",
       numberOfVacancies: 1,
-      contractType: "",
+      contractType: ContractType["FullTime"],
       organizationId: organizationId,
-      categoryId: null,
+      categoryId: "",
     },
     validate: zodResolver(FormJobListingSchema),
   });
 
   const handleSubmit = async (values: typeof form["values"]) => {
-    console.log(values);
+    publishJob({
+      JobListingInput: {
+        ...values,
+        organizationId: organizationId as string,
+        availableFrom: format(values.availableFrom, "yyyy-MM-dd"),
+        availableTo: format(values.availableTo, "yyyy-MM-dd"),
+      },
+    });
   };
 
   return (
@@ -136,30 +211,40 @@ export default function OrganizationPostJobForm() {
             form.setFieldValue("description", e.currentTarget.value);
           }}
         />
+        <Group position="right">
+          <Text
+            size="xs"
+            color={!form.errors.description ? "dimmed" : "red"}
+            mt={4}
+          >
+            {desc.length}/2.000
+          </Text>
+        </Group>
         <DatePicker
           withAsterisk
           mt="md"
           label="From"
-          description="The starting date of employment"
+          description="The starting date of this listing"
           clearable={false}
           icon={<CalendarIcon width={18} />}
-          maxDate={new Date()}
+          minDate={new Date()}
           {...form.getInputProps("availableFrom")}
           value={startDate}
           onChange={(d) => {
             if (d) {
               setStartDate(d);
-              form.setFieldValue("startDate", d);
+              form.setFieldValue("availableFrom", d);
             } else new Date();
           }}
         />
         <DatePicker
           mt="md"
           label="Until"
-          description="The ending date of employment"
+          description="The ending date of this listing"
           icon={<CalendarIcon width={18} />}
           withAsterisk
-          minDate={startDate}
+          minDate={addDays(startDate, 1)}
+          clearable={false}
           {...form.getInputProps("availableTo")}
         />
         <ShowIfElse
@@ -178,7 +263,7 @@ export default function OrganizationPostJobForm() {
           />
         </ShowIfElse>
         <ShowIfElse
-          if={!isCountryListLoading}
+          if={!isJobsLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
         >
           <Select
@@ -187,8 +272,13 @@ export default function OrganizationPostJobForm() {
             searchable
             mt="md"
             withAsterisk
-            data={[]}
-            icon={<MapPinIcon width={18} />}
+            itemComponent={SelectItem}
+            data={(jobs?.getAllJobs ?? [])?.map((j) => ({
+              label: j?.name,
+              value: j?.id,
+              description: j?.description,
+            }))}
+            icon={<WrenchIcon width={18} />}
             {...form.getInputProps("jobId")}
           />
         </ShowIfElse>
@@ -208,9 +298,7 @@ export default function OrganizationPostJobForm() {
           withAsterisk
           icon={<ClipboardDocumentIcon width={18} />}
           data={(Object.entries(ContractType) ?? [])?.map(([, value]) => ({
-            label: capitalizeFirstLetter(
-              value.toLowerCase().split("_").join(" ")
-            ),
+            label: prettyEnumValue(value),
             value: value,
           }))}
           {...form.getInputProps("contractType")}
@@ -225,6 +313,7 @@ export default function OrganizationPostJobForm() {
             mt="md"
             withAsterisk
             itemComponent={SelectItem}
+            readOnly
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
               value: o?.id,
@@ -236,7 +325,7 @@ export default function OrganizationPostJobForm() {
           />
         </ShowIfElse>
         <ShowIfElse
-          if={!isOrganizationsLoading}
+          if={!isJobCategoriesLoading || isAddJobCategoryLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
         >
           <Select
@@ -244,17 +333,23 @@ export default function OrganizationPostJobForm() {
             description="The category of this job"
             mt="md"
             withAsterisk
-            itemComponent={SelectItem}
-            data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
-              label: o?.name,
-              value: o?.id,
-              image: o?.photography,
-              description: o?.industry,
-            }))}
-            icon={<BuildingOffice2Icon width={18} />}
+            creatable
+            searchable
+            getCreateLabel={(query) => `+ Create ${query}`}
+            onCreate={(query) => createJobCategoryCb(query)}
+            data={jobCategories}
+            icon={<LifebuoyIcon width={18} />}
             {...form.getInputProps("categoryId")}
+            value={selectedJobCategory}
+            onChange={(val) => {
+              setSelectedJobCategory(val);
+              form.setFieldValue("categoryId", val as string);
+            }}
           />
         </ShowIfElse>
+        <Button type="submit" fullWidth mt="xl">
+          Submit
+        </Button>
       </form>
     </Modal>
   );

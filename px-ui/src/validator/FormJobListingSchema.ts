@@ -1,11 +1,14 @@
 import { ContractType } from "@gql/generated";
-import { addDays } from "date-fns";
+import { addDays, startOfDay } from "date-fns";
 import { z } from "zod";
 
 export const FormJobListingSchema = z
   .object({
     title: z.string().min(1, "Title must be filled"),
-    description: z.string().min(1, "Description must be filled"),
+    description: z
+      .string()
+      .min(1, "Description must be filled")
+      .max(2000, "Description must be lower than 2000 characters"),
     availableFrom: z.date().min(new Date()),
     availableTo: z.date().min(addDays(new Date(), 1)),
     location: z.string().min(1, "Location must be filled"),
@@ -18,7 +21,7 @@ export const FormJobListingSchema = z
     categoryId: z.string().min(1, "Category must be filled"),
   })
   .superRefine(({ availableFrom, availableTo }, ctx) => {
-    if (availableTo && availableTo <= availableFrom) {
+    if (availableTo && startOfDay(availableTo) <= startOfDay(availableFrom)) {
       ctx.addIssue({
         code: "invalid_date",
         message: "Ending date cannot be before starting date",

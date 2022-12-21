@@ -3,6 +3,9 @@ import JobListingItem from "@components/jobs/JobListing";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
+  FieldType,
+  Operator,
+  SortDirection,
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
@@ -14,18 +17,41 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
 
 export default function JobsPage() {
   const [p, setP] = useState<number>(1);
   const [ps, setPs] = useState<number>(5);
+  const todayIsoFmt = formatISO(new Date());
+
   const { data, isLoading: jobsLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
       searchQuery: {
         page: p - 1,
         size: ps,
+        filters: [
+          {
+            key: "availableTo",
+            fieldType: FieldType.Date,
+            value: todayIsoFmt,
+            operator: Operator.GreaterThan,
+          },
+          {
+            key: "availableFrom",
+            fieldType: FieldType.Date,
+            value: todayIsoFmt,
+            operator: Operator.LessThan,
+          },
+        ],
+        sorts: [
+          {
+            direction: SortDirection.Desc,
+            key: "createdAt",
+          },
+        ],
       },
     },
     {

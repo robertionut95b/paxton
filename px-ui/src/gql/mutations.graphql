@@ -86,3 +86,18 @@ mutation AddCertification($CertificationInput: CertificationInput!) {
     name
   }
 }
+
+mutation PublishJobListing($JobListingInput: JobListingInput!) {
+  publishJobListing(JobListingInput: $JobListingInput) {
+    id
+    title
+    description
+  }
+}
+
+mutation AddJobCategory($JobCategoryInput: JobCategoryInput!) {
+  addJobCategory(JobCategoryInput: $JobCategoryInput) {
+    id
+    name
+  }
+}

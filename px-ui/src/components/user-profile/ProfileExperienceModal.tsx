@@ -37,7 +37,7 @@ import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
-import { capitalizeFirstLetter } from "@utils/capitalizeString";
+import { prettyEnumValue } from "@utils/enumUtils";
 import FormAddExperienceSchema from "@validator/FormAddExperienceSchema";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -273,9 +273,7 @@ export default function ProfileExperienceModal() {
           withAsterisk
           icon={<ClipboardDocumentIcon width={18} />}
           data={(Object.entries(ContractType) ?? [])?.map(([, value]) => ({
-            label: capitalizeFirstLetter(
-              value.toLowerCase().split("_").join(" ")
-            ),
+            label: prettyEnumValue(value),
             value: value,
           }))}
           {...form.getInputProps("contractType")}

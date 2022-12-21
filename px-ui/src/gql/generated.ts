@@ -126,10 +126,21 @@ export type ExperienceInput = {
   userProfileSlugUrl: Scalars["String"];
 };
 
+export enum FieldType {
+  Boolean = "BOOLEAN",
+  Char = "CHAR",
+  Date = "DATE",
+  Datetime = "DATETIME",
+  Double = "DOUBLE",
+  Integer = "INTEGER",
+  Long = "LONG",
+  String = "STRING",
+}
+
 export type FiltersInput = {
-  field_type: Scalars["String"];
+  fieldType: FieldType;
   key: Scalars["String"];
-  operator: Scalars["String"];
+  operator: Operator;
   value: Scalars["String"];
 };
 
@@ -159,6 +170,10 @@ export type Job = {
 export type JobCategory = {
   __typename?: "JobCategory";
   id: Scalars["ID"];
+  name: Scalars["String"];
+};
+
+export type JobCategoryInput = {
   name: Scalars["String"];
 };
 
@@ -210,6 +225,7 @@ export type Mutation = {
   addCertification?: Maybe<Certification>;
   addDomain?: Maybe<Domain>;
   addInstitution?: Maybe<Institution>;
+  addJobCategory?: Maybe<JobCategory>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
   healthCheckPost?: Maybe<Scalars["String"]>;
@@ -230,6 +246,10 @@ export type MutationAddDomainArgs = {
 
 export type MutationAddInstitutionArgs = {
   InstitutionInput: InstitutionInput;
+};
+
+export type MutationAddJobCategoryArgs = {
+  JobCategoryInput: JobCategoryInput;
 };
 
 export type MutationAddUserProfileExperienceArgs = {
@@ -259,6 +279,18 @@ export type MutationUpdateUserProfileExperienceArgs = {
 export type MutationUpdateUserProfileStudyArgs = {
   StudyInput: StudyInput;
 };
+
+export enum Operator {
+  Between = "BETWEEN",
+  Equal = "EQUAL",
+  GreaterThan = "GREATER_THAN",
+  GreaterThanEqual = "GREATER_THAN_EQUAL",
+  In = "IN",
+  LessThan = "LESS_THAN",
+  LessThanEqual = "LESS_THAN_EQUAL",
+  Like = "LIKE",
+  NotEqual = "NOT_EQUAL",
+}
 
 export type Organization = {
   __typename?: "Organization";
@@ -560,6 +592,33 @@ export type AddCertificationMutation = {
   } | null;
 };
 
+export type PublishJobListingMutationVariables = Exact<{
+  JobListingInput: JobListingInput;
+}>;
+
+export type PublishJobListingMutation = {
+  __typename?: "Mutation";
+  publishJobListing?: {
+    __typename?: "JobListing";
+    id: string;
+    title: string;
+    description: string;
+  } | null;
+};
+
+export type AddJobCategoryMutationVariables = Exact<{
+  JobCategoryInput: JobCategoryInput;
+}>;
+
+export type AddJobCategoryMutation = {
+  __typename?: "Mutation";
+  addJobCategory?: {
+    __typename?: "JobCategory";
+    id: string;
+    name: string;
+  } | null;
+};
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -759,6 +818,29 @@ export type GetAllCertificationsQuery = {
     __typename?: "Certification";
     id: string;
     name: string;
+  } | null> | null;
+};
+
+export type GetAllJobCategoriesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetAllJobCategoriesQuery = {
+  __typename?: "Query";
+  getAllJobCategories?: Array<{
+    __typename?: "JobCategory";
+    id: string;
+    name: string;
+  } | null> | null;
+};
+
+export type GetAllJobsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetAllJobsQuery = {
+  __typename?: "Query";
+  getAllJobs?: Array<{
+    __typename?: "Job";
+    id: string;
+    name: string;
+    description: string;
   } | null> | null;
 };
 
@@ -1067,6 +1149,78 @@ export const useAddCertificationMutation = <
       fetcher<AddCertificationMutation, AddCertificationMutationVariables>(
         client,
         AddCertificationDocument,
+        variables,
+        headers
+      )(),
+    options
+  );
+export const PublishJobListingDocument = `
+    mutation PublishJobListing($JobListingInput: JobListingInput!) {
+  publishJobListing(JobListingInput: $JobListingInput) {
+    id
+    title
+    description
+  }
+}
+    `;
+export const usePublishJobListingMutation = <
+  TError = unknown,
+  TContext = unknown
+>(
+  client: GraphQLClient,
+  options?: UseMutationOptions<
+    PublishJobListingMutation,
+    TError,
+    PublishJobListingMutationVariables,
+    TContext
+  >,
+  headers?: RequestInit["headers"]
+) =>
+  useMutation<
+    PublishJobListingMutation,
+    TError,
+    PublishJobListingMutationVariables,
+    TContext
+  >(
+    ["PublishJobListing"],
+    (variables?: PublishJobListingMutationVariables) =>
+      fetcher<PublishJobListingMutation, PublishJobListingMutationVariables>(
+        client,
+        PublishJobListingDocument,
+        variables,
+        headers
+      )(),
+    options
+  );
+export const AddJobCategoryDocument = `
+    mutation AddJobCategory($JobCategoryInput: JobCategoryInput!) {
+  addJobCategory(JobCategoryInput: $JobCategoryInput) {
+    id
+    name
+  }
+}
+    `;
+export const useAddJobCategoryMutation = <TError = unknown, TContext = unknown>(
+  client: GraphQLClient,
+  options?: UseMutationOptions<
+    AddJobCategoryMutation,
+    TError,
+    AddJobCategoryMutationVariables,
+    TContext
+  >,
+  headers?: RequestInit["headers"]
+) =>
+  useMutation<
+    AddJobCategoryMutation,
+    TError,
+    AddJobCategoryMutationVariables,
+    TContext
+  >(
+    ["AddJobCategory"],
+    (variables?: AddJobCategoryMutationVariables) =>
+      fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(
+        client,
+        AddJobCategoryDocument,
         variables,
         headers
       )(),
@@ -1401,6 +1555,60 @@ export const useGetAllCertificationsQuery = <
     fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(
       client,
       GetAllCertificationsDocument,
+      variables,
+      headers
+    ),
+    options
+  );
+export const GetAllJobCategoriesDocument = `
+    query getAllJobCategories {
+  getAllJobCategories {
+    id
+    name
+  }
+}
+    `;
+export const useGetAllJobCategoriesQuery = <
+  TData = GetAllJobCategoriesQuery,
+  TError = unknown
+>(
+  client: GraphQLClient,
+  variables?: GetAllJobCategoriesQueryVariables,
+  options?: UseQueryOptions<GetAllJobCategoriesQuery, TError, TData>,
+  headers?: RequestInit["headers"]
+) =>
+  useQuery<GetAllJobCategoriesQuery, TError, TData>(
+    variables === undefined
+      ? ["getAllJobCategories"]
+      : ["getAllJobCategories", variables],
+    fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(
+      client,
+      GetAllJobCategoriesDocument,
+      variables,
+      headers
+    ),
+    options
+  );
+export const GetAllJobsDocument = `
+    query getAllJobs {
+  getAllJobs {
+    id
+    name
+    description
+  }
+}
+    `;
+export const useGetAllJobsQuery = <TData = GetAllJobsQuery, TError = unknown>(
+  client: GraphQLClient,
+  variables?: GetAllJobsQueryVariables,
+  options?: UseQueryOptions<GetAllJobsQuery, TError, TData>,
+  headers?: RequestInit["headers"]
+) =>
+  useQuery<GetAllJobsQuery, TError, TData>(
+    variables === undefined ? ["getAllJobs"] : ["getAllJobs", variables],
+    fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(
+      client,
+      GetAllJobsDocument,
       variables,
       headers
     ),

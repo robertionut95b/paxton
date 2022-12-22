@@ -1,9 +1,13 @@
 import { SelectItem } from "@components/select-items/SelectItem";
+import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   ContractType,
+  FieldType,
+  Operator,
   useAddJobCategoryMutation,
   useGetAllJobCategoriesQuery,
+  useGetAllJobListingsQuery,
   useGetAllJobsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
@@ -45,20 +49,30 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function OrganizationPostJobForm() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
-  const { organizationId } = useParams();
+  const { organizationId, jobListingId } = useParams();
 
-  // const prevData = queryClient.getQueryData<GetUserProfileQuery>([
-  //   "GetUserProfile",
-  //   {
-  //     profileSlugUrl: user?.profileSlugUrl,
-  //   },
-  // ]);
+  const { data: jobListing, isLoading } = useGetAllJobListingsQuery(
+    graphqlRequestClient,
+    {
+      searchQuery: {
+        filters: [
+          {
+            key: "id",
+            fieldType: FieldType.Long,
+            operator: Operator.Equal,
+            value: jobListingId?.toString() as string,
+          },
+        ],
+      },
+    },
+    {
+      enabled: !!jobListingId,
+    }
+  );
 
-  // const initialExperienceSelected = prevData?.getUserProfile?.experiences?.find(
-  //   (e) => e?.id === organizationId
-  // );
+  const jobListingItem = jobListing?.getAllJobListings?.list?.[0];
 
-  const [desc, setDesc] = useState<string>("");
+  const [desc, setDesc] = useState<string>(jobListingItem?.description ?? "");
 
   const [startDate, setStartDate] = useState<Date>(new Date());
 
@@ -91,7 +105,7 @@ export default function OrganizationPostJobForm() {
   );
 
   const [selectedJobCategory, setSelectedJobCategory] = useState<string | null>(
-    null
+    jobListingItem?.category?.id ?? null
   );
 
   const { mutateAsync: addJobCategory, isLoading: isAddJobCategoryLoading } =
@@ -147,16 +161,20 @@ export default function OrganizationPostJobForm() {
 
   const form = useForm({
     initialValues: {
-      title: "",
-      description: "",
-      availableFrom: new Date(),
-      availableTo: addDays(new Date(), 1),
-      location: "",
-      jobId: "",
-      numberOfVacancies: 1,
-      contractType: ContractType["FullTime"],
+      title: jobListingItem?.title ?? "",
+      description: jobListingItem?.description ?? "",
+      availableFrom: jobListingItem?.availableFrom
+        ? new Date(jobListingItem.availableFrom)
+        : new Date(),
+      availableTo: jobListingItem?.availableTo
+        ? new Date(jobListingItem.availableTo)
+        : addDays(new Date(), 1),
+      location: jobListingItem?.city.name ?? "",
+      jobId: jobListingItem?.job.id ?? "",
+      numberOfVacancies: jobListingItem?.numberOfVacancies ?? 1,
+      contractType: jobListingItem?.contractType ?? ContractType["FullTime"],
       organizationId: organizationId,
-      categoryId: "",
+      categoryId: jobListingItem?.category?.id ?? "",
     },
     validate: zodResolver(FormJobListingSchema),
   });
@@ -171,6 +189,8 @@ export default function OrganizationPostJobForm() {
       },
     });
   };
+
+  if (isLoading) return <ApplicationSpinner />;
 
   return (
     <Modal

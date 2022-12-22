@@ -29,6 +29,10 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
         location
         photography
       }
+      category {
+        id
+        name
+      }
     }
     page
     totalPages

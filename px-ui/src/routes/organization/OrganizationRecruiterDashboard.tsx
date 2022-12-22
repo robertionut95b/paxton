@@ -11,9 +11,14 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { ClipboardDocumentIcon, UserIcon } from "@heroicons/react/24/outline";
+import {
+  ClipboardDocumentIcon,
+  PencilIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
+  ActionIcon,
   Avatar,
   Button,
   Container,
@@ -25,12 +30,14 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 export default function OrganizationRecruiterDashboard() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: userProfile, isLoading: isLoadingUserProfile } =
     useGetUserProfileQuery(graphqlRequestClient, {
@@ -86,6 +93,35 @@ export default function OrganizationRecruiterDashboard() {
         keepPreviousData: true,
         staleTime: 1000 * 60,
         enabled: !!lastOrganization,
+        onSuccess: (data) => {
+          data.getAllJobListings?.list?.forEach((jl) =>
+            queryClient.setQueryData(
+              [
+                "GetAllJobListings",
+                {
+                  searchQuery: {
+                    filters: [
+                      {
+                        key: "id",
+                        fieldType: FieldType.Long,
+                        operator: Operator.Equal,
+                        value: jl?.id.toString() as string,
+                      },
+                    ],
+                  },
+                },
+              ],
+              {
+                getAllJobListings: {
+                  list: [jl],
+                },
+                page: 0,
+                totalElements: 1,
+                totalPages: 1,
+              }
+            )
+          );
+        },
       }
     );
 
@@ -123,6 +159,35 @@ export default function OrganizationRecruiterDashboard() {
         keepPreviousData: true,
         staleTime: 1000 * 60,
         enabled: !!lastOrganization,
+        onSuccess: (data) => {
+          data.getAllJobListings?.list?.forEach((jl) =>
+            queryClient.setQueryData(
+              [
+                "GetAllJobListings",
+                {
+                  searchQuery: {
+                    filters: [
+                      {
+                        key: "id",
+                        fieldType: FieldType.Long,
+                        operator: Operator.Equal,
+                        value: jl?.id.toString() as string,
+                      },
+                    ],
+                  },
+                },
+              ],
+              {
+                getAllJobListings: {
+                  list: [jl],
+                },
+                page: 0,
+                totalElements: 1,
+                totalPages: 1,
+              }
+            )
+          );
+        },
       }
     );
 
@@ -190,7 +255,16 @@ export default function OrganizationRecruiterDashboard() {
               (jl, idx) =>
                 jl && (
                   <div key={jl.id}>
-                    <JobListingItem data={jl} />
+                    <div className="flex items-start">
+                      <JobListingItem data={jl} />
+                      <NavLink
+                        to={`/app/organizations/${lastOrganization?.id}/jobs/publish-job/form/${jl.id}/update`}
+                      >
+                        <ActionIcon mt={"md"} color="violet">
+                          <PencilIcon width={16} />
+                        </ActionIcon>
+                      </NavLink>
+                    </div>
                     {idx !== orgJobsData.length - 1 && <Divider />}
                   </div>
                 )
@@ -251,7 +325,16 @@ export default function OrganizationRecruiterDashboard() {
               (jl, idx) =>
                 jl && (
                   <div className="opacity-50" key={jl.id}>
-                    <JobListingItem data={jl} />
+                    <div className="flex items-start">
+                      <JobListingItem data={jl} />
+                      <NavLink
+                        to={`/app/organizations/${lastOrganization?.id}/jobs/publish-job/form/${jl.id}/update`}
+                      >
+                        <ActionIcon mt={"md"} color="violet">
+                          <PencilIcon width={16} />
+                        </ActionIcon>
+                      </NavLink>
+                    </div>
                     {idx !== orgJobsDataInactive.length - 1 && <Divider />}
                   </div>
                 )

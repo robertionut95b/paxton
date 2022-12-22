@@ -189,6 +189,16 @@ export default function AppUI() {
                     </RequireAuth>
                   }
                 />
+                <Route
+                  path="/app/organizations/:organizationId/jobs/publish-job/form/:jobListingId/update"
+                  element={
+                    <RequireAuth>
+                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                        <OrganizationPostJobForm />
+                      </RequirePermission>
+                    </RequireAuth>
+                  }
+                />
               </Route>
               <Route
                 path="/app/access-denied"

@@ -321,6 +321,7 @@ type Query {
     getAllUsers: [User]
     getAllJobs: [Job]
     getAllOrganizations: [Organization]
+    getOrganizationById(organizationId: ID!): Organization
     getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
     getAllProcesses: [Process]
     getAllSteps: [Step]

@@ -89,7 +89,6 @@ export default function OrganizationRecruiterDashboard() {
         },
       },
       {
-        queryKey: [`jobsActiveOrgListing${p}&${ps}`],
         keepPreviousData: true,
         staleTime: 1000 * 60,
         enabled: !!lastOrganization,
@@ -120,6 +119,13 @@ export default function OrganizationRecruiterDashboard() {
                 totalPages: 1,
               }
             )
+          );
+          const org = data.getAllJobListings?.list?.[0]?.organization;
+          queryClient.setQueryData(
+            ["GetOrganizationById", { organizationId: org?.id }],
+            {
+              getOrganizationById: org,
+            }
           );
         },
       }
@@ -155,7 +161,6 @@ export default function OrganizationRecruiterDashboard() {
         },
       },
       {
-        queryKey: [`jobsActiveOrgListing${p}&${ps}`],
         keepPreviousData: true,
         staleTime: 1000 * 60,
         enabled: !!lastOrganization,
@@ -186,6 +191,13 @@ export default function OrganizationRecruiterDashboard() {
                 totalPages: 1,
               }
             )
+          );
+          const org = data.getAllJobListings?.list?.[0]?.organization;
+          queryClient.setQueryData(
+            ["GetOrganizationById", { organizationId: org?.id }],
+            {
+              getOrganizationById: org,
+            }
           );
         },
       }
@@ -227,7 +239,7 @@ export default function OrganizationRecruiterDashboard() {
           <ShowIf if={lastOrganization}>
             <NavLink to={`/app/organizations/${lastOrganization?.id}/details`}>
               <Group>
-                <Text className="hidden md:block" size="sm">
+                <Text className="hidden md:block" size={"sm"}>
                   {lastOrganization?.name}
                 </Text>
                 <Avatar

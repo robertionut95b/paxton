@@ -341,6 +341,7 @@ export type Query = {
   getAllUsers?: Maybe<Array<Maybe<User>>>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
+  getOrganizationById?: Maybe<Organization>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
   healthCheck?: Maybe<Scalars['String']>;
@@ -349,6 +350,11 @@ export type Query = {
 
 export type QueryGetAllJobListingsArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetOrganizationByIdArgs = {
+  organizationId: Scalars['ID'];
 };
 
 
@@ -589,6 +595,13 @@ export type GetAllJobsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllJobsQuery = { __typename?: 'Query', getAllJobs?: Array<{ __typename?: 'Job', id: string, name: string, description: string } | null> | null };
+
+export type GetOrganizationByIdQueryVariables = Exact<{
+  organizationId: Scalars['ID'];
+}>;
+
+
+export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1162,5 +1175,30 @@ export const useGetAllJobsQuery = <
     useQuery<GetAllJobsQuery, TError, TData>(
       variables === undefined ? ['getAllJobs'] : ['getAllJobs', variables],
       fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, variables, headers),
+      options
+    );
+export const GetOrganizationByIdDocument = `
+    query GetOrganizationById($organizationId: ID!) {
+  getOrganizationById(organizationId: $organizationId) {
+    id
+    name
+    industry
+    location
+    photography
+  }
+}
+    `;
+export const useGetOrganizationByIdQuery = <
+      TData = GetOrganizationByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetOrganizationByIdQueryVariables,
+      options?: UseQueryOptions<GetOrganizationByIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetOrganizationByIdQuery, TError, TData>(
+      ['GetOrganizationById', variables],
+      fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers),
       options
     );

@@ -176,3 +176,13 @@ query getAllJobs {
     description
   }
 }
+
+query GetOrganizationById($organizationId: ID!) {
+  getOrganizationById(organizationId: $organizationId) {
+    id
+    name
+    industry
+    location
+    photography
+  }
+}

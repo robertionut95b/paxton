@@ -51,7 +51,7 @@ export default function OrganizationPostJobForm() {
   const navigate = useNavigate();
   const { organizationId, jobListingId } = useParams();
 
-  const { data: jobListing, isLoading } = useGetAllJobListingsQuery(
+  const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
       searchQuery: {
@@ -190,7 +190,7 @@ export default function OrganizationPostJobForm() {
     });
   };
 
-  if (isLoading) return <ApplicationSpinner />;
+  if (isInitialLoading) return <ApplicationSpinner />;
 
   return (
     <Modal

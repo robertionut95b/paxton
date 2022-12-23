@@ -31,6 +31,9 @@ const OrganizationPostJobForm = lazy(
   () => import("./organization/OrganizationPostJobForm")
 );
 const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
+const OrganizationDetailsPage = lazy(
+  () => import("./organization/OrganizationDetailsPage")
+);
 
 export default function AppUI() {
   return (
@@ -179,6 +182,16 @@ export default function AppUI() {
                   </RequireAuth>
                 }
               >
+                <Route
+                  path="/app/organizations/:organizationId/details"
+                  element={
+                    <RequireAuth>
+                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                        <OrganizationDetailsPage />
+                      </RequirePermission>
+                    </RequireAuth>
+                  }
+                />
                 <Route
                   path="/app/organizations/:organizationId/jobs/publish-job/form"
                   element={

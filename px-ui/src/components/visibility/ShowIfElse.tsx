@@ -1,18 +1,23 @@
-import React from "react";
+import React, { ReactElement } from "react";
 
-export interface IShowIFProps {
+export interface ShowIFElseProps {
   if: unknown;
-  else: React.ReactNode;
-  children: React.ReactNode;
+  else: ReactElement | unknown;
+  children: ReactElement | unknown;
 }
 
-const checkTypeFunction = (children: React.ReactNode) =>
-  // @ts-expect-error(type check)
+const checkTypeFunction = (children: ReactElement | unknown) =>
   typeof children === "function" ? children() : children;
 
-// eslint-disable-next-line react/display-name
-export default React.memo(
-  /* eslint-disable react/prop-types */
-  ({ if: show, else: elseChildren, children }: IShowIFProps) =>
+const ShowIfElse = React.memo(
+  ({
+    if: show,
+    else: elseChildren,
+    children,
+  }: ShowIFElseProps): ReactElement | null =>
     show ? checkTypeFunction(children) : elseChildren
 );
+
+ShowIfElse.displayName = "ShowIfElse";
+
+export default ShowIfElse;

@@ -54,7 +54,7 @@ const AvatarMenu = ({
         <Menu.Item
           color="red"
           component={Link}
-          to={`/app/logout`}
+          to={`/logout`}
           icon={<XMarkIcon width={16} />}
         >
           Log out

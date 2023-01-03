@@ -70,6 +70,7 @@ query GetUserProfile($profileSlugUrl: String) {
         name
         industry
         photography
+        location
       }
       city {
         id

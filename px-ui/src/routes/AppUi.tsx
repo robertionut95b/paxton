@@ -21,9 +21,6 @@ const JobsPage = lazy(() => import("./jobs/JobsPage"));
 const Login = lazy(() => import("./Login"));
 const Logout = lazy(() => import("./Logout"));
 const NetworkPage = lazy(() => import("./NetworkPage"));
-const OrganizationRecruiterDashboard = lazy(
-  () => import("./organization/OrganizationRecruiterDashboard")
-);
 const SignUp = lazy(() => import("./SignUp"));
 const RecruitmentPage = lazy(() => import("./user/RecruitmentPage"));
 const UserProfile = lazy(() => import("./user/UserProfile"));
@@ -34,218 +31,102 @@ const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
 const OrganizationDetailsPage = lazy(
   () => import("./organization/OrganizationDetailsPage")
 );
+const MyOrganizationPage = lazy(() => import("./organization/MyOrganization"));
+const NotFoundPage = lazy(() => import("./NotFoundPage"));
 
 export default function AppUI() {
   return (
     <BrowserRouter>
       <Suspense>
         <Routes>
-          <Route>
-            {/* Landing section of the app */}
-            <Route index element={<Index />} errorElement={<ErrorPage />} />
-          </Route>
-          <Route>
-            {/* Actual client app, where auth is required */}
+          {/* Landing section of the app */}
+          <Route index element={<Index />} errorElement={<ErrorPage />} />
+          {/* Actual client app, where auth is required */}
+          <Route
+            path="app"
+            element={
+              <RequireAuth>
+                <ClientApp />
+              </RequireAuth>
+            }
+            errorElement={<ErrorPage />}
+          >
+            <Route index element={<FeedPage />} />
+            <Route path="jobs" element={<JobsPage />} />
             <Route
-              path="app"
+              path="candidature"
               element={
-                <RequireAuth>
-                  <ClientApp />
-                </RequireAuth>
+                <RequirePermission permission={RoleType.ROLE_VIEWER}>
+                  <></>
+                </RequirePermission>
               }
-              errorElement={<ErrorPage />}
+            />
+            <Route path="up/:profileSlug/" element={<UserProfile />}>
+              <Route path="update/banner" element={<ProfileBannerModal />} />
+              <Route path="update/avatar" element={<ProfileAvatarModal />} />
+              <Route
+                path="update/intro"
+                element={<BasicUpdateProfileModal />}
+              />
+              <Route
+                path="experiences/new"
+                element={<ProfileExperienceModal />}
+              />
+              <Route
+                path="experiences/:experienceId/update"
+                element={<ProfileExperienceModal />}
+              />
+              <Route path="studies/new" element={<ProfileStudyModal />} />
+              <Route
+                path="studies/:studyId/update"
+                element={<ProfileStudyModal />}
+              />
+            </Route>
+            <Route path="network" element={<NetworkPage />}></Route>
+            <Route
+              path="recruitment"
+              element={
+                <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                  <RecruitmentPage />
+                </RequirePermission>
+              }
+            />
+            <Route path="my-organization" element={<MyOrganizationPage />} />
+            <Route
+              path="organizations/:organizationId"
+              element={<OrganizationPage />}
             >
+              <Route path="details" element={<OrganizationDetailsPage />} />
               <Route
-                path="/app/feed"
+                path="jobs/publish-job/form"
                 element={
-                  <RequireAuth>
-                    <FeedPage />
-                  </RequireAuth>
+                  <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                    <OrganizationPostJobForm />
+                  </RequirePermission>
                 }
               />
               <Route
-                path="/app/jobs"
+                path="jobs/publish-job/form/:jobListingId/update"
                 element={
-                  <RequireAuth>
-                    <JobsPage />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/app/candidature"
-                element={
-                  <RequireAuth>
-                    <RequirePermission permission={RoleType.ROLE_VIEWER}>
-                      <></>
-                    </RequirePermission>
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/app/up/:profileSlug/"
-                element={
-                  <RequireAuth>
-                    <UserProfile />
-                  </RequireAuth>
-                }
-              >
-                <Route
-                  path="/app/up/:profileSlug/update/banner"
-                  element={
-                    <RequireAuth>
-                      <ProfileBannerModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/update/avatar"
-                  element={
-                    <RequireAuth>
-                      <ProfileAvatarModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/update/intro"
-                  element={
-                    <RequireAuth>
-                      <BasicUpdateProfileModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/experiences/new"
-                  element={
-                    <RequireAuth>
-                      <ProfileExperienceModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/experiences/:experienceId/update"
-                  element={
-                    <RequireAuth>
-                      <ProfileExperienceModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/studies/new"
-                  element={
-                    <RequireAuth>
-                      <ProfileStudyModal />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/up/:profileSlug/studies/:studyId/update"
-                  element={
-                    <RequireAuth>
-                      <ProfileStudyModal />
-                    </RequireAuth>
-                  }
-                />
-              </Route>
-              <Route
-                path="/app/network"
-                element={
-                  <RequireAuth>
-                    <NetworkPage />
-                  </RequireAuth>
-                }
-              ></Route>
-              <Route
-                path="/app/recruitment"
-                element={
-                  <RequireAuth>
-                    <RequirePermission permission={RoleType.ROLE_RECRUITER}>
-                      <RecruitmentPage />
-                    </RequirePermission>
-                  </RequireAuth>
-                }
-              ></Route>
-              <Route
-                path="/app/my-organization"
-                element={
-                  <RequireAuth>
-                    <RequirePermission permission={RoleType.ROLE_RECRUITER}>
-                      <OrganizationRecruiterDashboard />
-                    </RequirePermission>
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/app/organizations"
-                element={
-                  <RequireAuth>
-                    <OrganizationPage />
-                  </RequireAuth>
-                }
-              >
-                <Route
-                  path="/app/organizations/:organizationId/details"
-                  element={
-                    <RequireAuth>
-                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
-                        <OrganizationDetailsPage />
-                      </RequirePermission>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/organizations/:organizationId/jobs/publish-job/form"
-                  element={
-                    <RequireAuth>
-                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
-                        <OrganizationPostJobForm />
-                      </RequirePermission>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/app/organizations/:organizationId/jobs/publish-job/form/:jobListingId/update"
-                  element={
-                    <RequireAuth>
-                      <RequirePermission permission={RoleType.ROLE_RECRUITER}>
-                        <OrganizationPostJobForm />
-                      </RequirePermission>
-                    </RequireAuth>
-                  }
-                />
-              </Route>
-              <Route
-                path="/app/access-denied"
-                element={
-                  <RequireAuth>
-                    <AccessDenied />
-                  </RequireAuth>
+                  <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                    <OrganizationPostJobForm />
+                  </RequirePermission>
                 }
               />
             </Route>
-            <Route
-              path="app/logout"
-              element={
-                <RequireAuth>
-                  <Logout />
-                </RequireAuth>
-              }
-            />
-            <Route path="app/login" element={<Login />} />
-            <Route path="app/signup" element={<SignUp />} />
-            <Route
-              path="app/forgot-password/request"
-              element={<ForgotPassword />}
-            />
-            <Route
-              path="app/forgot-password/reset"
-              element={<ForgotPasswordReset />}
-            />
-            <Route
-              path="app/signup/confirmation"
-              element={<ConfirmUserRegister />}
-            />
+            <Route path="access-denied" element={<AccessDenied />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
-          <Route path="*" errorElement={<ErrorPage />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<SignUp />} />
+          <Route path="forgot-password/request" element={<ForgotPassword />} />
+          <Route
+            path="forgot-password/reset"
+            element={<ForgotPasswordReset />}
+          />
+          <Route path="signup/confirmation" element={<ConfirmUserRegister />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

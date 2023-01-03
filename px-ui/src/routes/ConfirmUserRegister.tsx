@@ -18,7 +18,7 @@ export default function ConfirmUserRegister() {
         setMsg("Your account has been succesfully created, proceed to login");
         setSuccess(true);
         setTimeout(() => {
-          navigate("/app/login", { replace: true });
+          navigate("/login", { replace: true });
         }, 2000);
       },
     }
@@ -39,7 +39,7 @@ export default function ConfirmUserRegister() {
       </Title>
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <p className="text-center">{msg}</p>
-        <Link to="/app/login">
+        <Link to="/login">
           {success && (
             <Button type="button" fullWidth mt="xl">
               Log in

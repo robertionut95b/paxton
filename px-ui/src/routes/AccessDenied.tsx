@@ -1,12 +1,30 @@
 import { ShieldExclamationIcon } from "@heroicons/react/24/outline";
-import { Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Container,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 
 export default function AccessDenied() {
   return (
-    <div className="px-acess-denied flex flex-col justify-center items-center gap-2">
-      <ShieldExclamationIcon width={32} />
-      <Title order={5}>Access Denied</Title>
-      <p className="text-sm">You are not allowed to access this resource</p>
-    </div>
+    <Container p={0}>
+      <Paper shadow={"xs"} p="md" className="px-acess-denied">
+        <Stack align="center" spacing={4}>
+          <ActionIcon color={"red.8"} size={56}>
+            <ShieldExclamationIcon />
+          </ActionIcon>
+          <Title order={5} color="red.9">
+            Access Denied
+          </Title>
+          <Text>You are not allowed to access this resource</Text>
+          <Text size="sm" color="dimmed">
+            Insufficient roles or permissions
+          </Text>
+        </Stack>
+      </Paper>
+    </Container>
   );
 }

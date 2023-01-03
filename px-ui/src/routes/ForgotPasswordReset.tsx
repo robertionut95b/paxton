@@ -39,7 +39,7 @@ export default function ForgotPasswordReset() {
         icon: <EnvelopeIcon width={20} />,
       });
       setTimeout(() => {
-        navigate("/app/login", { replace: true });
+        navigate("/login", { replace: true });
       }, 6000);
     },
     onError: () => {
@@ -107,7 +107,7 @@ export default function ForgotPasswordReset() {
       </Paper>
       <p className="text-center">
         Already have an account?{" "}
-        <Anchor component={Link} to="/app/login">
+        <Anchor component={Link} to="/login">
           Log in
         </Anchor>
       </p>

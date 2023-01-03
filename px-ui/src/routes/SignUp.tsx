@@ -42,7 +42,7 @@ export default function SignUp() {
         icon: <CheckIcon width={20} />,
       });
       setTimeout(() => {
-        navigate("/app/login", { replace: true });
+        navigate("/login", { replace: true });
       }, 3000);
     },
   });
@@ -121,7 +121,7 @@ export default function SignUp() {
       </Paper>
       <p className="text-center">
         Already have an account?{" "}
-        <Anchor component={Link} to="/app/login">
+        <Anchor component={Link} to="/login">
           Log in
         </Anchor>
       </p>

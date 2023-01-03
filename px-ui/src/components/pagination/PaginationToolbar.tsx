@@ -30,7 +30,7 @@ export default function PaginationToolbar({
   const [ps, setPs] = useState(pageSize ?? 5);
 
   return (
-    <div className="flex justify-between items-center mt-4">
+    <Group position="apart" mt={"md"}>
       <Group>
         <Select
           data={pageSizes}
@@ -74,6 +74,6 @@ export default function PaginationToolbar({
         position="right"
         grow
       />
-    </div>
+    </Group>
   );
 }

@@ -14,7 +14,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { useIsMutating } from "@tanstack/react-query";
 import FormLoginSchema from "@validator/FormLoginSchema";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -53,14 +53,7 @@ export default function Login() {
       <Title align="center">Welcome to Paxton</Title>
       <p className="text-center">
         Do not have an account yet?{" "}
-        <Anchor<"a">
-          href="#"
-          size="sm"
-          onClick={(event) => {
-            event.preventDefault();
-            navigate("/app/signup");
-          }}
-        >
+        <Anchor component={NavLink} to="/signup">
           Create account
         </Anchor>
       </p>
@@ -84,14 +77,7 @@ export default function Login() {
           />
           <Group position="apart" mt="md">
             <Checkbox label="Remember me" />
-            <Anchor<"a">
-              onClick={(event) => {
-                event.preventDefault();
-                navigate("/app/forgot-password/request");
-              }}
-              href="#"
-              size="sm"
-            >
+            <Anchor component={NavLink} to={"/forgot-password/request"}>
               Forgot password?
             </Anchor>
           </Group>

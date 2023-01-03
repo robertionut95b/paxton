@@ -1,4 +1,5 @@
 import RequireAuth from "@auth/RequireAuth";
+import RequireNonAuth from "@auth/RequireNonAuth";
 import { RequirePermission } from "@auth/RequirePermission";
 import RoleType from "@auth/RoleType";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
@@ -115,17 +116,49 @@ export default function AppUI() {
               />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
+            <Route path="logout" element={<Logout />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
-          <Route path="logout" element={<Logout />} />
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<SignUp />} />
-          <Route path="forgot-password/request" element={<ForgotPassword />} />
+          <Route
+            path="login"
+            element={
+              <RequireNonAuth>
+                <Login />
+              </RequireNonAuth>
+            }
+          />
+          <Route
+            path="signup"
+            element={
+              <RequireNonAuth>
+                <SignUp />
+              </RequireNonAuth>
+            }
+          />
+          <Route
+            path="forgot-password/request"
+            element={
+              <RequireNonAuth>
+                <ForgotPassword />
+              </RequireNonAuth>
+            }
+          />
           <Route
             path="forgot-password/reset"
-            element={<ForgotPasswordReset />}
+            element={
+              <RequireNonAuth>
+                <ForgotPasswordReset />
+              </RequireNonAuth>
+            }
           />
-          <Route path="signup/confirmation" element={<ConfirmUserRegister />} />
+          <Route
+            path="signup/confirmation"
+            element={
+              <RequireNonAuth>
+                <ConfirmUserRegister />
+              </RequireNonAuth>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

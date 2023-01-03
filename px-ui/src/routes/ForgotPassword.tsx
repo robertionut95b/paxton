@@ -103,7 +103,7 @@ export default function ForgotPassword() {
       </Paper>
       <p className="text-center">
         Don&apos;t have an account?{" "}
-        <Anchor component={Link} to="/app/signup">
+        <Anchor component={Link} to="/signup">
           Sign Up
         </Anchor>
       </p>

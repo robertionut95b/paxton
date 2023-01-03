@@ -1,6 +1,7 @@
 import { useAuth } from "@auth/useAuth";
 import JobListingItem from "@components/jobs/JobListing";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
+import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
@@ -9,14 +10,7 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import {
-  Container,
-  Divider,
-  Pagination,
-  Select,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Container, Divider, Text, Title } from "@mantine/core";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
@@ -112,41 +106,14 @@ export default function JobsPage() {
               </div>
             )
         )}
-        <div className="px-jobs-pagination flex justify-between items-center mt-4">
-          <Select
-            data={[
-              { value: "5", label: "5" },
-              { value: "10", label: "10" },
-              { value: "20", label: "20" },
-              { value: "50", label: "50" },
-            ]}
-            styles={{
-              root: {
-                display: "flex",
-                alignItems: "center",
-              },
-              label: {
-                marginRight: "10px",
-              },
-              input: {
-                width: "5rem",
-              },
-            }}
-            label="Page size"
-            defaultValue={ps.toString()}
-            value={ps.toString()}
-            onChange={(v) => {
-              setPs(parseInt(v ?? "10"));
-              setP(1);
-            }}
-          />
-          <Pagination
-            total={totalPages}
+        <div className="px-jobs-pagination">
+          <PaginationToolbar
             page={p}
-            onChange={setP}
-            initialPage={0}
-            position="right"
-            grow
+            setPage={setP}
+            pageSize={ps}
+            setPageSize={setPs}
+            totalElements={totalElements}
+            totalPages={totalPages}
           />
         </div>
       </Container>

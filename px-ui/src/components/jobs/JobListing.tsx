@@ -1,10 +1,11 @@
+import ShowIf from "@components/visibility/ShowIf";
 import { JobListing } from "@gql/generated";
-import { MapPinIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Avatar, Group, Paper, Text, Title } from "@mantine/core";
-import formatDistance from "date-fns/formatDistance";
+import { differenceInBusinessDays, formatDistanceToNowStrict } from "date-fns";
 
 export default function JobListingItem({
-  data: { title, description, organization, city, availableFrom },
+  data: { title, description, organization, city, availableFrom, availableTo },
 }: {
   data: JobListing;
 }) {
@@ -47,11 +48,33 @@ export default function JobListingItem({
               </Group>
             </li>
             <li>
-              <Text mt={2} size="xs" color="dimmed">
-                {formatDistance?.(new Date(availableFrom), new Date(), {
-                  addSuffix: true,
-                }) ?? "Invalid date"}
-              </Text>
+              <Group>
+                <Text mt={2} size="xs" color="dimmed">
+                  {formatDistanceToNowStrict?.(new Date(availableFrom), {
+                    addSuffix: true,
+                  }) ?? "Invalid date"}
+                </Text>
+                {availableTo && (
+                  <ShowIf
+                    if={
+                      differenceInBusinessDays(
+                        new Date(availableTo),
+                        new Date()
+                      ) <= 3
+                    }
+                  >
+                    <Group spacing={4}>
+                      <ClockIcon width={16} color="red" />
+                      <Text mt={2} size="xs" color="red">
+                        expires{" "}
+                        {formatDistanceToNowStrict?.(new Date(availableTo), {
+                          addSuffix: true,
+                        }) ?? "Invalid date"}
+                      </Text>
+                    </Group>
+                  </ShowIf>
+                )}
+              </Group>
             </li>
           </ul>
         </div>

@@ -1,5 +1,5 @@
 import { useAuth } from "@auth/useAuth";
-import JobListingItem from "@components/jobs/JobListing";
+import JobListings from "@components/jobs/JobListings";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ShowIfElse from "@components/visibility/ShowIfElse";
@@ -10,7 +10,7 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { Container, Divider, Text, Title } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
@@ -84,7 +84,7 @@ export default function JobsPage() {
   return (
     <div className="px-jobs grid gap-8">
       <Container className="px-container-wrapper">
-        <Title mb={2} order={4}>
+        <Title mb={"xs"} order={4}>
           <ShowIfElse
             if={userProfile?.getUserProfile?.city}
             else={"Recommended jobs"}
@@ -93,19 +93,7 @@ export default function JobsPage() {
             {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
           </ShowIfElse>
         </Title>
-        <Text mb={10} color="dimmed" size={13}>
-          {totalElements} results
-        </Text>
-        <Divider />
-        {jobs.map(
-          (jl, idx) =>
-            jl && (
-              <div key={jl.id}>
-                <JobListingItem data={jl} />
-                {idx !== jobs.length - 1 && <Divider />}
-              </div>
-            )
-        )}
+        <JobListings jobs={jobs} />
         <div className="px-jobs-pagination">
           <PaginationToolbar
             page={p}

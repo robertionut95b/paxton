@@ -9,6 +9,7 @@ import ProfileExperienceModal from "@components/user-profile/ProfileExperienceMo
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import JobDetailsPage from "./jobs/JobDetailsPage";
 
 const AccessDenied = lazy(() => import("./AccessDenied"));
 const ClientApp = lazy(() => import("./ClientApp"));
@@ -53,7 +54,10 @@ export default function AppUI() {
             errorElement={<ErrorPage />}
           >
             <Route index element={<FeedPage />} />
-            <Route path="jobs" element={<JobsPage />} />
+            <Route path="jobs">
+              <Route index element={<JobsPage />} />
+              <Route path={"view/:jobId"} element={<JobDetailsPage />} />
+            </Route>
             <Route
               path="candidature"
               element={

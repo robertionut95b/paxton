@@ -32,8 +32,10 @@ export type ActivitySector = {
 
 export type Application = {
   __typename?: 'Application';
+  applicantProfile: UserProfile;
   dateOfApplication: Scalars['Date'];
   id: Scalars['ID'];
+  jobListing: JobListing;
 };
 
 export type Certification = {
@@ -342,6 +344,7 @@ export type Query = {
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getOrganizationById?: Maybe<Organization>;
+  getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
   healthCheck?: Maybe<Scalars['String']>;
@@ -355,6 +358,11 @@ export type QueryGetAllJobListingsArgs = {
 
 export type QueryGetOrganizationByIdArgs = {
   organizationId: Scalars['ID'];
+};
+
+
+export type QueryGetRelatedJobListingsArgs = {
+  jobName: Scalars['String'];
 };
 
 
@@ -547,7 +555,7 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null }, category?: { __typename?: 'JobCategory', id: string, name: string } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: any } | null> | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -602,6 +610,13 @@ export type GetOrganizationByIdQueryVariables = Exact<{
 
 
 export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } | null };
+
+export type GetRelatedJobListingsQueryVariables = Exact<{
+  jobName: Scalars['String'];
+}>;
+
+
+export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, availableFrom: any, availableTo: any, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: any } | null> | null } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -883,6 +898,10 @@ export const GetAllJobListingsDocument = `
       category {
         id
         name
+      }
+      applications {
+        id
+        dateOfApplication
       }
     }
     page
@@ -1201,5 +1220,46 @@ export const useGetOrganizationByIdQuery = <
     useQuery<GetOrganizationByIdQuery, TError, TData>(
       ['GetOrganizationById', variables],
       fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers),
+      options
+    );
+export const GetRelatedJobListingsDocument = `
+    query GetRelatedJobListings($jobName: String!) {
+  getRelatedJobListings(jobName: $jobName) {
+    id
+    title
+    availableFrom
+    availableTo
+    city {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    organization {
+      id
+      name
+      photography
+    }
+    applications {
+      id
+      dateOfApplication
+    }
+  }
+}
+    `;
+export const useGetRelatedJobListingsQuery = <
+      TData = GetRelatedJobListingsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetRelatedJobListingsQueryVariables,
+      options?: UseQueryOptions<GetRelatedJobListingsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetRelatedJobListingsQuery, TError, TData>(
+      ['GetRelatedJobListings', variables],
+      fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
     );

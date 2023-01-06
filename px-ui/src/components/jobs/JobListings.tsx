@@ -11,7 +11,7 @@ const JobListings = ({ jobs }: JobListingsProps) => {
 
   return (
     <>
-      {jobs.map(
+      {jobs?.map(
         (jl, idx) =>
           jl && (
             <div key={jl.id}>

@@ -10,7 +10,7 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { Container, Title } from "@mantine/core";
+import { Container, Text, Title } from "@mantine/core";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
@@ -76,7 +76,7 @@ export default function JobsPage() {
         <Title mb={8} order={4}>
           No suitable jobs found
         </Title>
-        <p>You should consider updating your profile</p>
+        <Text>You should consider updating your profile</Text>
       </Container>
     );
   }

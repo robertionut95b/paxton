@@ -33,6 +33,10 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
         id
         name
       }
+      applications {
+        id
+        dateOfApplication
+      }
     }
     page
     totalPages
@@ -185,5 +189,31 @@ query GetOrganizationById($organizationId: ID!) {
     industry
     location
     photography
+  }
+}
+
+query GetRelatedJobListings($jobName: String!) {
+  getRelatedJobListings(jobName: $jobName) {
+    id
+    title
+    availableFrom
+    availableTo
+    city {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    organization {
+      id
+      name
+      photography
+    }
+    applications {
+      id
+      dateOfApplication
+    }
   }
 }

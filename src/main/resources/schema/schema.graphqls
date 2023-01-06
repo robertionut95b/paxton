@@ -9,6 +9,8 @@ type ActivitySector {
 type Application {
     id: ID!
     dateOfApplication: Date!
+    applicantProfile: UserProfile!
+    jobListing: JobListing!
 }
 
 enum ContractType {
@@ -323,6 +325,7 @@ type Query {
     getAllOrganizations: [Organization]
     getOrganizationById(organizationId: ID!): Organization
     getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
+    getRelatedJobListings(jobName: String!): [JobListing]
     getAllProcesses: [Process]
     getAllSteps: [Step]
     getStepsByProcess(processId: Int!): [Step]

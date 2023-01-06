@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -47,5 +49,10 @@ public class JobListingService {
         jobListingRepository.save(jobListing);
 
         return jobListing;
+    }
+
+    @Transactional
+    public Collection<JobListing> findRelatedJobListings(String jobName) {
+        return jobListingRepository.findByJobNameAndAvailableFromLessThanEqualAndAvailableToGreaterThanEqual(jobName, LocalDate.now(), LocalDate.now());
     }
 }

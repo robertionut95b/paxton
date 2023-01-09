@@ -1,6 +1,5 @@
 package com.irb.paxton.core.jobs;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.contract.ContractType;
@@ -54,7 +53,7 @@ public class JobListing extends PaxtonEntity<Long> {
     private LocalDate availableTo;
 
     @Transient
-    private boolean isActive = false;
+    private boolean isActive;
 
     @ManyToOne
     @JoinColumn(name = "city_id")
@@ -88,8 +87,9 @@ public class JobListing extends PaxtonEntity<Long> {
     @JoinColumn(name = "process_id")
     private Process process;
 
-    public boolean getIsActive() {
-        return availableFrom.isAfter(LocalDate.now())
-                && availableTo.isBefore(LocalDate.now());
+    @PostLoad
+    private void postLoad() {
+        this.isActive = LocalDate.now().isAfter(availableFrom)
+                && LocalDate.now().isBefore(availableTo);
     }
 }

@@ -106,6 +106,7 @@ const OrganizationJobsTab = ({ filters = [] }: OrganizationJobsTabsProps) => {
   return (
     <Container>
       {totalElements > 0 ? (
+        // @ts-expect-error(types-check)
         <OrganizationJobListings jobs={orgJobsData} />
       ) : (
         <Group py="sm">

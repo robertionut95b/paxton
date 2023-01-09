@@ -97,7 +97,7 @@ export default function OrganizationPage() {
                   key: "availableFrom",
                   fieldType: FieldType.Date,
                   value: todayIsoFmt,
-                  operator: Operator.GreaterThan,
+                  operator: Operator.GreaterThanEqual,
                 },
               ]}
             />

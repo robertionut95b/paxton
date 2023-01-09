@@ -58,7 +58,7 @@ export default function BasicUpdateProfileModal() {
         const city = c?.cities?.map((ci) => ci?.name) || [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
-          value: ci,
+          value: ci as string,
         }));
         return locs;
       })

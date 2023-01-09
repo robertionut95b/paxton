@@ -147,8 +147,8 @@ export default function ProfileStudyModal() {
     { label?: string; value?: string }[]
   >(
     certificationsData?.getAllCertifications?.map((c) => ({
-      label: c?.name,
-      value: c?.id,
+      label: c?.name as string,
+      value: c?.id as string,
     })) ?? []
   );
 
@@ -221,8 +221,9 @@ export default function ProfileStudyModal() {
           institution,
           domainStudy,
           certification,
-          startDate: format(startDate, "yyyy-MM-dd"),
-          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+          startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
+          endDate:
+            endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
         },
       });
     } else
@@ -232,8 +233,9 @@ export default function ProfileStudyModal() {
           institution,
           domainStudy,
           certification,
-          startDate: format(startDate, "yyyy-MM-dd"),
-          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+          startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
+          endDate:
+            endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
         },
       });
   };
@@ -324,10 +326,12 @@ export default function ProfileStudyModal() {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
+            // @ts-expect-error("types-check")
             onCreate={(query) => createInstitutionCb(query)}
             mt="md"
             withAsterisk
             icon={<BuildingLibraryIcon width={18} />}
+            // @ts-expect-error("types-check")
             data={institutions}
             {...form.getInputProps("institution")}
             value={selectedInstitution}
@@ -347,9 +351,11 @@ export default function ProfileStudyModal() {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
+            // @ts-expect-error("types-check")
             onCreate={(query) => createDomainCb(query)}
             mt="md"
             icon={<CogIcon width={18} />}
+            // @ts-expect-error("types-check")
             data={domains}
             {...form.getInputProps("domainStudy")}
             value={selectedDomain}
@@ -376,9 +382,11 @@ export default function ProfileStudyModal() {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
+            // @ts-expect-error("types-check")
             onCreate={(query) => createCertificationCb(query)}
             mt="md"
             icon={<DocumentCheckIcon width={18} />}
+            // @ts-expect-error("types-check")
             data={certifications}
             {...form.getInputProps("certification")}
             value={selectedCertification}

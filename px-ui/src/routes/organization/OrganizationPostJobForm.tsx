@@ -99,8 +99,8 @@ export default function OrganizationPostJobForm() {
     { label?: string; value?: string }[]
   >(
     jobCategoriesData?.getAllJobCategories?.map((j) => ({
-      label: j?.name,
-      value: j?.id,
+      label: j?.name as string,
+      value: j?.id as string,
     })) ?? []
   );
 
@@ -118,8 +118,8 @@ export default function OrganizationPostJobForm() {
       },
     });
     const item = {
-      value: jobCategory.addJobCategory?.id,
-      label: jobCategory.addJobCategory?.name,
+      value: jobCategory.addJobCategory?.id as string,
+      label: jobCategory.addJobCategory?.name as string,
     };
     setJobCategories((prev) => [...prev, item]);
     setSelectedJobCategory(item.value as string);
@@ -148,7 +148,7 @@ export default function OrganizationPostJobForm() {
         const city = c?.cities?.map((ci) => ci?.name) || [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
-          value: ci,
+          value: ci as string,
         }));
         return locs;
       })
@@ -184,8 +184,14 @@ export default function OrganizationPostJobForm() {
       JobListingInput: {
         ...values,
         organizationId: organizationId as string,
-        availableFrom: format(values.availableFrom, "yyyy-MM-dd"),
-        availableTo: format(values.availableTo, "yyyy-MM-dd"),
+        availableFrom: format(
+          values.availableFrom,
+          "yyyy-MM-dd"
+        ) as unknown as Date,
+        availableTo: format(
+          values.availableTo,
+          "yyyy-MM-dd"
+        ) as unknown as Date,
       },
     });
   };
@@ -295,7 +301,7 @@ export default function OrganizationPostJobForm() {
             itemComponent={SelectItem}
             data={(jobs?.getAllJobs ?? [])?.map((j) => ({
               label: j?.name,
-              value: j?.id,
+              value: j?.id as string,
               description: j?.description,
             }))}
             icon={<WrenchIcon width={18} />}
@@ -336,7 +342,7 @@ export default function OrganizationPostJobForm() {
             readOnly
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
-              value: o?.id,
+              value: o?.id as string,
               image: o?.photography,
               description: o?.industry,
             }))}
@@ -356,7 +362,9 @@ export default function OrganizationPostJobForm() {
             creatable
             searchable
             getCreateLabel={(query) => `+ Create ${query}`}
+            // @ts-expect-error(types-error)
             onCreate={(query) => createJobCategoryCb(query)}
+            // @ts-expect-error(types-error)
             data={jobCategories}
             icon={<LifebuoyIcon width={18} />}
             {...form.getInputProps("categoryId")}

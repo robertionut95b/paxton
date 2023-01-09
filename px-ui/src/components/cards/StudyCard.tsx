@@ -11,7 +11,7 @@ export default function StudyCard({
   study,
   withDivider = false,
 }: {
-  study: Omit<Study, "userProfile"> | null;
+  study: Omit<Study, "userProfile">;
   withDivider?: boolean;
 }) {
   return (
@@ -44,7 +44,7 @@ export default function StudyCard({
               {format(new Date(study?.startDate), "yyyy")} -{" "}
               {
                 <ShowIfElse if={study?.endDate} else="present">
-                  {format(new Date(study?.endDate), "yyyy")}
+                  {study.endDate && format(new Date(study?.endDate), "yyyy")}
                 </ShowIfElse>
               }
             </Text>

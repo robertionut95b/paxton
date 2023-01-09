@@ -126,7 +126,7 @@ export default function ProfileExperienceModal() {
         const city = c?.cities?.map((ci) => ci?.name) || [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
-          value: ci,
+          value: ci as string,
         }));
         return locs;
       })
@@ -169,8 +169,9 @@ export default function ProfileExperienceModal() {
           ...values,
           id,
           contractType,
-          startDate: format(startDate, "yyyy-MM-dd"),
-          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+          startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
+          endDate:
+            endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
         },
       });
     else
@@ -178,8 +179,9 @@ export default function ProfileExperienceModal() {
         ExperienceInput: {
           ...values,
           contractType,
-          startDate: format(startDate, "yyyy-MM-dd"),
-          endDate: endDate && format(endDate, "yyyy-MM-dd"),
+          startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
+          endDate:
+            endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
         },
       });
   };
@@ -243,7 +245,7 @@ export default function ProfileExperienceModal() {
             itemComponent={SelectItem}
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
-              value: o?.id,
+              value: o?.id as string,
               image: o?.photography,
               description: o?.industry,
             }))}
@@ -291,7 +293,7 @@ export default function ProfileExperienceModal() {
             icon={<CogIcon width={18} />}
             data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
               label: a?.name,
-              value: a?.id,
+              value: a?.id as string,
             }))}
             {...form.getInputProps("activitySectorId")}
           />

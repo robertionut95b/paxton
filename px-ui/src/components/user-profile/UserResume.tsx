@@ -62,11 +62,17 @@ export default function UserResume({
           <ShowIf if={studies.length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
           </ShowIf>
-          {studies.map((s, idx) => (
-            <div key={idx} className="px-user-study mb-8">
-              <StudyCard withDivider={studies.length - 1 !== idx} study={s} />
-            </div>
-          ))}
+          {studies.map(
+            (s, idx) =>
+              s && (
+                <div key={idx} className="px-user-study mb-8">
+                  <StudyCard
+                    withDivider={studies.length - 1 !== idx}
+                    study={s}
+                  />
+                </div>
+              )
+          )}
         </div>
       </Container>
       <Container className="px-container-wrapper px-user-resume-experiences">

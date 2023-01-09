@@ -93,6 +93,7 @@ export default function JobsPage() {
             {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
           </ShowIfElse>
         </Title>
+        {/* @ts-expect-error("types-check") */}
         <JobListings jobs={jobs} />
         <div className="px-jobs-pagination">
           <PaginationToolbar

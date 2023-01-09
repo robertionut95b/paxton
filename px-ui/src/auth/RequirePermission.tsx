@@ -13,6 +13,9 @@ const isAllowed = (
 export const isAdmin = (permissions: string[]) =>
   permissions.some((p) => p === RoleType.ROLE_ADMINISTRATOR);
 
+export const isRecruiter = (permissions: string[]) =>
+  permissions.some((p) => p === RoleType.ROLE_RECRUITER);
+
 type RequireProps = {
   children: JSX.Element;
   permission: PermissionType | string | (() => boolean);

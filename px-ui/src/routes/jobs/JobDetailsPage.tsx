@@ -1,3 +1,5 @@
+import { isAdmin, isRecruiter } from "@auth/RequirePermission";
+import { useAuth } from "@auth/useAuth";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
@@ -18,6 +20,7 @@ import NotFoundPage from "@routes/NotFoundPage";
 import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
+  const { user } = useAuth();
   const { jobId } = useParams();
   const { data: jobData, isLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -47,6 +50,7 @@ const JobDetailsPage = () => {
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
       }
     );
+  const permissions = user?.permissions ?? [];
 
   if (isLoading) return <GenericLoadingSkeleton />;
   if (!job) return <NotFoundPage />;
@@ -59,7 +63,15 @@ const JobDetailsPage = () => {
         <Paper shadow={"xs"} p="xs">
           <Breadcrumbs excludePaths={["/app/jobs/view"]} />
         </Paper>
-        <JobMainSection job={job} applied={!!myApplication} />
+        <JobMainSection
+          job={job}
+          applied={!!myApplication}
+          isAllowedCandidature={
+            (job.isActive ?? false) &&
+            !isAdmin(permissions) &&
+            !isRecruiter(permissions)
+          }
+        />
         <JobDescriptionSection description={job.description} />
         <Paper shadow={"xs"} p="md">
           <Title mb={"md"} order={4}>

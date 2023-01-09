@@ -40,11 +40,14 @@ const JobMainSection = ({
     availableFrom,
     contractType,
     availableTo,
+    isActive,
   },
   applied = false,
+  isAllowedCandidature = false,
 }: {
   job: JobListing | OmitApplicationFieldsType;
   applied?: boolean;
+  isAllowedCandidature: boolean;
 }) => {
   return (
     <Paper shadow={"xs"} p="lg">
@@ -80,10 +83,22 @@ const JobMainSection = ({
         <Group spacing={5}>
           <CalendarDaysIcon width={16} />
           <Text size={"sm"}>
-            Published{" "}
-            {formatDistanceToNowStrict(new Date(availableFrom), {
-              addSuffix: true,
-            }) ?? "Invalid date"}
+            <ShowIfElse
+              if={isActive}
+              else={
+                <Text color="dimmed">
+                  Becomes available{" "}
+                  {formatDistanceToNowStrict(new Date(availableFrom), {
+                    addSuffix: true,
+                  }) ?? "Invalid date"}
+                </Text>
+              }
+            >
+              Published{" "}
+              {formatDistanceToNowStrict(new Date(availableFrom), {
+                addSuffix: true,
+              }) ?? "Invalid date"}
+            </ShowIfElse>
           </Text>
         </Group>
         <Group spacing={5}>
@@ -111,21 +126,23 @@ const JobMainSection = ({
             </Group>
           }
         >
-          <Group>
-            <ShowIfElse
-              if={!applied}
-              else={
-                <Button disabled leftIcon={<CheckCircleIcon width={16} />}>
-                  Candidature sent
-                </Button>
-              }
-            >
-              <Button leftIcon={<CheckCircleIcon width={16} />}>Apply</Button>
-            </ShowIfElse>
-            <Button variant="light" leftIcon={<BookmarkIcon width={16} />}>
-              Save this job
-            </Button>
-          </Group>
+          <ShowIf if={isAllowedCandidature}>
+            <Group>
+              <ShowIfElse
+                if={!applied}
+                else={
+                  <Button disabled leftIcon={<CheckCircleIcon width={16} />}>
+                    Candidature sent
+                  </Button>
+                }
+              >
+                <Button leftIcon={<CheckCircleIcon width={16} />}>Apply</Button>
+              </ShowIfElse>
+              <Button variant="light" leftIcon={<BookmarkIcon width={16} />}>
+                Save this job
+              </Button>
+            </Group>
+          </ShowIf>
         </ShowIfElse>
       </Stack>
     </Paper>

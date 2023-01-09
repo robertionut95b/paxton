@@ -31,13 +31,13 @@ export default function JobsPage() {
             key: "availableTo",
             fieldType: FieldType.Date,
             value: todayIsoFmt,
-            operator: Operator.GreaterThan,
+            operator: Operator.GreaterThanEqual,
           },
           {
             key: "availableFrom",
             fieldType: FieldType.Date,
             value: todayIsoFmt,
-            operator: Operator.LessThan,
+            operator: Operator.LessThanEqual,
           },
         ],
         sorts: [

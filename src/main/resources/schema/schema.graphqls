@@ -33,6 +33,12 @@ type Application {
     jobListing: JobListing!
 }
 
+type Candidate {
+    id: ID!
+    user: User!
+    applications: [Application]
+}
+
 enum ContractType {
     FULL_TIME,
     PART_TIME,

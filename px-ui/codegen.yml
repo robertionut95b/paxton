@@ -7,6 +7,19 @@ generates:
       - typescript
       - typescript-operations
       - typescript-react-query
+      - typescript-validation-schema
     config:
       fetcher: graphql-request
-      # fetcher: "./src/lib/graphqlFetcher"
+      strictScalars: true
+      scalars:
+        Date: Date
+      scalarSchemas:
+        Date: z.date()
+        Email: z.string().email()
+      schema: zod
+      # notAllowEmptyString: true
+      directives:
+        constraint:
+          minLength: min
+          maxLength:
+            ["max", "$1", "Field must not be longer than $1 characters"]

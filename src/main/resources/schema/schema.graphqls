@@ -1,5 +1,25 @@
+# noinspection GraphQLUnresolvedReference
 # The root query of the application
 scalar Date
+
+directive @constraint(
+    # String constraints
+    minLength: Int
+    maxLength: Int
+    startsWith: String
+    endsWith: String
+    contains: String
+    notContains: String
+    pattern: String
+    format: String
+    # Number constraints
+    min: Float
+    max: Float
+    exclusiveMin: Float
+    exclusiveMax: Float
+    multipleOf: Float
+    uniqueTypeName: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
 type ActivitySector {
     id: ID!
@@ -116,16 +136,16 @@ input JobInput {
 }
 
 input JobListingInput {
-    title: String!
-    description: String!
+    title: String! @constraint(minLength: 5)
+    description: String! @constraint(maxLength: 2000)
     availableFrom: Date!
     availableTo: Date!
-    location: String!
-    jobId: ID!
-    numberOfVacancies: Int!
+    location: String! @constraint(minLength: 3)
+    jobId: ID! @constraint(minLength: 1)
+    numberOfVacancies: Int! @constraint(minLength: 1)
     contractType: ContractType!
-    organizationId: ID!
-    categoryId: ID!
+    organizationId: ID! @constraint(minLength: 1)
+    categoryId: ID! @constraint(minLength: 1)
 }
 
 type JobListing {

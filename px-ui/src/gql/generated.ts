@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { GraphQLClient } from 'graphql-request';
 import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
@@ -21,7 +22,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  Date: any;
+  Date: Date;
 };
 
 export type ActivitySector = {
@@ -555,14 +556,14 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: any, availableTo: any, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: any } | null> | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: any, endDate?: any | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null, location: string } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: any, endDate?: any | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: Date, endDate?: Date | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null, location: string } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: Date, endDate?: Date | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -616,7 +617,7 @@ export type GetRelatedJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, availableFrom: any, availableTo: any, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: any } | null> | null } | null> | null };
+export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, availableFrom: Date, availableTo: Date, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1263,3 +1264,137 @@ export const useGetRelatedJobListingsQuery = <
       fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
     );
+
+type Properties<T> = Required<{
+  [K in keyof T]: z.ZodType<T[K], any, T[K]>;
+}>;
+
+type definedNonNullAny = {};
+
+export const isDefinedNonNullAny = (v: any): v is definedNonNullAny => v !== undefined && v !== null;
+
+export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny(v));
+
+export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
+  return z.object<Properties<CertificationInput>>({
+    name: z.string()
+  })
+}
+
+export const ContractTypeSchema = z.nativeEnum(ContractType);
+
+export function DomainInputSchema(): z.ZodObject<Properties<DomainInput>> {
+  return z.object<Properties<DomainInput>>({
+    name: z.string()
+  })
+}
+
+export function ExperienceInputSchema(): z.ZodObject<Properties<ExperienceInput>> {
+  return z.object<Properties<ExperienceInput>>({
+    activitySectorId: z.string(),
+    city: z.string().nullish(),
+    contractType: ContractTypeSchema,
+    description: z.string(),
+    endDate: z.date().nullish(),
+    id: z.string().nullish(),
+    organizationId: z.string(),
+    startDate: z.date(),
+    title: z.string(),
+    userProfileSlugUrl: z.string()
+  })
+}
+
+export const FieldTypeSchema = z.nativeEnum(FieldType);
+
+export function FiltersInputSchema(): z.ZodObject<Properties<FiltersInput>> {
+  return z.object<Properties<FiltersInput>>({
+    fieldType: FieldTypeSchema,
+    key: z.string(),
+    operator: OperatorSchema,
+    value: z.string()
+  })
+}
+
+export function InstitutionInputSchema(): z.ZodObject<Properties<InstitutionInput>> {
+  return z.object<Properties<InstitutionInput>>({
+    description: z.string().nullish(),
+    name: z.string(),
+    photography: z.string().nullish()
+  })
+}
+
+export function JobCategoryInputSchema(): z.ZodObject<Properties<JobCategoryInput>> {
+  return z.object<Properties<JobCategoryInput>>({
+    name: z.string()
+  })
+}
+
+export function JobInputSchema(): z.ZodObject<Properties<JobInput>> {
+  return z.object<Properties<JobInput>>({
+    description: z.string(),
+    name: z.string()
+  })
+}
+
+export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>> {
+  return z.object<Properties<JobListingInput>>({
+    availableFrom: z.date(),
+    availableTo: z.date(),
+    categoryId: z.string().min(1),
+    contractType: ContractTypeSchema,
+    description: z.string().max(2000, "Field must not be longer than 2000 characters"),
+    jobId: z.string().min(1),
+    location: z.string().min(3),
+    numberOfVacancies: z.number().min(1),
+    organizationId: z.string().min(1),
+    title: z.string().min(5)
+  })
+}
+
+export const OperatorSchema = z.nativeEnum(Operator);
+
+export function SearchQueryInputSchema(): z.ZodObject<Properties<SearchQueryInput>> {
+  return z.object<Properties<SearchQueryInput>>({
+    filters: z.array(z.lazy(() => FiltersInputSchema().nullable())).nullish(),
+    page: z.number().nullish(),
+    size: z.number().nullish(),
+    sorts: z.array(z.lazy(() => SortsInputSchema().nullable())).nullish()
+  })
+}
+
+export const SortDirectionSchema = z.nativeEnum(SortDirection);
+
+export function SortsInputSchema(): z.ZodObject<Properties<SortsInput>> {
+  return z.object<Properties<SortsInput>>({
+    direction: SortDirectionSchema,
+    key: z.string()
+  })
+}
+
+export const StatusSchema = z.nativeEnum(Status);
+
+export function StudyInputSchema(): z.ZodObject<Properties<StudyInput>> {
+  return z.object<Properties<StudyInput>>({
+    certification: z.string().nullish(),
+    degree: z.string().nullish(),
+    description: z.string().nullish(),
+    domainStudy: z.string().nullish(),
+    endDate: z.date().nullish(),
+    id: z.string().nullish(),
+    institution: z.string(),
+    startDate: z.date(),
+    userProfileSlugUrl: z.string()
+  })
+}
+
+export function UserProfileInputSchema(): z.ZodObject<Properties<UserProfileInput>> {
+  return z.object<Properties<UserProfileInput>>({
+    city: z.string(),
+    description: z.string(),
+    firstName: z.string(),
+    id: z.string(),
+    lastName: z.string(),
+    profileSlugUrl: z.string(),
+    profileTitle: z.string()
+  })
+}

@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -89,7 +90,7 @@ public class JobListing extends PaxtonEntity<Long> {
 
     @PostLoad
     private void postLoad() {
-        this.isActive = LocalDate.now().isAfter(availableFrom)
-                && LocalDate.now().isBefore(availableTo);
+        this.isActive = LocalDateTime.now().isAfter(availableFrom.atStartOfDay())
+                && LocalDateTime.now().isBefore(availableTo.atStartOfDay());
     }
 }

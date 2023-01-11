@@ -1,13 +1,13 @@
 import RequireAuth from "@auth/RequireAuth";
 import RequireNonAuth from "@auth/RequireNonAuth";
-import { RequirePermission } from "@auth/RequirePermission";
+import { RequireRoles } from "@auth/RequireRoles";
 import RoleType from "@auth/RoleType";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
 import ProfileExperienceModal from "@components/user-profile/ProfileExperienceModal";
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import JobDetailsPage from "./jobs/JobDetailsPage";
 
@@ -21,7 +21,6 @@ const ForgotPasswordReset = lazy(() => import("./ForgotPasswordReset"));
 const Index = lazy(() => import("./IndexPage"));
 const JobsPage = lazy(() => import("./jobs/JobsPage"));
 const Login = lazy(() => import("./Login"));
-const Logout = lazy(() => import("./Logout"));
 const NetworkPage = lazy(() => import("./NetworkPage"));
 const SignUp = lazy(() => import("./SignUp"));
 const RecruitmentPage = lazy(() => import("./user/RecruitmentPage"));
@@ -61,9 +60,11 @@ export default function AppUI() {
             <Route
               path="candidature"
               element={
-                <RequirePermission permission={RoleType.ROLE_VIEWER}>
+                <RequireRoles
+                  roles={[RoleType.ROLE_VIEWER, RoleType.ROLE_EVERYONE]}
+                >
                   <></>
-                </RequirePermission>
+                </RequireRoles>
               }
             />
             <Route path="up/:profileSlug/" element={<UserProfile />}>
@@ -91,9 +92,9 @@ export default function AppUI() {
             <Route
               path="recruitment"
               element={
-                <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                <RequireRoles roles={RoleType.ROLE_RECRUITER}>
                   <RecruitmentPage />
-                </RequirePermission>
+                </RequireRoles>
               }
             />
             <Route path="my-organization" element={<MyOrganizationPage />} />
@@ -105,22 +106,21 @@ export default function AppUI() {
               <Route
                 path="jobs/publish-job/form"
                 element={
-                  <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
                     <OrganizationPostJobForm />
-                  </RequirePermission>
+                  </RequireRoles>
                 }
               />
               <Route
                 path="jobs/publish-job/form/:jobListingId/update"
                 element={
-                  <RequirePermission permission={RoleType.ROLE_RECRUITER}>
+                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
                     <OrganizationPostJobForm />
-                  </RequirePermission>
+                  </RequireRoles>
                 }
               />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
-            <Route path="logout" element={<Logout />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route

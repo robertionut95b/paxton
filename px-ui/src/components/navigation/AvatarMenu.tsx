@@ -7,6 +7,7 @@ import {
   WrenchIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import useEffectOnce from "@hooks/useEffectOnce";
 import { User } from "@interfaces/user.types";
 import { Avatar, Menu } from "@mantine/core";
 import { Link } from "react-router-dom";
@@ -15,12 +16,17 @@ const AvatarMenu = ({
   user,
   profileLink,
   src,
+  signOutFn,
 }: {
   user?: User | null;
   profileLink?: string;
   src?: string | null;
+  signOutFn?: () => void;
 }) => {
   const link = `/app/up/${profileLink}`;
+  useEffectOnce(() => {
+    if (!signOutFn) console.warn("Sign out function should be defined");
+  });
   return (
     <Menu shadow="md" width={200} transitionDuration={300}>
       <Menu.Target>
@@ -53,9 +59,8 @@ const AvatarMenu = ({
         </Menu.Item>
         <Menu.Item
           color="red"
-          component={Link}
-          to={`/app/logout`}
           icon={<XMarkIcon width={16} />}
+          onClick={signOutFn}
         >
           Log out
         </Menu.Item>

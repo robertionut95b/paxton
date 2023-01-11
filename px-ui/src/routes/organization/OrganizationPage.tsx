@@ -1,4 +1,4 @@
-import { RequirePermission } from "@auth/RequirePermission";
+import { RequireRoles } from "@auth/RequireRoles";
 import RoleType from "@auth/RoleType";
 import OrganizationToolbar from "@components/organization/OrganizationToolbar";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
@@ -40,12 +40,9 @@ export default function OrganizationPage() {
   return (
     <div className="px-organization flex flex-col gap-4">
       {organizationItem && (
-        <RequirePermission
-          permission={RoleType.ROLE_RECRUITER}
-          returnValue="null"
-        >
+        <RequireRoles roles={RoleType.ROLE_RECRUITER} returnValue="null">
           <OrganizationToolbar organization={organizationItem} />
-        </RequirePermission>
+        </RequireRoles>
       )}
       <Paper shadow={"xs"} p="md">
         <Tabs color="violet" defaultValue="active">

@@ -1,5 +1,5 @@
+import { RequireRoles } from "@auth/RequireRoles";
 import { RoleType } from "@auth/permission.types";
-import { RequirePermission } from "@auth/RequirePermission";
 import JobListingItem from "@components/jobs/JobListing";
 import { JobListing } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
@@ -21,8 +21,8 @@ const OrganizationJobListings = ({ jobs }: OrganizationJobListingsProps) => {
                 <div className="grow">
                   <JobListingItem data={jl} />
                 </div>
-                <RequirePermission
-                  permission={RoleType.ROLE_RECRUITER}
+                <RequireRoles
+                  roles={RoleType.ROLE_RECRUITER}
                   returnValue="null"
                 >
                   <NavLink
@@ -33,7 +33,7 @@ const OrganizationJobListings = ({ jobs }: OrganizationJobListingsProps) => {
                       <PencilIcon width={16} />
                     </ActionIcon>
                   </NavLink>
-                </RequirePermission>
+                </RequireRoles>
               </div>
               {idx !== jobs.length - 1 && <Divider />}
             </div>

@@ -1,4 +1,5 @@
-import { isAdmin, RequirePermission } from "@auth/RequirePermission";
+import { RequirePermission } from "@auth/RequirePermission";
+import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
 import ProfileBanner from "@components/user-profile/ProfileBanner";
 import ProfileCard from "@components/user-profile/ProfileCard";
@@ -8,45 +9,42 @@ import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Button, Container } from "@mantine/core";
-import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
+import { Button, Group, Paper, Stack } from "@mantine/core";
+import NotFoundPage from "@routes/NotFoundPage";
+import { NavLink, Outlet, useParams } from "react-router-dom";
 
 export default function UserProfile() {
   const { profileSlug } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInRole } = useAuth();
 
-  const { data, isLoading } = useGetUserProfileQuery(
-    graphqlRequestClient,
-    {
-      profileSlugUrl: profileSlug,
-    },
-    {
-      onSuccess: (data) => {
-        if (data.getUserProfile === null) navigate("/app");
-      },
-    }
-  );
-  const userProfile = data?.getUserProfile;
+  const { data, isLoading } = useGetUserProfileQuery(graphqlRequestClient, {
+    profileSlugUrl: profileSlug,
+  });
+
+  if (isLoading) return <ProfileLoadingSkeleton />;
+
+  if (!data?.getUserProfile) return <NotFoundPage />;
+
+  const userProfile = data.getUserProfile;
   const coverPhoto =
     userProfile?.coverPhotography && userProfile.coverPhotography !== null
       ? `${APP_API_BASE_URL}/${userProfile.coverPhotography}`
       : "/images/bg-profile.jpg";
 
-  if (isLoading) return <ProfileLoadingSkeleton />;
-
   const isCurrentUser = userProfile?.user.username === user?.username;
 
+  const isCurrentUserCb = () => isCurrentUser;
+
   return (
-    <div className="px-user-profile flex flex-col gap-y-2">
-      <Container className="px-container-wrapper">
-        <div className="px-banner-parent w-full">
+    <Stack className="px-user-profile">
+      <Paper shadow={"xs"} p="md">
+        <Group className="px-banner-parent" grow>
           <ProfileBanner
             coverPhoto={coverPhoto}
-            editable={isCurrentUser || isAdmin(user?.permissions || [])}
+            editable={isCurrentUser || isInRole(RoleType.ROLE_ADMINISTRATOR)}
           />
-        </div>
-        <div className="px-profile-card-parent flex justify-between items-center mt-6">
+        </Group>
+        <Group mt={"md"} position="apart">
           <ProfileCard
             location={
               userProfile?.city?.country
@@ -58,15 +56,12 @@ export default function UserProfile() {
               `${APP_API_BASE_URL}/${userProfile.photography}`
             }
             title={userProfile?.profileTitle}
-            firstName={userProfile?.user?.firstName}
-            lastName={userProfile?.user?.lastName}
-            username={userProfile?.user.username as string}
+            firstName={userProfile.user?.firstName}
+            lastName={userProfile.user?.lastName}
+            username={userProfile.user?.username}
             isEmailConfirmed={user?.isEmailConfirmed}
           />
-          <RequirePermission
-            returnValue="null"
-            permission={() => isCurrentUser}
-          >
+          <RequirePermission returnValue="null" permission={isCurrentUserCb}>
             <NavLink
               to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
             >
@@ -75,15 +70,15 @@ export default function UserProfile() {
               </Button>
             </NavLink>
           </RequirePermission>
-        </div>
-      </Container>
+        </Group>
+      </Paper>
       <UserResume
         userProfile={userProfile}
-        editable={isCurrentUser || isAdmin(user?.permissions || [])}
+        editable={isCurrentUser || isInRole(RoleType.ROLE_ADMINISTRATOR)}
       />
-      <RequirePermission returnValue="null" permission={() => isCurrentUser}>
+      <RequirePermission returnValue="null" permission={isCurrentUserCb}>
         <Outlet />
       </RequirePermission>
-    </div>
+    </Stack>
   );
 }

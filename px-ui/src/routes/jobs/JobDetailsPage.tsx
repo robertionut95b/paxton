@@ -1,9 +1,9 @@
-import { isAdmin, isRecruiter } from "@auth/RequirePermission";
+import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
-import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ExpandableText from "@components/visibility/ExpandableText";
@@ -20,7 +20,7 @@ import NotFoundPage from "@routes/NotFoundPage";
 import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
-  const { user } = useAuth();
+  const { isInRole } = useAuth();
   const { jobId } = useParams();
   const { data: jobData, isLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -50,7 +50,6 @@ const JobDetailsPage = () => {
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
       }
     );
-  const permissions = user?.permissions ?? [];
 
   if (isLoading) return <GenericLoadingSkeleton />;
   if (!job) return <NotFoundPage />;
@@ -68,8 +67,8 @@ const JobDetailsPage = () => {
           applied={!!myApplication}
           isAllowedCandidature={
             (job.isActive ?? false) &&
-            !isAdmin(permissions) &&
-            !isRecruiter(permissions)
+            !isInRole(RoleType.ROLE_ADMINISTRATOR) &&
+            !isInRole(RoleType.ROLE_RECRUITER)
           }
         />
         <JobDescriptionSection description={job.description} />
@@ -90,7 +89,10 @@ const JobDetailsPage = () => {
         <ShowIfElse
           if={relatedJobsIsLoading}
           else={
-            relatedJobsData && <JobsRelatedSection jobs={relatedJobsData} />
+            relatedJobsData &&
+            relatedJobsData.length > 0 && (
+              <JobsRelatedSection jobs={relatedJobsData} />
+            )
           }
         >
           <JobsListingsSkeleton />

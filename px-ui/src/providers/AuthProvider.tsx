@@ -1,6 +1,8 @@
 import AuthContext from "@auth/AuthContext";
+import RoleType from "@auth/RoleType";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
+import useEffectOnce from "@hooks/useEffectOnce";
 import useInterval from "@hooks/useInterval";
 import useLoginUser from "@hooks/useLoginUser";
 import useLogoutUser from "@hooks/useLogoutUser";
@@ -14,7 +16,7 @@ import { api } from "@lib/axiosClient";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
 import jwtDecode from "jwt-decode";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { AuthErrorMessages } from "./messages";
 
 const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
@@ -38,9 +40,9 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null>(null);
-  const [refreshIntervalInSec, setRefreshIntervalInSec] = useState(
-    expToMillis(60)
-  );
+  const [refreshIntervalInSec, setRefreshIntervalInSec] = useState<
+    number | null
+  >(expToMillis(60));
   const [loading, setLoading] = useState(true);
 
   const loadMetaFromToken = (accessToken: string) => {
@@ -48,7 +50,7 @@ export default function AuthProvider({
     // set authorization headers
     api.defaults.headers.Authorization = bearer;
     graphqlRequestClient.setHeader("Authorization", bearer);
-    const decodedAccessToken = jwtDecode(accessToken) as AccessTokenDecode;
+    const decodedAccessToken: AccessTokenDecode = jwtDecode(accessToken);
     // set refresh interval
     setRefreshIntervalInSec(
       decodedAccessToken.exp < 1000
@@ -96,8 +98,8 @@ export default function AuthProvider({
           autoClose: 5000,
           icon: <LockClosedIcon width={20} />,
         });
-        setRefreshIntervalInSec(Number.MAX_SAFE_INTEGER);
       }
+      setRefreshIntervalInSec(null);
       setUser(null);
     },
     onSettled: () => setLoading(false),
@@ -113,20 +115,30 @@ export default function AuthProvider({
 
   const signout = (callback: VoidFunction) => {
     logOut();
+    setUser(null);
+    setRefreshIntervalInSec(null);
     callback?.();
   };
 
   useInterval(() => refreshLogin(), refreshIntervalInSec);
 
-  useEffect(() => refreshLogin(), []);
+  useEffectOnce(() => refreshLogin());
 
-  const value = {
-    user,
-    signin,
-    signout,
-    loading: (!user || user === null) && loading,
-    setUser,
-  };
+  const isInRole = (role: RoleType) =>
+    (user?.permissions ?? []).some((p) => p === role);
+
+  const value = useMemo(
+    () => ({
+      user,
+      signin,
+      signout,
+      loading: (!user || user === null) && loading,
+      setUser,
+      isInRole,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, loading]
+  );
 
   if ((!user || user === null) && loading) return <ApplicationSpinner />;
 

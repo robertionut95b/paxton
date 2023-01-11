@@ -1,17 +1,18 @@
+import { useAuth } from "@auth/useAuth";
 import { LogoWithSearch } from "@components/Logo";
 import { User } from "@interfaces/user.types";
 import {
   Burger,
   Container,
-  createStyles,
   Group,
   Header,
   Paper,
   Transition,
+  createStyles,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ReactNode, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
 import AvatarMenu from "./AvatarMenu";
 
 export interface LinkItem {
@@ -113,6 +114,7 @@ const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
   const [active, setActive] = useState(location.pathname || links[0].link);
   const { classes, cx } = useStyles();
   const navigate = useNavigate();
+  const { signout } = useAuth();
 
   const items = links.map((link) => (
     <Link
@@ -143,7 +145,12 @@ const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
           <Group className={classes.links} spacing={5}>
             {items}
           </Group>
-          <AvatarMenu user={user} profileLink={profileLink} src={avatarSrc} />
+          <AvatarMenu
+            user={user}
+            profileLink={profileLink}
+            src={avatarSrc}
+            signOutFn={() => signout(() => redirect("/app"))}
+          />
           <Burger
             opened={opened}
             onClick={toggle}

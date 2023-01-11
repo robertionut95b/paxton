@@ -1,6 +1,5 @@
 import { RequireRoles } from "@auth/RequireRoles";
 import RoleType from "@auth/RoleType";
-import OrganizationToolbar from "@components/organization/OrganizationToolbar";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import {
   FieldType,
@@ -13,12 +12,25 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Paper, Tabs } from "@mantine/core";
+import { Group, Paper, Skeleton, Tabs } from "@mantine/core";
 import { formatISO } from "date-fns";
+import { Suspense, lazy } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationJobsTab from "./OrganizationJobsTab";
 
 const todayIsoFmt = formatISO(new Date());
+
+const OrganizationToolbarSkeleton = () => (
+  <Paper shadow={"xs"} p="md">
+    <Group position="apart" align={"center"}>
+      <Skeleton height={8} radius="xl" width={"40%"} />
+      <Group position="apart" align={"center"} w={"15%"}>
+        <Skeleton height={8} radius="xl" width={"65%"} />
+        <Skeleton height={28} circle />
+      </Group>
+    </Group>
+  </Paper>
+);
 
 export default function OrganizationPage() {
   const { organizationId } = useParams();
@@ -37,11 +49,17 @@ export default function OrganizationPage() {
 
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
 
+  const OrganizationToolbar = lazy(
+    () => import("@components/organization/OrganizationToolbar")
+  );
+
   return (
     <div className="px-organization flex flex-col gap-4">
       {organizationItem && (
         <RequireRoles roles={RoleType.ROLE_RECRUITER} returnValue="null">
-          <OrganizationToolbar organization={organizationItem} />
+          <Suspense fallback={<OrganizationToolbarSkeleton />}>
+            <OrganizationToolbar organization={organizationItem} />
+          </Suspense>
         </RequireRoles>
       )}
       <Paper shadow={"xs"} p="md">

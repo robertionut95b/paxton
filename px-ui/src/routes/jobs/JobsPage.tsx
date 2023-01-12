@@ -11,6 +11,7 @@ import {
   useGetUserProfileQuery,
 } from "@gql/generated";
 import { Container, Text, Title } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
@@ -19,6 +20,7 @@ export default function JobsPage() {
   const [p, setP] = useState<number>(1);
   const [ps, setPs] = useState<number>(5);
   const todayIsoFmt = formatISO(new Date());
+  const queryClient = useQueryClient();
 
   const { data, isLoading: jobsLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -52,6 +54,44 @@ export default function JobsPage() {
       queryKey: [`jobsListing${p}&${ps}`],
       keepPreviousData: true,
       staleTime: 1000 * 60,
+      onSuccess: (data) => {
+        if (data) {
+          data.getAllJobListings?.list?.forEach((jl) =>
+            queryClient.setQueryData(
+              [
+                "GetAllJobListings",
+                {
+                  searchQuery: {
+                    filters: [
+                      {
+                        key: "id",
+                        fieldType: FieldType.Long,
+                        operator: Operator.Equal,
+                        value: jl?.id.toString() as string,
+                      },
+                    ],
+                  },
+                },
+              ],
+              {
+                getAllJobListings: {
+                  list: [jl],
+                },
+                page: 0,
+                totalElements: 1,
+                totalPages: 1,
+              }
+            )
+          );
+          const org = data?.getAllJobListings?.list?.[0]?.organization;
+          queryClient.setQueryData(
+            ["GetOrganizationById", { organizationId: org?.id }],
+            {
+              getOrganizationById: org,
+            }
+          );
+        }
+      },
     }
   );
 

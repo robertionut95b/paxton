@@ -2,8 +2,6 @@ import AuthContext from "@auth/AuthContext";
 import RoleType from "@auth/RoleType";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
-import useEffectOnce from "@hooks/useEffectOnce";
-import useInterval from "@hooks/useInterval";
 import useLoginUser from "@hooks/useLoginUser";
 import useLogoutUser from "@hooks/useLogoutUser";
 import useRefreshLogin from "@hooks/useRefreshLogin";
@@ -17,6 +15,7 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
 import jwtDecode from "jwt-decode";
 import { useMemo, useState } from "react";
+import { useEffectOnce, useInterval } from "usehooks-ts";
 import { AuthErrorMessages } from "./messages";
 
 const userDecodeToUser = (userDecode: AccessTokenDecode): User => {

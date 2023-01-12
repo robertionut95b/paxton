@@ -1,3 +1,4 @@
+import { ThemeTogglerMenuItem } from "@components/layout/ThemeToggler";
 import {
   ExclamationTriangleIcon,
   IdentificationIcon,
@@ -7,10 +8,10 @@ import {
   WrenchIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import useEffectOnce from "@hooks/useEffectOnce";
 import { User } from "@interfaces/user.types";
 import { Avatar, Menu } from "@mantine/core";
 import { Link } from "react-router-dom";
+import { useEffectOnce } from "usehooks-ts";
 
 const AvatarMenu = ({
   user,
@@ -52,6 +53,7 @@ const AvatarMenu = ({
         <Menu.Item icon={<InboxIcon width={16} />}>Messages</Menu.Item>
         <Menu.Item icon={<NewspaperIcon width={16} />}>Notifications</Menu.Item>
         <Menu.Item icon={<WrenchIcon width={16} />}>Settings</Menu.Item>
+        <ThemeTogglerMenuItem />
         <Menu.Divider />
         <Menu.Label>Account</Menu.Label>
         <Menu.Item icon={<ExclamationTriangleIcon width={16} />}>

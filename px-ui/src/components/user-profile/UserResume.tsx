@@ -5,7 +5,7 @@ import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import { ActionIcon, Container, Text, Title } from "@mantine/core";
+import { ActionIcon, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import groupBy from "lodash.groupby";
 import { NavLink } from "react-router-dom";
 
@@ -24,12 +24,12 @@ export default function UserResume({
     "No information was provided. Start by adding some to your profile.";
 
   return (
-    <div className="px-user-resume flex flex-col gap-y-4">
-      <Container className="px-container-wrapper">
+    <Stack className="px-user-resume">
+      <Paper shadow="sm" p="md">
         <Title mb={"md"} order={4}>
           About
         </Title>
-        <div className="px-user-resume-description">
+        <Group className="px-user-resume-description">
           <ShowIfElse
             if={userProfile?.description}
             else={<Text size="sm">{placeholder}</Text>}
@@ -38,11 +38,15 @@ export default function UserResume({
               {userProfile?.description}
             </ExpandableText>
           </ShowIfElse>
-        </div>
-      </Container>
-      <Container className="px-container-wrapper px-user-resume-studies">
-        <div className="px-user-resume-studies-heading flex justify-between">
-          <Title order={4} mb={"md"}>
+        </Group>
+      </Paper>
+      <Paper shadow="sm" p="md" className=" px-user-resume-studies">
+        <Group
+          className="px-user-resume-studies-heading"
+          position="apart"
+          align="center"
+        >
+          <Title order={4} mb={"lg"}>
             Studies
           </Title>
           <ShowIf if={editable}>
@@ -57,8 +61,8 @@ export default function UserResume({
               </ActionIcon>
             </NavLink>
           </ShowIf>
-        </div>
-        <div className="px-user-studies">
+        </Group>
+        <Paper className="px-user-studies">
           <ShowIf if={studies.length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
           </ShowIf>
@@ -73,11 +77,15 @@ export default function UserResume({
                 </div>
               )
           )}
-        </div>
-      </Container>
-      <Container className="px-container-wrapper px-user-resume-experiences">
-        <div className="px-user-resume-experiences-heading flex justify-between">
-          <Title order={4} mb="md">
+        </Paper>
+      </Paper>
+      <Paper shadow="sm" p="md" className="px-user-resume-experiences">
+        <Group
+          position="apart"
+          align="center"
+          className="px-user-resume-experiences-heading"
+        >
+          <Title order={4} mb="lg">
             Experience
           </Title>
           <ShowIf if={editable}>
@@ -94,8 +102,8 @@ export default function UserResume({
               </ActionIcon>
             </NavLink>
           </ShowIf>
-        </div>
-        <div className="px-user-experiences">
+        </Group>
+        <Paper className="px-user-experiences">
           <ShowIf if={Object.entries(experiences).length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
           </ShowIf>
@@ -105,8 +113,8 @@ export default function UserResume({
               <ExperienceCard experience={e} />
             </div>
           ))}
-        </div>
-      </Container>
-    </div>
+        </Paper>
+      </Paper>
+    </Stack>
   );
 }

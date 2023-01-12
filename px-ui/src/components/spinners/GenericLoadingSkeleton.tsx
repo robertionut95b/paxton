@@ -1,18 +1,18 @@
-import { Skeleton } from "@mantine/core";
+import { Paper, Skeleton, Stack } from "@mantine/core";
 
 export default function GenericLoadingSkeleton() {
   return (
-    <div className="px-loading-skeleton">
-      <div className="px-skeleton px-container-wrapper">
+    <Stack className="px-loading-skeleton">
+      <Paper shadow={"sm"} p="md">
         <Skeleton height={120} mb="xl" />
         <Skeleton height={8} mt={6} radius="xl" />
         <Skeleton height={8} mt={6} width="70%" radius="xl" />
-      </div>
-      <div className="px-skeleton-inner my-4 px-container-wrapper">
+      </Paper>
+      <Paper shadow={"sm"} p="md" className="px-skeleton-inner my-4">
         <Skeleton height={120} mb="xl" />
         <Skeleton height={8} mt={6} radius="xl" />
         <Skeleton height={8} mt={6} width="70%" radius="xl" />
-      </div>
-    </div>
+      </Paper>
+    </Stack>
   );
 }

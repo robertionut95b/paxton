@@ -2,23 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .px-container-wrapper {
-    @apply p-4 bg-white border rounded-lg border-solid w-full
-  }
-}
-  
 html,
-body {
+body,
+#root,
+#px-app > div {
   background-color: #f9f5f9;
-  margin: 0px;
-  padding: 0px;
+  min-height: 100%;
 }
 
-#root {
-  background-color: #f9f5f9;
-  padding-bottom: 25px;
-  height: 100%;
+html.dark,
+body,
+#root,
+#px-app > div {
+  background-color: #25262b;
+  min-height: 100%;
 }
 
 .px-user-resume-description ::-webkit-scrollbar {
@@ -33,7 +30,7 @@ body {
 .px-expandable-text {
   --max-lines: 3;
   --line-height: 1.5;
-  
+
   max-height: calc(var(--max-lines) * 1em * var(--line-height));
   line-height: var(--line-height);
 
@@ -41,14 +38,15 @@ body {
   position: relative;
 }
 
-.px-expandable-text:has(+ .px-expandable-text-expand-btn:not(:checked))::before {
+.px-expandable-text:has(
+    + .px-expandable-text-expand-btn:not(:checked)
+  )::before {
   content: "";
   position: absolute;
   height: calc(1em * var(--line-height));
   width: 100%;
   bottom: 0;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, white);
 }
 
 .px-expandable-text-expand-btn {
@@ -56,11 +54,11 @@ body {
 }
 
 .px-expandable-text-expand-btn::before {
-  content: "... see more"
+  content: "... see more";
 }
 
 .px-expandable-text-expand-btn:checked:before {
-  content: "show less"
+  content: "show less";
 }
 
 .px-expandable-text:has(~ .px-expandable-text-expand-btn:checked) {

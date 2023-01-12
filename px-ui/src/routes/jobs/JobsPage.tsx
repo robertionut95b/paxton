@@ -10,7 +10,7 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { Container, Text, Title } from "@mantine/core";
+import { Paper, Text, Title } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useState } from "react";
@@ -112,40 +112,38 @@ export default function JobsPage() {
 
   if (jobs.length === 0) {
     return (
-      <Container className="px-container-wrapper">
+      <Paper shadow="sm" p="md">
         <Title mb={8} order={4}>
           No suitable jobs found
         </Title>
         <Text>You should consider updating your profile</Text>
-      </Container>
+      </Paper>
     );
   }
 
   return (
-    <div className="px-jobs grid gap-8">
-      <Container className="px-container-wrapper">
-        <Title mb={"xs"} order={4}>
-          <ShowIfElse
-            if={userProfile?.getUserProfile?.city}
-            else={"Recommended jobs"}
-          >
-            Jobs of interest in:{" "}
-            {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
-          </ShowIfElse>
-        </Title>
-        {/* @ts-expect-error("types-check") */}
-        <JobListings jobs={jobs} />
-        <div className="px-jobs-pagination">
-          <PaginationToolbar
-            page={p}
-            setPage={setP}
-            pageSize={ps}
-            setPageSize={setPs}
-            totalElements={totalElements}
-            totalPages={totalPages}
-          />
-        </div>
-      </Container>
-    </div>
+    <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
+      <Title mb={"xs"} order={4}>
+        <ShowIfElse
+          if={userProfile?.getUserProfile?.city}
+          else={"Recommended jobs"}
+        >
+          Jobs of interest in:{" "}
+          {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
+        </ShowIfElse>
+      </Title>
+      {/* @ts-expect-error("types-check") */}
+      <JobListings jobs={jobs} />
+      <Paper className="px-jobs-pagination">
+        <PaginationToolbar
+          page={p}
+          setPage={setP}
+          pageSize={ps}
+          setPageSize={setPs}
+          totalElements={totalElements}
+          totalPages={totalPages}
+        />
+      </Paper>
+    </Paper>
   );
 }

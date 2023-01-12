@@ -1,15 +1,18 @@
-import { Text, TextProps } from "@mantine/core";
+import { Stack, Text, TextProps } from "@mantine/core";
+import { useDarkMode } from "usehooks-ts";
 
 export default function ExpandableText(props: TextProps) {
   const { children, className, ...rest } = props;
+  const { isDarkMode } = useDarkMode();
   return (
-    <div className="px-expandable-container flex flex-col">
+    <Stack className="px-expandable-container flex flex-col">
       <Text className={`px-expandable-text ${className}`} {...rest}>
         <pre
           style={{
             fontFamily: "inherit",
             fontSize: "inherit",
             whiteSpace: "pre-wrap",
+            color: isDarkMode ? "#C1C2C5" : "#000",
           }}
         >
           {children}
@@ -20,6 +23,6 @@ export default function ExpandableText(props: TextProps) {
         type={"checkbox"}
         title="Expand"
       />
-    </div>
+    </Stack>
   );
 }

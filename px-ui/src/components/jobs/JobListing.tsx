@@ -52,8 +52,8 @@ export default function JobListingItem({
               </Anchor>
             </li>
             <li>
-              <Text my={2} size={"sm"}>
-                {`${description.slice(0, 200)} ...`}
+              <Text my={2} size={"sm"} truncate>
+                {description}
               </Text>
             </li>
             <li>

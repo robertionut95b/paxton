@@ -12,9 +12,10 @@ import {
   NewspaperIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Center, Container, Skeleton } from "@mantine/core";
+import { Center, Container, Paper, Skeleton } from "@mantine/core";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
+import { useDarkMode } from "usehooks-ts";
 
 const renderLinksByPermission = (permissions: string[]) => {
   const commonLinks: LinkItem[] = [
@@ -49,6 +50,7 @@ const renderLinksByPermission = (permissions: string[]) => {
 
 export default function ClientApp() {
   const { user } = useAuth();
+  const { isDarkMode } = useDarkMode();
   const { data: profileData, isLoading } = useGetUserProfileQuery(
     graphqlRequestClient,
     {
@@ -57,7 +59,11 @@ export default function ClientApp() {
   );
   const permissions = user?.permissions || [];
   return (
-    <>
+    <div
+      style={{
+        backgroundColor: isDarkMode ? "#25262B" : "#f9f5f9",
+      }}
+    >
       <ShowIfElse
         if={isLoading}
         else={
@@ -72,17 +78,17 @@ export default function ClientApp() {
           />
         }
       >
-        <div className="p-4 bg-white w-full mb-6">
+        <Paper p="lg" mb="lg" w="100%">
           <Center>
             <Skeleton width={"58%"} height={12} radius="xl" />
           </Center>
-        </div>
+        </Paper>
       </ShowIfElse>
-      <Container>
+      <Container pb="xs">
         <Suspense fallback={<GenericLoadingSkeleton />}>
           <Outlet />
         </Suspense>
       </Container>
-    </>
+    </div>
   );
 }

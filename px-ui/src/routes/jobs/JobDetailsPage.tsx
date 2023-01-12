@@ -3,25 +3,32 @@ import { useAuth } from "@auth/useAuth";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
+import JobOrganizationAboutCard from "@components/jobs/job-page/JobOrganizationAboutCard";
+import JobRelatedAlertSection from "@components/jobs/job-page/JobRelatedAlertSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import ExpandableText from "@components/visibility/ExpandableText";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
+  useApplyToJobListingMutation,
   useGetAllJobListingsQuery,
+  useGetApplicationForJobListingQuery,
   useGetRelatedJobListingsQuery,
 } from "@gql/generated";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Avatar, Container, Group, Paper, Stack, Title } from "@mantine/core";
+import { Container, Paper, Stack } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import NotFoundPage from "@routes/NotFoundPage";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
-  const { isInRole } = useAuth();
+  const { user, isInRole } = useAuth();
   const { jobId } = useParams();
+  const queryClient = useQueryClient();
   const { data: jobData, isLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
@@ -50,11 +57,49 @@ const JobDetailsPage = () => {
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
       }
     );
+  const { data: myApplication, isLoading: applicationLoading } =
+    useGetApplicationForJobListingQuery(
+      graphqlRequestClient,
+      {
+        JobListingId: job?.id ?? "",
+      },
+      {
+        enabled: !!job?.id,
+      }
+    );
 
-  if (isLoading) return <GenericLoadingSkeleton />;
+  const { isLoading: isApplyLoading, mutate } = useApplyToJobListingMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          "GetApplicationForJobListing",
+          {
+            JobListingId: job?.id ?? "",
+          },
+        ]);
+        showNotification({
+          title: "Application submitted",
+          message:
+            "Successfully submitted application! Your entry will be reviewed in short time by the recruiter",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+      },
+    }
+  );
+
+  const submitCandidature = () =>
+    mutate({
+      ApplicationInput: {
+        applicantProfileId: user?.profileId.toString() ?? "",
+        jobListingId: job?.id ?? "",
+        userId: String(3),
+      },
+    });
+
+  if (isLoading || applicationLoading) return <GenericLoadingSkeleton />;
   if (!job) return <NotFoundPage />;
-
-  const myApplication = job.applications?.find((a) => a?.id === "1");
 
   return (
     <Container>
@@ -64,28 +109,25 @@ const JobDetailsPage = () => {
         </Paper>
         <JobMainSection
           job={job}
-          applied={!!myApplication}
+          applied={!!myApplication?.getApplicationForJobListing}
           isAllowedCandidature={
             (job.isActive ?? false) &&
             !isInRole(RoleType.ROLE_ADMINISTRATOR) &&
             !isInRole(RoleType.ROLE_RECRUITER)
           }
+          submitCandidatureFn={submitCandidature}
+          isCandidatureLoading={isApplyLoading}
         />
         <JobDescriptionSection description={job.description} />
-        <Paper shadow={"xs"} p="md">
-          <Title mb={"md"} order={4}>
-            About the company
-          </Title>
-          <Group>
-            <Avatar src={job.organization.photography} mb={"md"}>
-              {job.organization.name[0]}
-            </Avatar>
-            <Title mb={8} order={5}>
-              {job.organization.name}
-            </Title>
-          </Group>
-          <ExpandableText size={"sm"}>{job.description}</ExpandableText>
-        </Paper>
+        <JobRelatedAlertSection
+          job={job.job}
+          location={`${job.city.name}, ${job.city.country.name}`}
+          isAlertAllowable
+        />
+        <JobOrganizationAboutCard
+          organization={job.organization}
+          jobDescription={job.description}
+        />
         <ShowIfElse
           if={relatedJobsIsLoading}
           else={

@@ -101,3 +101,10 @@ mutation AddJobCategory($JobCategoryInput: JobCategoryInput!) {
     name
   }
 }
+
+mutation ApplyToJobListing($ApplicationInput: ApplicationInput!) {
+  applyToJobListing(ApplicationInput: $ApplicationInput) {
+    id
+    dateOfApplication
+  }
+}

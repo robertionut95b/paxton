@@ -8,6 +8,7 @@ import {
   CheckCircleIcon,
   DocumentTextIcon,
   EllipsisHorizontalIcon,
+  MapIcon,
   ShareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -16,9 +17,9 @@ import {
   Avatar,
   Button,
   Group,
+  List,
   Paper,
   Space,
-  Stack,
   Text,
   Title,
 } from "@mantine/core";
@@ -44,10 +45,14 @@ const JobMainSection = ({
   },
   applied = false,
   isAllowedCandidature = false,
+  submitCandidatureFn,
+  isCandidatureLoading = true,
 }: {
   job: JobListing | OmitApplicationFieldsType;
   applied?: boolean;
   isAllowedCandidature: boolean;
+  submitCandidatureFn: () => void;
+  isCandidatureLoading: boolean;
 }) => {
   return (
     <Paper shadow={"xs"} p="lg">
@@ -75,13 +80,12 @@ const JobMainSection = ({
         </Text>
         <ShowIf if={applications && applications.length > 0}>
           {" - "}
-          <Text size="sm">{applications?.length} candidates</Text>
+          <Text size="sm">{applications?.length} candidate(s)</Text>
         </ShowIf>
       </Group>
       <Space h="md" />
-      <Stack align={"flex-start"} spacing={"sm"}>
-        <Group spacing={5}>
-          <CalendarDaysIcon width={16} />
+      <List size="sm" spacing={"xs"} mb="sm">
+        <List.Item icon={<CalendarDaysIcon width={16} />}>
           <Text size={"sm"}>
             <ShowIfElse
               if={isActive}
@@ -100,51 +104,54 @@ const JobMainSection = ({
               }) ?? "Invalid date"}
             </ShowIfElse>
           </Text>
-        </Group>
-        <Group spacing={5}>
-          <DocumentTextIcon width={16} />
+        </List.Item>
+        <List.Item icon={<MapIcon width={16} />}>
+          <Text size="sm">Remote/On-site work</Text>
+        </List.Item>
+        <List.Item icon={<DocumentTextIcon width={16} />}>
           <Text size="sm">{prettyEnumValue(contractType)} contract</Text>
-        </Group>
-        <Group spacing={5}>
-          <BuildingOfficeIcon width={16} />
+        </List.Item>
+        <List.Item icon={<BuildingOfficeIcon width={16} />}>
           <Text size="sm">{organization.industry} activity line</Text>
-        </Group>
-        <ShowIf if={applications && applications.length > 0}>
-          <Group spacing={5}>
-            <BuildingOfficeIcon width={16} />
-            <Text size="sm">{applications?.length} candidates</Text>
+        </List.Item>
+      </List>
+      <ShowIfElse
+        if={availableTo && isFuture(new Date(availableTo))}
+        else={
+          <List.Item icon={<XMarkIcon width={16} color="red" />}>
+            <Text color="red" size="sm">
+              Candidature is no longer allowed for this job
+            </Text>
+          </List.Item>
+        }
+      >
+        <ShowIf if={isAllowedCandidature}>
+          <Group>
+            <ShowIfElse
+              if={!applied}
+              else={
+                <Button
+                  disabled
+                  leftIcon={<CheckCircleIcon width={16} />}
+                  loading={isCandidatureLoading}
+                >
+                  Candidature sent
+                </Button>
+              }
+            >
+              <Button
+                onClick={submitCandidatureFn}
+                leftIcon={<CheckCircleIcon width={16} />}
+              >
+                Apply
+              </Button>
+            </ShowIfElse>
+            <Button variant="light" leftIcon={<BookmarkIcon width={16} />}>
+              Save this job
+            </Button>
           </Group>
         </ShowIf>
-        <ShowIfElse
-          if={availableTo && isFuture(new Date(availableTo))}
-          else={
-            <Group spacing={4}>
-              <XMarkIcon width={16} color="red" />
-              <Text color="red" size="sm">
-                Candidature is no longer allowed for this job
-              </Text>
-            </Group>
-          }
-        >
-          <ShowIf if={isAllowedCandidature}>
-            <Group>
-              <ShowIfElse
-                if={!applied}
-                else={
-                  <Button disabled leftIcon={<CheckCircleIcon width={16} />}>
-                    Candidature sent
-                  </Button>
-                }
-              >
-                <Button leftIcon={<CheckCircleIcon width={16} />}>Apply</Button>
-              </ShowIfElse>
-              <Button variant="light" leftIcon={<BookmarkIcon width={16} />}>
-                Save this job
-              </Button>
-            </Group>
-          </ShowIf>
-        </ShowIfElse>
-      </Stack>
+      </ShowIfElse>
     </Paper>
   );
 };

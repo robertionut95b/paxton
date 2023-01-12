@@ -34,9 +34,23 @@ export type ActivitySector = {
 export type Application = {
   __typename?: 'Application';
   applicantProfile: UserProfile;
+  candidate: Candidate;
   dateOfApplication: Scalars['Date'];
   id: Scalars['ID'];
   jobListing: JobListing;
+};
+
+export type ApplicationInput = {
+  applicantProfileId: Scalars['ID'];
+  jobListingId: Scalars['ID'];
+  userId: Scalars['ID'];
+};
+
+export type Candidate = {
+  __typename?: 'Candidate';
+  applications?: Maybe<Array<Maybe<Application>>>;
+  id: Scalars['ID'];
+  user: User;
 };
 
 export type Certification = {
@@ -213,6 +227,7 @@ export type Mutation = {
   addJobCategory?: Maybe<JobCategory>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
+  applyToJobListing?: Maybe<Application>;
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
@@ -249,6 +264,11 @@ export type MutationAddUserProfileExperienceArgs = {
 
 export type MutationAddUserProfileStudyArgs = {
   StudyInput: StudyInput;
+};
+
+
+export type MutationApplyToJobListingArgs = {
+  ApplicationInput: ApplicationInput;
 };
 
 
@@ -342,6 +362,7 @@ export type Query = {
   getAllProcesses?: Maybe<Array<Maybe<Process>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
+  getApplicationForJobListing?: Maybe<Application>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getOrganizationById?: Maybe<Organization>;
@@ -354,6 +375,11 @@ export type Query = {
 
 export type QueryGetAllJobListingsArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetApplicationForJobListingArgs = {
+  JobListingId: Scalars['ID'];
 };
 
 
@@ -551,6 +577,13 @@ export type AddJobCategoryMutationVariables = Exact<{
 
 export type AddJobCategoryMutation = { __typename?: 'Mutation', addJobCategory?: { __typename?: 'JobCategory', id: string, name: string } | null };
 
+export type ApplyToJobListingMutationVariables = Exact<{
+  ApplicationInput: ApplicationInput;
+}>;
+
+
+export type ApplyToJobListingMutation = { __typename?: 'Mutation', applyToJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -618,6 +651,13 @@ export type GetRelatedJobListingsQueryVariables = Exact<{
 
 
 export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, availableFrom: Date, availableTo: Date, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null } | null> | null };
+
+export type GetApplicationForJobListingQueryVariables = Exact<{
+  JobListingId: Scalars['ID'];
+}>;
+
+
+export type GetApplicationForJobListingQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -862,6 +902,27 @@ export const useAddJobCategoryMutation = <
     useMutation<AddJobCategoryMutation, TError, AddJobCategoryMutationVariables, TContext>(
       ['AddJobCategory'],
       (variables?: AddJobCategoryMutationVariables) => fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(client, AddJobCategoryDocument, variables, headers)(),
+      options
+    );
+export const ApplyToJobListingDocument = `
+    mutation ApplyToJobListing($ApplicationInput: ApplicationInput!) {
+  applyToJobListing(ApplicationInput: $ApplicationInput) {
+    id
+    dateOfApplication
+  }
+}
+    `;
+export const useApplyToJobListingMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ApplyToJobListingMutation, TError, ApplyToJobListingMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<ApplyToJobListingMutation, TError, ApplyToJobListingMutationVariables, TContext>(
+      ['ApplyToJobListing'],
+      (variables?: ApplyToJobListingMutationVariables) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers)(),
       options
     );
 export const GetAllJobListingsDocument = `
@@ -1264,6 +1325,28 @@ export const useGetRelatedJobListingsQuery = <
       fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
     );
+export const GetApplicationForJobListingDocument = `
+    query GetApplicationForJobListing($JobListingId: ID!) {
+  getApplicationForJobListing(JobListingId: $JobListingId) {
+    id
+    dateOfApplication
+  }
+}
+    `;
+export const useGetApplicationForJobListingQuery = <
+      TData = GetApplicationForJobListingQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetApplicationForJobListingQueryVariables,
+      options?: UseQueryOptions<GetApplicationForJobListingQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetApplicationForJobListingQuery, TError, TData>(
+      ['GetApplicationForJobListing', variables],
+      fetcher<GetApplicationForJobListingQuery, GetApplicationForJobListingQueryVariables>(client, GetApplicationForJobListingDocument, variables, headers),
+      options
+    );
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -1274,6 +1357,14 @@ type definedNonNullAny = {};
 export const isDefinedNonNullAny = (v: any): v is definedNonNullAny => v !== undefined && v !== null;
 
 export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny(v));
+
+export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInput>> {
+  return z.object<Properties<ApplicationInput>>({
+    applicantProfileId: z.string(),
+    jobListingId: z.string(),
+    userId: z.string()
+  })
+}
 
 export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
   return z.object<Properties<CertificationInput>>({

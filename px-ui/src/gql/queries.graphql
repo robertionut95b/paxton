@@ -217,3 +217,10 @@ query GetRelatedJobListings($jobName: String!) {
     }
   }
 }
+
+query GetApplicationForJobListing($JobListingId: ID!) {
+  getApplicationForJobListing(JobListingId: $JobListingId) {
+    id
+    dateOfApplication
+  }
+}

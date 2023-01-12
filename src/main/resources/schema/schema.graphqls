@@ -30,7 +30,14 @@ type Application {
     id: ID!
     dateOfApplication: Date!
     applicantProfile: UserProfile!
+    candidate: Candidate!
     jobListing: JobListing!
+}
+
+input ApplicationInput {
+    userId: ID!
+    applicantProfileId: ID!
+    jobListingId: ID!
 }
 
 type Candidate {
@@ -362,6 +369,7 @@ type Query {
     getAllInstitutions: [Institution]
     getAllDomains: [Domain]
     getAllCertifications: [Certification]
+    getApplicationForJobListing(JobListingId: ID!): Application
 }
 
 type Mutation {
@@ -377,4 +385,5 @@ type Mutation {
     addDomain(DomainInput: DomainInput!): Domain
     addCertification(CertificationInput: CertificationInput!): Certification
     addJobCategory(JobCategoryInput: JobCategoryInput!): JobCategory
+    applyToJobListing(ApplicationInput: ApplicationInput!): Application
 }

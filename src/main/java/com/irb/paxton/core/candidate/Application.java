@@ -1,10 +1,12 @@
 package com.irb.paxton.core.candidate;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -30,7 +32,7 @@ public class Application extends PaxtonEntity<Long> {
     @JoinColumn(name = "application_profile_id")
     private UserProfile applicantProfile;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 

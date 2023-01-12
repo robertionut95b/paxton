@@ -1,15 +1,12 @@
 package com.irb.paxton.security.auth.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.irb.paxton.auditable.AuditableEntity;
+import com.irb.paxton.core.candidate.Candidate;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -27,6 +24,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class User extends PaxtonEntity<Long> {
 
     @NotBlank
@@ -76,6 +74,10 @@ public class User extends PaxtonEntity<Long> {
     @JsonIgnore
     private UserProfile userProfile;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
+
     public User(Long id, String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {
         this.id = id;
         this.firstName = firstName;
@@ -98,6 +100,7 @@ public class User extends PaxtonEntity<Long> {
         roles = user.getRoles();
         credentials = user.getCredentials();
         userProfile = user.getUserProfile();
+        candidate = user.getCandidate();
         isEmailConfirmed = user.isEmailConfirmed();
     }
 

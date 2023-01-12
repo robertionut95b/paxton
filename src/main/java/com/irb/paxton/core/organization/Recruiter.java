@@ -1,10 +1,12 @@
 package com.irb.paxton.core.organization;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -22,7 +24,8 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class Recruiter extends PaxtonEntity<Long> {
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @MapsId
+    @JoinColumn(name = "id")
     private User user;
 
     @JsonBackReference

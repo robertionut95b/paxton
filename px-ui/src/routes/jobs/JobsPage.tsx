@@ -1,6 +1,9 @@
+import { RequireRoles } from "@auth/RequireRoles";
+import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import JobListings from "@components/jobs/JobListings";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
+import PageFooter from "@components/layout/PageFooter";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
@@ -10,11 +13,12 @@ import {
   useGetAllJobListingsQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { Paper, Text, Title } from "@mantine/core";
+import { Grid, Paper, Text, Title } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
+import JobsLeftMenu from "./JobsLeftMenu";
 
 export default function JobsPage() {
   const [p, setP] = useState<number>(1);
@@ -122,28 +126,40 @@ export default function JobsPage() {
   }
 
   return (
-    <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
-      <Title mb={"xs"} order={4}>
-        <ShowIfElse
-          if={userProfile?.getUserProfile?.city}
-          else={"Recommended jobs"}
-        >
-          Jobs of interest in:{" "}
-          {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
-        </ShowIfElse>
-      </Title>
-      {/* @ts-expect-error("types-check") */}
-      <JobListings jobs={jobs} />
-      <Paper className="px-jobs-pagination">
-        <PaginationToolbar
-          page={p}
-          setPage={setP}
-          pageSize={ps}
-          setPageSize={setPs}
-          totalElements={totalElements}
-          totalPages={totalPages}
-        />
-      </Paper>
-    </Paper>
+    <Grid className="px-jobs-page">
+      <Grid.Col span={3}>
+        <RequireRoles roles={RoleType.ROLE_EVERYONE} returnValue="null">
+          <JobsLeftMenu />
+        </RequireRoles>
+      </Grid.Col>
+      <Grid.Col span={7}>
+        <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
+          <Title mb={"xs"} order={4}>
+            <ShowIfElse
+              if={userProfile?.getUserProfile?.city}
+              else={"Recommended jobs"}
+            >
+              Jobs of interest in:{" "}
+              {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
+            </ShowIfElse>
+          </Title>
+          {/* @ts-expect-error("types-check") */}
+          <JobListings jobs={jobs} />
+          <Paper className="px-jobs-pagination">
+            <PaginationToolbar
+              page={p}
+              setPage={setP}
+              pageSize={ps}
+              setPageSize={setPs}
+              totalElements={totalElements}
+              totalPages={totalPages}
+            />
+          </Paper>
+        </Paper>
+      </Grid.Col>
+      <Grid.Col span={2}>
+        <PageFooter />
+      </Grid.Col>
+    </Grid>
   );
 }

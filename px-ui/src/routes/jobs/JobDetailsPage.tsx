@@ -113,8 +113,10 @@ const JobDetailsPage = () => {
       },
     });
 
+  if (!job || jobData.getAllJobListings?.totalElements === 0)
+    return <NotFoundPage />;
+
   if (isLoading || applicationLoading) return <GenericLoadingSkeleton />;
-  if (!job) return <NotFoundPage />;
 
   return (
     <Container>

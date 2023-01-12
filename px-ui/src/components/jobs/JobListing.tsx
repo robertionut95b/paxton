@@ -35,7 +35,7 @@ export default function JobListingItem({
             {organization.name[0]}
           </Avatar>
         </div>
-        <div className="px-job-card-details flex-grow">
+        <div className="px-job-card-details flex-grow overflow-auto">
           <Title order={5} color="violet">
             <Anchor component={NavLink} to={`/app/jobs/view/${id}`}>
               {title}

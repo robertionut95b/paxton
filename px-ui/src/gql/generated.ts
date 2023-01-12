@@ -362,9 +362,9 @@ export type Query = {
   getAllProcesses?: Maybe<Array<Maybe<Process>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
-  getApplicationForJobListing?: Maybe<Application>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
+  getMyApplicationForJobListing?: Maybe<Application>;
   getOrganizationById?: Maybe<Organization>;
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
@@ -378,7 +378,7 @@ export type QueryGetAllJobListingsArgs = {
 };
 
 
-export type QueryGetApplicationForJobListingArgs = {
+export type QueryGetMyApplicationForJobListingArgs = {
   JobListingId: Scalars['ID'];
 };
 
@@ -652,12 +652,12 @@ export type GetRelatedJobListingsQueryVariables = Exact<{
 
 export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: string, title: string, availableFrom: Date, availableTo: Date, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null } | null> | null };
 
-export type GetApplicationForJobListingQueryVariables = Exact<{
+export type GetMyApplicationForJobListingQueryVariables = Exact<{
   JobListingId: Scalars['ID'];
 }>;
 
 
-export type GetApplicationForJobListingQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
+export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1325,26 +1325,26 @@ export const useGetRelatedJobListingsQuery = <
       fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
     );
-export const GetApplicationForJobListingDocument = `
-    query GetApplicationForJobListing($JobListingId: ID!) {
-  getApplicationForJobListing(JobListingId: $JobListingId) {
+export const GetMyApplicationForJobListingDocument = `
+    query GetMyApplicationForJobListing($JobListingId: ID!) {
+  getMyApplicationForJobListing(JobListingId: $JobListingId) {
     id
     dateOfApplication
   }
 }
     `;
-export const useGetApplicationForJobListingQuery = <
-      TData = GetApplicationForJobListingQuery,
+export const useGetMyApplicationForJobListingQuery = <
+      TData = GetMyApplicationForJobListingQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: GetApplicationForJobListingQueryVariables,
-      options?: UseQueryOptions<GetApplicationForJobListingQuery, TError, TData>,
+      variables: GetMyApplicationForJobListingQueryVariables,
+      options?: UseQueryOptions<GetMyApplicationForJobListingQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetApplicationForJobListingQuery, TError, TData>(
-      ['GetApplicationForJobListing', variables],
-      fetcher<GetApplicationForJobListingQuery, GetApplicationForJobListingQueryVariables>(client, GetApplicationForJobListingDocument, variables, headers),
+    useQuery<GetMyApplicationForJobListingQuery, TError, TData>(
+      ['GetMyApplicationForJobListing', variables],
+      fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers),
       options
     );
 

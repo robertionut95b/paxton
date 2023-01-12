@@ -14,7 +14,7 @@ import {
   Operator,
   useApplyToJobListingMutation,
   useGetAllJobListingsQuery,
-  useGetApplicationForJobListingQuery,
+  useGetMyApplicationForJobListingQuery,
   useGetRelatedJobListingsQuery,
 } from "@gql/generated";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
@@ -58,7 +58,7 @@ const JobDetailsPage = () => {
       }
     );
   const { data: myApplication, isLoading: applicationLoading } =
-    useGetApplicationForJobListingQuery(
+    useGetMyApplicationForJobListingQuery(
       graphqlRequestClient,
       {
         JobListingId: job?.id ?? "",
@@ -73,9 +73,24 @@ const JobDetailsPage = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries([
-          "GetApplicationForJobListing",
+          "GetMyApplicationForJobListing",
           {
             JobListingId: job?.id ?? "",
+          },
+        ]);
+        queryClient.invalidateQueries([
+          "GetAllJobListings",
+          {
+            searchQuery: {
+              filters: [
+                {
+                  key: "id",
+                  fieldType: FieldType.Long,
+                  operator: Operator.Equal,
+                  value: jobId ?? "0",
+                },
+              ],
+            },
           },
         ]);
         showNotification({
@@ -94,7 +109,7 @@ const JobDetailsPage = () => {
       ApplicationInput: {
         applicantProfileId: user?.profileId.toString() ?? "",
         jobListingId: job?.id ?? "",
-        userId: String(3),
+        userId: user?.userId ?? "",
       },
     });
 
@@ -109,7 +124,7 @@ const JobDetailsPage = () => {
         </Paper>
         <JobMainSection
           job={job}
-          applied={!!myApplication?.getApplicationForJobListing}
+          applied={!!myApplication?.getMyApplicationForJobListing}
           isAllowedCandidature={
             (job.isActive ?? false) &&
             !isInRole(RoleType.ROLE_ADMINISTRATOR) &&

@@ -2,19 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-background-dark: #25262b;
+  --color-background-light: #f5f5f9;
+}
+
 html,
 body,
 #root,
 #px-app > div {
-  background-color: #f9f5f9;
-  min-height: 100%;
-}
-
-html.dark,
-body,
-#root,
-#px-app > div {
-  background-color: #25262b;
   min-height: 100%;
 }
 

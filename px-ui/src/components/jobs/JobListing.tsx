@@ -46,7 +46,6 @@ export default function JobListingItem({
               <Anchor
                 component={NavLink}
                 to={`/app/organizations/${organization.id}/details`}
-                color="dark"
               >
                 <Text size={"md"}>{organization.name}</Text>
               </Anchor>
@@ -58,7 +57,7 @@ export default function JobListingItem({
             </li>
             <li>
               <Group spacing={2}>
-                <MapPinIcon width={14} color="indigo" />
+                <MapPinIcon width={14} />
                 <Text mt={2} size={"sm"}>
                   {city.name} {city.country.name}
                 </Text>

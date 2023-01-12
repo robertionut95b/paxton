@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 
-    Application findByJobListingId(Long jobListingId);
+    Application findByJobListingIdAndCandidate_UserUsername(Long jobListingId, String username);
 }

@@ -15,7 +15,6 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Center, Container, Paper, Skeleton } from "@mantine/core";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
-import { useDarkMode } from "usehooks-ts";
 
 const renderLinksByPermission = (permissions: string[]) => {
   const commonLinks: LinkItem[] = [
@@ -50,7 +49,6 @@ const renderLinksByPermission = (permissions: string[]) => {
 
 export default function ClientApp() {
   const { user } = useAuth();
-  const { isDarkMode } = useDarkMode();
   const { data: profileData, isLoading } = useGetUserProfileQuery(
     graphqlRequestClient,
     {
@@ -59,11 +57,7 @@ export default function ClientApp() {
   );
   const permissions = user?.permissions || [];
   return (
-    <div
-      style={{
-        backgroundColor: isDarkMode ? "#25262B" : "#f9f5f9",
-      }}
-    >
+    <div>
       <ShowIfElse
         if={isLoading}
         else={
@@ -84,7 +78,7 @@ export default function ClientApp() {
           </Center>
         </Paper>
       </ShowIfElse>
-      <Container pb="xs">
+      <Container pb="lg">
         <Suspense fallback={<GenericLoadingSkeleton />}>
           <Outlet />
         </Suspense>

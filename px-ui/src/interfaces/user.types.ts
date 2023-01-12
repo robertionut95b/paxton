@@ -1,5 +1,6 @@
 export interface User {
   permissions: string[];
+  userId: string;
   username: string;
   sessionTime: number;
   firstName: string;

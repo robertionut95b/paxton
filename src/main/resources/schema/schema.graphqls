@@ -369,7 +369,7 @@ type Query {
     getAllInstitutions: [Institution]
     getAllDomains: [Domain]
     getAllCertifications: [Certification]
-    getApplicationForJobListing(JobListingId: ID!): Application
+    getMyApplicationForJobListing(JobListingId: ID!): Application
 }
 
 type Mutation {

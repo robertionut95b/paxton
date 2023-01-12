@@ -21,10 +21,16 @@ export default function AppProviders({
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     isDarkMode ? "dark" : "light"
   );
+  const htmlElement = document.documentElement;
+  const rootElement = document.getElementById("root");
 
-  isDarkMode
-    ? document.documentElement.classList.add("dark")
-    : document.documentElement.classList.remove("dark");
+  if (isDarkMode) {
+    htmlElement.style.backgroundColor = "#25262b";
+    if (rootElement) rootElement.style.backgroundColor = "#25262b";
+  } else {
+    htmlElement.style.backgroundColor = "#f5f5f9";
+    if (rootElement) rootElement.style.backgroundColor = "#f5f5f9";
+  }
 
   const toggleColorScheme = (value?: ColorScheme) => {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));

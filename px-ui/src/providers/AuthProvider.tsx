@@ -20,6 +20,7 @@ import { AuthErrorMessages } from "./messages";
 
 const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
   return {
+    userId: userDecode.userId,
     firstName: userDecode.firstName,
     lastName: userDecode.lastName,
     permissions: userDecode.authorities.split(","),

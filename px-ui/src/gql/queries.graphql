@@ -218,8 +218,8 @@ query GetRelatedJobListings($jobName: String!) {
   }
 }
 
-query GetApplicationForJobListing($JobListingId: ID!) {
-  getApplicationForJobListing(JobListingId: $JobListingId) {
+query GetMyApplicationForJobListing($JobListingId: ID!) {
+  getMyApplicationForJobListing(JobListingId: $JobListingId) {
     id
     dateOfApplication
   }

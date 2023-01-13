@@ -1,5 +1,5 @@
-import { RequireRoles } from "@auth/RequireRoles";
 import { RoleType } from "@auth/permission.types";
+import { RequireRoles } from "@auth/RequireRoles";
 import JobListingItem from "@components/jobs/JobListing";
 import { JobListing } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
@@ -18,7 +18,7 @@ const OrganizationJobListings = ({ jobs }: OrganizationJobListingsProps) => {
           jl && (
             <div key={jl.id}>
               <div className="flex items-center">
-                <div className="grow">
+                <div className="grow overflow-auto">
                   <JobListingItem data={jl} />
                 </div>
                 <RequireRoles

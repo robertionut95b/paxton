@@ -13,8 +13,9 @@ import {
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Group, Paper, Skeleton, Tabs } from "@mantine/core";
+import NotFoundPage from "@routes/NotFoundPage";
 import { formatISO } from "date-fns";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationJobsTab from "./OrganizationJobsTab";
 
@@ -47,6 +48,7 @@ export default function OrganizationPage() {
 
   const organizationItem = organization?.getOrganizationById;
 
+  if (!organization?.getOrganizationById) return <NotFoundPage />;
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
 
   const OrganizationToolbar = lazy(

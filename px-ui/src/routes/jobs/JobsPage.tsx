@@ -20,11 +20,13 @@ import { useState } from "react";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
 import JobsLeftMenu from "./JobsLeftMenu";
 
+const todayIsoFmt = formatISO(new Date());
+
 export default function JobsPage() {
   const [p, setP] = useState<number>(1);
   const [ps, setPs] = useState<number>(5);
-  const todayIsoFmt = formatISO(new Date());
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data, isLoading: jobsLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -98,12 +100,9 @@ export default function JobsPage() {
       },
     }
   );
-
   const totalPages = data?.getAllJobListings?.totalPages ?? 0;
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
-
-  const { user } = useAuth();
 
   const { data: userProfile, isLoading } = useGetUserProfileQuery(
     graphqlRequestClient,
@@ -127,12 +126,12 @@ export default function JobsPage() {
 
   return (
     <Grid className="px-jobs-page">
-      <Grid.Col span={3}>
+      <Grid.Col sm={3} span={12}>
         <RequireRoles roles={RoleType.ROLE_EVERYONE} returnValue="null">
           <JobsLeftMenu />
         </RequireRoles>
       </Grid.Col>
-      <Grid.Col span={7}>
+      <Grid.Col sm={7} span={12}>
         <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
           <Title mb={"xs"} order={4}>
             <ShowIfElse
@@ -157,7 +156,7 @@ export default function JobsPage() {
           </Paper>
         </Paper>
       </Grid.Col>
-      <Grid.Col span={2}>
+      <Grid.Col sm={2} span={12}>
         <PageFooter />
       </Grid.Col>
     </Grid>

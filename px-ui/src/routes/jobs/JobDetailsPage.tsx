@@ -1,11 +1,11 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
-import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobOrganizationAboutCard from "@components/jobs/job-page/JobOrganizationAboutCard";
 import JobRelatedAlertSection from "@components/jobs/job-page/JobRelatedAlertSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIfElse from "@components/visibility/ShowIfElse";
@@ -57,16 +57,15 @@ const JobDetailsPage = () => {
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
       }
     );
-  const { data: myApplication, isLoading: applicationLoading } =
-    useGetMyApplicationForJobListingQuery(
-      graphqlRequestClient,
-      {
-        JobListingId: job?.id ?? "",
-      },
-      {
-        enabled: !!job?.id,
-      }
-    );
+  const { data: myApplication } = useGetMyApplicationForJobListingQuery(
+    graphqlRequestClient,
+    {
+      JobListingId: job?.id ?? "",
+    },
+    {
+      enabled: !!job?.id,
+    }
+  );
 
   const { isLoading: isApplyLoading, mutate } = useApplyToJobListingMutation(
     graphqlRequestClient,
@@ -113,13 +112,12 @@ const JobDetailsPage = () => {
       },
     });
 
+  if (isLoading) return <GenericLoadingSkeleton />;
   if (!job || jobData.getAllJobListings?.totalElements === 0)
     return <NotFoundPage />;
 
-  if (isLoading || applicationLoading) return <GenericLoadingSkeleton />;
-
   return (
-    <Container>
+    <Container size="lg" p={0}>
       <Stack spacing={"sm"}>
         <Paper shadow={"xs"} p="xs">
           <Breadcrumbs excludePaths={["/app/jobs/view"]} />

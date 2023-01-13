@@ -75,7 +75,6 @@ public class User extends PaxtonEntity<Long> {
     private UserProfile userProfile;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
     public User(Long id, String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {

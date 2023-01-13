@@ -1,5 +1,7 @@
+import RoleType from "@auth/RoleType";
+
 export interface User {
-  permissions: string[];
+  permissions: string[] | RoleType[];
   userId: string;
   username: string;
   sessionTime: number;

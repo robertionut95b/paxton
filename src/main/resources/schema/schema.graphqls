@@ -40,10 +40,24 @@ input ApplicationInput {
     jobListingId: ID!
 }
 
+type ApplicationPage {
+    list: [Application],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 type Candidate {
     id: ID!
     user: User!
     applications: [Application]
+}
+
+type CandidatePage {
+    list: [Candidate],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
 }
 
 enum ContractType {
@@ -277,7 +291,8 @@ type User {
     email: String!
     username: String!
     roles: [Role]
-    isEmailConfirmed: Boolean
+    isEmailConfirmed: Boolean!
+    userProfile: UserProfile!
 }
 
 type UserProfile {
@@ -370,6 +385,9 @@ type Query {
     getAllDomains: [Domain]
     getAllCertifications: [Certification]
     getMyApplicationForJobListing(JobListingId: ID!): Application
+    getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
+    getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage
+    getAllApplications(searchQuery: SearchQueryInput): ApplicationPage
 }
 
 type Mutation {

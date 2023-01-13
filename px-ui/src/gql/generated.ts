@@ -46,11 +46,27 @@ export type ApplicationInput = {
   userId: Scalars['ID'];
 };
 
+export type ApplicationPage = {
+  __typename?: 'ApplicationPage';
+  list?: Maybe<Array<Maybe<Application>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
+};
+
 export type Candidate = {
   __typename?: 'Candidate';
   applications?: Maybe<Array<Maybe<Application>>>;
   id: Scalars['ID'];
   user: User;
+};
+
+export type CandidatePage = {
+  __typename?: 'CandidatePage';
+  list?: Maybe<Array<Maybe<Candidate>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
 };
 
 export type Certification = {
@@ -352,6 +368,9 @@ export type ProcessSteps = {
 export type Query = {
   __typename?: 'Query';
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
+  getAllApplications?: Maybe<ApplicationPage>;
+  getAllCandidates?: Maybe<CandidatePage>;
+  getAllCandidatesByJobListingId?: Maybe<CandidatePage>;
   getAllCertifications?: Maybe<Array<Maybe<Certification>>>;
   getAllDomains?: Maybe<Array<Maybe<Domain>>>;
   getAllInstitutions?: Maybe<Array<Maybe<Institution>>>;
@@ -370,6 +389,21 @@ export type Query = {
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
   healthCheck?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryGetAllApplicationsArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllCandidatesArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllCandidatesByJobListingIdArgs = {
+  JobListingId: Scalars['ID'];
 };
 
 
@@ -477,9 +511,10 @@ export type User = {
   email: Scalars['String'];
   firstName: Scalars['String'];
   id: Scalars['ID'];
-  isEmailConfirmed?: Maybe<Scalars['Boolean']>;
+  isEmailConfirmed: Scalars['Boolean'];
   lastName: Scalars['String'];
   roles?: Maybe<Array<Maybe<Role>>>;
+  userProfile: UserProfile;
   username: Scalars['String'];
 };
 
@@ -658,6 +693,20 @@ export type GetMyApplicationForJobListingQueryVariables = Exact<{
 
 
 export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
+
+export type GetAllCandidatesByJobListingIdQueryVariables = Exact<{
+  JobListingId: Scalars['ID'];
+}>;
+
+
+export type GetAllCandidatesByJobListingIdQuery = { __typename?: 'Query', getAllCandidatesByJobListingId?: { __typename?: 'CandidatePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Candidate', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null } } } | null> | null } | null };
+
+export type GetAllApplicationsQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
+
+
+export type GetAllApplicationsQuery = { __typename?: 'Query', getAllApplications?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string } } } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1345,6 +1394,83 @@ export const useGetMyApplicationForJobListingQuery = <
     useQuery<GetMyApplicationForJobListingQuery, TError, TData>(
       ['GetMyApplicationForJobListing', variables],
       fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers),
+      options
+    );
+export const GetAllCandidatesByJobListingIdDocument = `
+    query GetAllCandidatesByJobListingId($JobListingId: ID!) {
+  getAllCandidatesByJobListingId(JobListingId: $JobListingId) {
+    list {
+      id
+      user {
+        firstName
+        lastName
+        username
+        userProfile {
+          id
+          profileSlugUrl
+          profileTitle
+          photography
+        }
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllCandidatesByJobListingIdQuery = <
+      TData = GetAllCandidatesByJobListingIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetAllCandidatesByJobListingIdQueryVariables,
+      options?: UseQueryOptions<GetAllCandidatesByJobListingIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllCandidatesByJobListingIdQuery, TError, TData>(
+      ['GetAllCandidatesByJobListingId', variables],
+      fetcher<GetAllCandidatesByJobListingIdQuery, GetAllCandidatesByJobListingIdQueryVariables>(client, GetAllCandidatesByJobListingIdDocument, variables, headers),
+      options
+    );
+export const GetAllApplicationsDocument = `
+    query GetAllApplications($searchQuery: SearchQueryInput) {
+  getAllApplications(searchQuery: $searchQuery) {
+    list {
+      id
+      dateOfApplication
+      applicantProfile {
+        id
+        profileSlugUrl
+        profileTitle
+        photography
+      }
+      candidate {
+        user {
+          firstName
+          lastName
+          username
+        }
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllApplicationsQuery = <
+      TData = GetAllApplicationsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllApplicationsQueryVariables,
+      options?: UseQueryOptions<GetAllApplicationsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllApplicationsQuery, TError, TData>(
+      variables === undefined ? ['GetAllApplications'] : ['GetAllApplications', variables],
+      fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, variables, headers),
       options
     );
 

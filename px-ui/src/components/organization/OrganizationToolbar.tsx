@@ -32,7 +32,7 @@ export default function OrganizationToolbar({
         <ShowIf if={organization}>
           <NavLink to={`/app/organizations/${organization?.id}/details`}>
             <Group>
-              <Text className="hidden md:block" size={"sm"}>
+              <Text className="hidden sm:block" size={"sm"}>
                 {organization?.name}
               </Text>
               <Avatar

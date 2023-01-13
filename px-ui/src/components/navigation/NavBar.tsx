@@ -4,11 +4,13 @@ import { User } from "@interfaces/user.types";
 import {
   Burger,
   Container,
+  createStyles,
   Group,
   Header,
+  MediaQuery,
   Paper,
+  Stack,
   Transition,
-  createStyles,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ReactNode, useState } from "react";
@@ -73,14 +75,17 @@ const useStyles = createStyles((theme) => ({
   link: {
     display: "block",
     lineHeight: 1,
-    padding: "8px 12px",
+    paddingLeft: theme.spacing.xs,
+    paddingRight: theme.spacing.xs,
+    paddingTop: theme.spacing.xs - 5,
+    paddingBottom: theme.spacing.xs - 5,
     borderRadius: theme.radius.sm,
     textDecoration: "none",
     color:
       theme.colorScheme === "dark"
         ? theme.colors.dark[0]
         : theme.colors.gray[7],
-    fontSize: theme.fontSizes.sm,
+    fontSize: theme.fontSizes.xs - 1,
     fontWeight: 500,
 
     "&:hover": {
@@ -92,7 +97,8 @@ const useStyles = createStyles((theme) => ({
 
     [theme.fn.smallerThan("sm")]: {
       borderRadius: 0,
-      padding: theme.spacing.md,
+      padding: theme.spacing.sm,
+      fontSize: theme.fontSizes.sm,
     },
   },
 
@@ -130,18 +136,26 @@ const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
         navigate(link.link);
       }}
     >
-      <Group align={"center"} spacing="xs">
-        {link.icon && link.icon}
-        {link.label}
-      </Group>
+      <MediaQuery largerThan={"sm"} styles={{ display: "none" }}>
+        <Group align={"center"} spacing={6}>
+          {link.icon && link.icon}
+          {link.label}
+        </Group>
+      </MediaQuery>
+      <MediaQuery smallerThan={"sm"} styles={{ display: "none" }}>
+        <Stack align={"center"} spacing={6}>
+          {link.icon && link.icon}
+          {link.label}
+        </Stack>
+      </MediaQuery>
     </Link>
   ));
 
   return (
     <Header height={HEADER_HEIGHT} mb={30}>
-      <Container className={classes.header}>
+      <Container className={classes.header} size="lg">
         <LogoWithSearch />
-        <Group spacing={"sm"}>
+        <Group spacing={"xs"}>
           <Group className={classes.links} spacing={5}>
             {items}
           </Group>

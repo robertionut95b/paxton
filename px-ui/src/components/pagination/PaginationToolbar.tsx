@@ -34,7 +34,7 @@ export default function PaginationToolbar({
       <Group>
         <Select
           data={pageSizes}
-          size="sm"
+          size="xs"
           styles={{
             root: {
               display: "flex",
@@ -58,7 +58,7 @@ export default function PaginationToolbar({
           }}
         />
         <ShowIf if={totalElements > 0}>
-          <Text size={"sm"}>
+          <Text size={"xs"}>
             {totalElements} result<ShowIf if={totalElements > 1}>s</ShowIf>
           </Text>
         </ShowIf>
@@ -66,6 +66,7 @@ export default function PaginationToolbar({
       <Pagination
         total={totalPages}
         page={p}
+        size="sm"
         onChange={(p) => {
           setP(p);
           setPage(p);

@@ -29,7 +29,7 @@ export default function UserResume({
         <Title mb={"md"} order={4}>
           About
         </Title>
-        <Group className="px-user-resume-description">
+        <Group className="px-user-resume-description" grow>
           <ShowIfElse
             if={userProfile?.description}
             else={<Text size="sm">{placeholder}</Text>}

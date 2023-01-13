@@ -1,4 +1,5 @@
 import ShowIf from "@components/visibility/ShowIf";
+import ShowIfElse from "@components/visibility/ShowIfElse";
 import { JobListing } from "@gql/generated";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
@@ -14,41 +15,55 @@ export default function JobListingItem({
     city,
     availableFrom,
     availableTo,
+    applications,
   },
+  compact = false,
+  navigable = true,
 }: {
   data: JobListing;
+  compact?: boolean;
+  navigable?: boolean;
 }) {
   return (
-    <Paper className="p-4">
+    <Paper py="md" px="xs">
       <div className="flex gap-x-6">
-        <div className="px-job-card-heading mt-1.5">
-          <Avatar
-            color={"violet"}
-            size={48}
-            src={organization?.photography}
-            styles={{
-              image: {
-                objectFit: "contain",
-              },
-            }}
-          >
-            {organization.name[0]}
-          </Avatar>
-        </div>
+        {compact === false && (
+          <div className="px-job-card-heading mt-1.5">
+            <Avatar
+              color={"violet"}
+              size={48}
+              src={organization?.photography}
+              styles={{
+                image: {
+                  objectFit: "contain",
+                },
+              }}
+            >
+              {organization.name[0]}
+            </Avatar>
+          </div>
+        )}
         <div className="px-job-card-details flex-grow overflow-auto">
           <Title order={5} color="violet">
-            <Anchor component={NavLink} to={`/app/jobs/view/${id}`}>
-              {title}
-            </Anchor>
+            <ShowIfElse if={navigable} else={title}>
+              <Anchor component={NavLink} to={`/app/jobs/view/${id}`}>
+                {title}
+              </Anchor>
+            </ShowIfElse>
           </Title>
           <ul>
             <li>
-              <Anchor
-                component={NavLink}
-                to={`/app/organizations/${organization.id}/details`}
+              <ShowIfElse
+                if={navigable}
+                else={<Text size={"md"}>{organization.name}</Text>}
               >
-                <Text size={"md"}>{organization.name}</Text>
-              </Anchor>
+                <Anchor
+                  component={NavLink}
+                  to={`/app/organizations/${organization.id}/details`}
+                >
+                  <Text size={"md"}>{organization.name}</Text>
+                </Anchor>
+              </ShowIfElse>
             </li>
             <li>
               <Text my={2} size={"sm"} truncate>
@@ -59,7 +74,7 @@ export default function JobListingItem({
               <Group spacing={2}>
                 <MapPinIcon width={14} />
                 <Text mt={2} size={"sm"}>
-                  {city.name} {city.country.name}
+                  {city.name}, {city.country.name}
                 </Text>
               </Group>
             </li>

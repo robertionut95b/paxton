@@ -6,10 +6,10 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
+  BellIcon,
   BriefcaseIcon,
   BuildingOfficeIcon,
-  ClipboardDocumentCheckIcon,
-  NewspaperIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Center, Container, Paper, Skeleton } from "@mantine/core";
@@ -18,33 +18,31 @@ import { Outlet } from "react-router-dom";
 
 const renderLinksByPermission = (permissions: string[]) => {
   const commonLinks: LinkItem[] = [
-    { label: "Jobs", link: "/app/jobs", icon: <BriefcaseIcon width={16} /> },
+    { label: "Jobs", link: "/app/jobs", icon: <BriefcaseIcon width={20} /> },
+    {
+      label: "Messages",
+      link: "/app/inbox/messages",
+      icon: <ChatBubbleLeftEllipsisIcon width={20} />,
+    },
+    {
+      label: "Notices",
+      link: "/app/notifications",
+      icon: <BellIcon width={20} />,
+    },
   ];
   const editorLinks: LinkItem[] = [
     {
-      label: "Organization",
+      label: "Company",
       link: "/app/my-organization",
-      icon: <BuildingOfficeIcon width={16} />,
-    },
-    {
-      label: "Recruit",
-      link: "/app/recruitment",
-      icon: <ClipboardDocumentCheckIcon width={16} />,
+      icon: <BuildingOfficeIcon width={20} />,
     },
   ];
 
-  const userLinks = [
-    {
-      label: "Application",
-      link: "/app/candidature",
-      icon: <NewspaperIcon width={16} />,
-    },
-  ];
   const profileLinks = permissions.includes(RoleType.ROLE_RECRUITER)
     ? editorLinks
-    : userLinks;
+    : [];
 
-  return [...commonLinks, ...profileLinks];
+  return [...profileLinks, ...commonLinks];
 };
 
 export default function ClientApp() {
@@ -78,7 +76,7 @@ export default function ClientApp() {
           </Center>
         </Paper>
       </ShowIfElse>
-      <Container pb="lg">
+      <Container pb="lg" size="lg">
         <Suspense fallback={<GenericLoadingSkeleton />}>
           <Outlet />
         </Suspense>

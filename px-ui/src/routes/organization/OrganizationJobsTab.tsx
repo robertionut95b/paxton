@@ -5,6 +5,7 @@ import {
   FieldType,
   FiltersInput,
   InputMaybe,
+  JobListing,
   Operator,
   SortDirection,
   useGetAllJobListingsQuery,
@@ -13,14 +14,22 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { queryClient } from "@lib/queryClient";
 import { Container, Group, Text } from "@mantine/core";
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { useParams } from "react-router-dom";
 
 type OrganizationJobsTabsProps = {
   filters?: InputMaybe<InputMaybe<FiltersInput>[]>;
+  compactItems?: boolean;
+  editableItems?: boolean;
+  itemClickCb?: (item: JobListing) => MouseEventHandler<Element> | undefined;
 };
 
-const OrganizationJobsTab = ({ filters = [] }: OrganizationJobsTabsProps) => {
+const OrganizationJobsTab = ({
+  filters = [],
+  compactItems = false,
+  editableItems = false,
+  itemClickCb,
+}: OrganizationJobsTabsProps) => {
   const { organizationId } = useParams();
   const [p, setP] = useState(1);
   const [ps, setPs] = useState(5);
@@ -104,10 +113,15 @@ const OrganizationJobsTab = ({ filters = [] }: OrganizationJobsTabsProps) => {
     return <JobsListingsSkeleton />;
 
   return (
-    <Container>
+    <Container p={0}>
       {totalElements > 0 ? (
-        // @ts-expect-error(types-check)
-        <OrganizationJobListings jobs={orgJobsData} />
+        <OrganizationJobListings
+          compactItems={compactItems}
+          editableItems={editableItems}
+          itemClickCb={itemClickCb}
+          // @ts-expect-error(types-check)
+          jobs={orgJobsData}
+        />
       ) : (
         <Group py="sm">
           <Text size={"md"}>No results found for this request</Text>

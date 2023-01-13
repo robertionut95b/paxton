@@ -7,7 +7,7 @@ import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
 import ProfileExperienceModal from "@components/user-profile/ProfileExperienceModal";
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import JobDetailsPage from "./jobs/JobDetailsPage";
 
@@ -89,19 +89,9 @@ export default function AppUI() {
               />
             </Route>
             <Route path="network" element={<NetworkPage />}></Route>
-            <Route
-              path="recruitment"
-              element={
-                <RequireRoles roles={RoleType.ROLE_RECRUITER}>
-                  <RecruitmentPage />
-                </RequireRoles>
-              }
-            />
             <Route path="my-organization" element={<MyOrganizationPage />} />
-            <Route
-              path="organizations/:organizationId"
-              element={<OrganizationPage />}
-            >
+            <Route path="organizations/:organizationId">
+              <Route element={<OrganizationPage />} index />
               <Route path="details" element={<OrganizationDetailsPage />} />
               <Route
                 path="jobs/publish-job/form"
@@ -116,6 +106,14 @@ export default function AppUI() {
                 element={
                   <RequireRoles roles={RoleType.ROLE_RECRUITER}>
                     <OrganizationPostJobForm />
+                  </RequireRoles>
+                }
+              />
+              <Route
+                path="recruitment"
+                element={
+                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                    <RecruitmentPage />
                   </RequireRoles>
                 }
               />

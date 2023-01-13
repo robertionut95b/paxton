@@ -1,5 +1,6 @@
 import { RequireRoles } from "@auth/RequireRoles";
 import RoleType from "@auth/RoleType";
+import { useAuth } from "@auth/useAuth";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import {
   FieldType,
@@ -12,7 +13,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Group, Paper, Skeleton, Tabs } from "@mantine/core";
+import { Grid, Group, Paper, Skeleton, Stack, Tabs } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
 import { formatISO } from "date-fns";
 import { lazy, Suspense } from "react";
@@ -34,6 +35,7 @@ const OrganizationToolbarSkeleton = () => (
 );
 
 export default function OrganizationPage() {
+  const { user, isInRole } = useAuth();
   const { organizationId } = useParams();
   const { data: organization, isLoading: isLoadingOrganization } =
     useGetOrganizationByIdQuery(
@@ -48,15 +50,19 @@ export default function OrganizationPage() {
 
   const organizationItem = organization?.getOrganizationById;
 
-  if (!organization?.getOrganizationById) return <NotFoundPage />;
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
+  if (!organization?.getOrganizationById) return <NotFoundPage />;
 
   const OrganizationToolbar = lazy(
     () => import("@components/organization/OrganizationToolbar")
   );
 
+  const OrganizationLeftMenu = lazy(
+    () => import("@components/organization/OrganizationLeftMenu")
+  );
+
   return (
-    <div className="px-organization flex flex-col gap-4">
+    <Stack className="px-organization">
       {organizationItem && (
         <RequireRoles roles={RoleType.ROLE_RECRUITER} returnValue="null">
           <Suspense fallback={<OrganizationToolbarSkeleton />}>
@@ -64,82 +70,105 @@ export default function OrganizationPage() {
           </Suspense>
         </RequireRoles>
       )}
-      <Paper shadow={"xs"} p="md">
-        <Tabs color="violet" defaultValue="active">
-          <Tabs.List grow>
-            <Tabs.Tab value="active" icon={<BoltIcon width={16} />}>
-              Active jobs
-            </Tabs.Tab>
-            <Tabs.Tab value="future" icon={<CalendarDaysIcon width={16} />}>
-              Future jobs
-            </Tabs.Tab>
-            <Tabs.Tab value="expired" icon={<XMarkIcon width={16} />}>
-              Expired jobs
-            </Tabs.Tab>
-          </Tabs.List>
-          <Tabs.Panel value="active" p={"xs"}>
-            <OrganizationJobsTab
-              filters={[
-                {
-                  key: "organization",
-                  fieldType: FieldType.Long,
-                  value: organizationItem?.id.toString() ?? "0",
-                  operator: Operator.Equal,
-                },
-                {
-                  key: "availableTo",
-                  fieldType: FieldType.Date,
-                  value: todayIsoFmt,
-                  operator: Operator.GreaterThanEqual,
-                },
-                {
-                  key: "availableFrom",
-                  fieldType: FieldType.Date,
-                  value: todayIsoFmt,
-                  operator: Operator.LessThanEqual,
-                },
-              ]}
+      <Grid>
+        <Grid.Col sm={3} span={12}>
+          <Suspense fallback={<OrganizationToolbarSkeleton />}>
+            <OrganizationLeftMenu
+              rolesToShow={(user?.permissions as RoleType[]) ?? []}
             />
-          </Tabs.Panel>
-          <Tabs.Panel value="future" p={"xs"}>
-            <OrganizationJobsTab
-              filters={[
-                {
-                  key: "organization",
-                  fieldType: FieldType.Long,
-                  value: organizationItem?.id.toString() ?? "0",
-                  operator: Operator.Equal,
-                },
-                {
-                  key: "availableFrom",
-                  fieldType: FieldType.Date,
-                  value: todayIsoFmt,
-                  operator: Operator.GreaterThan,
-                },
-              ]}
-            />
-          </Tabs.Panel>
-          <Tabs.Panel value="expired" p={"xs"}>
-            <OrganizationJobsTab
-              filters={[
-                {
-                  key: "organization",
-                  fieldType: FieldType.Long,
-                  value: organizationItem?.id.toString() ?? "0",
-                  operator: Operator.Equal,
-                },
-                {
-                  key: "availableTo",
-                  fieldType: FieldType.Date,
-                  value: todayIsoFmt,
-                  operator: Operator.LessThan,
-                },
-              ]}
-            />
-          </Tabs.Panel>
-        </Tabs>
-      </Paper>
+          </Suspense>
+        </Grid.Col>
+        <Grid.Col sm={9} span={12}>
+          <Paper shadow={"sm"} p="md">
+            <Tabs color="violet" defaultValue="active">
+              <Tabs.List grow>
+                <Tabs.Tab value="active" icon={<BoltIcon width={16} />}>
+                  Active jobs
+                </Tabs.Tab>
+                <Tabs.Tab value="future" icon={<CalendarDaysIcon width={16} />}>
+                  Future jobs
+                </Tabs.Tab>
+                <Tabs.Tab value="expired" icon={<XMarkIcon width={16} />}>
+                  Expired jobs
+                </Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="active" p={"xs"}>
+                <OrganizationJobsTab
+                  filters={[
+                    {
+                      key: "organization",
+                      fieldType: FieldType.Long,
+                      value: organizationItem?.id.toString() ?? "0",
+                      operator: Operator.Equal,
+                    },
+                    {
+                      key: "availableTo",
+                      fieldType: FieldType.Date,
+                      value: todayIsoFmt,
+                      operator: Operator.GreaterThanEqual,
+                    },
+                    {
+                      key: "availableFrom",
+                      fieldType: FieldType.Date,
+                      value: todayIsoFmt,
+                      operator: Operator.LessThanEqual,
+                    },
+                  ]}
+                  editableItems={
+                    isInRole(RoleType.ROLE_RECRUITER) ||
+                    isInRole(RoleType.ROLE_ADMINISTRATOR)
+                  }
+                />
+              </Tabs.Panel>
+              <Tabs.Panel value="future" p={"xs"}>
+                <OrganizationJobsTab
+                  filters={[
+                    {
+                      key: "organization",
+                      fieldType: FieldType.Long,
+                      value: organizationItem?.id.toString() ?? "0",
+                      operator: Operator.Equal,
+                    },
+                    {
+                      key: "availableFrom",
+                      fieldType: FieldType.Date,
+                      value: todayIsoFmt,
+                      operator: Operator.GreaterThan,
+                    },
+                  ]}
+                  editableItems={
+                    isInRole(RoleType.ROLE_RECRUITER) ||
+                    isInRole(RoleType.ROLE_ADMINISTRATOR)
+                  }
+                />
+              </Tabs.Panel>
+              <Tabs.Panel value="expired" p={"xs"}>
+                <OrganizationJobsTab
+                  filters={[
+                    {
+                      key: "organization",
+                      fieldType: FieldType.Long,
+                      value: organizationItem?.id.toString() ?? "0",
+                      operator: Operator.Equal,
+                    },
+                    {
+                      key: "availableTo",
+                      fieldType: FieldType.Date,
+                      value: todayIsoFmt,
+                      operator: Operator.LessThan,
+                    },
+                  ]}
+                  editableItems={
+                    isInRole(RoleType.ROLE_RECRUITER) ||
+                    isInRole(RoleType.ROLE_ADMINISTRATOR)
+                  }
+                />
+              </Tabs.Panel>
+            </Tabs>
+          </Paper>
+        </Grid.Col>
+      </Grid>
       <Outlet />
-    </div>
+    </Stack>
   );
 }

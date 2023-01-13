@@ -1,4 +1,5 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import { showNotification } from "@mantine/notifications";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 
@@ -10,7 +11,19 @@ export const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchInterval: false,
       retry: 0,
-      onError: () => {
+      onError: (err) => {
+        if ((err as GraphqlApiResponse).response.errors) {
+          const error = err as GraphqlApiResponse;
+          if (error.response.errors?.[0].message.includes("does not exist")) {
+            showNotification({
+              title: "Data fetching error",
+              message: "This object does not exist in our database",
+              autoClose: 5000,
+              icon: <ExclamationTriangleIcon width={20} />,
+            });
+            return;
+          }
+        }
         showNotification({
           title: "Application error",
           message: "Oops, something went wrong!",

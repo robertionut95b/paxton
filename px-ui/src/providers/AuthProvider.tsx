@@ -62,9 +62,7 @@ export default function AuthProvider({
   };
 
   const { mutate: logIn } = useLoginUser({
-    onSuccess: ({ access_token }) => {
-      loadMetaFromToken(access_token);
-    },
+    onSuccess: ({ access_token }) => loadMetaFromToken(access_token),
     onError: (err) => {
       let msg = "Unknown error encountered, please try again later";
       if (err.response && err.response.status === 401) {
@@ -109,8 +107,12 @@ export default function AuthProvider({
     { username, password }: LoginUserMutationProps,
     callback: VoidFunction
   ) => {
-    logIn({ username, password });
-    callback?.();
+    logIn(
+      { username, password },
+      {
+        onSuccess: () => callback?.(),
+      }
+    );
   };
 
   const signout = (callback: VoidFunction) => {

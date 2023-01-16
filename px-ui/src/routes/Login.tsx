@@ -13,7 +13,6 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { useIsMutating } from "@tanstack/react-query";
 import FormLoginSchema from "@validator/FormLoginSchema";
-import { useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -31,10 +30,6 @@ export default function Login() {
     },
     validate: zodResolver(FormLoginSchema),
   });
-
-  useEffect(() => {
-    if (user) navigate(from, { replace: true });
-  }, [user]);
 
   const handleSubmit = async (values: typeof form["values"]) => {
     const username = values.username;

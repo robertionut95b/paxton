@@ -1,4 +1,9 @@
-import { FieldType, Operator, useGetAllJobListingsQuery } from "@gql/generated";
+import {
+  FieldType,
+  Operator,
+  useGetAllJobListingsQuery,
+  useGetOrganizationByIdQuery,
+} from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Breadcrumbs as MantineBreadCrumbs,
@@ -40,12 +45,36 @@ const JobPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
   return <Text>{title}</Text>;
 };
 
+const OrgPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
+  const orgIdParam = match.params.organizationId;
+  const { data: organizationData, isLoading } = useGetOrganizationByIdQuery(
+    graphqlRequestClient,
+    {
+      organizationId: orgIdParam as string,
+    },
+    {
+      enabled: !!orgIdParam,
+    }
+  );
+  if (isLoading) return <Loader size={"xs"} />;
+  if (!organizationData?.getOrganizationById) return orgIdParam;
+  const name = organizationData.getOrganizationById.name;
+
+  if (!name) return orgIdParam;
+
+  return <Text>{name}</Text>;
+};
+
 const excPaths = ["/", "/app"];
 
 const routes = [
   {
     path: "/app/jobs/view/:jobId",
     breadcrumb: JobPageCrumb,
+  },
+  {
+    path: "/app/organizations/:organizationId/",
+    breadcrumb: OrgPageCrumb,
   },
 ];
 
@@ -56,9 +85,12 @@ const Breadcrumbs = ({ excludePaths = [] }: { excludePaths?: string[] }) => {
   });
   return (
     <MantineBreadCrumbs separator="»">
-      {breadcrumbs.map(({ breadcrumb, match }) => (
+      {breadcrumbs.map(({ breadcrumb, match }, idx) => (
         <NavLink key={match.pathname} to={match.pathname}>
-          <Button variant="light" compact>
+          <Button
+            variant={breadcrumbs.length - 1 === idx ? "light" : "subtle"}
+            compact
+          >
             {breadcrumb}
           </Button>
         </NavLink>

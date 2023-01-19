@@ -37,7 +37,9 @@ const AvatarMenu = ({
           color="violet"
           src={src}
         >
-          {user?.username?.[0].toUpperCase() ?? "U"}
+          {user?.firstName && user.lastName
+            ? `${user.firstName[0]}${user.lastName[0]}`
+            : user?.username?.[0].toUpperCase() ?? "U"}
         </Avatar>
       </Menu.Target>
       <Menu.Dropdown>

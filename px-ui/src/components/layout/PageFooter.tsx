@@ -1,49 +1,60 @@
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
-import { Anchor, List, createStyles } from "@mantine/core";
+import { Group, Stack, Text } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 
-const useStyles = createStyles((theme) => ({
-  footerLink: {
-    color:
-      theme.colorScheme === "dark" ? theme.colors.violet[4] : theme.colors.gray,
-  },
-}));
-
 const PageFooter = () => {
-  const { classes } = useStyles();
   return (
-    <List size={"xs"} spacing={5}>
-      <List.Item>
-        <Anchor
-          component={NavLink}
-          to="/app/about-us"
-          className={classes.footerLink}
-        >
+    <Stack>
+      <Group spacing={"sm"} position="center">
+        <Text size="xs" component={NavLink} to="/app/about-us" variant="link">
           About us
-        </Anchor>
-      </List.Item>
-      <List.Item>
-        <Anchor
-          component={NavLink}
-          to="/app/support"
-          className={classes.footerLink}
-        >
+        </Text>
+        <Text size="xs" component={NavLink} to="/app/support" variant="link">
           Ask for support
-        </Anchor>
-      </List.Item>
-      <List.Item>
-        <Anchor
+        </Text>
+        <Text
+          size="xs"
+          component={NavLink}
+          to="/app/terms-and-services"
+          variant="link"
+        >
+          Terms and Services
+        </Text>
+        <Text
+          size="xs"
+          component={NavLink}
+          to="/app/support/business-users"
+          variant="link"
+        >
+          Business support
+        </Text>
+        <Text
+          size="xs"
           component={NavLink}
           to="/app/terms-and-services/confidentiality"
-          className={classes.footerLink}
+          variant="link"
         >
           Confidentiality
-        </Anchor>
-      </List.Item>
-      <List.Item icon={<BuildingOffice2Icon className="-mr-1.5" width={14} />}>
-        Paxton Inc © {new Date().getFullYear()}
-      </List.Item>
-    </List>
+        </Text>
+        <Text
+          size="xs"
+          component={NavLink}
+          to="/app/support/publicity"
+          variant="link"
+        >
+          Publicity
+        </Text>
+        <Text size="xs" component={NavLink} to="#" variant="link">
+          More
+        </Text>
+      </Group>
+      <Text size="xs">
+        <Group position="center" spacing={"sm"}>
+          <BuildingOffice2Icon className="-mr-1.5" width={14} />
+          Paxton Inc © {new Date().getFullYear()}
+        </Group>
+      </Text>
+    </Stack>
   );
 };
 

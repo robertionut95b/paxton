@@ -1,29 +1,52 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
-import { useGetUserProfileQuery } from "@gql/generated";
+import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
+import { useGetRecruiterByIdQuery } from "@gql/generated";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { useEffect } from "react";
+import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
+import { useEffectOnce } from "usehooks-ts";
 
 export default function MyOrganizationPage() {
-  const { user } = useAuth();
-  const { data: userProfile } = useGetUserProfileQuery(graphqlRequestClient, {
-    profileSlugUrl: user?.profileSlugUrl,
+  const { user, isInRole } = useAuth();
+  const navigate = useNavigate();
+  const { data, isLoading } = useGetRecruiterByIdQuery(
+    graphqlRequestClient,
+    {
+      recruiterId: user?.userId as string,
+    },
+    {
+      onSuccess: (data) => {
+        const organizationId = data.getRecruiterById?.organization.id;
+        if (organizationId && isInRole(RoleType.ROLE_RECRUITER)) {
+          navigate(`/app/organizations/${organizationId}/`);
+        }
+      },
+      onError: () => {
+        showNotification({
+          title: "Data error",
+          message: "You are not assigned to any organization",
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+        navigate(`/app`);
+      },
+    }
+  );
+
+  useEffectOnce(() => {
+    if (
+      data &&
+      data.getRecruiterById?.organization.id &&
+      isInRole(RoleType.ROLE_RECRUITER)
+    ) {
+      const organizationId = data.getRecruiterById?.organization?.id;
+      navigate(`/app/organizations/${organizationId}/`);
+    } else navigate(`/app`);
   });
 
-  const lastOrganization =
-    userProfile?.getUserProfile?.experiences?.[0]?.organization;
+  if (isLoading) return <GenericLoadingSkeleton />;
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (lastOrganization) {
-      const permissions = user?.permissions ?? [];
-      if (permissions.includes(RoleType.ROLE_RECRUITER)) {
-        navigate(`/app/organizations/${lastOrganization?.id}/`);
-      } else navigate(`/app/organizations/${lastOrganization?.id}/`);
-    }
-  }, [lastOrganization, navigate, user?.permissions]);
-
-  return <></>;
+  return null;
 }

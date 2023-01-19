@@ -422,6 +422,7 @@ export type Query = {
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMyApplicationForJobListing?: Maybe<Application>;
   getOrganizationById?: Maybe<Organization>;
+  getRecruiterById?: Maybe<Recruiter>;
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
@@ -469,6 +470,11 @@ export type QueryGetOrganizationByIdArgs = {
 };
 
 
+export type QueryGetRecruiterByIdArgs = {
+  recruiterId: Scalars['ID'];
+};
+
+
 export type QueryGetRelatedJobListingsArgs = {
   jobName: Scalars['String'];
 };
@@ -486,6 +492,9 @@ export type QueryGetUserProfileArgs = {
 export type Recruiter = {
   __typename?: 'Recruiter';
   id: Scalars['ID'];
+  isActive: Scalars['Boolean'];
+  lastActive?: Maybe<Scalars['DateTime']>;
+  organization: Organization;
   user: User;
 };
 
@@ -761,6 +770,13 @@ export type GetAllRecruitersForOrganizationQueryVariables = Exact<{
 
 
 export type GetAllRecruitersForOrganizationQuery = { __typename?: 'Query', getAllRecruitersForOrganization?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
+
+export type GetRecruiterByIdQueryVariables = Exact<{
+  recruiterId: Scalars['ID'];
+}>;
+
+
+export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string } } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1734,6 +1750,52 @@ useGetAllRecruitersForOrganizationQuery.getKey = (variables: GetAllRecruitersFor
 ;
 
 useGetAllRecruitersForOrganizationQuery.fetcher = (client: GraphQLClient, variables: GetAllRecruitersForOrganizationQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllRecruitersForOrganizationQuery, GetAllRecruitersForOrganizationQueryVariables>(client, GetAllRecruitersForOrganizationDocument, variables, headers);
+export const GetRecruiterByIdDocument = `
+    query GetRecruiterById($recruiterId: ID!) {
+  getRecruiterById(recruiterId: $recruiterId) {
+    id
+    user {
+      firstName
+      lastName
+      email
+      username
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    organization {
+      id
+      name
+      industry
+      location
+      photography
+      description
+    }
+  }
+}
+    `;
+export const useGetRecruiterByIdQuery = <
+      TData = GetRecruiterByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetRecruiterByIdQueryVariables,
+      options?: UseQueryOptions<GetRecruiterByIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetRecruiterByIdQuery, TError, TData>(
+      ['GetRecruiterById', variables],
+      fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, variables, headers),
+      options
+    );
+useGetRecruiterByIdQuery.document = GetRecruiterByIdDocument;
+
+
+useGetRecruiterByIdQuery.getKey = (variables: GetRecruiterByIdQueryVariables) => ['GetRecruiterById', variables];
+;
+
+useGetRecruiterByIdQuery.fetcher = (client: GraphQLClient, variables: GetRecruiterByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;

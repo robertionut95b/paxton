@@ -1,16 +1,16 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
+import JobMeetRecruitersSection from "@components/jobs/job-page/JobMeetRecruitersSection";
 import JobOrganizationAboutCard from "@components/jobs/job-page/JobOrganizationAboutCard";
 import JobRelatedAlertSection from "@components/jobs/job-page/JobRelatedAlertSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
-import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { APP_API_BASE_URL } from "@constants/Properties";
 import {
   FieldType,
   Operator,
@@ -21,20 +21,11 @@ import {
 } from "@gql/generated";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import {
-  Avatar,
-  Button,
-  Container,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Container, Paper, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
   const { user, isInRole } = useAuth();
@@ -151,48 +142,7 @@ const JobDetailsPage = () => {
           isCandidatureLoading={isApplyLoading}
         />
         <ShowIf if={recruiter}>
-          <Paper shadow={"xs"} p="md">
-            <Title mb={"md"} order={4}>
-              Meet the recruiters
-            </Title>
-            <Group position="apart">
-              <NavLink
-                to={
-                  recruiter
-                    ? `/app/up/${recruiter.user.userProfile.profileSlugUrl}`
-                    : "#"
-                }
-              >
-                <Group>
-                  <Avatar
-                    radius={"xl"}
-                    size={76}
-                    src={
-                      recruiter?.user.userProfile.photography
-                        ? `${APP_API_BASE_URL}/${recruiter?.user.userProfile.photography}`
-                        : null
-                    }
-                  >
-                    {recruiter?.user.username?.[0].toUpperCase()}
-                  </Avatar>
-                  <Stack spacing={0}>
-                    <Text size="sm" weight="bold">
-                      {recruiter?.user.firstName && recruiter.user.lastName
-                        ? `${recruiter.user.firstName} ${recruiter.user.lastName}`
-                        : recruiter?.user.username}
-                    </Text>
-                    <Text size={"sm"}>
-                      {recruiter?.user.userProfile.profileTitle}
-                    </Text>
-                    <Text size={"xs"} color="dimmed">
-                      The person who posted this job listing
-                    </Text>
-                  </Stack>
-                </Group>
-              </NavLink>
-              <Button>Message</Button>
-            </Group>
-          </Paper>
+          {recruiter && <JobMeetRecruitersSection recruiter={recruiter} />}
         </ShowIf>
         <JobDescriptionSection description={job.description} />
         <JobRelatedAlertSection

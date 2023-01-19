@@ -1,7 +1,7 @@
 import { SelectItem } from "@components/select-items/SelectItem";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { APP_API_BASE_URL } from "@constants/Properties";
+import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   ContractType,
   FieldType,
@@ -37,8 +37,8 @@ import {
   NumberInput,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
@@ -411,7 +411,7 @@ export default function OrganizationPostJobForm() {
                 description: r?.user.userProfile.profileTitle,
                 image:
                   r?.user.userProfile.photography &&
-                  `${APP_API_BASE_URL}/${r.user.userProfile.photography}`,
+                  `${APP_IMAGES_API_PATH}/100x100?f=/${r.user.userProfile.photography}`,
               })
             )}
             icon={<UserIcon width={18} />}

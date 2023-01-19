@@ -131,7 +131,7 @@ export default function JobsPage() {
           <JobsLeftMenu />
         </RequireRoles>
       </Grid.Col>
-      <Grid.Col sm={7} span={12}>
+      <Grid.Col sm={6} span={12}>
         <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
           <Title mb={"xs"} order={4}>
             <ShowIfElse
@@ -156,7 +156,7 @@ export default function JobsPage() {
           </Paper>
         </Paper>
       </Grid.Col>
-      <Grid.Col sm={2} span={12}>
+      <Grid.Col sm={3} span={12}>
         <PageFooter />
       </Grid.Col>
     </Grid>

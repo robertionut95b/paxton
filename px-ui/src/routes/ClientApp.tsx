@@ -1,9 +1,8 @@
 import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
-import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { APP_API_BASE_URL } from "@constants/Properties";
+import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
   BellIcon,
@@ -65,7 +64,7 @@ export default function ClientApp() {
             profileLink={profileData?.getUserProfile?.profileSlugUrl}
             avatarSrc={
               profileData?.getUserProfile?.photography &&
-              `${APP_API_BASE_URL}/${profileData?.getUserProfile?.photography}`
+              `${APP_IMAGES_API_PATH}/100x100?f=${profileData?.getUserProfile?.photography}`
             }
           />
         }
@@ -77,7 +76,7 @@ export default function ClientApp() {
         </Paper>
       </ShowIfElse>
       <Container pb="lg" size="lg">
-        <Suspense fallback={<GenericLoadingSkeleton />}>
+        <Suspense fallback={null}>
           <Outlet />
         </Suspense>
       </Container>

@@ -318,3 +318,27 @@ query GetAllRecruitersForOrganization($organizationId: ID!) {
     }
   }
 }
+
+query GetRecruiterById($recruiterId: ID!) {
+  getRecruiterById(recruiterId: $recruiterId) {
+    id
+    user {
+      firstName
+      lastName
+      email
+      username
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    organization {
+      id
+      name
+      industry
+      location
+      photography
+      description
+    }
+  }
+}

@@ -2,7 +2,7 @@ import { useAuth } from "@auth/useAuth";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { APP_API_BASE_URL } from "@constants/Properties";
+import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   FieldType,
   Operator,
@@ -110,7 +110,7 @@ const RecruitmentApplicationPage = () => {
             <Avatar
               size={"xl"}
               radius="xl"
-              src={`${APP_API_BASE_URL}/${userProfile.photography}`}
+              src={`${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`}
             >
               {candidate.user?.username?.[0].toUpperCase() ?? "U"}
             </Avatar>
@@ -258,7 +258,7 @@ const RecruitmentApplicationPage = () => {
               <Avatar
                 size="lg"
                 radius="xl"
-                src={`${APP_API_BASE_URL}/${currentUserProfile?.getUserProfile?.photography}`}
+                src={`${APP_IMAGES_API_PATH}/100x100?f=${currentUserProfile?.getUserProfile?.photography}`}
               >
                 U
               </Avatar>

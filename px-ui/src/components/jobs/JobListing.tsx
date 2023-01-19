@@ -15,7 +15,6 @@ export default function JobListingItem({
     city,
     availableFrom,
     availableTo,
-    applications,
   },
   compact = false,
   navigable = true,

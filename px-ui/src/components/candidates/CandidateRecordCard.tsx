@@ -1,4 +1,4 @@
-import { APP_API_BASE_URL } from "@constants/Properties";
+import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { Application, GetAllApplicationsQuery } from "@gql/generated";
 import {
   ChatBubbleLeftEllipsisIcon,
@@ -30,7 +30,7 @@ const ApplicationRecordCard = ({
               <Avatar
                 size={"lg"}
                 radius="xl"
-                src={`${APP_API_BASE_URL}/${userProfile.photography}`}
+                src={`${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`}
               >
                 {user?.username?.[0].toUpperCase() ?? "U"}
               </Avatar>

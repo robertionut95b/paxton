@@ -299,6 +299,9 @@ input StudyInput {
 type Recruiter {
     id: ID!
     user: User!
+    organization: Organization!
+    isActive: Boolean!
+    lastActive: DateTime
 }
 
 type Photography {
@@ -419,6 +422,7 @@ type Query {
     getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
     getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage
     getAllApplications(searchQuery: SearchQueryInput): ApplicationPage
+    getRecruiterById(recruiterId: ID!): Recruiter
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
 }
 

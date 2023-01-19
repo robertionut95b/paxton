@@ -108,6 +108,7 @@ public class SecurityConfiguration {
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/assets/**").permitAll()
                 .antMatchers("/api/v*/auth/**").permitAll()
+                .antMatchers("/api/v*/images/**").permitAll()
                 // front-end paths
                 .antMatchers("/app/**").permitAll()
                 .antMatchers("/",

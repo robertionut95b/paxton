@@ -79,6 +79,7 @@ export default function ProfileBannerModal() {
           label="Photography"
           description="An image is worth a thousand words"
           withAsterisk
+          accept="image/jpeg"
           icon={<PhotoIcon width={18} />}
           {...form.getInputProps("photography")}
         />

@@ -22,7 +22,7 @@ export default function JobOrganizationAboutCard({
           {organization.name}
         </Title>
       </Group>
-      <ExpandableText size={"sm"}>{jobDescription}</ExpandableText>
+      <ExpandableText size={"sm"}>{organization.description}</ExpandableText>
     </Paper>
   );
 }

@@ -1,6 +1,7 @@
 # noinspection GraphQLUnresolvedReference
 # The root query of the application
 scalar Date
+scalar DateTime
 
 directive @constraint(
     # String constraints
@@ -28,10 +29,16 @@ type ActivitySector {
 
 type Application {
     id: ID!
-    dateOfApplication: Date!
+    dateOfApplication: DateTime!
     applicantProfile: UserProfile!
     candidate: Candidate!
     jobListing: JobListing!
+    processSteps: [ApplicationProcessSteps]
+}
+
+type ApplicationDocument {
+    id: ID!
+    document: Document!
 }
 
 input ApplicationInput {
@@ -45,6 +52,13 @@ type ApplicationPage {
     page: Int!
     totalPages: Int!
     totalElements: Int!
+}
+
+type ApplicationProcessSteps {
+    id: ID!
+    processStep: ProcessSteps!
+    application: Application!
+    registeredAt: DateTime!
 }
 
 type Candidate {
@@ -89,6 +103,11 @@ type Country {
     code: String!
     name: String!
     cities: [City]
+}
+
+type Document {
+    name: String!
+    url: String!
 }
 
 type Domain {
@@ -173,6 +192,7 @@ input JobListingInput {
     contractType: ContractType!
     organizationId: ID! @constraint(minLength: 1)
     categoryId: ID! @constraint(minLength: 1)
+    recruiterId: ID! @constraint(minLength: 1)
 }
 
 type JobListing {
@@ -189,6 +209,8 @@ type JobListing {
     organization: Organization!
     category: JobCategory
     applications: [Application]
+    process: Process
+    recruiter: Recruiter
 }
 
 type JobListingPage {
@@ -205,6 +227,7 @@ type Organization {
     location: String!
     jobs: [JobListing]
     photography: String
+    description: String!
 }
 
 enum Status {
@@ -225,7 +248,15 @@ type Process {
     name: String!
     description: String!
     processSteps: [ProcessSteps]
+    recruiter: Recruiter
+    jobListings: [JobListing]
+}
 
+type ProcessPage {
+    list: [Process],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
 }
 
 type ProcessSteps {
@@ -374,7 +405,7 @@ type Query {
     getOrganizationById(organizationId: ID!): Organization
     getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
     getRelatedJobListings(jobName: String!): [JobListing]
-    getAllProcesses: [Process]
+    getAllProcesses(searchQuery: SearchQueryInput): ProcessPage
     getAllSteps: [Step]
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
@@ -388,6 +419,7 @@ type Query {
     getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
     getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage
     getAllApplications(searchQuery: SearchQueryInput): ApplicationPage
+    getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
 }
 
 type Mutation {

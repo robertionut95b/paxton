@@ -65,6 +65,8 @@ public class JwtTokenProvider {
 
     public String generateTokenFromUserDetails(UserDetails userDetails) {
         Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiryInSeconds());
+        String birthDate = ((PaxtonUserDetails) userDetails).getBirthDate() != null ?
+                ((PaxtonUserDetails) userDetails).getBirthDate().toString() : null;
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
@@ -77,7 +79,7 @@ public class JwtTokenProvider {
                 .claim("userId", ((PaxtonUserDetails) userDetails).getId())
                 .claim("firstName", ((PaxtonUserDetails) userDetails).getFirstName())
                 .claim("lastName", ((PaxtonUserDetails) userDetails).getLastName())
-                .claim("birthDate", ((PaxtonUserDetails) userDetails).getBirthDate())
+                .claim("birthDate", birthDate)
                 .claim("profileId", ((PaxtonUserDetails) userDetails).getUserProfile().getId())
                 .claim("profileSlugUrl", ((PaxtonUserDetails) userDetails).getUserProfile().getProfileSlugUrl())
                 .claim("email", ((PaxtonUserDetails) userDetails).getEmail())
@@ -91,6 +93,7 @@ public class JwtTokenProvider {
     public String generateTokenFromUser(User user) {
         Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getAccessTokenExpiryInSeconds());
         PaxtonUserDetails userDetails = new PaxtonUserDetails(user);
+        String birthDate = userDetails.getBirthDate() != null ? userDetails.getBirthDate().toString() : null;
         return Jwts.builder()
                 .setIssuer("paxton")
                 .setIssuedAt(Date.from(Instant.now()))
@@ -103,7 +106,7 @@ public class JwtTokenProvider {
                 .claim("userId", ((PaxtonUserDetails) userDetails).getId())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
-                .claim("birthDate", user.getBirthDate())
+                .claim("birthDate", birthDate)
                 .claim("profileId", userDetails.getUserProfile().getId())
                 .claim("profileSlugUrl", userDetails.getUserProfile().getProfileSlugUrl())
                 .claim("email", user.getEmail())

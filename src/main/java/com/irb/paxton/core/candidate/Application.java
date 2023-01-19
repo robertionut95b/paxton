@@ -1,5 +1,6 @@
 package com.irb.paxton.core.candidate;
 
+import com.irb.paxton.core.ApplicationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
@@ -10,7 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -26,7 +27,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class Application extends PaxtonEntity<Long> {
 
     @NotNull
-    private LocalDateTime dateOfApplication = LocalDateTime.now();
+    private OffsetDateTime dateOfApplication = OffsetDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "application_profile_id")
@@ -42,4 +43,7 @@ public class Application extends PaxtonEntity<Long> {
 
     @OneToMany(mappedBy = "application")
     private Collection<ApplicationDocument> applicationDocuments;
+
+    @OneToMany(mappedBy = "application")
+    private Collection<ApplicationProcessSteps> processSteps;
 }

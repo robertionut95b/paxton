@@ -1,9 +1,5 @@
 import { APP_API_BASE_URL } from "@constants/Properties";
-import {
-  Application,
-  GetAllApplicationsQuery,
-  Organization,
-} from "@gql/generated";
+import { Application, GetAllApplicationsQuery } from "@gql/generated";
 import {
   ChatBubbleLeftEllipsisIcon,
   ClipboardDocumentListIcon,
@@ -18,12 +14,10 @@ type ApplicationRecordCardProps = {
     | NonNullable<
         NonNullable<GetAllApplicationsQuery["getAllApplications"]>["list"]
       >[number];
-  organizationId: Organization["id"];
 };
 
 const ApplicationRecordCard = ({
   candidate: application,
-  organizationId,
 }: ApplicationRecordCardProps) => {
   const user = application?.candidate.user;
   const userProfile = application?.applicantProfile;
@@ -42,7 +36,7 @@ const ApplicationRecordCard = ({
               </Avatar>
             )}
             <Stack spacing={2}>
-              <Text weight="bold" size="md">
+              <Text weight="bold" size="md" variant="link">
                 {user?.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
                   : user?.username}
@@ -59,7 +53,7 @@ const ApplicationRecordCard = ({
             size="md"
             title="See the application process"
             component={NavLink}
-            to={`/app/organization/${organizationId}/recruitement/application/${application?.id}`}
+            to={`applications/${application?.id}`}
           >
             <ClipboardDocumentListIcon />
           </ActionIcon>

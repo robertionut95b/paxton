@@ -1,6 +1,7 @@
 import {
   FieldType,
   Operator,
+  useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
   useGetOrganizationByIdQuery,
 } from "@gql/generated";
@@ -45,6 +46,39 @@ const JobPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
   return <Text>{title}</Text>;
 };
 
+const ApplicationPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
+  const applicationId = match.params.applicationId;
+  const { data: applicationData, isLoading } = useGetAllApplicationsQuery(
+    graphqlRequestClient,
+    {
+      searchQuery: {
+        filters: [
+          {
+            fieldType: FieldType.Long,
+            key: "id",
+            operator: Operator.Equal,
+            value: applicationId as string,
+          },
+        ],
+      },
+    },
+    {
+      enabled: !!applicationId,
+    }
+  );
+  console.log("ceva");
+  if (isLoading) return <Loader size={"xs"} />;
+  if (!applicationData?.getAllApplications) return applicationId;
+  if (!applicationData.getAllApplications.list?.[0]) return applicationId;
+
+  const user = applicationData.getAllApplications.list[0].candidate.user;
+  const fullName = `${user.firstName} ${user.lastName}`;
+
+  if (!fullName) return applicationId;
+
+  return <Text>{fullName}</Text>;
+};
+
 const OrgPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
   const orgIdParam = match.params.organizationId;
   const { data: organizationData, isLoading } = useGetOrganizationByIdQuery(
@@ -73,8 +107,16 @@ const routes = [
     breadcrumb: JobPageCrumb,
   },
   {
+    path: "/app/organizations/:organizationId/recruitment/jobs/:jobId",
+    breadcrumb: JobPageCrumb,
+  },
+  {
     path: "/app/organizations/:organizationId/",
     breadcrumb: OrgPageCrumb,
+  },
+  {
+    path: "/app/organizations/:organizationId/recruitment/jobs/:jobId/applications/:applicationId",
+    breadCrumb: ApplicationPageCrumb,
   },
 ];
 
@@ -84,7 +126,15 @@ const Breadcrumbs = ({ excludePaths = [] }: { excludePaths?: string[] }) => {
     excludePaths: [...excPaths, ...excludePaths],
   });
   return (
-    <MantineBreadCrumbs separator="»">
+    <MantineBreadCrumbs
+      separator="»"
+      styles={(theme) => ({
+        separator: {
+          marginLeft: theme.spacing.xs - 5,
+          marginRight: theme.spacing.xs - 5,
+        },
+      })}
+    >
       {breadcrumbs.map(({ breadcrumb, match }, idx) => (
         <NavLink key={match.pathname} to={match.pathname}>
           <Button

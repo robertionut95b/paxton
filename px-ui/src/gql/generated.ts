@@ -23,6 +23,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: Date;
+  DateTime: Date;
 };
 
 export type ActivitySector = {
@@ -35,9 +36,16 @@ export type Application = {
   __typename?: 'Application';
   applicantProfile: UserProfile;
   candidate: Candidate;
-  dateOfApplication: Scalars['Date'];
+  dateOfApplication: Scalars['DateTime'];
   id: Scalars['ID'];
   jobListing: JobListing;
+  processSteps?: Maybe<Array<Maybe<ApplicationProcessSteps>>>;
+};
+
+export type ApplicationDocument = {
+  __typename?: 'ApplicationDocument';
+  document: Document;
+  id: Scalars['ID'];
 };
 
 export type ApplicationInput = {
@@ -52,6 +60,14 @@ export type ApplicationPage = {
   page: Scalars['Int'];
   totalElements: Scalars['Int'];
   totalPages: Scalars['Int'];
+};
+
+export type ApplicationProcessSteps = {
+  __typename?: 'ApplicationProcessSteps';
+  application: Application;
+  id: Scalars['ID'];
+  processStep: ProcessSteps;
+  registeredAt: Scalars['DateTime'];
 };
 
 export type Candidate = {
@@ -101,6 +117,12 @@ export type Country = {
   cities?: Maybe<Array<Maybe<City>>>;
   code: Scalars['String'];
   name: Scalars['String'];
+};
+
+export type Document = {
+  __typename?: 'Document';
+  name: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type Domain = {
@@ -211,6 +233,8 @@ export type JobListing = {
   job: Job;
   numberOfVacancies: Scalars['Int'];
   organization: Organization;
+  process?: Maybe<Process>;
+  recruiter?: Maybe<Recruiter>;
   title: Scalars['String'];
 };
 
@@ -224,6 +248,7 @@ export type JobListingInput = {
   location: Scalars['String'];
   numberOfVacancies: Scalars['Int'];
   organizationId: Scalars['ID'];
+  recruiterId: Scalars['ID'];
   title: Scalars['String'];
 };
 
@@ -326,6 +351,7 @@ export enum Operator {
 
 export type Organization = {
   __typename?: 'Organization';
+  description: Scalars['String'];
   id: Scalars['ID'];
   industry: Scalars['String'];
   jobs?: Maybe<Array<Maybe<JobListing>>>;
@@ -352,8 +378,18 @@ export type Process = {
   __typename?: 'Process';
   description: Scalars['String'];
   id: Scalars['ID'];
+  jobListings?: Maybe<Array<Maybe<JobListing>>>;
   name: Scalars['String'];
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
+  recruiter?: Maybe<Recruiter>;
+};
+
+export type ProcessPage = {
+  __typename?: 'ProcessPage';
+  list?: Maybe<Array<Maybe<Process>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
 };
 
 export type ProcessSteps = {
@@ -378,7 +414,8 @@ export type Query = {
   getAllJobListings?: Maybe<JobListingPage>;
   getAllJobs?: Maybe<Array<Maybe<Job>>>;
   getAllOrganizations?: Maybe<Array<Maybe<Organization>>>;
-  getAllProcesses?: Maybe<Array<Maybe<Process>>>;
+  getAllProcesses?: Maybe<ProcessPage>;
+  getAllRecruitersForOrganization?: Maybe<Array<Maybe<Recruiter>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
@@ -409,6 +446,16 @@ export type QueryGetAllCandidatesByJobListingIdArgs = {
 
 export type QueryGetAllJobListingsArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllProcessesArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllRecruitersForOrganizationArgs = {
+  organizationId: Scalars['ID'];
 };
 
 
@@ -624,7 +671,7 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, process?: { __typename?: 'Process', id: string } | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -678,7 +725,7 @@ export type GetOrganizationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } | null };
+export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -694,19 +741,26 @@ export type GetMyApplicationForJobListingQueryVariables = Exact<{
 
 export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
 
-export type GetAllCandidatesByJobListingIdQueryVariables = Exact<{
-  JobListingId: Scalars['ID'];
-}>;
-
-
-export type GetAllCandidatesByJobListingIdQuery = { __typename?: 'Query', getAllCandidatesByJobListingId?: { __typename?: 'CandidatePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Candidate', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null } } } | null> | null } | null };
-
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
 
 
-export type GetAllApplicationsQuery = { __typename?: 'Query', getAllApplications?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string } } } | null> | null } | null };
+export type GetAllApplicationsQuery = { __typename?: 'Query', getAllApplications?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, step: { __typename?: 'Step', id: string, title: string } } } | null> | null } | null> | null } | null };
+
+export type GetAllProcessesQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
+
+
+export type GetAllProcessesQuery = { __typename?: 'Query', getAllProcesses?: { __typename?: 'ProcessPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Process', id: string, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: string, status: Status, order: number, step: { __typename?: 'Step', id: string, title: string } } | null> | null } | null> | null } | null };
+
+export type GetAllRecruitersForOrganizationQueryVariables = Exact<{
+  organizationId: Scalars['ID'];
+}>;
+
+
+export type GetAllRecruitersForOrganizationQuery = { __typename?: 'Query', getAllRecruitersForOrganization?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -735,6 +789,9 @@ export const useUpdateUserProfileMutation = <
       (variables?: UpdateUserProfileMutationVariables) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers)(),
       options
     );
+useUpdateUserProfileMutation.getKey = () => ['UpdateUserProfile'];
+
+useUpdateUserProfileMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers);
 export const AddUserProfileExperienceDocument = `
     mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
   addUserProfileExperience(ExperienceInput: $ExperienceInput) {
@@ -765,6 +822,9 @@ export const useAddUserProfileExperienceMutation = <
       (variables?: AddUserProfileExperienceMutationVariables) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers)(),
       options
     );
+useAddUserProfileExperienceMutation.getKey = () => ['AddUserProfileExperience'];
+
+useAddUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: AddUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers);
 export const UpdateUserProfileExperienceDocument = `
     mutation UpdateUserProfileExperience($ExperienceInput: ExperienceInput!) {
   updateUserProfileExperience(ExperienceInput: $ExperienceInput) {
@@ -795,6 +855,9 @@ export const useUpdateUserProfileExperienceMutation = <
       (variables?: UpdateUserProfileExperienceMutationVariables) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers)(),
       options
     );
+useUpdateUserProfileExperienceMutation.getKey = () => ['UpdateUserProfileExperience'];
+
+useUpdateUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers);
 export const AddUserProfileStudyDocument = `
     mutation AddUserProfileStudy($StudyInput: StudyInput!) {
   addUserProfileStudy(StudyInput: $StudyInput) {
@@ -820,6 +883,9 @@ export const useAddUserProfileStudyMutation = <
       (variables?: AddUserProfileStudyMutationVariables) => fetcher<AddUserProfileStudyMutation, AddUserProfileStudyMutationVariables>(client, AddUserProfileStudyDocument, variables, headers)(),
       options
     );
+useAddUserProfileStudyMutation.getKey = () => ['AddUserProfileStudy'];
+
+useAddUserProfileStudyMutation.fetcher = (client: GraphQLClient, variables: AddUserProfileStudyMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUserProfileStudyMutation, AddUserProfileStudyMutationVariables>(client, AddUserProfileStudyDocument, variables, headers);
 export const UpdateUserProfileStudyDocument = `
     mutation UpdateUserProfileStudy($StudyInput: StudyInput!) {
   updateUserProfileStudy(StudyInput: $StudyInput) {
@@ -845,6 +911,9 @@ export const useUpdateUserProfileStudyMutation = <
       (variables?: UpdateUserProfileStudyMutationVariables) => fetcher<UpdateUserProfileStudyMutation, UpdateUserProfileStudyMutationVariables>(client, UpdateUserProfileStudyDocument, variables, headers)(),
       options
     );
+useUpdateUserProfileStudyMutation.getKey = () => ['UpdateUserProfileStudy'];
+
+useUpdateUserProfileStudyMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileStudyMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileStudyMutation, UpdateUserProfileStudyMutationVariables>(client, UpdateUserProfileStudyDocument, variables, headers);
 export const AddInstitutionDocument = `
     mutation AddInstitution($InstitutionInput: InstitutionInput!) {
   addInstitution(InstitutionInput: $InstitutionInput) {
@@ -868,6 +937,9 @@ export const useAddInstitutionMutation = <
       (variables?: AddInstitutionMutationVariables) => fetcher<AddInstitutionMutation, AddInstitutionMutationVariables>(client, AddInstitutionDocument, variables, headers)(),
       options
     );
+useAddInstitutionMutation.getKey = () => ['AddInstitution'];
+
+useAddInstitutionMutation.fetcher = (client: GraphQLClient, variables: AddInstitutionMutationVariables, headers?: RequestInit['headers']) => fetcher<AddInstitutionMutation, AddInstitutionMutationVariables>(client, AddInstitutionDocument, variables, headers);
 export const AddDomainDocument = `
     mutation AddDomain($DomainInput: DomainInput!) {
   addDomain(DomainInput: $DomainInput) {
@@ -889,6 +961,9 @@ export const useAddDomainMutation = <
       (variables?: AddDomainMutationVariables) => fetcher<AddDomainMutation, AddDomainMutationVariables>(client, AddDomainDocument, variables, headers)(),
       options
     );
+useAddDomainMutation.getKey = () => ['AddDomain'];
+
+useAddDomainMutation.fetcher = (client: GraphQLClient, variables: AddDomainMutationVariables, headers?: RequestInit['headers']) => fetcher<AddDomainMutation, AddDomainMutationVariables>(client, AddDomainDocument, variables, headers);
 export const AddCertificationDocument = `
     mutation AddCertification($CertificationInput: CertificationInput!) {
   addCertification(CertificationInput: $CertificationInput) {
@@ -910,6 +985,9 @@ export const useAddCertificationMutation = <
       (variables?: AddCertificationMutationVariables) => fetcher<AddCertificationMutation, AddCertificationMutationVariables>(client, AddCertificationDocument, variables, headers)(),
       options
     );
+useAddCertificationMutation.getKey = () => ['AddCertification'];
+
+useAddCertificationMutation.fetcher = (client: GraphQLClient, variables: AddCertificationMutationVariables, headers?: RequestInit['headers']) => fetcher<AddCertificationMutation, AddCertificationMutationVariables>(client, AddCertificationDocument, variables, headers);
 export const PublishJobListingDocument = `
     mutation PublishJobListing($JobListingInput: JobListingInput!) {
   publishJobListing(JobListingInput: $JobListingInput) {
@@ -932,6 +1010,9 @@ export const usePublishJobListingMutation = <
       (variables?: PublishJobListingMutationVariables) => fetcher<PublishJobListingMutation, PublishJobListingMutationVariables>(client, PublishJobListingDocument, variables, headers)(),
       options
     );
+usePublishJobListingMutation.getKey = () => ['PublishJobListing'];
+
+usePublishJobListingMutation.fetcher = (client: GraphQLClient, variables: PublishJobListingMutationVariables, headers?: RequestInit['headers']) => fetcher<PublishJobListingMutation, PublishJobListingMutationVariables>(client, PublishJobListingDocument, variables, headers);
 export const AddJobCategoryDocument = `
     mutation AddJobCategory($JobCategoryInput: JobCategoryInput!) {
   addJobCategory(JobCategoryInput: $JobCategoryInput) {
@@ -953,6 +1034,9 @@ export const useAddJobCategoryMutation = <
       (variables?: AddJobCategoryMutationVariables) => fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(client, AddJobCategoryDocument, variables, headers)(),
       options
     );
+useAddJobCategoryMutation.getKey = () => ['AddJobCategory'];
+
+useAddJobCategoryMutation.fetcher = (client: GraphQLClient, variables: AddJobCategoryMutationVariables, headers?: RequestInit['headers']) => fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(client, AddJobCategoryDocument, variables, headers);
 export const ApplyToJobListingDocument = `
     mutation ApplyToJobListing($ApplicationInput: ApplicationInput!) {
   applyToJobListing(ApplicationInput: $ApplicationInput) {
@@ -974,6 +1058,9 @@ export const useApplyToJobListingMutation = <
       (variables?: ApplyToJobListingMutationVariables) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers)(),
       options
     );
+useApplyToJobListingMutation.getKey = () => ['ApplyToJobListing'];
+
+useApplyToJobListingMutation.fetcher = (client: GraphQLClient, variables: ApplyToJobListingMutationVariables, headers?: RequestInit['headers']) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -1005,6 +1092,7 @@ export const GetAllJobListingsDocument = `
         industry
         location
         photography
+        description
       }
       category {
         id
@@ -1013,6 +1101,24 @@ export const GetAllJobListingsDocument = `
       applications {
         id
         dateOfApplication
+      }
+      process {
+        id
+      }
+      recruiter {
+        id
+        user {
+          id
+          firstName
+          lastName
+          username
+          userProfile {
+            id
+            profileSlugUrl
+            photography
+            profileTitle
+          }
+        }
       }
     }
     page
@@ -1035,6 +1141,13 @@ export const useGetAllJobListingsQuery = <
       fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers),
       options
     );
+useGetAllJobListingsQuery.document = GetAllJobListingsDocument;
+
+
+useGetAllJobListingsQuery.getKey = (variables?: GetAllJobListingsQueryVariables) => variables === undefined ? ['GetAllJobListings'] : ['GetAllJobListings', variables];
+;
+
+useGetAllJobListingsQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobListingsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers);
 export const GetUserProfileDocument = `
     query GetUserProfile($profileSlugUrl: String) {
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
@@ -1122,6 +1235,13 @@ export const useGetUserProfileQuery = <
       fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, variables, headers),
       options
     );
+useGetUserProfileQuery.document = GetUserProfileDocument;
+
+
+useGetUserProfileQuery.getKey = (variables?: GetUserProfileQueryVariables) => variables === undefined ? ['GetUserProfile'] : ['GetUserProfile', variables];
+;
+
+useGetUserProfileQuery.fetcher = (client: GraphQLClient, variables?: GetUserProfileQueryVariables, headers?: RequestInit['headers']) => fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, variables, headers);
 export const GetCountriesCitiesDocument = `
     query GetCountriesCities {
   getCountriesCities {
@@ -1148,6 +1268,13 @@ export const useGetCountriesCitiesQuery = <
       fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers),
       options
     );
+useGetCountriesCitiesQuery.document = GetCountriesCitiesDocument;
+
+
+useGetCountriesCitiesQuery.getKey = (variables?: GetCountriesCitiesQueryVariables) => variables === undefined ? ['GetCountriesCities'] : ['GetCountriesCities', variables];
+;
+
+useGetCountriesCitiesQuery.fetcher = (client: GraphQLClient, variables?: GetCountriesCitiesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers);
 export const GetAllOrganizationsDocument = `
     query getAllOrganizations {
   getAllOrganizations {
@@ -1173,6 +1300,13 @@ export const useGetAllOrganizationsQuery = <
       fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, variables, headers),
       options
     );
+useGetAllOrganizationsQuery.document = GetAllOrganizationsDocument;
+
+
+useGetAllOrganizationsQuery.getKey = (variables?: GetAllOrganizationsQueryVariables) => variables === undefined ? ['getAllOrganizations'] : ['getAllOrganizations', variables];
+;
+
+useGetAllOrganizationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllOrganizationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, variables, headers);
 export const GetAllActivitySectorsDocument = `
     query getAllActivitySectors {
   getAllActivitySectors {
@@ -1195,6 +1329,13 @@ export const useGetAllActivitySectorsQuery = <
       fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers),
       options
     );
+useGetAllActivitySectorsQuery.document = GetAllActivitySectorsDocument;
+
+
+useGetAllActivitySectorsQuery.getKey = (variables?: GetAllActivitySectorsQueryVariables) => variables === undefined ? ['getAllActivitySectors'] : ['getAllActivitySectors', variables];
+;
+
+useGetAllActivitySectorsQuery.fetcher = (client: GraphQLClient, variables?: GetAllActivitySectorsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers);
 export const GetAllInstitutionsDocument = `
     query getAllInstitutions {
   getAllInstitutions {
@@ -1219,6 +1360,13 @@ export const useGetAllInstitutionsQuery = <
       fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, variables, headers),
       options
     );
+useGetAllInstitutionsQuery.document = GetAllInstitutionsDocument;
+
+
+useGetAllInstitutionsQuery.getKey = (variables?: GetAllInstitutionsQueryVariables) => variables === undefined ? ['getAllInstitutions'] : ['getAllInstitutions', variables];
+;
+
+useGetAllInstitutionsQuery.fetcher = (client: GraphQLClient, variables?: GetAllInstitutionsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, variables, headers);
 export const GetAllDomainsDocument = `
     query getAllDomains {
   getAllDomains {
@@ -1241,6 +1389,13 @@ export const useGetAllDomainsQuery = <
       fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, variables, headers),
       options
     );
+useGetAllDomainsQuery.document = GetAllDomainsDocument;
+
+
+useGetAllDomainsQuery.getKey = (variables?: GetAllDomainsQueryVariables) => variables === undefined ? ['getAllDomains'] : ['getAllDomains', variables];
+;
+
+useGetAllDomainsQuery.fetcher = (client: GraphQLClient, variables?: GetAllDomainsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, variables, headers);
 export const GetAllCertificationsDocument = `
     query getAllCertifications {
   getAllCertifications {
@@ -1263,6 +1418,13 @@ export const useGetAllCertificationsQuery = <
       fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, variables, headers),
       options
     );
+useGetAllCertificationsQuery.document = GetAllCertificationsDocument;
+
+
+useGetAllCertificationsQuery.getKey = (variables?: GetAllCertificationsQueryVariables) => variables === undefined ? ['getAllCertifications'] : ['getAllCertifications', variables];
+;
+
+useGetAllCertificationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllCertificationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, variables, headers);
 export const GetAllJobCategoriesDocument = `
     query getAllJobCategories {
   getAllJobCategories {
@@ -1285,6 +1447,13 @@ export const useGetAllJobCategoriesQuery = <
       fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(client, GetAllJobCategoriesDocument, variables, headers),
       options
     );
+useGetAllJobCategoriesQuery.document = GetAllJobCategoriesDocument;
+
+
+useGetAllJobCategoriesQuery.getKey = (variables?: GetAllJobCategoriesQueryVariables) => variables === undefined ? ['getAllJobCategories'] : ['getAllJobCategories', variables];
+;
+
+useGetAllJobCategoriesQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobCategoriesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(client, GetAllJobCategoriesDocument, variables, headers);
 export const GetAllJobsDocument = `
     query getAllJobs {
   getAllJobs {
@@ -1308,6 +1477,13 @@ export const useGetAllJobsQuery = <
       fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, variables, headers),
       options
     );
+useGetAllJobsQuery.document = GetAllJobsDocument;
+
+
+useGetAllJobsQuery.getKey = (variables?: GetAllJobsQueryVariables) => variables === undefined ? ['getAllJobs'] : ['getAllJobs', variables];
+;
+
+useGetAllJobsQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, variables, headers);
 export const GetOrganizationByIdDocument = `
     query GetOrganizationById($organizationId: ID!) {
   getOrganizationById(organizationId: $organizationId) {
@@ -1316,6 +1492,7 @@ export const GetOrganizationByIdDocument = `
     industry
     location
     photography
+    description
   }
 }
     `;
@@ -1333,6 +1510,13 @@ export const useGetOrganizationByIdQuery = <
       fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers),
       options
     );
+useGetOrganizationByIdQuery.document = GetOrganizationByIdDocument;
+
+
+useGetOrganizationByIdQuery.getKey = (variables: GetOrganizationByIdQueryVariables) => ['GetOrganizationById', variables];
+;
+
+useGetOrganizationByIdQuery.fetcher = (client: GraphQLClient, variables: GetOrganizationByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers);
 export const GetRelatedJobListingsDocument = `
     query GetRelatedJobListings($jobName: String!) {
   getRelatedJobListings(jobName: $jobName) {
@@ -1374,6 +1558,13 @@ export const useGetRelatedJobListingsQuery = <
       fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
     );
+useGetRelatedJobListingsQuery.document = GetRelatedJobListingsDocument;
+
+
+useGetRelatedJobListingsQuery.getKey = (variables: GetRelatedJobListingsQueryVariables) => ['GetRelatedJobListings', variables];
+;
+
+useGetRelatedJobListingsQuery.fetcher = (client: GraphQLClient, variables: GetRelatedJobListingsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers);
 export const GetMyApplicationForJobListingDocument = `
     query GetMyApplicationForJobListing($JobListingId: ID!) {
   getMyApplicationForJobListing(JobListingId: $JobListingId) {
@@ -1396,43 +1587,13 @@ export const useGetMyApplicationForJobListingQuery = <
       fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers),
       options
     );
-export const GetAllCandidatesByJobListingIdDocument = `
-    query GetAllCandidatesByJobListingId($JobListingId: ID!) {
-  getAllCandidatesByJobListingId(JobListingId: $JobListingId) {
-    list {
-      id
-      user {
-        firstName
-        lastName
-        username
-        userProfile {
-          id
-          profileSlugUrl
-          profileTitle
-          photography
-        }
-      }
-    }
-    page
-    totalPages
-    totalElements
-  }
-}
-    `;
-export const useGetAllCandidatesByJobListingIdQuery = <
-      TData = GetAllCandidatesByJobListingIdQuery,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables: GetAllCandidatesByJobListingIdQueryVariables,
-      options?: UseQueryOptions<GetAllCandidatesByJobListingIdQuery, TError, TData>,
-      headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllCandidatesByJobListingIdQuery, TError, TData>(
-      ['GetAllCandidatesByJobListingId', variables],
-      fetcher<GetAllCandidatesByJobListingIdQuery, GetAllCandidatesByJobListingIdQueryVariables>(client, GetAllCandidatesByJobListingIdDocument, variables, headers),
-      options
-    );
+useGetMyApplicationForJobListingQuery.document = GetMyApplicationForJobListingDocument;
+
+
+useGetMyApplicationForJobListingQuery.getKey = (variables: GetMyApplicationForJobListingQueryVariables) => ['GetMyApplicationForJobListing', variables];
+;
+
+useGetMyApplicationForJobListingQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationForJobListingQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers);
 export const GetAllApplicationsDocument = `
     query GetAllApplications($searchQuery: SearchQueryInput) {
   getAllApplications(searchQuery: $searchQuery) {
@@ -1450,7 +1611,19 @@ export const GetAllApplicationsDocument = `
           firstName
           lastName
           username
+          birthDate
+          email
         }
+      }
+      processSteps {
+        processStep {
+          id
+          step {
+            id
+            title
+          }
+        }
+        registeredAt
       }
     }
     page
@@ -1473,6 +1646,94 @@ export const useGetAllApplicationsQuery = <
       fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, variables, headers),
       options
     );
+useGetAllApplicationsQuery.document = GetAllApplicationsDocument;
+
+
+useGetAllApplicationsQuery.getKey = (variables?: GetAllApplicationsQueryVariables) => variables === undefined ? ['GetAllApplications'] : ['GetAllApplications', variables];
+;
+
+useGetAllApplicationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllApplicationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, variables, headers);
+export const GetAllProcessesDocument = `
+    query GetAllProcesses($searchQuery: SearchQueryInput) {
+  getAllProcesses(searchQuery: $searchQuery) {
+    list {
+      id
+      name
+      description
+      processSteps {
+        id
+        status
+        step {
+          id
+          title
+        }
+        order
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllProcessesQuery = <
+      TData = GetAllProcessesQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllProcessesQueryVariables,
+      options?: UseQueryOptions<GetAllProcessesQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllProcessesQuery, TError, TData>(
+      variables === undefined ? ['GetAllProcesses'] : ['GetAllProcesses', variables],
+      fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, variables, headers),
+      options
+    );
+useGetAllProcessesQuery.document = GetAllProcessesDocument;
+
+
+useGetAllProcessesQuery.getKey = (variables?: GetAllProcessesQueryVariables) => variables === undefined ? ['GetAllProcesses'] : ['GetAllProcesses', variables];
+;
+
+useGetAllProcessesQuery.fetcher = (client: GraphQLClient, variables?: GetAllProcessesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, variables, headers);
+export const GetAllRecruitersForOrganizationDocument = `
+    query GetAllRecruitersForOrganization($organizationId: ID!) {
+  getAllRecruitersForOrganization(organizationId: $organizationId) {
+    id
+    user {
+      firstName
+      lastName
+      username
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+  }
+}
+    `;
+export const useGetAllRecruitersForOrganizationQuery = <
+      TData = GetAllRecruitersForOrganizationQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetAllRecruitersForOrganizationQueryVariables,
+      options?: UseQueryOptions<GetAllRecruitersForOrganizationQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllRecruitersForOrganizationQuery, TError, TData>(
+      ['GetAllRecruitersForOrganization', variables],
+      fetcher<GetAllRecruitersForOrganizationQuery, GetAllRecruitersForOrganizationQueryVariables>(client, GetAllRecruitersForOrganizationDocument, variables, headers),
+      options
+    );
+useGetAllRecruitersForOrganizationQuery.document = GetAllRecruitersForOrganizationDocument;
+
+
+useGetAllRecruitersForOrganizationQuery.getKey = (variables: GetAllRecruitersForOrganizationQueryVariables) => ['GetAllRecruitersForOrganization', variables];
+;
+
+useGetAllRecruitersForOrganizationQuery.fetcher = (client: GraphQLClient, variables: GetAllRecruitersForOrganizationQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllRecruitersForOrganizationQuery, GetAllRecruitersForOrganizationQueryVariables>(client, GetAllRecruitersForOrganizationDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -1564,6 +1825,7 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     location: z.string().min(3),
     numberOfVacancies: z.number().min(1),
     organizationId: z.string().min(1),
+    recruiterId: z.string().min(1),
     title: z.string().min(5)
   })
 }

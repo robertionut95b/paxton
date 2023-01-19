@@ -52,6 +52,13 @@ export default function AppProviders({
           headings: {
             fontFamily: "Roboto, sans-serif",
           },
+          components: {
+            Container: {
+              defaultProps: {
+                size: "lg",
+              },
+            },
+          },
         }}
         emotionCache={createEmotionCache({
           key: "mantine",

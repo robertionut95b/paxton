@@ -53,4 +53,7 @@ public class JobListingInput implements Serializable {
     @NotEmpty
     @NotBlank
     private String description;
+
+    @NotNull
+    private Long recruiterId;
 }

@@ -12,7 +12,10 @@ import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
+import com.irb.paxton.core.organization.Recruiter;
+import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,10 @@ public abstract class JobListingMapper {
     @Autowired
     private JobCategoryRepository jobCategoryRepository;
 
+    @Autowired
+    private RecruiterRepository recruiterRepository;
+
+    @Mapping(target = "recruiter", source = "jobListingInput.recruiterId")
     @Mapping(target = "organization", source = "jobListingInput.organizationId")
     @Mapping(target = "job", source = "jobListingInput.jobId")
     @Mapping(target = "city", source = "jobListingInput.location")
@@ -63,5 +70,10 @@ public abstract class JobListingMapper {
     public Job mapJob(Long jobId) {
         return jobService.findById(jobId)
                 .orElseThrow(() -> new JobNotExistsException(String.format("Job by id %d does not exist", jobId), "jobId"));
+    }
+
+    public Recruiter mapRecruiter(Long recruiterId) {
+        return recruiterRepository.findById(recruiterId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User by id %d does not exist", recruiterId)));
     }
 }

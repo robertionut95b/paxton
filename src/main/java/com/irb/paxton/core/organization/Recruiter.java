@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -36,6 +35,5 @@ public class Recruiter extends PaxtonEntity<Long> {
     @NotNull
     private boolean isActive = true;
 
-    @Nullable
     private LocalDateTime lastActive;
 }

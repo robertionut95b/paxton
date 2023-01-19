@@ -6,6 +6,7 @@ import com.irb.paxton.core.jobs.contract.ContractType;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.organization.Organization;
+import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.process.Process;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,9 +25,7 @@ import java.util.Collection;
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_JOB_LISTING", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"job_id", "organization_id", "process_id"})
-})
+@Table(name = TABLE_PREFIX + "_JOB_LISTING")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -87,6 +86,10 @@ public class JobListing extends PaxtonEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "process_id")
     private Process process;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "recruiter_id")
+    private Recruiter recruiter;
 
     @PostLoad
     private void postLoad() {

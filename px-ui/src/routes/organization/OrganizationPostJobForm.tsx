@@ -1,6 +1,7 @@
 import { SelectItem } from "@components/select-items/SelectItem";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import {
   ContractType,
   FieldType,
@@ -10,6 +11,7 @@ import {
   useGetAllJobListingsQuery,
   useGetAllJobsQuery,
   useGetAllOrganizationsQuery,
+  useGetAllRecruitersForOrganizationQuery,
   useGetCountriesCitiesQuery,
   usePublishJobListingMutation,
 } from "@gql/generated";
@@ -22,6 +24,7 @@ import {
   CubeIcon,
   LifebuoyIcon,
   MapPinIcon,
+  UserIcon,
   UsersIcon,
   WrenchIcon,
 } from "@heroicons/react/24/outline";
@@ -95,6 +98,17 @@ export default function OrganizationPostJobForm() {
   const { data: jobs, isLoading: isJobsLoading } =
     useGetAllJobsQuery(graphqlRequestClient);
 
+  const { data: recruitersData, isLoading: isRecruitersLoading } =
+    useGetAllRecruitersForOrganizationQuery(
+      graphqlRequestClient,
+      {
+        organizationId: organizationId as string,
+      },
+      {
+        enabled: !!organizationId,
+      }
+    );
+
   const [jobCategories, setJobCategories] = useState<
     { label?: string; value?: string }[]
   >(
@@ -122,8 +136,8 @@ export default function OrganizationPostJobForm() {
       label: jobCategory.addJobCategory?.name as string,
     };
     setJobCategories((prev) => [...prev, item]);
-    setSelectedJobCategory(item.value as string);
-    form.setFieldValue("categoryId", item.value as string);
+    setSelectedJobCategory(item.value);
+    form.setFieldValue("categoryId", item.value);
     return item;
   };
 
@@ -175,6 +189,7 @@ export default function OrganizationPostJobForm() {
       contractType: jobListingItem?.contractType ?? ContractType["FullTime"],
       organizationId: organizationId,
       categoryId: jobListingItem?.category?.id ?? "",
+      recruiterId: jobListingItem?.recruiter?.id ?? "",
     },
     validate: zodResolver(FormJobListingSchema),
   });
@@ -228,7 +243,7 @@ export default function OrganizationPostJobForm() {
           description="Fill in a job description for this listing"
           mt="md"
           withAsterisk
-          minRows={9}
+          minRows={6}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
           value={desc}
@@ -246,6 +261,31 @@ export default function OrganizationPostJobForm() {
             {desc.length}/2.000
           </Text>
         </Group>
+        <ShowIfElse
+          if={!isJobCategoriesLoading || isAddJobCategoryLoading}
+          else={<Loader mt="md" size="sm" variant="dots" />}
+        >
+          <Select
+            label="Category"
+            description="The category of this job"
+            mt="md"
+            withAsterisk
+            creatable
+            searchable
+            getCreateLabel={(query) => `+ Create ${query}`}
+            // @ts-expect-error(types-error)
+            onCreate={(query) => createJobCategoryCb(query)}
+            // @ts-expect-error(types-error)
+            data={jobCategories}
+            icon={<LifebuoyIcon width={18} />}
+            {...form.getInputProps("categoryId")}
+            value={selectedJobCategory}
+            onChange={(val) => {
+              setSelectedJobCategory(val);
+              form.setFieldValue("categoryId", val as string);
+            }}
+          />
+        </ShowIfElse>
         <DatePicker
           withAsterisk
           mt="md"
@@ -314,6 +354,7 @@ export default function OrganizationPostJobForm() {
           placeholder="The number of occupancy spots for this job listing"
           withAsterisk
           mt="md"
+          min={0}
           icon={<UsersIcon width={18} />}
           {...form.getInputProps("numberOfVacancies")}
         />
@@ -351,28 +392,30 @@ export default function OrganizationPostJobForm() {
           />
         </ShowIfElse>
         <ShowIfElse
-          if={!isJobCategoriesLoading || isAddJobCategoryLoading}
+          if={!isRecruitersLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
         >
           <Select
-            label="Category"
-            description="The category of this job"
+            label="Recruiter"
+            description="The recruiting person for this job publishing"
             mt="md"
             withAsterisk
-            creatable
-            searchable
-            getCreateLabel={(query) => `+ Create ${query}`}
-            // @ts-expect-error(types-error)
-            onCreate={(query) => createJobCategoryCb(query)}
-            // @ts-expect-error(types-error)
-            data={jobCategories}
-            icon={<LifebuoyIcon width={18} />}
-            {...form.getInputProps("categoryId")}
-            value={selectedJobCategory}
-            onChange={(val) => {
-              setSelectedJobCategory(val);
-              form.setFieldValue("categoryId", val as string);
-            }}
+            itemComponent={SelectItem}
+            data={(recruitersData?.getAllRecruitersForOrganization ?? [])?.map(
+              (r) => ({
+                label:
+                  r?.user.firstName && r.user.lastName
+                    ? `${r.user.firstName} ${r.user.lastName}`
+                    : r?.user.username,
+                value: r?.id as string,
+                description: r?.user.userProfile.profileTitle,
+                image:
+                  r?.user.userProfile.photography &&
+                  `${APP_API_BASE_URL}/${r.user.userProfile.photography}`,
+              })
+            )}
+            icon={<UserIcon width={18} />}
+            {...form.getInputProps("recruiterId")}
           />
         </ShowIfElse>
         <Button type="submit" fullWidth mt="xl">

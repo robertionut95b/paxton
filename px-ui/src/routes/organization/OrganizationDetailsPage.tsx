@@ -56,20 +56,8 @@ export default function OrganizationDetailsPage() {
         </Group>
         <Group>
           <ExpandableText>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non
-            ornare velit, sit amet ornare nunc. Nulla sit amet mattis ante. Cras
-            imperdiet rhoncus lectus eget egestas. Nulla at purus tristique,
-            scelerisque sapien a, pellentesque est. Aliquam molestie nunc
-            condimentum risus sodales pretium. Vestibulum rutrum neque sed elit
-            tincidunt hendrerit. Nam finibus urna eget mauris vestibulum, quis
-            sagittis risus tempus. Praesent pulvinar tortor faucibus commodo
-            vulputate. Ut maximus ipsum nec lacus facilisis tempor. Fusce
-            placerat justo efficitur massa condimentum, et feugiat turpis
-            aliquet. Maecenas id dictum dui. Praesent malesuada, nunc eget
-            convallis scelerisque, justo ex venenatis lorem, sed dignissim ante
-            magna id ligula. In ut lorem nec magna commodo porttitor. Sed
-            consectetur dui est, quis auctor enim finibus cursus. Quisque
-            sodales pulvinar dui vitae mattis.
+            {organizationItem?.description ??
+              "No description was provided for this organization"}
           </ExpandableText>
         </Group>
       </Container>

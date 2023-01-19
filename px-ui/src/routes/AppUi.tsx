@@ -9,7 +9,6 @@ import ProfileExperienceModal from "@components/user-profile/ProfileExperienceMo
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import JobDetailsPage from "./jobs/JobDetailsPage";
 
 const AccessDenied = lazy(() => import("./AccessDenied"));
 const ClientApp = lazy(() => import("./ClientApp"));
@@ -23,7 +22,7 @@ const JobsPage = lazy(() => import("./jobs/JobsPage"));
 const Login = lazy(() => import("./Login"));
 const NetworkPage = lazy(() => import("./NetworkPage"));
 const SignUp = lazy(() => import("./SignUp"));
-const RecruitmentPage = lazy(() => import("./user/RecruitmentPage"));
+const RecruitmentPage = lazy(() => import("./organization/RecruitmentPage"));
 const UserProfile = lazy(() => import("./user/UserProfile"));
 const OrganizationPostJobForm = lazy(
   () => import("./organization/OrganizationPostJobForm")
@@ -34,6 +33,13 @@ const OrganizationDetailsPage = lazy(
 );
 const MyOrganizationPage = lazy(() => import("./organization/MyOrganization"));
 const NotFoundPage = lazy(() => import("./NotFoundPage"));
+const JobDetailsPage = lazy(() => import("./jobs/JobDetailsPage"));
+const RecruitmentApplicationPage = lazy(
+  () => import("./organization/RecruitmentApplicationPage")
+);
+const RecruitmentCandidatesPage = lazy(
+  () => import("./organization/RecruitmentCandidatesPage")
+);
 
 export default function AppUI() {
   return (
@@ -109,14 +115,34 @@ export default function AppUI() {
                   </RequireRoles>
                 }
               />
-              <Route
-                path="recruitment"
-                element={
-                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
-                    <RecruitmentPage />
-                  </RequireRoles>
-                }
-              />
+              <Route path="recruitment/jobs">
+                <Route
+                  index
+                  element={
+                    <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                      <RecruitmentPage />
+                    </RequireRoles>
+                  }
+                />
+                <Route path=":jobId">
+                  <Route
+                    index
+                    element={
+                      <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                        <RecruitmentCandidatesPage />
+                      </RequireRoles>
+                    }
+                  />
+                  <Route
+                    path="applications/:applicationId"
+                    element={
+                      <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                        <RecruitmentApplicationPage />
+                      </RequireRoles>
+                    }
+                  />
+                </Route>
+              </Route>
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

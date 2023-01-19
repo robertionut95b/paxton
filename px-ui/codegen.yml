@@ -10,9 +10,14 @@ generates:
       - typescript-validation-schema
     config:
       fetcher: graphql-request
+      exposeDocument: true
+      exposeQueryKeys: true
+      exposeMutationKeys: true
+      exposeFetcher: true
       strictScalars: true
       scalars:
         Date: Date
+        DateTime: Date
       scalarSchemas:
         Date: z.date()
         Email: z.string().email()

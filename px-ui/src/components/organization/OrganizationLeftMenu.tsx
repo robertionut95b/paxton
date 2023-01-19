@@ -19,7 +19,7 @@ const links: MenuLinkProps[] = [
   {
     icon: <ClipboardDocumentCheckIcon width={18} />,
     text: "Recruitment",
-    to: "recruitment",
+    to: "recruitment/jobs",
     allowedRole: RoleType.ROLE_RECRUITER,
   },
   {

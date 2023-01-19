@@ -28,6 +28,7 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
         industry
         location
         photography
+        description
       }
       category {
         id
@@ -36,6 +37,24 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
       applications {
         id
         dateOfApplication
+      }
+      process {
+        id
+      }
+      recruiter {
+        id
+        user {
+          id
+          firstName
+          lastName
+          username
+          userProfile {
+            id
+            profileSlugUrl
+            photography
+            profileTitle
+          }
+        }
       }
     }
     page
@@ -189,6 +208,7 @@ query GetOrganizationById($organizationId: ID!) {
     industry
     location
     photography
+    description
   }
 }
 
@@ -241,11 +261,60 @@ query GetAllApplications($searchQuery: SearchQueryInput) {
           firstName
           lastName
           username
+          birthDate
+          email
         }
+      }
+      processSteps {
+        processStep {
+          id
+          step {
+            id
+            title
+          }
+        }
+        registeredAt
       }
     }
     page
     totalPages
     totalElements
+  }
+}
+
+query GetAllProcesses($searchQuery: SearchQueryInput) {
+  getAllProcesses(searchQuery: $searchQuery) {
+    list {
+      id
+      name
+      description
+      processSteps {
+        id
+        status
+        step {
+          id
+          title
+        }
+        order
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
+query GetAllRecruitersForOrganization($organizationId: ID!) {
+  getAllRecruitersForOrganization(organizationId: $organizationId) {
+    id
+    user {
+      firstName
+      lastName
+      username
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
   }
 }

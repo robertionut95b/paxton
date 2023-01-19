@@ -10,7 +10,7 @@ import {
 
 export default function AccessDenied() {
   return (
-    <Container p={0}>
+    <Container p={0} size="lg">
       <Paper shadow={"xs"} p="md" className="px-acess-denied">
         <Stack align="center" spacing={4}>
           <ActionIcon color={"red.8"} size={56}>

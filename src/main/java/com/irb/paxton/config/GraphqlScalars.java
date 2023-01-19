@@ -12,4 +12,9 @@ public class GraphqlScalars {
     public GraphQLScalarType Date() {
         return ExtendedScalars.Date;
     }
+
+    @Bean
+    public GraphQLScalarType DateTime() {
+        return ExtendedScalars.DateTime;
+    }
 }

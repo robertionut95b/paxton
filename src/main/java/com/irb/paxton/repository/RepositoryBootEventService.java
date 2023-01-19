@@ -169,7 +169,7 @@ public class RepositoryBootEventService {
     public void setupSampleOrganizationRepository() {
         log.info("Paxton : creating organization objects");
 
-        Organization paxtonOrg = new Organization("Paxton", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
+        Organization paxtonOrg = new Organization("Paxton", "This is the default application organization, used for testing.", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
         JobCategory itcJobCategory = new JobCategory("IT&C", null);
         ActivitySector itFinance = new ActivitySector("IT & Finance");
         this.activitySectorRepository.save(itFinance);
@@ -181,16 +181,16 @@ public class RepositoryBootEventService {
         this.jobRepository.save(softwareDeveloper);
 
         City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
+        User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
+        Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
 
         JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
-                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null);
+                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null, recruiter);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
         jobListingRepository.save(jobListingPaxtonSoftwareDev);
 
         // Define a basic process as template
-        User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
-        Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
         this.recruiterRepository.save(recruiter);
         Process paxtonProcess = new Process("Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
 

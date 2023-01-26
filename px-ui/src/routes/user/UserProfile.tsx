@@ -1,4 +1,3 @@
-import { RequirePermission } from "@auth/RequirePermission";
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
@@ -16,7 +15,7 @@ import { NavLink, Outlet, useParams } from "react-router-dom";
 
 export default function UserProfile() {
   const { profileSlug } = useParams();
-  const { user, isInRole } = useAuth();
+  const { user, isAuthorized } = useAuth();
 
   const { data, isLoading } = useGetUserProfileQuery(graphqlRequestClient, {
     profileSlugUrl: profileSlug,
@@ -45,7 +44,7 @@ export default function UserProfile() {
               <ProfileBanner
                 coverPhoto={coverPhoto}
                 editable={
-                  isCurrentUser || isInRole(RoleType.ROLE_ADMINISTRATOR)
+                  isCurrentUser || isAuthorized([RoleType.ROLE_ADMINISTRATOR])
                 }
               />
             </Group>
@@ -66,27 +65,26 @@ export default function UserProfile() {
                 username={userProfile.user?.username}
                 isEmailConfirmed={user?.isEmailConfirmed}
               />
-              <RequirePermission
-                returnValue="null"
-                permission={isCurrentUserCb}
-              >
-                <NavLink
-                  to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
-                >
-                  <Button rightIcon={<PencilIcon width={16} />} size="sm">
-                    Edit
-                  </Button>
-                </NavLink>
-              </RequirePermission>
+              <>
+                {isCurrentUserCb() && (
+                  <NavLink
+                    to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
+                  >
+                    <Button rightIcon={<PencilIcon width={16} />} size="sm">
+                      Edit
+                    </Button>
+                  </NavLink>
+                )}
+              </>
             </Group>
           </Paper>
           <UserResume
             userProfile={userProfile}
-            editable={isCurrentUser || isInRole(RoleType.ROLE_ADMINISTRATOR)}
+            editable={
+              isCurrentUser || isAuthorized([RoleType.ROLE_ADMINISTRATOR])
+            }
           />
-          <RequirePermission returnValue="null" permission={isCurrentUserCb}>
-            <Outlet />
-          </RequirePermission>
+          <>{isCurrentUserCb() && <Outlet />}</>
         </Stack>
       </Grid.Col>
       <Grid.Col span={12} sm={3}>

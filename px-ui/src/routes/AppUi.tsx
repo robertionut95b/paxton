@@ -1,6 +1,6 @@
+import IsAllowed from "@auth/IsAllowed";
 import RequireAuth from "@auth/RequireAuth";
 import RequireNonAuth from "@auth/RequireNonAuth";
-import { RequireRoles } from "@auth/RequireRoles";
 import RoleType from "@auth/RoleType";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
@@ -66,11 +66,9 @@ export default function AppUI() {
             <Route
               path="candidature"
               element={
-                <RequireRoles
-                  roles={[RoleType.ROLE_VIEWER, RoleType.ROLE_EVERYONE]}
-                >
+                <IsAllowed roles={[RoleType.ROLE_EVERYONE]}>
                   <></>
-                </RequireRoles>
+                </IsAllowed>
               }
             />
             <Route path="up/:profileSlug/" element={<UserProfile />}>
@@ -102,43 +100,43 @@ export default function AppUI() {
               <Route
                 path="jobs/publish-job/form"
                 element={
-                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                  <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
                     <OrganizationPostJobForm />
-                  </RequireRoles>
+                  </IsAllowed>
                 }
               />
               <Route
                 path="jobs/publish-job/form/:jobListingId/update"
                 element={
-                  <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                  <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
                     <OrganizationPostJobForm />
-                  </RequireRoles>
+                  </IsAllowed>
                 }
               />
               <Route path="recruitment/jobs">
                 <Route
                   index
                   element={
-                    <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                    <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
                       <RecruitmentPage />
-                    </RequireRoles>
+                    </IsAllowed>
                   }
                 />
                 <Route path=":jobId">
                   <Route
                     index
                     element={
-                      <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                      <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
                         <RecruitmentCandidatesPage />
-                      </RequireRoles>
+                      </IsAllowed>
                     }
                   />
                   <Route
                     path="applications/:applicationId"
                     element={
-                      <RequireRoles roles={RoleType.ROLE_RECRUITER}>
+                      <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
                         <RecruitmentApplicationPage />
-                      </RequireRoles>
+                      </IsAllowed>
                     }
                   />
                 </Route>

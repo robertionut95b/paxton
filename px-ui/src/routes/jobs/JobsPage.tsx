@@ -1,5 +1,3 @@
-import { RequireRoles } from "@auth/RequireRoles";
-import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import JobListings from "@components/jobs/JobListings";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
@@ -127,9 +125,7 @@ export default function JobsPage() {
   return (
     <Grid className="px-jobs-page">
       <Grid.Col sm={3} span={12}>
-        <RequireRoles roles={RoleType.ROLE_EVERYONE} returnValue="null">
-          <JobsLeftMenu />
-        </RequireRoles>
+        <JobsLeftMenu />
       </Grid.Col>
       <Grid.Col sm={6} span={12}>
         <Paper shadow="sm" p="md" className="px-jobs grid gap-8">

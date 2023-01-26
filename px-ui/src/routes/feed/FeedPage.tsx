@@ -66,9 +66,9 @@ export default function FeedPage() {
                     },
                   }}
                   src={
-                    upd && upd.getUserProfile
+                    upd && upd.getUserProfile && upd.getUserProfile.photography
                       ? `${APP_IMAGES_API_PATH}/150x100?f=${upd.getUserProfile.photography}`
-                      : null
+                      : undefined
                   }
                 >
                   {user?.firstName && user?.lastName
@@ -97,7 +97,10 @@ export default function FeedPage() {
                   <Avatar
                     radius="xl"
                     size="md"
-                    src={`${APP_IMAGES_API_PATH}/100x100?f=${upd.getUserProfile.photography}`}
+                    src={
+                      upd.getUserProfile.photography &&
+                      `${APP_IMAGES_API_PATH}/100x100?f=${upd.getUserProfile.photography}`
+                    }
                   >
                     {user?.firstName && user?.lastName
                       ? `${user.firstName[0]}${user.lastName[0]}`

@@ -3,6 +3,7 @@ package com.irb.paxton.core.jobs;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.jobs.worktype.WorkType;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.organization.Organization;
@@ -90,6 +91,10 @@ public class JobListing extends PaxtonEntity<Long> {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;
+
+    @Enumerated
+    @NotNull
+    private WorkType workType = WorkType.HYBRID;
 
     @PostLoad
     private void postLoad() {

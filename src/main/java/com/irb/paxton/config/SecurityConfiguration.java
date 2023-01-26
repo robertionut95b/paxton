@@ -61,7 +61,7 @@ public class SecurityConfiguration {
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String hierarchy = String.format("%s > %s > %s > %s", PaxtonRole.ROLE_ADMINISTRATOR.name(), PaxtonRole.ROLE_RECRUITER.name(), PaxtonRole.ROLE_READ_ONLY.name(), PaxtonRole.ROLE_EVERYONE.name());
+        String hierarchy = String.format("%s > %s > %s", PaxtonRole.ROLE_ADMINISTRATOR.name(), PaxtonRole.ROLE_RECRUITER.name(), PaxtonRole.ROLE_EVERYONE.name());
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
     }

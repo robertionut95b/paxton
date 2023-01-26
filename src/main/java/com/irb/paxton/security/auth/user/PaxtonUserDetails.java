@@ -1,11 +1,10 @@
 package com.irb.paxton.security.auth.user;
 
+import com.irb.paxton.security.auth.utils.AuthoritiesUtils;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public class PaxtonUserDetails extends User implements UserDetails {
 
@@ -15,9 +14,7 @@ public class PaxtonUserDetails extends User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+        return AuthoritiesUtils.getAuthorities(this.getRoles());
     }
 
     @Override

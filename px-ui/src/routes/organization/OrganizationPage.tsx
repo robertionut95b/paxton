@@ -1,4 +1,4 @@
-import { RequireRoles } from "@auth/RequireRoles";
+import IsAllowed from "@auth/IsAllowed";
 import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
@@ -35,7 +35,7 @@ const OrganizationToolbarSkeleton = () => (
 );
 
 export default function OrganizationPage() {
-  const { user, isInRole } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const { organizationId } = useParams();
   const { data: organization, isLoading: isLoadingOrganization } =
     useGetOrganizationByIdQuery(
@@ -64,18 +64,16 @@ export default function OrganizationPage() {
   return (
     <Stack className="px-organization">
       {organizationItem && (
-        <RequireRoles roles={RoleType.ROLE_RECRUITER} returnValue="null">
+        <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
           <Suspense fallback={<OrganizationToolbarSkeleton />}>
             <OrganizationToolbar organization={organizationItem} />
           </Suspense>
-        </RequireRoles>
+        </IsAllowed>
       )}
       <Grid>
         <Grid.Col sm={3} span={12}>
           <Suspense fallback={<OrganizationToolbarSkeleton />}>
-            <OrganizationLeftMenu
-              rolesToShow={(user?.permissions as RoleType[]) ?? []}
-            />
+            <OrganizationLeftMenu rolesToShow={user?.roles ?? []} />
           </Suspense>
         </Grid.Col>
         <Grid.Col sm={9} span={12}>
@@ -114,10 +112,10 @@ export default function OrganizationPage() {
                       operator: Operator.LessThanEqual,
                     },
                   ]}
-                  editableItems={
-                    isInRole(RoleType.ROLE_RECRUITER) ||
-                    isInRole(RoleType.ROLE_ADMINISTRATOR)
-                  }
+                  editableItems={isAuthorized([
+                    RoleType.ROLE_RECRUITER,
+                    RoleType.ROLE_ADMINISTRATOR,
+                  ])}
                 />
               </Tabs.Panel>
               <Tabs.Panel value="future" p={"xs"}>
@@ -136,10 +134,10 @@ export default function OrganizationPage() {
                       operator: Operator.GreaterThan,
                     },
                   ]}
-                  editableItems={
-                    isInRole(RoleType.ROLE_RECRUITER) ||
-                    isInRole(RoleType.ROLE_ADMINISTRATOR)
-                  }
+                  editableItems={isAuthorized([
+                    RoleType.ROLE_RECRUITER,
+                    RoleType.ROLE_ADMINISTRATOR,
+                  ])}
                 />
               </Tabs.Panel>
               <Tabs.Panel value="expired" p={"xs"}>
@@ -158,10 +156,10 @@ export default function OrganizationPage() {
                       operator: Operator.LessThan,
                     },
                   ]}
-                  editableItems={
-                    isInRole(RoleType.ROLE_RECRUITER) ||
-                    isInRole(RoleType.ROLE_ADMINISTRATOR)
-                  }
+                  editableItems={isAuthorized([
+                    RoleType.ROLE_RECRUITER,
+                    RoleType.ROLE_ADMINISTRATOR,
+                  ])}
                 />
               </Tabs.Panel>
             </Tabs>

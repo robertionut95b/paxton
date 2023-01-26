@@ -4,10 +4,8 @@ import { Avatar, Group, Paper, Title } from "@mantine/core";
 
 export default function JobOrganizationAboutCard({
   organization,
-  jobDescription,
 }: {
   organization: JobListing["organization"] | Organization;
-  jobDescription: string;
 }) {
   return (
     <Paper shadow={"xs"} p="md">

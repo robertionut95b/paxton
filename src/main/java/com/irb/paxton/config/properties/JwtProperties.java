@@ -30,4 +30,6 @@ public class JwtProperties {
 
     private String permissionsClaimName = "authorities";
 
+    private String rolesClaimName = "roles";
+
 }

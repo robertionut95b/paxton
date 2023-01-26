@@ -19,6 +19,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
@@ -113,5 +114,9 @@ public class User extends PaxtonEntity<Long> {
     public void updateCreatedModifiedBy() {
         this.setCreatedBy(this.getUsername());
         this.setModifiedBy(this.getUsername());
+    }
+
+    public String getUserRolesAsString() {
+        return getRoles().stream().map(Role::getName).collect(Collectors.joining(","));
     }
 }

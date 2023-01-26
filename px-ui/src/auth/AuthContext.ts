@@ -9,7 +9,10 @@ interface AuthContextType {
   signin: (credentials: LoginUserMutationProps, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
   loading: boolean;
-  isInRole: (role: RoleType) => boolean;
+  isAuthorized: (
+    roleNames?: RoleType[] | string[],
+    permissionsNames?: string[]
+  ) => boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

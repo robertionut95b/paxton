@@ -9,6 +9,7 @@ import com.irb.paxton.core.jobs.JobRepository;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.jobs.worktype.WorkType;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.Country;
@@ -42,7 +43,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -129,13 +129,11 @@ public class RepositoryBootEventService {
         Privilege writeAllPrivilege = this.privilegeService.createPrivilegeIfNotFound("WRITE_ALL_PRIVILEGE");
         List<Privilege> adminPrivileges = Arrays.asList(readAllPrivilege, writeAllPrivilege);
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_ADMINISTRATOR.toString(), adminPrivileges);
-        this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_READ_ONLY.toString(), Collections.singletonList(readAllPrivilege));
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_EVERYONE.toString(), null);
         this.roleService.createRoleIfNotFound(PaxtonRole.ROLE_RECRUITER.toString(), null);
 
         // define roles
         Role adminRole = this.roleService.findByName(PaxtonRole.ROLE_ADMINISTRATOR.toString());
-        Role userRole = this.roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString());
         Role everyOneRole = this.roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString());
         Role recruiterRole = this.roleService.findByName(PaxtonRole.ROLE_RECRUITER.toString());
 
@@ -154,7 +152,7 @@ public class RepositoryBootEventService {
         userService.registerNewUser(admin);
 
         // create read-only user
-        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", List.of(userRole, everyOneRole), null, true);
+        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", List.of(everyOneRole), null, true);
         Credentials userCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
         readOnly.setCredentials(userCredentials);
         userService.registerNewUser(readOnly);
@@ -170,28 +168,37 @@ public class RepositoryBootEventService {
         log.info("Paxton : creating organization objects");
 
         Organization paxtonOrg = new Organization("Paxton", "This is the default application organization, used for testing.", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
-        JobCategory itcJobCategory = new JobCategory("IT&C", null);
-        ActivitySector itFinance = new ActivitySector("IT & Finance");
-        this.activitySectorRepository.save(itFinance);
+        JobCategory itcJobCategory = new JobCategory("Information Technology & Communications", null);
+        JobCategory educationCategory = new JobCategory("Education", null);
+        JobCategory healthcareCategory = new JobCategory("Healthcare", null);
+        JobCategory lawCategory = new JobCategory("Law", null);
+        ActivitySector itFinance = new ActivitySector("Information Technology & Finance");
+        ActivitySector healthcare = new ActivitySector("Healthcare");
+        ActivitySector education = new ActivitySector("Education");
+        ActivitySector law = new ActivitySector("Law");
         this.organizationRepository.save(paxtonOrg);
-        this.jobCategoryRepository.save(itcJobCategory);
+        this.activitySectorRepository.saveAll(List.of(itFinance, healthcare, education, law));
+        this.jobCategoryRepository.saveAll(List.of(itcJobCategory, educationCategory, healthcareCategory, lawCategory));
 
         // define a job and job listing for Paxton organisation
         Job softwareDeveloper = new Job("Software Developer", "Developers are often natural problem solvers who possess strong analytical skills and the ability to think outside the box", null);
-        this.jobRepository.save(softwareDeveloper);
+        Job dataAnalyst = new Job("Data Analyst", "A data analyst is a person whose job is to gather and interpret data in order to solve a specific problem", null);
+        Job projectManager = new Job("Project Manager", "Project managers have the responsibility of the planning, procurement and execution of a project, in any undertaking that has a defined scope, defined start and a defined finish; regardless of industry", null);
+        this.jobRepository.saveAll(List.of(softwareDeveloper, dataAnalyst, projectManager));
 
         City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
         Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
 
         JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
-                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null, recruiter);
+                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null, recruiter, WorkType.HYBRID);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
         jobListingRepository.save(jobListingPaxtonSoftwareDev);
 
         // Define a basic process as template
         this.recruiterRepository.save(recruiter);
+        Process defaultProcess = new Process("Default recruitment process", "Default recruitment process for all organizations", null, null, null);
         Process paxtonProcess = new Process("Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
 
         // define steps
@@ -203,16 +210,18 @@ public class RepositoryBootEventService {
         Step conclusionStep = new Step(null, "Conclusion", "This is the final step of the process, which will end up with a reject or accept from the employee/employer");
         this.stepRepository.saveAll(List.of(applyStep, candidatureAnalysisStep, interviewStep, responseStep, offerNegotiationStep, conclusionStep));
         // link steps to process
-        ProcessSteps processStepsApply = new ProcessSteps(paxtonProcess, applyStep, Status.FINISHED, 1);
-        ProcessSteps processStepsAnalysis = new ProcessSteps(paxtonProcess, candidatureAnalysisStep, Status.FINISHED, 2);
-        ProcessSteps processStepsInterview = new ProcessSteps(paxtonProcess, interviewStep, Status.FINISHED, 3);
-        ProcessSteps processStepsResponse = new ProcessSteps(paxtonProcess, responseStep, Status.FINISHED, 4);
-        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(paxtonProcess, offerNegotiationStep, Status.FINISHED, 5);
-        ProcessSteps processStepsConclusion = new ProcessSteps(paxtonProcess, conclusionStep, Status.FINISHED, 6);
+        ProcessSteps processStepsApply = new ProcessSteps(paxtonProcess, applyStep, Status.ACTIVE, 1);
+        ProcessSteps processStepsAnalysis = new ProcessSteps(paxtonProcess, candidatureAnalysisStep, Status.ACTIVE, 2);
+        ProcessSteps processStepsInterview = new ProcessSteps(paxtonProcess, interviewStep, Status.ACTIVE, 3);
+        ProcessSteps processStepsResponse = new ProcessSteps(paxtonProcess, responseStep, Status.ACTIVE, 4);
+        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(paxtonProcess, offerNegotiationStep, Status.ACTIVE, 5);
+        ProcessSteps processStepsConclusion = new ProcessSteps(paxtonProcess, conclusionStep, Status.ACTIVE, 6);
         this.processStepsRepository.saveAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
 
         paxtonProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
+        defaultProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsConclusion));
         this.processRepository.save(paxtonProcess);
+        this.processRepository.save(defaultProcess);
         jobListingPaxtonSoftwareDev.setProcess(paxtonProcess);
     }
 

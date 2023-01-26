@@ -38,7 +38,7 @@ const AvatarMenu = ({
           src={src}
         >
           {user?.firstName && user.lastName
-            ? `${user.firstName[0]}${user.lastName[0]}`
+            ? `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`
             : user?.username?.[0].toUpperCase() ?? "U"}
         </Avatar>
       </Menu.Target>

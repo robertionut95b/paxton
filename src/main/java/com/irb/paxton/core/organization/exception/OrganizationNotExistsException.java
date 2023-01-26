@@ -4,12 +4,15 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class OrganizationNotExistsException extends RuntimeException implements GraphQLError {
 
     @Serial

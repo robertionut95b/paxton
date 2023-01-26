@@ -193,6 +193,7 @@ input JobListingInput {
     organizationId: ID! @constraint(minLength: 1)
     categoryId: ID! @constraint(minLength: 1)
     recruiterId: ID! @constraint(minLength: 1)
+    workType: WorkType!
 }
 
 type JobListing {
@@ -209,6 +210,7 @@ type JobListing {
     organization: Organization!
     category: JobCategory
     applications: [Application]
+    workType: WorkType!
     process: Process
     recruiter: Recruiter
 }
@@ -231,10 +233,9 @@ type Organization {
 }
 
 enum Status {
-    FINISHED,
-    STARTED,
-    DRAFT,
-    IN_PROGRESS
+    ACTIVE,
+    REMOVED,
+    DRAFT
 }
 
 type Step {
@@ -350,6 +351,12 @@ input UserProfileInput {
     city: String!
     profileTitle: String!
     profileSlugUrl: String!
+}
+
+enum WorkType {
+    REMOTE
+    ON_SITE
+    HYBRID
 }
 
 enum FieldType {

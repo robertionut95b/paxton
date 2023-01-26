@@ -70,7 +70,7 @@ public class UserService {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
         User returnUser = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
-                List.of(roleService.findByName(PaxtonRole.ROLE_READ_ONLY.toString()), roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
+                List.of(roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
                 new Credentials(CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         UserProfile userProfile = new UserProfile(returnUser, null, null, null, null,

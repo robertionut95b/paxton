@@ -13,8 +13,9 @@ import { User } from "@interfaces/user.types";
 import { api } from "@lib/axiosClient";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
+import { CheckUserHasRolesOrPermissions } from "@utils/security";
 import jwtDecode from "jwt-decode";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useEffectOnce, useInterval } from "usehooks-ts";
 import { AuthErrorMessages } from "./messages";
 
@@ -24,6 +25,9 @@ const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
     firstName: userDecode.firstName,
     lastName: userDecode.lastName,
     permissions: userDecode.authorities.split(","),
+    roles: userDecode.roles
+      .split(",")
+      .map((r) => RoleType[r as keyof typeof RoleType]),
     profileSlugUrl: userDecode.profileSlugUrl,
     sessionTime: userDecode.exp,
     username: userDecode.sub,
@@ -126,8 +130,25 @@ export default function AuthProvider({
 
   useEffectOnce(() => refreshLogin());
 
-  const isInRole = (role: RoleType) =>
-    (user?.permissions ?? []).some((p) => p === role);
+  const isAuthorized = useCallback(
+    (roleNames?: RoleType[] | string[], permissionNames?: string[]) => {
+      let hasAuthorization = false;
+
+      setLoading(true);
+      if (user) {
+        hasAuthorization = CheckUserHasRolesOrPermissions(
+          user,
+          roleNames,
+          permissionNames
+        );
+      }
+      setLoading(false);
+
+      return hasAuthorization;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const value = useMemo(
     () => ({
@@ -136,7 +157,7 @@ export default function AuthProvider({
       signout,
       loading: (!user || user === null) && loading,
       setUser,
-      isInRole,
+      isAuthorized,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]

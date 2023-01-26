@@ -1,12 +1,12 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
-import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobMeetRecruitersSection from "@components/jobs/job-page/JobMeetRecruitersSection";
 import JobOrganizationAboutCard from "@components/jobs/job-page/JobOrganizationAboutCard";
 import JobRelatedAlertSection from "@components/jobs/job-page/JobRelatedAlertSection";
 import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
+import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
@@ -28,7 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
-  const { user, isInRole } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const { jobId } = useParams();
   const queryClient = useQueryClient();
   const { data: jobData, isLoading } = useGetAllJobListingsQuery(
@@ -66,10 +66,8 @@ const JobDetailsPage = () => {
     },
     {
       enabled:
-        !(
-          isInRole(RoleType.ROLE_ADMINISTRATOR) ||
-          isInRole(RoleType.ROLE_RECRUITER)
-        ) && !!job?.id,
+        !isAuthorized([RoleType.ROLE_ADMINISTRATOR, RoleType.ROLE_RECRUITER]) &&
+        !!job?.id,
     }
   );
 
@@ -135,8 +133,10 @@ const JobDetailsPage = () => {
           applied={!!myApplication?.getMyApplicationForJobListing}
           isAllowedCandidature={
             (job.isActive ?? false) &&
-            !isInRole(RoleType.ROLE_ADMINISTRATOR) &&
-            !isInRole(RoleType.ROLE_RECRUITER)
+            !isAuthorized([
+              RoleType.ROLE_ADMINISTRATOR,
+              RoleType.ROLE_RECRUITER,
+            ])
           }
           submitCandidatureFn={submitCandidature}
           isCandidatureLoading={isApplyLoading}
@@ -150,10 +150,7 @@ const JobDetailsPage = () => {
           location={`${job.city.name}, ${job.city.country.name}`}
           isAlertAllowable
         />
-        <JobOrganizationAboutCard
-          organization={job.organization}
-          jobDescription={job.description}
-        />
+        <JobOrganizationAboutCard organization={job.organization} />
         <ShowIfElse
           if={relatedJobsIsLoading}
           else={

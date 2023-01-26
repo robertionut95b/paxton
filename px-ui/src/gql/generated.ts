@@ -236,6 +236,7 @@ export type JobListing = {
   process?: Maybe<Process>;
   recruiter?: Maybe<Recruiter>;
   title: Scalars['String'];
+  workType: WorkType;
 };
 
 export type JobListingInput = {
@@ -250,6 +251,7 @@ export type JobListingInput = {
   organizationId: Scalars['ID'];
   recruiterId: Scalars['ID'];
   title: Scalars['String'];
+  workType: WorkType;
 };
 
 export type JobListingPage = {
@@ -523,10 +525,9 @@ export type SortsInput = {
 };
 
 export enum Status {
+  Active = 'ACTIVE',
   Draft = 'DRAFT',
-  Finished = 'FINISHED',
-  InProgress = 'IN_PROGRESS',
-  Started = 'STARTED'
+  Removed = 'REMOVED'
 }
 
 export type Step = {
@@ -597,6 +598,12 @@ export type UserProfileInput = {
   profileSlugUrl: Scalars['String'];
   profileTitle: Scalars['String'];
 };
+
+export enum WorkType {
+  Hybrid = 'HYBRID',
+  OnSite = 'ON_SITE',
+  Remote = 'REMOTE'
+}
 
 export type UpdateUserProfileMutationVariables = Exact<{
   UserProfileInput: UserProfileInput;
@@ -680,7 +687,7 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, process?: { __typename?: 'Process', id: string } | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, process?: { __typename?: 'Process', id: string } | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -1136,6 +1143,7 @@ export const GetAllJobListingsDocument = `
           }
         }
       }
+      workType
     }
     page
     totalPages
@@ -1888,7 +1896,8 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     numberOfVacancies: z.number().min(1),
     organizationId: z.string().min(1),
     recruiterId: z.string().min(1),
-    title: z.string().min(5)
+    title: z.string().min(5),
+    workType: WorkTypeSchema
   })
 }
 
@@ -1939,3 +1948,5 @@ export function UserProfileInputSchema(): z.ZodObject<Properties<UserProfileInpu
     profileTitle: z.string()
   })
 }
+
+export const WorkTypeSchema = z.nativeEnum(WorkType);

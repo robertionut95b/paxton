@@ -42,6 +42,7 @@ const JobMainSection = ({
     contractType,
     availableTo,
     isActive,
+    workType,
   },
   applied = false,
   isAllowedCandidature = false,
@@ -84,8 +85,8 @@ const JobMainSection = ({
         </ShowIf>
       </Group>
       <Space h="md" />
-      <List size="sm" spacing={"xs"} mb="sm">
-        <List.Item icon={<CalendarDaysIcon width={16} />}>
+      <List size="sm" spacing={"xs"} mb="sm" center>
+        <List.Item icon={<CalendarDaysIcon width={18} />}>
           <Text size={"sm"}>
             <ShowIfElse
               if={isActive}
@@ -105,20 +106,20 @@ const JobMainSection = ({
             </ShowIfElse>
           </Text>
         </List.Item>
-        <List.Item icon={<MapIcon width={16} />}>
-          <Text size="sm">Remote/On-site work</Text>
+        <List.Item icon={<MapIcon width={18} />}>
+          <Text size="sm">{prettyEnumValue(workType)} work</Text>
         </List.Item>
-        <List.Item icon={<DocumentTextIcon width={16} />}>
+        <List.Item icon={<DocumentTextIcon width={18} />}>
           <Text size="sm">{prettyEnumValue(contractType)} contract</Text>
         </List.Item>
-        <List.Item icon={<BuildingOfficeIcon width={16} />}>
+        <List.Item icon={<BuildingOfficeIcon width={18} />}>
           <Text size="sm">{organization.industry} activity line</Text>
         </List.Item>
       </List>
       <ShowIfElse
         if={availableTo && isFuture(new Date(availableTo))}
         else={
-          <List.Item icon={<XMarkIcon width={16} color="red" />}>
+          <List.Item icon={<XMarkIcon width={18} color="red" />}>
             <Text color="red" size="sm">
               Candidature is no longer allowed for this job
             </Text>
@@ -132,7 +133,7 @@ const JobMainSection = ({
               else={
                 <Button
                   disabled
-                  leftIcon={<CheckCircleIcon width={16} />}
+                  leftIcon={<CheckCircleIcon width={18} />}
                   loading={isCandidatureLoading}
                 >
                   Candidature sent
@@ -141,12 +142,12 @@ const JobMainSection = ({
             >
               <Button
                 onClick={submitCandidatureFn}
-                leftIcon={<CheckCircleIcon width={16} />}
+                leftIcon={<CheckCircleIcon width={18} />}
               >
                 Apply
               </Button>
             </ShowIfElse>
-            <Button variant="light" leftIcon={<BookmarkIcon width={16} />}>
+            <Button variant="light" leftIcon={<BookmarkIcon width={18} />}>
               Save this job
             </Button>
           </Group>

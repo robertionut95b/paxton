@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 
 export default function MyOrganizationPage() {
-  const { user, isInRole } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const navigate = useNavigate();
   const { data, isLoading } = useGetRecruiterByIdQuery(
     graphqlRequestClient,
@@ -17,9 +17,9 @@ export default function MyOrganizationPage() {
       recruiterId: user?.userId as string,
     },
     {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         const organizationId = data.getRecruiterById?.organization.id;
-        if (organizationId && isInRole(RoleType.ROLE_RECRUITER)) {
+        if (organizationId && isAuthorized([RoleType.ROLE_RECRUITER])) {
           navigate(`/app/organizations/${organizationId}/`);
         }
       },
@@ -39,7 +39,7 @@ export default function MyOrganizationPage() {
     if (
       data &&
       data.getRecruiterById?.organization.id &&
-      isInRole(RoleType.ROLE_RECRUITER)
+      isAuthorized([RoleType.ROLE_RECRUITER])
     ) {
       const organizationId = data.getRecruiterById?.organization?.id;
       navigate(`/app/organizations/${organizationId}/`);

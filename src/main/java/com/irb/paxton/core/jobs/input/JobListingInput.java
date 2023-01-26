@@ -1,6 +1,7 @@
 package com.irb.paxton.core.jobs.input;
 
 import com.irb.paxton.core.jobs.contract.ContractType;
+import com.irb.paxton.core.jobs.worktype.WorkType;
 import lombok.Data;
 
 import javax.persistence.Enumerated;
@@ -56,4 +57,8 @@ public class JobListingInput implements Serializable {
 
     @NotNull
     private Long recruiterId;
+
+    @Enumerated
+    @NotNull
+    private WorkType workType;
 }

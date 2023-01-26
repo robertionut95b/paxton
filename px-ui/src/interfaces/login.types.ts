@@ -19,6 +19,7 @@ export interface AccessTokenDecode {
   aud: string;
   jti: string;
   authorities: string;
+  roles: string;
   userId: string;
   firstName: string;
   lastName: string;

@@ -1,9 +1,19 @@
-import { LoadingOverlay } from "@mantine/core";
+import { Loader, LoaderProps, LoadingOverlay } from "@mantine/core";
 
-export default function ApplicationSpinner() {
+type ApplicationSpinnerProps = {
+  variant?: LoaderProps["variant"];
+};
+
+export default function ApplicationSpinner({
+  variant = "dots",
+}: ApplicationSpinnerProps) {
   return (
     <div className="px-app-loading">
-      <LoadingOverlay visible={true} overlayBlur={2} />
+      <LoadingOverlay
+        visible={true}
+        overlayBlur={2}
+        loader={<Loader variant={variant} />}
+      />
     </div>
   );
 }

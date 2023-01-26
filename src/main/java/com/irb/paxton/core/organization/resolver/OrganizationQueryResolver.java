@@ -21,6 +21,6 @@ public class OrganizationQueryResolver implements GraphQLQueryResolver {
 
     public Organization getOrganizationById(Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization %s does not exist", organizationId)));
+                .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization %s does not exist", organizationId), "id"));
     }
 }

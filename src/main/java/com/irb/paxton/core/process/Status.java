@@ -1,8 +1,7 @@
 package com.irb.paxton.core.process;
 
 public enum Status {
-    FINISHED,
-    STARTED,
+    ACTIVE,
     DRAFT,
-    IN_PROGRESS
+    REMOVED
 }

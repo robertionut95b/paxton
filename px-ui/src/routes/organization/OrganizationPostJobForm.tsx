@@ -14,6 +14,7 @@ import {
   useGetAllRecruitersForOrganizationQuery,
   useGetCountriesCitiesQuery,
   usePublishJobListingMutation,
+  WorkType,
 } from "@gql/generated";
 import {
   BuildingOffice2Icon,
@@ -22,6 +23,7 @@ import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
   CubeIcon,
+  GlobeAltIcon,
   LifebuoyIcon,
   MapPinIcon,
   UserIcon,
@@ -37,8 +39,8 @@ import {
   NumberInput,
   Select,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
@@ -190,6 +192,7 @@ export default function OrganizationPostJobForm() {
       organizationId: organizationId,
       categoryId: jobListingItem?.category?.id ?? "",
       recruiterId: jobListingItem?.recruiter?.id ?? "",
+      workType: jobListingItem?.workType ?? WorkType.Hybrid,
     },
     validate: zodResolver(FormJobListingSchema),
   });
@@ -369,6 +372,18 @@ export default function OrganizationPostJobForm() {
             value: value,
           }))}
           {...form.getInputProps("contractType")}
+        />
+        <Select
+          label="Work type"
+          description="If the organization allows alternative choices for workplaces"
+          mt="md"
+          withAsterisk
+          icon={<GlobeAltIcon width={18} />}
+          data={(Object.entries(WorkType) ?? [])?.map(([, value]) => ({
+            label: prettyEnumValue(value),
+            value: value,
+          }))}
+          {...form.getInputProps("workType")}
         />
         <ShowIfElse
           if={!isOrganizationsLoading}

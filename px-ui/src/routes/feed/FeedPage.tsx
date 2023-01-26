@@ -72,7 +72,7 @@ export default function FeedPage() {
                   }
                 >
                   {user?.firstName && user?.lastName
-                    ? `${user.firstName[0]}${user.lastName[0]}`
+                    ? `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`
                     : user?.username[0].toUpperCase()}
                 </Avatar>
               </Center>

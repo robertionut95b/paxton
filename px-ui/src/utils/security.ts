@@ -22,6 +22,5 @@ export const CheckUserHasRolesOrPermissions = (
     );
     hasPermissions = intersection.length > 0;
   }
-
   return hasRoles || hasPermissions;
 };

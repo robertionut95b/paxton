@@ -133,8 +133,6 @@ export default function AuthProvider({
   const isAuthorized = useCallback(
     (roleNames?: RoleType[] | string[], permissionNames?: string[]) => {
       let hasAuthorization = false;
-
-      setLoading(true);
       if (user) {
         hasAuthorization = CheckUserHasRolesOrPermissions(
           user,
@@ -142,12 +140,9 @@ export default function AuthProvider({
           permissionNames
         );
       }
-      setLoading(false);
-
       return hasAuthorization;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [user]
   );
 
   const value = useMemo(

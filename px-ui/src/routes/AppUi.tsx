@@ -40,6 +40,7 @@ const RecruitmentApplicationPage = lazy(
 const RecruitmentCandidatesPage = lazy(
   () => import("./organization/RecruitmentCandidatesPage")
 );
+const AdminPage = lazy(() => import("./AdminPage"));
 
 export default function AppUI() {
   return (
@@ -141,6 +142,9 @@ export default function AppUI() {
                   />
                 </Route>
               </Route>
+            </Route>
+            <Route path="admin-panel">
+              <Route element={<AdminPage />} index />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

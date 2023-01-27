@@ -25,12 +25,18 @@ import { Container, Paper, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
   const { user, isAuthorized } = useAuth();
   const { jobId } = useParams();
   const queryClient = useQueryClient();
+  const isCandidatureAllowed = isAuthorized([
+    RoleType.ROLE_ADMINISTRATOR,
+    RoleType.ROLE_RECRUITER,
+  ]);
+
   const { data: jobData, isLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
@@ -65,9 +71,7 @@ const JobDetailsPage = () => {
       JobListingId: job?.id ?? "",
     },
     {
-      enabled:
-        !isAuthorized([RoleType.ROLE_ADMINISTRATOR, RoleType.ROLE_RECRUITER]) &&
-        !!job?.id,
+      enabled: !isCandidatureAllowed && !!job?.id,
     }
   );
 
@@ -107,14 +111,18 @@ const JobDetailsPage = () => {
     }
   );
 
-  const submitCandidature = () =>
-    mutate({
-      ApplicationInput: {
-        applicantProfileId: user?.profileId.toString() ?? "",
-        jobListingId: job?.id ?? "",
-        userId: user?.userId ?? "",
-      },
-    });
+  const submitCandidature = useCallback(
+    () =>
+      mutate({
+        ApplicationInput: {
+          applicantProfileId: user?.profileId.toString() ?? "",
+          jobListingId: job?.id ?? "",
+          userId: user?.userId ?? "",
+        },
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [job?.id, user?.profileId, user?.userId]
+  );
 
   if (isLoading) return <GenericLoadingSkeleton />;
   if (!job || jobData.getAllJobListings?.totalElements === 0)
@@ -132,11 +140,7 @@ const JobDetailsPage = () => {
           job={job}
           applied={!!myApplication?.getMyApplicationForJobListing}
           isAllowedCandidature={
-            (job.isActive ?? false) &&
-            !isAuthorized([
-              RoleType.ROLE_ADMINISTRATOR,
-              RoleType.ROLE_RECRUITER,
-            ])
+            (job.isActive ?? false) && !isCandidatureAllowed
           }
           submitCandidatureFn={submitCandidature}
           isCandidatureLoading={isApplyLoading}

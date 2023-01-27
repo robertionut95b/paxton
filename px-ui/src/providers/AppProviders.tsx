@@ -47,10 +47,10 @@ export default function AppProviders({
         withNormalizeCSS
         theme={{
           colorScheme,
-          fontFamily: "Roboto, sans-serif",
+          fontFamily: "Inter, sans-serif",
           primaryColor: "violet",
           headings: {
-            fontFamily: "Roboto, sans-serif",
+            fontFamily: "Inter, sans-serif",
           },
           components: {
             Container: {

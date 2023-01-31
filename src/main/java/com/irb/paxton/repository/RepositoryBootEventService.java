@@ -46,6 +46,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.irb.paxton.config.properties.ApplicationProperties.DEFAULT_PROCESS_NAME;
+
 @Service
 @Slf4j
 public class RepositoryBootEventService {
@@ -167,7 +169,7 @@ public class RepositoryBootEventService {
     public void setupSampleOrganizationRepository() {
         log.info("Paxton : creating organization objects");
 
-        Organization paxtonOrg = new Organization("Paxton", "This is the default application organization, used for testing.", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null);
+        Organization paxtonOrg = new Organization("Paxton", "This is the default application organization, used for testing.", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null, null);
         JobCategory itcJobCategory = new JobCategory("Information Technology & Communications", null);
         JobCategory educationCategory = new JobCategory("Education", null);
         JobCategory healthcareCategory = new JobCategory("Healthcare", null);
@@ -191,15 +193,14 @@ public class RepositoryBootEventService {
         Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
 
         JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
-                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, null, recruiter, WorkType.HYBRID);
+                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, recruiter, WorkType.HYBRID);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
         jobListingRepository.save(jobListingPaxtonSoftwareDev);
 
         // Define a basic process as template
         this.recruiterRepository.save(recruiter);
-        Process defaultProcess = new Process("Default recruitment process", "Default recruitment process for all organizations", null, null, null);
-        Process paxtonProcess = new Process("Paxton recruitment process", "Default Paxton Inc. recruitment process which is applied to all candidates", null, recruiter, List.of(jobListingPaxtonSoftwareDev));
+        Process defaultProcess = new Process(DEFAULT_PROCESS_NAME, "Default recruitment process for all the organizations", null, null);
 
         // define steps
         Step applyStep = new Step(null, "Candidature", "During this step, candidates will send their profile reference. If they draw the recruiter's attention, the next steps will follow");
@@ -210,19 +211,17 @@ public class RepositoryBootEventService {
         Step conclusionStep = new Step(null, "Conclusion", "This is the final step of the process, which will end up with a reject or accept from the employee/employer");
         this.stepRepository.saveAll(List.of(applyStep, candidatureAnalysisStep, interviewStep, responseStep, offerNegotiationStep, conclusionStep));
         // link steps to process
-        ProcessSteps processStepsApply = new ProcessSteps(paxtonProcess, applyStep, Status.ACTIVE, 1);
-        ProcessSteps processStepsAnalysis = new ProcessSteps(paxtonProcess, candidatureAnalysisStep, Status.ACTIVE, 2);
-        ProcessSteps processStepsInterview = new ProcessSteps(paxtonProcess, interviewStep, Status.ACTIVE, 3);
-        ProcessSteps processStepsResponse = new ProcessSteps(paxtonProcess, responseStep, Status.ACTIVE, 4);
-        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(paxtonProcess, offerNegotiationStep, Status.ACTIVE, 5);
-        ProcessSteps processStepsConclusion = new ProcessSteps(paxtonProcess, conclusionStep, Status.ACTIVE, 6);
+        ProcessSteps processStepsApply = new ProcessSteps(defaultProcess, applyStep, Status.ACTIVE, 1);
+        ProcessSteps processStepsAnalysis = new ProcessSteps(defaultProcess, candidatureAnalysisStep, Status.ACTIVE, 2);
+        ProcessSteps processStepsInterview = new ProcessSteps(defaultProcess, interviewStep, Status.ACTIVE, 3);
+        ProcessSteps processStepsResponse = new ProcessSteps(defaultProcess, responseStep, Status.ACTIVE, 4);
+        ProcessSteps processStepsOfferNegotiation = new ProcessSteps(defaultProcess, offerNegotiationStep, Status.ACTIVE, 5);
+        ProcessSteps processStepsConclusion = new ProcessSteps(defaultProcess, conclusionStep, Status.ACTIVE, 6);
         this.processStepsRepository.saveAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
 
-        paxtonProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
-        defaultProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsConclusion));
-        this.processRepository.save(paxtonProcess);
+        defaultProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
         this.processRepository.save(defaultProcess);
-        jobListingPaxtonSoftwareDev.setProcess(paxtonProcess);
+        paxtonOrg.setRecruitmentProcess(defaultProcess);
     }
 
     public void setupNomenclaturesRepository() {

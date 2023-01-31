@@ -1,6 +1,5 @@
 package com.irb.paxton.core.jobs;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.model.PaxtonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +35,6 @@ public class Job extends PaxtonEntity<Long> {
     @Length(min = 10, message = "Description must be longer than 10 characters")
     private String description;
 
-    @OneToMany(mappedBy = "job")
+    @OneToMany(mappedBy = "job", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Collection<JobListing> jobListings;
 }

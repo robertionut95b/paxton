@@ -48,7 +48,7 @@ import { showNotification } from "@mantine/notifications";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { FormJobListingSchema } from "@validator/FormJobListingSchema";
 import { addDays, format } from "date-fns";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function OrganizationPostJobForm() {
@@ -170,13 +170,14 @@ export default function OrganizationPostJobForm() {
       })
       .flat(1) || [];
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     navigate(-1);
     setOpened(false);
-  };
+  }, []);
 
   const form = useForm({
     initialValues: {
+      id: jobListingId ?? null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
       availableFrom: jobListingItem?.availableFrom

@@ -10,6 +10,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/solid";
 import { Grid, List, Paper, Title } from "@mantine/core";
+import { NavLink, Outlet } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
@@ -22,10 +23,10 @@ const AdminDashboard = () => {
           <List spacing="md" size="sm" center>
             <List.Item icon={<BriefcaseIcon width={20} />}>Jobs</List.Item>
             <List.Item icon={<ClipboardDocumentIcon width={20} />}>
-              Job postings
+              <NavLink to="collections/job-listings">Job postings</NavLink>
             </List.Item>
             <List.Item icon={<BuildingOfficeIcon width={20} />}>
-              Organizations
+              <NavLink to="collections/organizations">Organizations</NavLink>
             </List.Item>
             <List.Item icon={<ArrowsRightLeftIcon width={20} />}>
               Processes
@@ -47,11 +48,7 @@ const AdminDashboard = () => {
         </Paper>
       </Grid.Col>
       <Grid.Col span={12} sm={9}>
-        <Paper shadow="xs" p="md">
-          <Title order={5} mb="md">
-            Resource name
-          </Title>
-        </Paper>
+        <Outlet />
       </Grid.Col>
     </Grid>
   );

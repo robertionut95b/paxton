@@ -1,12 +1,15 @@
 package com.irb.paxton.core.candidate.mapper;
 
 import com.irb.paxton.core.candidate.Application;
+import com.irb.paxton.core.candidate.ApplicationProcessSteps;
 import com.irb.paxton.core.candidate.Candidate;
 import com.irb.paxton.core.candidate.CandidateRepository;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.exception.JobNotExistsException;
+import com.irb.paxton.core.process.ProcessSteps;
+import com.irb.paxton.core.process.Status;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
 import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
@@ -15,7 +18,11 @@ import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class ApplicationMapper {
@@ -32,6 +39,7 @@ public abstract class ApplicationMapper {
     @Autowired
     UserRepository userRepository;
 
+    @Mapping(target = "processSteps", source = "applicationInput", qualifiedByName = "mapProcessStep")
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "jobListing", source = "applicationInput.jobListingId")
@@ -61,5 +69,18 @@ public abstract class ApplicationMapper {
     public UserProfile mapUserProfile(Long userProfileId) {
         return userProfileRepository.findById(userProfileId)
                 .orElseThrow(() -> new UserProfileNotFoundException(String.format("User profile by id %d does not exist", userProfileId), "applicantProfileId"));
+    }
+
+    @Named("mapProcessStep")
+    public Collection<ApplicationProcessSteps> mapProcessStep(ApplicationInput applicationInput) {
+        JobListing jobListing = this.mapJobListing(applicationInput.getJobListingId());
+        Collection<ProcessSteps> processSteps = jobListing.getOrganization().getRecruitmentProcess().getProcessSteps();
+        ProcessSteps candidatureStep = null;
+        try {
+            candidatureStep = processSteps.stream().filter(p -> p.getOrder() == 1 && p.getStatus().equals(Status.ACTIVE)).toList().get(0);
+        } catch (IndexOutOfBoundsException ex) {
+            throw new IllegalStateException(String.format("There is no active starting step for the recruitment process of job posting %s", applicationInput.getJobListingId()));
+        }
+        return List.of(new ApplicationProcessSteps(candidatureStep));
     }
 }

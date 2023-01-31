@@ -108,3 +108,10 @@ mutation ApplyToJobListing($ApplicationInput: ApplicationInput!) {
     dateOfApplication
   }
 }
+
+mutation CreateOrUpdateOrganization($OrganizationInput: OrganizationInput!) {
+  createOrUpdateOrganization(OrganizationInput: $OrganizationInput) {
+    name
+    description
+  }
+}

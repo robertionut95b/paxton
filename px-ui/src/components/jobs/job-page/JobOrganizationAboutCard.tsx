@@ -5,7 +5,9 @@ import { Avatar, Group, Paper, Title } from "@mantine/core";
 export default function JobOrganizationAboutCard({
   organization,
 }: {
-  organization: JobListing["organization"] | Organization;
+  organization:
+    | Omit<JobListing["organization"], "recruitmentProcess">
+    | Organization;
 }) {
   return (
     <Paper shadow={"xs"} p="md">

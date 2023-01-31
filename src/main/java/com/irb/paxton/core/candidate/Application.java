@@ -1,6 +1,5 @@
 package com.irb.paxton.core.candidate;
 
-import com.irb.paxton.core.ApplicationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
@@ -41,9 +40,9 @@ public class Application extends PaxtonEntity<Long> {
     @JoinColumn(name = "jobListing_id")
     private JobListing jobListing;
 
-    @OneToMany(mappedBy = "application")
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     private Collection<ApplicationDocument> applicationDocuments;
 
-    @OneToMany(mappedBy = "application")
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     private Collection<ApplicationProcessSteps> processSteps;
 }

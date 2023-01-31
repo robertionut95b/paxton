@@ -8,7 +8,6 @@ import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.Recruiter;
-import com.irb.paxton.core.process.Process;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +15,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -33,6 +30,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Setter
 public class JobListing extends PaxtonEntity<Long> {
 
+    @Column(nullable = false)
     @NotNull
     @NotEmpty
     @NotBlank
@@ -43,12 +41,15 @@ public class JobListing extends PaxtonEntity<Long> {
     @NotEmpty
     @Length(min = 10, message = "Description must be longer than 10 characters")
     @Lob
+    @Column(nullable = false)
     private String description;
 
+    @FutureOrPresent(message = "Date must be in present or future")
     @Column(nullable = false)
     @NotNull
     private LocalDate availableFrom;
 
+    @Future(message = "Date must be exclusively in the future")
     @Column(nullable = false)
     @NotNull
     private LocalDate availableTo;
@@ -56,16 +57,19 @@ public class JobListing extends PaxtonEntity<Long> {
     @Transient
     private boolean isActive;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
 
+    @Positive
+    @Min(1)
     @NotNull
     private Integer numberOfVacancies = 1;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "job_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
     @Enumerated
@@ -73,22 +77,20 @@ public class JobListing extends PaxtonEntity<Long> {
     @NotNull
     private ContractType contractType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "organization_id")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private JobCategory category;
 
     @OneToMany(mappedBy = "jobListing")
     private Collection<Application> applications;
 
     @ManyToOne
-    @JoinColumn(name = "process_id")
-    private Process process;
-
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;
 

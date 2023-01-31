@@ -47,7 +47,6 @@ public class JobListingService {
     public JobListing publishJobListing(JobListingInput jobListingInput) {
         JobListing jobListing = jobListingMapper.inputToJobListing(jobListingInput);
         jobListingRepository.save(jobListing);
-
         return jobListing;
     }
 

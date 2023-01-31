@@ -182,6 +182,7 @@ input JobInput {
 }
 
 input JobListingInput {
+    id: ID
     title: String! @constraint(minLength: 5)
     description: String! @constraint(maxLength: 2000)
     availableFrom: Date!
@@ -211,7 +212,6 @@ type JobListing {
     category: JobCategory
     applications: [Application]
     workType: WorkType!
-    process: Process
     recruiter: Recruiter
 }
 
@@ -225,23 +225,21 @@ type JobListingPage {
 type Organization {
     id: ID!
     name: String!
+    description: String!
     industry: String!
     location: String!
     jobs: [JobListing]
     photography: String
+    recruitmentProcess: Process!
+}
+
+input OrganizationInput {
+    id: ID
+    name: String!
     description: String!
-}
-
-enum Status {
-    ACTIVE,
-    REMOVED,
-    DRAFT
-}
-
-type Step {
-    id: ID!
-    title: String!
-    processSteps: [ProcessSteps]
+    industry: String!
+    location: ID!
+    photography: String
 }
 
 type Process {
@@ -249,8 +247,22 @@ type Process {
     name: String!
     description: String!
     processSteps: [ProcessSteps]
-    recruiter: Recruiter
-    jobListings: [JobListing]
+    organizations: [Organization]
+}
+
+input ProcessInput {
+    name: String!
+    description: String!
+    processSteps: [ProcessStepsInput]
+    organizationId: ID!
+}
+
+input ProcessInputUpdate {
+    id: ID!
+    name: String!
+    description: String!
+    processSteps: [ID]
+    organizationId: ID!
 }
 
 type ProcessPage {
@@ -268,9 +280,34 @@ type ProcessSteps {
     order: Int!
 }
 
+input ProcessStepsInput {
+    processId: ID!
+    status: Status!
+    stepId: ID!
+    order: Int!
+}
+
 type Privilege {
     id: ID!
     name: String
+}
+
+enum Status {
+    ACTIVE,
+    REMOVED,
+    DRAFT
+}
+
+type Step {
+    id: ID!
+    title: String!
+    description: String!
+    processSteps: [ProcessSteps]
+}
+
+input StepInput {
+    title: String!
+    description: String!
 }
 
 type Study {
@@ -447,4 +484,7 @@ type Mutation {
     addCertification(CertificationInput: CertificationInput!): Certification
     addJobCategory(JobCategoryInput: JobCategoryInput!): JobCategory
     applyToJobListing(ApplicationInput: ApplicationInput!): Application
+    createProcess(ProcessInput: ProcessInput!): Process
+    updateProcess(ProcessInputUpdate: ProcessInputUpdate!): Process
+    createOrUpdateOrganization(OrganizationInput: OrganizationInput!): Organization
 }

@@ -1,6 +1,5 @@
-package com.irb.paxton.core;
+package com.irb.paxton.core.candidate;
 
-import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.ProcessSteps;
 import lombok.AllArgsConstructor;
@@ -35,4 +34,8 @@ public class ApplicationProcessSteps extends PaxtonEntity<Long> {
 
     @NotNull
     private LocalDateTime registeredAt = LocalDateTime.now();
+
+    public ApplicationProcessSteps(ProcessSteps processStep) {
+        this.processStep = processStep;
+    }
 }

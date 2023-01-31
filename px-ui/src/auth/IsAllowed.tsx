@@ -53,7 +53,7 @@ const IsAllowed = ({
     }
 
     setChecking(false);
-  }, [roles, permissions]);
+  }, [roles, permissions, adminCheck, user]);
 
   if (!hasAccess && checking) {
     return isLoading;

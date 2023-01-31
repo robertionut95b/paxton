@@ -95,14 +95,14 @@ const RecruitmentCandidatesPage = () => {
               fieldType: FieldType.Long,
               key: "id",
               operator: Operator.Equal,
-              value: jobListingData?.getAllJobListings?.list?.[0]?.process
-                ?.id as string,
+              value: organization?.getOrganizationById?.recruitmentProcess
+                .id as string,
             },
           ],
         },
       },
       {
-        enabled: !!jobListingData?.getAllJobListings?.list?.[0]?.process?.id,
+        enabled: !!organization?.getOrganizationById?.recruitmentProcess.id,
       }
     );
 

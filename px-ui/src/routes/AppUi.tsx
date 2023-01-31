@@ -2,6 +2,7 @@ import IsAllowed from "@auth/IsAllowed";
 import RequireAuth from "@auth/RequireAuth";
 import RequireNonAuth from "@auth/RequireNonAuth";
 import RoleType from "@auth/RoleType";
+import OrganizationModal from "@components/organization/OrganizationModal";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
@@ -41,6 +42,12 @@ const RecruitmentCandidatesPage = lazy(
   () => import("./organization/RecruitmentCandidatesPage")
 );
 const AdminPage = lazy(() => import("./AdminPage"));
+const AdminJobListings = lazy(
+  () => import("../components/admin/AdminJobListings")
+);
+const AdminOrganizations = lazy(
+  () => import("../components/admin/AdminOrganizations")
+);
 
 export default function AppUI() {
   return (
@@ -143,8 +150,19 @@ export default function AppUI() {
                 </Route>
               </Route>
             </Route>
-            <Route path="admin-panel">
-              <Route element={<AdminPage />} index />
+            <Route path="admin-panel" element={<AdminPage />}>
+              <Route path="collections">
+                <Route path="job-listings" element={<AdminJobListings />} />
+                <Route path="organizations" element={<AdminOrganizations />} />
+                <Route
+                  path="organizations/new"
+                  element={<OrganizationModal />}
+                />
+                <Route
+                  path="organizations/update/:organizationId"
+                  element={<AdminOrganizations />}
+                />
+              </Route>
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

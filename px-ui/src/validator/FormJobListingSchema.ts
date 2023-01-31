@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const FormJobListingSchema = JobListingInputSchema()
   .extend({
-    availableFrom: z.date().min(new Date()),
+    availableFrom: z.date().min(startOfDay(new Date())),
     availableTo: z.date().min(addDays(new Date(), 1)),
   })
   .superRefine(({ availableFrom, availableTo }, ctx) => {

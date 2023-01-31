@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 export default function OrganizationToolbar({
   organization,
 }: {
-  organization: Organization;
+  organization: Organization | Omit<Organization, "recruitmentProcess">;
 }) {
   return (
     <Paper shadow={"xs"} p="md">

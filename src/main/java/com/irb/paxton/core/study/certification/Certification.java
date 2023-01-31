@@ -1,9 +1,11 @@
 package com.irb.paxton.core.study.certification;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.study.Study;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -27,6 +29,6 @@ public class Certification extends PaxtonEntity<Long> {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "certification")
+    @OneToMany(mappedBy = "certification", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Collection<Study> studies;
 }

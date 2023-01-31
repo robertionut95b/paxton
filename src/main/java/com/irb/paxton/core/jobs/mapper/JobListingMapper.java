@@ -15,6 +15,7 @@ import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.process.ProcessRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,15 +39,16 @@ public abstract class JobListingMapper {
     @Autowired
     private RecruiterRepository recruiterRepository;
 
+    @Autowired
+    private ProcessRepository processRepository;
+
     @Mapping(target = "recruiter", source = "jobListingInput.recruiterId")
     @Mapping(target = "organization", source = "jobListingInput.organizationId")
     @Mapping(target = "job", source = "jobListingInput.jobId")
     @Mapping(target = "city", source = "jobListingInput.location")
     @Mapping(target = "category", source = "jobListingInput.categoryId")
-    @Mapping(target = "process", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "applications", ignore = true)

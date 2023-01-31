@@ -233,7 +233,6 @@ export type JobListing = {
   job: Job;
   numberOfVacancies: Scalars['Int'];
   organization: Organization;
-  process?: Maybe<Process>;
   recruiter?: Maybe<Recruiter>;
   title: Scalars['String'];
   workType: WorkType;
@@ -245,6 +244,7 @@ export type JobListingInput = {
   categoryId: Scalars['ID'];
   contractType: ContractType;
   description: Scalars['String'];
+  id?: InputMaybe<Scalars['ID']>;
   jobId: Scalars['ID'];
   location: Scalars['String'];
   numberOfVacancies: Scalars['Int'];
@@ -271,9 +271,12 @@ export type Mutation = {
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
   applyToJobListing?: Maybe<Application>;
+  createOrUpdateOrganization?: Maybe<Organization>;
+  createProcess?: Maybe<Process>;
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
+  updateProcess?: Maybe<Process>;
   updateUserProfile?: Maybe<UserProfile>;
   updateUserProfileExperience?: Maybe<UserProfile>;
   updateUserProfileStudy?: Maybe<UserProfile>;
@@ -315,6 +318,16 @@ export type MutationApplyToJobListingArgs = {
 };
 
 
+export type MutationCreateOrUpdateOrganizationArgs = {
+  OrganizationInput: OrganizationInput;
+};
+
+
+export type MutationCreateProcessArgs = {
+  ProcessInput: ProcessInput;
+};
+
+
 export type MutationPublishJobArgs = {
   JobInput: JobInput;
 };
@@ -322,6 +335,11 @@ export type MutationPublishJobArgs = {
 
 export type MutationPublishJobListingArgs = {
   JobListingInput: JobListingInput;
+};
+
+
+export type MutationUpdateProcessArgs = {
+  ProcessInputUpdate: ProcessInputUpdate;
 };
 
 
@@ -360,6 +378,16 @@ export type Organization = {
   location: Scalars['String'];
   name: Scalars['String'];
   photography?: Maybe<Scalars['String']>;
+  recruitmentProcess: Process;
+};
+
+export type OrganizationInput = {
+  description: Scalars['String'];
+  id?: InputMaybe<Scalars['ID']>;
+  industry: Scalars['String'];
+  location: Scalars['ID'];
+  name: Scalars['String'];
+  photography?: InputMaybe<Scalars['String']>;
 };
 
 export type Photography = {
@@ -380,10 +408,24 @@ export type Process = {
   __typename?: 'Process';
   description: Scalars['String'];
   id: Scalars['ID'];
-  jobListings?: Maybe<Array<Maybe<JobListing>>>;
   name: Scalars['String'];
+  organizations?: Maybe<Array<Maybe<Organization>>>;
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
-  recruiter?: Maybe<Recruiter>;
+};
+
+export type ProcessInput = {
+  description: Scalars['String'];
+  name: Scalars['String'];
+  organizationId: Scalars['ID'];
+  processSteps?: InputMaybe<Array<InputMaybe<ProcessStepsInput>>>;
+};
+
+export type ProcessInputUpdate = {
+  description: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  organizationId: Scalars['ID'];
+  processSteps?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
 };
 
 export type ProcessPage = {
@@ -401,6 +443,13 @@ export type ProcessSteps = {
   process: Process;
   status: Status;
   step: Step;
+};
+
+export type ProcessStepsInput = {
+  order: Scalars['Int'];
+  processId: Scalars['ID'];
+  status: Status;
+  stepId: Scalars['ID'];
 };
 
 export type Query = {
@@ -532,8 +581,14 @@ export enum Status {
 
 export type Step = {
   __typename?: 'Step';
+  description: Scalars['String'];
   id: Scalars['ID'];
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
+  title: Scalars['String'];
+};
+
+export type StepInput = {
+  description: Scalars['String'];
   title: Scalars['String'];
 };
 
@@ -682,12 +737,19 @@ export type ApplyToJobListingMutationVariables = Exact<{
 
 export type ApplyToJobListingMutation = { __typename?: 'Mutation', applyToJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
 
+export type CreateOrUpdateOrganizationMutationVariables = Exact<{
+  OrganizationInput: OrganizationInput;
+}>;
+
+
+export type CreateOrUpdateOrganizationMutation = { __typename?: 'Mutation', createOrUpdateOrganization?: { __typename?: 'Organization', name: string, description: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, process?: { __typename?: 'Process', id: string } | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -704,7 +766,7 @@ export type GetCountriesCitiesQuery = { __typename?: 'Query', getCountriesCities
 export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null } | null> | null };
+export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, description: string, industry: string, location: string, photography?: string | null, recruitmentProcess: { __typename?: 'Process', id: string } } | null> | null };
 
 export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -741,7 +803,7 @@ export type GetOrganizationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string } | null };
+export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -1084,6 +1146,30 @@ export const useApplyToJobListingMutation = <
 useApplyToJobListingMutation.getKey = () => ['ApplyToJobListing'];
 
 useApplyToJobListingMutation.fetcher = (client: GraphQLClient, variables: ApplyToJobListingMutationVariables, headers?: RequestInit['headers']) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers);
+export const CreateOrUpdateOrganizationDocument = `
+    mutation CreateOrUpdateOrganization($OrganizationInput: OrganizationInput!) {
+  createOrUpdateOrganization(OrganizationInput: $OrganizationInput) {
+    name
+    description
+  }
+}
+    `;
+export const useCreateOrUpdateOrganizationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateOrUpdateOrganizationMutation, TError, CreateOrUpdateOrganizationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateOrUpdateOrganizationMutation, TError, CreateOrUpdateOrganizationMutationVariables, TContext>(
+      ['CreateOrUpdateOrganization'],
+      (variables?: CreateOrUpdateOrganizationMutationVariables) => fetcher<CreateOrUpdateOrganizationMutation, CreateOrUpdateOrganizationMutationVariables>(client, CreateOrUpdateOrganizationDocument, variables, headers)(),
+      options
+    );
+useCreateOrUpdateOrganizationMutation.getKey = () => ['CreateOrUpdateOrganization'];
+
+useCreateOrUpdateOrganizationMutation.fetcher = (client: GraphQLClient, variables: CreateOrUpdateOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateOrUpdateOrganizationMutation, CreateOrUpdateOrganizationMutationVariables>(client, CreateOrUpdateOrganizationDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -1124,9 +1210,6 @@ export const GetAllJobListingsDocument = `
       applications {
         id
         dateOfApplication
-      }
-      process {
-        id
       }
       recruiter {
         id
@@ -1304,9 +1387,13 @@ export const GetAllOrganizationsDocument = `
   getAllOrganizations {
     id
     name
+    description
     industry
     location
     photography
+    recruitmentProcess {
+      id
+    }
   }
 }
     `;
@@ -1517,6 +1604,9 @@ export const GetOrganizationByIdDocument = `
     location
     photography
     description
+    recruitmentProcess {
+      id
+    }
   }
 }
     `;
@@ -1891,6 +1981,7 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     categoryId: z.string().min(1),
     contractType: ContractTypeSchema,
     description: z.string().max(2000, "Field must not be longer than 2000 characters"),
+    id: z.string().nullish(),
     jobId: z.string().min(1),
     location: z.string().min(3),
     numberOfVacancies: z.number().min(1),
@@ -1902,6 +1993,45 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
 }
 
 export const OperatorSchema = z.nativeEnum(Operator);
+
+export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationInput>> {
+  return z.object<Properties<OrganizationInput>>({
+    description: z.string(),
+    id: z.string().nullish(),
+    industry: z.string(),
+    location: z.string(),
+    name: z.string(),
+    photography: z.string().nullish()
+  })
+}
+
+export function ProcessInputSchema(): z.ZodObject<Properties<ProcessInput>> {
+  return z.object<Properties<ProcessInput>>({
+    description: z.string(),
+    name: z.string(),
+    organizationId: z.string(),
+    processSteps: z.array(z.lazy(() => ProcessStepsInputSchema().nullable())).nullish()
+  })
+}
+
+export function ProcessInputUpdateSchema(): z.ZodObject<Properties<ProcessInputUpdate>> {
+  return z.object<Properties<ProcessInputUpdate>>({
+    description: z.string(),
+    id: z.string(),
+    name: z.string(),
+    organizationId: z.string(),
+    processSteps: z.array(z.string().nullable()).nullish()
+  })
+}
+
+export function ProcessStepsInputSchema(): z.ZodObject<Properties<ProcessStepsInput>> {
+  return z.object<Properties<ProcessStepsInput>>({
+    order: z.number(),
+    processId: z.string(),
+    status: StatusSchema,
+    stepId: z.string()
+  })
+}
 
 export function SearchQueryInputSchema(): z.ZodObject<Properties<SearchQueryInput>> {
   return z.object<Properties<SearchQueryInput>>({
@@ -1922,6 +2052,13 @@ export function SortsInputSchema(): z.ZodObject<Properties<SortsInput>> {
 }
 
 export const StatusSchema = z.nativeEnum(Status);
+
+export function StepInputSchema(): z.ZodObject<Properties<StepInput>> {
+  return z.object<Properties<StepInput>>({
+    description: z.string(),
+    title: z.string()
+  })
+}
 
 export function StudyInputSchema(): z.ZodObject<Properties<StudyInput>> {
   return z.object<Properties<StudyInput>>({

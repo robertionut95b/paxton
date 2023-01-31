@@ -29,6 +29,6 @@ public class JobCategory extends PaxtonEntity<Long> {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Collection<JobListing> jobs;
 }

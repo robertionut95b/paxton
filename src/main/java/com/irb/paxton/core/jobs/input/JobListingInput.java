@@ -18,6 +18,8 @@ public class JobListingInput implements Serializable {
     @Serial
     private static final long serialVersionUID = -2048899776051052428L;
 
+    private Long id;
+
     @NotNull
     private LocalDate availableFrom;
 

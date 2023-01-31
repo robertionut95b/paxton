@@ -24,6 +24,7 @@ public class ApplicationService {
 
     public Application applyToJobListing(ApplicationInput applicationInput) {
         Application application = applicationMapper.inputToApplication(applicationInput);
+        application.getProcessSteps().forEach(ps -> ps.setApplication(application));
         applicationRepository.save(application);
         return application;
     }

@@ -1,12 +1,14 @@
 package com.irb.paxton.core.study;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.institution.Institution;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -23,18 +25,18 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Setter
 public class Study extends PaxtonEntity<Long> {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "institution_id")
     @NotNull
     private Institution institution;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "domain_study_id")
     private Domain domainStudy;
 
     private String degree;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "certification_id")
     private Certification certification;
 

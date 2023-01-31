@@ -14,6 +14,8 @@ public class ApplicationProperties {
 
     public static final String TABLE_PREFIX = "PX";
 
+    public static final String DEFAULT_PROCESS_NAME = "Default recruitment process";
+
     @Value("${server.port:8080}")
     private int serverPort;
 }

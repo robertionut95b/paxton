@@ -38,9 +38,6 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
         id
         dateOfApplication
       }
-      process {
-        id
-      }
       recruiter {
         id
         user {
@@ -151,9 +148,13 @@ query getAllOrganizations {
   getAllOrganizations {
     id
     name
+    description
     industry
     location
     photography
+    recruitmentProcess {
+      id
+    }
   }
 }
 
@@ -210,6 +211,9 @@ query GetOrganizationById($organizationId: ID!) {
     location
     photography
     description
+    recruitmentProcess {
+      id
+    }
   }
 }
 

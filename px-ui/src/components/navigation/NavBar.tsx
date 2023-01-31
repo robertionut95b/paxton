@@ -4,16 +4,16 @@ import { User } from "@interfaces/user.types";
 import {
   Burger,
   Container,
-  createStyles,
   Group,
   Header,
   MediaQuery,
   Paper,
   Stack,
   Transition,
+  createStyles,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
 import AvatarMenu from "./AvatarMenu";
 
@@ -122,6 +122,9 @@ const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
   const navigate = useNavigate();
   const { signout } = useAuth();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const signOutCb = useCallback(() => signout(() => redirect("/app")), []);
+
   const items = links.map((link) => (
     <Link
       key={link.label}
@@ -163,7 +166,7 @@ const NavBar = ({ links, user, profileLink, avatarSrc }: NavBarProps) => {
             user={user}
             profileLink={profileLink}
             src={avatarSrc}
-            signOutFn={() => signout(() => redirect("/app"))}
+            signOutFn={signOutCb}
           />
           <Burger
             opened={opened}

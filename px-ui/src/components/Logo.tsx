@@ -28,7 +28,6 @@ export function LogoWithSearch() {
         </Title>
       </Link>
       <TextInput
-        // className={classes.search}
         size="sm"
         ml="sm"
         placeholder="Search anything"

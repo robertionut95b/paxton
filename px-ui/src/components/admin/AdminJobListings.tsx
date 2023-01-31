@@ -1,5 +1,5 @@
 import { useGetAllJobListingsQuery } from "@gql/generated";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { TypeColumn } from "@inovua/reactdatagrid-community/types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -124,7 +124,7 @@ const AdminJobListings = () => {
           <Button
             component={NavLink}
             to="new"
-            rightIcon={<PlusCircleIcon width={16} />}
+            rightIcon={<PlusCircleIcon width={20} />}
           >
             New record
           </Button>

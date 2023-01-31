@@ -18,7 +18,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useCallback } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
 
 const columns: TypeColumn[] = [
@@ -57,6 +57,7 @@ const columns: TypeColumn[] = [
 ];
 
 const AdminOrganizations = () => {
+  const navigate = useNavigate();
   const { data: organizationData, isLoading } = useGetAllOrganizationsQuery(
     graphqlRequestClient,
     {}
@@ -64,19 +65,18 @@ const AdminOrganizations = () => {
   const { isDarkMode } = useDarkMode();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderRowContextMenu = useCallback((menuProps: any) => {
+  const renderRowContextMenu = useCallback((menuProps: any, { rowProps }) => {
     menuProps.autoDismiss = true;
     menuProps.items = [
       {
-        label: "Row details",
-        onClick: () => {
-          menuProps.onDismiss();
-        },
+        label: "Organization page",
+        onClick: () => navigate(`/app/organizations/${rowProps.data.id}`),
       },
       {
         label: "Show recruiters",
       },
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading)
@@ -98,7 +98,7 @@ const AdminOrganizations = () => {
           <Button
             component={NavLink}
             to="new"
-            rightIcon={<PlusCircleIcon width={16} />}
+            rightIcon={<PlusCircleIcon width={20} />}
           >
             New record
           </Button>
@@ -109,9 +109,11 @@ const AdminOrganizations = () => {
           dataSource={organizations}
           theme={isDarkMode ? "default-dark" : "default-light"}
           renderRowContextMenu={renderRowContextMenu}
+          pagination
           enableColumnAutosize
         />
       </Paper>
+      <Outlet />
     </Stack>
   );
 };

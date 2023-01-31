@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.Process;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +23,6 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 public class Organization extends PaxtonEntity<Long> {
 
     @NotNull

@@ -19,8 +19,8 @@ import {
   Modal,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -95,6 +95,7 @@ const OrganizationModal = () => {
       setDesc(e.currentTarget.value);
       form.setFieldValue("description", e.currentTarget.value);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

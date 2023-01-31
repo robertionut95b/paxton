@@ -48,6 +48,7 @@ const AdminJobListings = lazy(
 const AdminOrganizations = lazy(
   () => import("../components/admin/AdminOrganizations")
 );
+const NotificationsPage = lazy(() => import("./NotificationsPage"));
 
 export default function AppUI() {
   return (
@@ -153,17 +154,16 @@ export default function AppUI() {
             <Route path="admin-panel" element={<AdminPage />}>
               <Route path="collections">
                 <Route path="job-listings" element={<AdminJobListings />} />
-                <Route path="organizations" element={<AdminOrganizations />} />
-                <Route
-                  path="organizations/new"
-                  element={<OrganizationModal />}
-                />
-                <Route
-                  path="organizations/update/:organizationId"
-                  element={<AdminOrganizations />}
-                />
+                <Route path="organizations" element={<AdminOrganizations />}>
+                  <Route path="new" element={<OrganizationModal />} />
+                  <Route
+                    path="update/:organizationId"
+                    element={<AdminOrganizations />}
+                  />
+                </Route>
               </Route>
             </Route>
+            <Route path="notifications" element={<NotificationsPage />}></Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

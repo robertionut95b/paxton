@@ -1,8 +1,8 @@
 package com.irb.paxton.core.process;
 
+import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.process.exception.ProcessNotExistsException;
 import com.irb.paxton.core.process.input.ProcessInput;
-import com.irb.paxton.core.process.input.ProcessInputLkp;
 import com.irb.paxton.core.process.input.ProcessInputUpdate;
 import com.irb.paxton.core.process.mapper.ProcessMapper;
 import com.irb.paxton.core.search.PaginatedResponse;
@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import static com.irb.paxton.config.properties.ApplicationProperties.DEFAULT_PROCESS_NAME;
 
 @Service
 public class ProcessService {
@@ -42,11 +44,18 @@ public class ProcessService {
     public Process updateProcess(ProcessInputUpdate processInputUpdate) {
         Process process = processRepository
                 .findById(processInputUpdate.getId())
-                .orElseThrow(() -> new ProcessNotExistsException(String.format("Process by id %s does not exist", processInputUpdate.getId())));
+                .orElseThrow(() ->
+                        new ProcessNotExistsException("Process by id %s does not exist".formatted(processInputUpdate.getId())
+                        ));
         return processMapper.inputToProcessUpdate(process, processInputUpdate);
     }
 
-    public Process createProcess(ProcessInputLkp processInputLkp) {
-        return null;
+    public void assignDefaultProcessToOrg(Organization organization) {
+        Process process = this.processRepository
+                .findByName(DEFAULT_PROCESS_NAME)
+                .orElseThrow(() ->
+                        new ProcessNotExistsException("Process by name [%s] does not exist".formatted(DEFAULT_PROCESS_NAME)
+                        ));
+        organization.setRecruitmentProcess(process);
     }
 }

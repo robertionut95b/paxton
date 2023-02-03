@@ -1,6 +1,9 @@
 import { useGetAllJobListingsQuery } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import "@inovua/reactdatagrid-community/base.css";
+import "@inovua/reactdatagrid-community/theme/default-dark.css";
+import "@inovua/reactdatagrid-community/theme/default-light.css";
 import { TypeColumn } from "@inovua/reactdatagrid-community/types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
@@ -17,7 +20,7 @@ import {
 } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
 
 const columns: TypeColumn[] = [
@@ -125,6 +128,7 @@ const AdminJobListings = () => {
             component={NavLink}
             to="new"
             rightIcon={<PlusCircleIcon width={20} />}
+            disabled
           >
             New record
           </Button>
@@ -141,6 +145,7 @@ const AdminJobListings = () => {
           }}
         />
       </Paper>
+      <Outlet />
     </Stack>
   );
 };

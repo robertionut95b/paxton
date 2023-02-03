@@ -25,7 +25,7 @@ const columns: TypeColumn[] = [
   {
     name: "id",
     header: "ID",
-    defaultVisible: false,
+    defaultWidth: 80,
   },
   {
     name: "photography",
@@ -64,20 +64,31 @@ const AdminOrganizations = () => {
   );
   const { isDarkMode } = useDarkMode();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderRowContextMenu = useCallback((menuProps: any, { rowProps }) => {
-    menuProps.autoDismiss = true;
-    menuProps.items = [
-      {
-        label: "Organization page",
-        onClick: () => navigate(`/app/organizations/${rowProps.data.id}`),
-      },
-      {
-        label: "Show recruiters",
-      },
-    ];
+  const renderRowContextMenu = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (menuProps: any, { rowProps }: { rowProps: any }) => {
+      menuProps.autoDismiss = true;
+      menuProps.items = [
+        {
+          label: "Edit organization",
+          onClick: () => navigate(`update/${rowProps.data.id}`),
+        },
+        {
+          label: "Publish job listing",
+          onClick: () => navigate(`publish/${rowProps.data.id}`),
+        },
+        {
+          label: "Organization page",
+          onClick: () => navigate(`/app/organizations/${rowProps.data.id}`),
+        },
+        {
+          label: "Show recruiters",
+        },
+      ];
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    []
+  );
 
   if (isLoading)
     return (
@@ -111,6 +122,9 @@ const AdminOrganizations = () => {
           renderRowContextMenu={renderRowContextMenu}
           pagination
           enableColumnAutosize
+          style={{
+            minHeight: 350,
+          }}
         />
       </Paper>
       <Outlet />

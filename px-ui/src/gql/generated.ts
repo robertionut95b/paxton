@@ -803,7 +803,7 @@ export type GetOrganizationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
+export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, description: string, industry: string, location: string, photography?: string | null, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -1600,6 +1600,7 @@ export const GetOrganizationByIdDocument = `
   getOrganizationById(organizationId: $organizationId) {
     id
     name
+    description
     industry
     location
     photography
@@ -1996,11 +1997,11 @@ export const OperatorSchema = z.nativeEnum(Operator);
 
 export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationInput>> {
   return z.object<Properties<OrganizationInput>>({
-    description: z.string(),
+    description: z.string().min(5),
     id: z.string().nullish(),
-    industry: z.string(),
-    location: z.string(),
-    name: z.string(),
+    industry: z.string().min(1),
+    location: z.string().min(1),
+    name: z.string().min(3),
     photography: z.string().nullish()
   })
 }

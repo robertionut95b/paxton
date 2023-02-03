@@ -207,6 +207,7 @@ query GetOrganizationById($organizationId: ID!) {
   getOrganizationById(organizationId: $organizationId) {
     id
     name
+    description
     industry
     location
     photography

@@ -24,7 +24,13 @@ const AdminDashboard = () => {
   return (
     <Stack>
       <Paper shadow="xs" p="md">
-        <Tabs defaultValue="jobs" onTabChange={navigateTab} keepMounted={false}>
+        <Tabs
+          defaultValue="jobs"
+          onTabChange={navigateTab}
+          keepMounted={false}
+          variant="pills"
+          orientation="horizontal"
+        >
           <Tabs.List position="center">
             <Tabs.Tab value="jobs" icon={<BriefcaseIcon width={16} />}>
               Jobs

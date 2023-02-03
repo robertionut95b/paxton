@@ -235,10 +235,10 @@ type Organization {
 
 input OrganizationInput {
     id: ID
-    name: String!
-    description: String!
-    industry: String!
-    location: ID!
+    name: String! @constraint(minLength: 3)
+    description: String! @constraint(minLength: 5)
+    industry: String! @constraint(minLength: 1)
+    location: ID! @constraint(minLength: 1)
     photography: String
 }
 

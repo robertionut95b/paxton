@@ -1,7 +1,7 @@
 import Breadcrumbs from "@components/layout/Breadcrumbs";
+import OrganizationJobsTab from "@components/organization/OrganizationJobsTab";
 import { FieldType, Operator } from "@gql/generated";
 import { Paper, Stack, Title } from "@mantine/core";
-import OrganizationJobsTab from "@routes/organization/OrganizationJobsTab";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function RecruitmentPage() {

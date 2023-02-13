@@ -51,8 +51,10 @@ const OrganizationModal = () => {
       {
         enabled: !!organizationId,
         onSuccess: (data) => {
+          const { recruitmentProcess, ...rest } =
+            data.getOrganizationById ?? {};
           form.setValues({
-            ...data.getOrganizationById,
+            ...rest,
             photography: data.getOrganizationById?.photography ?? "",
           });
           setDesc(data.getOrganizationById?.description ?? "");

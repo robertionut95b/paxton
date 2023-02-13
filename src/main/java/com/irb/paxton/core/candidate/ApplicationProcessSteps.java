@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
@@ -33,7 +33,7 @@ public class ApplicationProcessSteps extends PaxtonEntity<Long> {
     private Application application;
 
     @NotNull
-    private LocalDateTime registeredAt = LocalDateTime.now();
+    private OffsetDateTime registeredAt = OffsetDateTime.now();
 
     public ApplicationProcessSteps(ProcessSteps processStep) {
         this.processStep = processStep;

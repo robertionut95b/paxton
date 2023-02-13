@@ -2,7 +2,6 @@ import IsAllowed from "@auth/IsAllowed";
 import RequireAuth from "@auth/RequireAuth";
 import RequireNonAuth from "@auth/RequireNonAuth";
 import RoleType from "@auth/RoleType";
-import OrganizationModal from "@components/organization/OrganizationModal";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
@@ -29,8 +28,17 @@ const OrganizationPostJobForm = lazy(
   () => import("./organization/OrganizationPostJobForm")
 );
 const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
-const OrganizationDetailsPage = lazy(
-  () => import("./organization/OrganizationDetailsPage")
+const OrganizationAboutPanel = lazy(
+  () => import("@components/organization/OrganizationAboutPanel")
+);
+const OrganizationJobsPanel = lazy(
+  () => import("@components/organization/OrganizationJobsPanel")
+);
+const OrganizationHomePanel = lazy(
+  () => import("@components/organization/OrganizationHomePanel")
+);
+const OrganizationModal = lazy(
+  () => import("@components/organization/OrganizationModal")
 );
 const MyOrganizationPage = lazy(() => import("./organization/MyOrganization"));
 const NotFoundPage = lazy(() => import("./NotFoundPage"));
@@ -104,9 +112,14 @@ export default function AppUI() {
             </Route>
             <Route path="network" element={<NetworkPage />}></Route>
             <Route path="my-organization" element={<MyOrganizationPage />} />
-            <Route path="organizations/:organizationId">
-              <Route element={<OrganizationPage />} index />
-              <Route path="details" element={<OrganizationDetailsPage />} />
+            <Route
+              path="organizations/:organizationId"
+              element={<OrganizationPage />}
+            >
+              <Route element={<OrganizationHomePanel />} index />
+              <Route path="about" element={<OrganizationAboutPanel />} />
+              <Route path="jobs" element={<OrganizationJobsPanel />} />
+              <Route path="people" element={<></>} />
               <Route
                 path="jobs/publish-job/form"
                 element={
@@ -123,33 +136,33 @@ export default function AppUI() {
                   </IsAllowed>
                 }
               />
-              <Route path="recruitment/jobs">
+            </Route>
+            <Route path="organizations/:organizationId/recruitment/jobs">
+              <Route
+                index
+                element={
+                  <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
+                    <RecruitmentPage />
+                  </IsAllowed>
+                }
+              />
+              <Route path=":jobId">
                 <Route
                   index
                   element={
                     <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
-                      <RecruitmentPage />
+                      <RecruitmentCandidatesPage />
                     </IsAllowed>
                   }
                 />
-                <Route path=":jobId">
-                  <Route
-                    index
-                    element={
-                      <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
-                        <RecruitmentCandidatesPage />
-                      </IsAllowed>
-                    }
-                  />
-                  <Route
-                    path="applications/:applicationId"
-                    element={
-                      <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
-                        <RecruitmentApplicationPage />
-                      </IsAllowed>
-                    }
-                  />
-                </Route>
+                <Route
+                  path="applications/:applicationId"
+                  element={
+                    <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
+                      <RecruitmentApplicationPage />
+                    </IsAllowed>
+                  }
+                />
               </Route>
             </Route>
             <Route path="admin-panel" element={<AdminPage />}>

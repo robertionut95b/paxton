@@ -46,11 +46,11 @@ type OrganizationLeftMenuProps = {
   rolesToShow: RoleType[];
 };
 
-const OrganizationLeftMenu = ({
+const OrganizationMenu = ({
   rolesToShow = [RoleType.ROLE_EVERYONE],
 }: OrganizationLeftMenuProps) => {
   return (
-    <Paper shadow={"sm"} p="md">
+    <Paper shadow={"xs"} p="md">
       <List spacing={"sm"} size="sm">
         {links.map((l) =>
           rolesToShow.includes(l.allowedRole) ? (
@@ -66,4 +66,4 @@ const OrganizationLeftMenu = ({
   );
 };
 
-export default OrganizationLeftMenu;
+export default OrganizationMenu;

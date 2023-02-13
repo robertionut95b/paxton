@@ -96,13 +96,13 @@ const RecruitmentCandidatesPage = () => {
               key: "id",
               operator: Operator.Equal,
               value: organization?.getOrganizationById?.recruitmentProcess
-                .id as string,
+                ?.id as string,
             },
           ],
         },
       },
       {
-        enabled: !!organization?.getOrganizationById?.recruitmentProcess.id,
+        enabled: !!organization?.getOrganizationById?.recruitmentProcess?.id,
       }
     );
 

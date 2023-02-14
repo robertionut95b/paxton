@@ -12,4 +12,6 @@ public interface RecruiterRepository extends JpaRepository<Recruiter, Long> {
     Optional<Recruiter> findByUser_Username(String username);
 
     Collection<Recruiter> findByOrganizationId(Long organizationId);
+
+    Collection<Recruiter> findByOrganizationSlugName(String organizationSlug);
 }

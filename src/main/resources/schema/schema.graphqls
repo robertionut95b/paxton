@@ -2,6 +2,7 @@
 # The root query of the application
 scalar Date
 scalar DateTime
+scalar Url
 
 directive @constraint(
     # String constraints
@@ -88,6 +89,10 @@ type City {
     id: ID!
     name: String!
     country: Country!
+}
+
+input CityLookupInput {
+    id: ID!
 }
 
 type Certification {
@@ -222,24 +227,50 @@ type JobListingPage {
     totalElements: Int!
 }
 
+enum OrganizationSize {
+    BETWEEN_1_5
+    BETWEEN_5_30
+    BETWEEN_30_100
+    BETWEEN_100_500
+    BETWEEN_500_1000
+    BETWEEN_1000_5000
+    BETWEEN_5000_10000
+    OVER_10000
+}
+
 type Organization {
     id: ID!
     name: String!
+    slugName: String!
+    slogan: String!
     description: String!
-    industry: String!
-    location: String!
+    headQuarters: City!
     jobs: [JobListing]
     photography: String
+    recruiters: [Recruiter]
     recruitmentProcess: Process!
+    webSite: Url
+    activitySector: ActivitySector!
+    foundedAt: Date!
+    companySize: OrganizationSize!
+    locations: [City]
+    specializations: [Specialization]
+    affiliates: [Organization]
 }
 
 input OrganizationInput {
     id: ID
     name: String! @constraint(minLength: 3)
+    slogan: String! @constraint(minLength: 5, maxLength: 100)
     description: String! @constraint(minLength: 5)
-    industry: String! @constraint(minLength: 1)
-    location: ID! @constraint(minLength: 1)
+    activitySectorId: ID! @constraint(minLength: 1)
+    headQuartersId: ID! @constraint(minLength: 1)
     photography: String
+    webSite: Url
+    foundedAt: Date!
+    companySize: OrganizationSize
+    locations: [CityLookupInput]
+    specializations: [Specialization]
 }
 
 type Process {
@@ -296,6 +327,54 @@ enum Status {
     ACTIVE,
     REMOVED,
     DRAFT
+}
+
+enum Specialization {
+    Banking,
+    Retail_banking,
+    Corporate_and_Investment_Banking,
+    Private_Banking,
+    Financial_services,
+    Insurance,
+    Securities_Services,
+    Mobility,
+    Credit,
+    Entrepreneurs,
+    Intrapreneurs,
+    Commercial_Banking,
+    Investment_Banking,
+    Wealth_Management,
+    Credit_Cards,
+    Capital_Markets,
+    Equity_and_Fixed_Income_Research,
+    Consumer_Lending,
+    Cash_Management,
+    Transaction_Services,
+    Offshore_Bonds,
+    Investment_Funds,
+    Equities_and_Brokerage,
+    Exchange_Traded_Funds,
+    Multi_Asset_Funds,
+    Technology_Innovation,
+    AI,
+    Machine_Learning,
+    Internet_of_Things,
+    Blockchain,
+    Virtual_Reality, Augmented_Reality,
+    Software_Product_Design,
+    Software_Development,
+    Digital_Transformation,
+    Financial_Software_Development,
+    Insurtech_Development,
+    Fintech_Development,
+    Information_Technology_and_Services,
+    IT_and_Software,
+    Technical_Consulting,
+    Project_Management,
+    Information_Services,
+    Engineering,
+    Automotive,
+    Industrial_Automation
 }
 
 type Step {
@@ -450,6 +529,7 @@ type Query {
     getAllJobs: [Job]
     getAllOrganizations: [Organization]
     getOrganizationById(organizationId: ID!): Organization
+    getOrganizationBySlugName(slugName: String!): Organization
     getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
     getRelatedJobListings(jobName: String!): [JobListing]
     getAllProcesses(searchQuery: SearchQueryInput): ProcessPage
@@ -468,6 +548,7 @@ type Query {
     getAllApplications(searchQuery: SearchQueryInput): ApplicationPage
     getRecruiterById(recruiterId: ID!): Recruiter
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
+    getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
 }
 
 type Mutation {

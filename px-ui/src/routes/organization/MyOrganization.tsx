@@ -18,9 +18,9 @@ export default function MyOrganizationPage() {
     },
     {
       onSuccess: async (data) => {
-        const organizationId = data.getRecruiterById?.organization.id;
-        if (organizationId && isAuthorized([RoleType.ROLE_RECRUITER])) {
-          navigate(`/app/organizations/${organizationId}/`);
+        const organizationSlug = data.getRecruiterById?.organization.slugName;
+        if (organizationSlug && isAuthorized([RoleType.ROLE_RECRUITER])) {
+          navigate(`/app/organizations/${organizationSlug}/`);
         }
       },
       onError: () => {
@@ -41,8 +41,8 @@ export default function MyOrganizationPage() {
       data.getRecruiterById?.organization.id &&
       isAuthorized([RoleType.ROLE_RECRUITER])
     ) {
-      const organizationId = data.getRecruiterById?.organization?.id;
-      navigate(`/app/organizations/${organizationId}/`);
+      const organizationSlug = data.getRecruiterById?.organization?.slugName;
+      navigate(`/app/organizations/${organizationSlug}/`);
     } else navigate(`/app`);
   });
 

@@ -18,6 +18,7 @@ generates:
       scalars:
         Date: Date
         DateTime: Date
+        Url: URL
       scalarSchemas:
         Date: z.date()
         Email: z.string().email()

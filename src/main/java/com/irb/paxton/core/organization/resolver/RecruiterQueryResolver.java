@@ -19,6 +19,10 @@ public class RecruiterQueryResolver implements GraphQLQueryResolver {
         return this.recruiterRepository.findByOrganizationId(organizationId);
     }
 
+    public Collection<Recruiter> getAllRecruitersForOrganizationBySlug(String organizationSlug) {
+        return this.recruiterRepository.findByOrganizationSlugName(organizationSlug);
+    }
+
     public Optional<Recruiter> getRecruiterById(Long recruiterId) {
         return this.recruiterRepository.findById(recruiterId);
     }

@@ -1,11 +1,9 @@
-import { GetRelatedJobListingsQuery } from "@gql/generated";
+import { JobsListingsDataProps } from "@interfaces/jobs.types";
 import { Button, Center, Stack, Title } from "@mantine/core";
 import JobListingsCards from "../JobListingsCards";
 
 type JobsRelatedSectionProps = {
-  jobs: (NonNullable<
-    NonNullable<GetRelatedJobListingsQuery["getRelatedJobListings"]>[number]
-  > | null)[];
+  jobs: JobsListingsDataProps;
 };
 
 const JobsRelatedSection = ({ jobs }: JobsRelatedSectionProps) => {

@@ -25,8 +25,10 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
       organization {
         id
         name
-        industry
-        location
+        activitySector {
+          id
+          name
+        }
         photography
         description
       }
@@ -89,9 +91,11 @@ query GetUserProfile($profileSlugUrl: String) {
       organization {
         id
         name
-        industry
+        activitySector {
+          id
+          name
+        }
         photography
-        location
       }
       city {
         id
@@ -148,9 +152,23 @@ query getAllOrganizations {
   getAllOrganizations {
     id
     name
+    slugName
     description
-    industry
-    location
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
+    activitySector {
+      id
+      name
+    }
     photography
     recruitmentProcess {
       id
@@ -207,9 +225,52 @@ query GetOrganizationById($organizationId: ID!) {
   getOrganizationById(organizationId: $organizationId) {
     id
     name
+    slugName
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
     description
-    industry
-    location
+    activitySector {
+      id
+      name
+    }
+    photography
+    description
+    recruitmentProcess {
+      id
+    }
+  }
+}
+
+query GetOrganizationBySlugName($slugName: String!) {
+  getOrganizationBySlugName(slugName: $slugName) {
+    id
+    name
+    slugName
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
+    description
+    activitySector {
+      id
+      name
+    }
     photography
     description
     recruitmentProcess {
@@ -310,8 +371,8 @@ query GetAllProcesses($searchQuery: SearchQueryInput) {
   }
 }
 
-query GetAllRecruitersForOrganization($organizationId: ID!) {
-  getAllRecruitersForOrganization(organizationId: $organizationId) {
+query GetAllRecruitersForOrganizationBySlug($organizationSlug: String!) {
+  getAllRecruitersForOrganizationBySlug(organizationSlug: $organizationSlug) {
     id
     user {
       firstName
@@ -341,8 +402,11 @@ query GetRecruiterById($recruiterId: ID!) {
     organization {
       id
       name
-      industry
-      location
+      slugName
+      activitySector {
+        id
+        name
+      }
       photography
       description
     }

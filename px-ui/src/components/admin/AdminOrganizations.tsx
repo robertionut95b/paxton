@@ -71,15 +71,16 @@ const AdminOrganizations = () => {
       menuProps.items = [
         {
           label: "Edit organization",
-          onClick: () => navigate(`update/${rowProps.data.id}`),
+          onClick: () => navigate(`update/${rowProps.data.slugName}`),
         },
         {
           label: "Publish job listing",
-          onClick: () => navigate(`publish/${rowProps.data.id}`),
+          onClick: () => navigate(`publish/${rowProps.data.slugName}`),
         },
         {
           label: "Organization page",
-          onClick: () => navigate(`/app/organizations/${rowProps.data.id}`),
+          onClick: () =>
+            navigate(`/app/organizations/${rowProps.data.slugName}`),
         },
         {
           label: "Show recruiters",

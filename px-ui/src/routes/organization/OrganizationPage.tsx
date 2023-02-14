@@ -3,11 +3,11 @@ import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import OrganizationHero from "@components/organization/OrganizationHero";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import { useGetOrganizationByIdQuery } from "@gql/generated";
+import { useGetOrganizationBySlugNameQuery } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Grid, Group, Paper, Skeleton, Stack, Title } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
 const OrganizationToolbarSkeleton = () => (
@@ -24,23 +24,23 @@ const OrganizationToolbarSkeleton = () => (
 
 export default function OrganizationPage() {
   const { user, isAuthorized } = useAuth();
-  const { organizationId } = useParams();
-  const { data: organization, isLoading: isLoadingOrganization } =
-    useGetOrganizationByIdQuery(
+  const { organizationSlug } = useParams();
+
+  const { data: organizationData, isInitialLoading: isLoadingOrganization } =
+    useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
       {
-        organizationId: organizationId as string,
+        slugName: organizationSlug as string,
       },
       {
-        enabled: !!organizationId,
+        enabled: !!organizationSlug,
       }
     );
 
-  const organizationItem = organization?.getOrganizationById;
+  const organizationItem = organizationData?.getOrganizationBySlugName;
 
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
-  if (!organization?.getOrganizationById || !organizationItem)
-    return <NotFoundPage />;
+  if (!organizationItem) return <NotFoundPage />;
 
   const OrganizationToolbar = lazy(
     () => import("@components/organization/OrganizationToolbar")
@@ -55,7 +55,7 @@ export default function OrganizationPage() {
       <Grid.Col span={12} sm={9}>
         <Stack>
           <OrganizationHero organization={organizationItem} />
-          <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
+          <IsAllowed roles={[RoleType.ROLE_RECRUITER]} renderAuthFailed={null}>
             <Suspense fallback={<OrganizationToolbarSkeleton />}>
               <OrganizationToolbar organization={organizationItem} />
             </Suspense>

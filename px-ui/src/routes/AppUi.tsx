@@ -113,7 +113,7 @@ export default function AppUI() {
             <Route path="network" element={<NetworkPage />}></Route>
             <Route path="my-organization" element={<MyOrganizationPage />} />
             <Route
-              path="organizations/:organizationId"
+              path="organizations/:organizationSlug"
               element={<OrganizationPage />}
             >
               <Route element={<OrganizationHomePanel />} index />
@@ -137,7 +137,7 @@ export default function AppUI() {
                 }
               />
             </Route>
-            <Route path="organizations/:organizationId/recruitment/jobs">
+            <Route path="organizations/:organizationSlug/recruitment/jobs">
               <Route
                 index
                 element={
@@ -175,11 +175,11 @@ export default function AppUI() {
                 <Route path="organizations" element={<AdminOrganizations />}>
                   <Route path="new" element={<OrganizationModal />} />
                   <Route
-                    path="update/:organizationId"
+                    path="update/:organizationSlug"
                     element={<OrganizationModal />}
                   />
                   <Route
-                    path="publish/:organizationId"
+                    path="publish/:organizationSlug"
                     element={<OrganizationPostJobForm />}
                   />
                 </Route>

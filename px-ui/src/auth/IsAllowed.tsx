@@ -8,7 +8,7 @@ export interface IsAllowedProps {
   roles?: RoleType[] | string[];
   permissions?: string[];
   isLoading?: React.ReactElement;
-  renderAuthFailed?: React.ReactElement;
+  renderAuthFailed?: React.ReactElement | null;
   adminCheck?: boolean;
   children: React.ReactElement;
 }

@@ -24,6 +24,7 @@ export type Scalars = {
   Float: number;
   Date: Date;
   DateTime: Date;
+  Url: URL;
 };
 
 export type ActivitySector = {
@@ -100,6 +101,10 @@ export type City = {
   country: Country;
   id: Scalars['ID'];
   name: Scalars['String'];
+};
+
+export type CityLookupInput = {
+  id: Scalars['ID'];
 };
 
 export enum ContractType {
@@ -371,24 +376,50 @@ export enum Operator {
 
 export type Organization = {
   __typename?: 'Organization';
+  activitySector: ActivitySector;
+  affiliates?: Maybe<Array<Maybe<Organization>>>;
+  companySize: OrganizationSize;
   description: Scalars['String'];
+  foundedAt: Scalars['Date'];
+  headQuarters: City;
   id: Scalars['ID'];
-  industry: Scalars['String'];
   jobs?: Maybe<Array<Maybe<JobListing>>>;
-  location: Scalars['String'];
+  locations?: Maybe<Array<Maybe<City>>>;
   name: Scalars['String'];
   photography?: Maybe<Scalars['String']>;
+  recruiters?: Maybe<Array<Maybe<Recruiter>>>;
   recruitmentProcess: Process;
+  slogan: Scalars['String'];
+  slugName: Scalars['String'];
+  specializations?: Maybe<Array<Maybe<Specialization>>>;
+  webSite?: Maybe<Scalars['Url']>;
 };
 
 export type OrganizationInput = {
+  activitySectorId: Scalars['ID'];
+  companySize?: InputMaybe<OrganizationSize>;
   description: Scalars['String'];
+  foundedAt: Scalars['Date'];
+  headQuartersId: Scalars['ID'];
   id?: InputMaybe<Scalars['ID']>;
-  industry: Scalars['String'];
-  location: Scalars['ID'];
+  locations?: InputMaybe<Array<InputMaybe<CityLookupInput>>>;
   name: Scalars['String'];
   photography?: InputMaybe<Scalars['String']>;
+  slogan: Scalars['String'];
+  specializations?: InputMaybe<Array<InputMaybe<Specialization>>>;
+  webSite?: InputMaybe<Scalars['Url']>;
 };
+
+export enum OrganizationSize {
+  Between_1_5 = 'BETWEEN_1_5',
+  Between_5_30 = 'BETWEEN_5_30',
+  Between_30_100 = 'BETWEEN_30_100',
+  Between_100_500 = 'BETWEEN_100_500',
+  Between_500_1000 = 'BETWEEN_500_1000',
+  Between_1000_5000 = 'BETWEEN_1000_5000',
+  Between_5000_10000 = 'BETWEEN_5000_10000',
+  Over_10000 = 'OVER_10000'
+}
 
 export type Photography = {
   __typename?: 'Photography';
@@ -467,12 +498,14 @@ export type Query = {
   getAllOrganizations?: Maybe<Array<Maybe<Organization>>>;
   getAllProcesses?: Maybe<ProcessPage>;
   getAllRecruitersForOrganization?: Maybe<Array<Maybe<Recruiter>>>;
+  getAllRecruitersForOrganizationBySlug?: Maybe<Array<Maybe<Recruiter>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMyApplicationForJobListing?: Maybe<Application>;
   getOrganizationById?: Maybe<Organization>;
+  getOrganizationBySlugName?: Maybe<Organization>;
   getRecruiterById?: Maybe<Recruiter>;
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
@@ -511,6 +544,11 @@ export type QueryGetAllRecruitersForOrganizationArgs = {
 };
 
 
+export type QueryGetAllRecruitersForOrganizationBySlugArgs = {
+  organizationSlug: Scalars['String'];
+};
+
+
 export type QueryGetMyApplicationForJobListingArgs = {
   JobListingId: Scalars['ID'];
 };
@@ -518,6 +556,11 @@ export type QueryGetMyApplicationForJobListingArgs = {
 
 export type QueryGetOrganizationByIdArgs = {
   organizationId: Scalars['ID'];
+};
+
+
+export type QueryGetOrganizationBySlugNameArgs = {
+  slugName: Scalars['String'];
 };
 
 
@@ -572,6 +615,55 @@ export type SortsInput = {
   direction: SortDirection;
   key: Scalars['String'];
 };
+
+export enum Specialization {
+  Ai = 'AI',
+  AugmentedReality = 'Augmented_Reality',
+  Automotive = 'Automotive',
+  Banking = 'Banking',
+  Blockchain = 'Blockchain',
+  CapitalMarkets = 'Capital_Markets',
+  CashManagement = 'Cash_Management',
+  CommercialBanking = 'Commercial_Banking',
+  ConsumerLending = 'Consumer_Lending',
+  CorporateAndInvestmentBanking = 'Corporate_and_Investment_Banking',
+  Credit = 'Credit',
+  CreditCards = 'Credit_Cards',
+  DigitalTransformation = 'Digital_Transformation',
+  Engineering = 'Engineering',
+  Entrepreneurs = 'Entrepreneurs',
+  EquitiesAndBrokerage = 'Equities_and_Brokerage',
+  EquityAndFixedIncomeResearch = 'Equity_and_Fixed_Income_Research',
+  ExchangeTradedFunds = 'Exchange_Traded_Funds',
+  FinancialSoftwareDevelopment = 'Financial_Software_Development',
+  FinancialServices = 'Financial_services',
+  FintechDevelopment = 'Fintech_Development',
+  ItAndSoftware = 'IT_and_Software',
+  IndustrialAutomation = 'Industrial_Automation',
+  InformationServices = 'Information_Services',
+  InformationTechnologyAndServices = 'Information_Technology_and_Services',
+  Insurance = 'Insurance',
+  InsurtechDevelopment = 'Insurtech_Development',
+  InternetOfThings = 'Internet_of_Things',
+  Intrapreneurs = 'Intrapreneurs',
+  InvestmentBanking = 'Investment_Banking',
+  InvestmentFunds = 'Investment_Funds',
+  MachineLearning = 'Machine_Learning',
+  Mobility = 'Mobility',
+  MultiAssetFunds = 'Multi_Asset_Funds',
+  OffshoreBonds = 'Offshore_Bonds',
+  PrivateBanking = 'Private_Banking',
+  ProjectManagement = 'Project_Management',
+  RetailBanking = 'Retail_banking',
+  SecuritiesServices = 'Securities_Services',
+  SoftwareDevelopment = 'Software_Development',
+  SoftwareProductDesign = 'Software_Product_Design',
+  TechnicalConsulting = 'Technical_Consulting',
+  TechnologyInnovation = 'Technology_Innovation',
+  TransactionServices = 'Transaction_Services',
+  VirtualReality = 'Virtual_Reality',
+  WealthManagement = 'Wealth_Management'
+}
 
 export enum Status {
   Active = 'ACTIVE',
@@ -749,14 +841,14 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: Date, endDate?: Date | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, industry: string, photography?: string | null, location: string } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: Date, endDate?: Date | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: string, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: string, title: string, contractType: ContractType, startDate: Date, endDate?: Date | null, description: string, organization?: { __typename?: 'Organization', id: string, name: string, photography?: string | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null, city?: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: string, degree?: string | null, description?: string | null, startDate: Date, endDate?: Date | null, institution: { __typename?: 'Institution', id: string, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: string, name: string } | null, certification?: { __typename?: 'Certification', id: string, name: string } | null } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -766,7 +858,7 @@ export type GetCountriesCitiesQuery = { __typename?: 'Query', getCountriesCities
 export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, description: string, industry: string, location: string, photography?: string | null, recruitmentProcess: { __typename?: 'Process', id: string } } | null> | null };
+export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, slugName: string, description: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, photography?: string | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string } } | null> | null };
 
 export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -803,7 +895,14 @@ export type GetOrganizationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, description: string, industry: string, location: string, photography?: string | null, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
+export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
+
+export type GetOrganizationBySlugNameQueryVariables = Exact<{
+  slugName: Scalars['String'];
+}>;
+
+
+export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -833,19 +932,19 @@ export type GetAllProcessesQueryVariables = Exact<{
 
 export type GetAllProcessesQuery = { __typename?: 'Query', getAllProcesses?: { __typename?: 'ProcessPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Process', id: string, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: string, status: Status, order: number, step: { __typename?: 'Step', id: string, title: string } } | null> | null } | null> | null } | null };
 
-export type GetAllRecruitersForOrganizationQueryVariables = Exact<{
-  organizationId: Scalars['ID'];
+export type GetAllRecruitersForOrganizationBySlugQueryVariables = Exact<{
+  organizationSlug: Scalars['String'];
 }>;
 
 
-export type GetAllRecruitersForOrganizationQuery = { __typename?: 'Query', getAllRecruitersForOrganization?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
+export type GetAllRecruitersForOrganizationBySlugQuery = { __typename?: 'Query', getAllRecruitersForOrganizationBySlug?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
 
 export type GetRecruiterByIdQueryVariables = Exact<{
   recruiterId: Scalars['ID'];
 }>;
 
 
-export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, organization: { __typename?: 'Organization', id: string, name: string, industry: string, location: string, photography?: string | null, description: string } } | null };
+export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1198,8 +1297,10 @@ export const GetAllJobListingsDocument = `
       organization {
         id
         name
-        industry
-        location
+        activitySector {
+          id
+          name
+        }
         photography
         description
       }
@@ -1284,9 +1385,11 @@ export const GetUserProfileDocument = `
       organization {
         id
         name
-        industry
+        activitySector {
+          id
+          name
+        }
         photography
-        location
       }
       city {
         id
@@ -1387,9 +1490,23 @@ export const GetAllOrganizationsDocument = `
   getAllOrganizations {
     id
     name
+    slugName
     description
-    industry
-    location
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
+    activitySector {
+      id
+      name
+    }
     photography
     recruitmentProcess {
       id
@@ -1600,9 +1717,23 @@ export const GetOrganizationByIdDocument = `
   getOrganizationById(organizationId: $organizationId) {
     id
     name
+    slugName
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
     description
-    industry
-    location
+    activitySector {
+      id
+      name
+    }
     photography
     description
     recruitmentProcess {
@@ -1632,6 +1763,57 @@ useGetOrganizationByIdQuery.getKey = (variables: GetOrganizationByIdQueryVariabl
 ;
 
 useGetOrganizationByIdQuery.fetcher = (client: GraphQLClient, variables: GetOrganizationByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers);
+export const GetOrganizationBySlugNameDocument = `
+    query GetOrganizationBySlugName($slugName: String!) {
+  getOrganizationBySlugName(slugName: $slugName) {
+    id
+    name
+    slugName
+    companySize
+    foundedAt
+    headQuarters {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    slogan
+    description
+    activitySector {
+      id
+      name
+    }
+    photography
+    description
+    recruitmentProcess {
+      id
+    }
+  }
+}
+    `;
+export const useGetOrganizationBySlugNameQuery = <
+      TData = GetOrganizationBySlugNameQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetOrganizationBySlugNameQueryVariables,
+      options?: UseQueryOptions<GetOrganizationBySlugNameQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetOrganizationBySlugNameQuery, TError, TData>(
+      ['GetOrganizationBySlugName', variables],
+      fetcher<GetOrganizationBySlugNameQuery, GetOrganizationBySlugNameQueryVariables>(client, GetOrganizationBySlugNameDocument, variables, headers),
+      options
+    );
+useGetOrganizationBySlugNameQuery.document = GetOrganizationBySlugNameDocument;
+
+
+useGetOrganizationBySlugNameQuery.getKey = (variables: GetOrganizationBySlugNameQueryVariables) => ['GetOrganizationBySlugName', variables];
+;
+
+useGetOrganizationBySlugNameQuery.fetcher = (client: GraphQLClient, variables: GetOrganizationBySlugNameQueryVariables, headers?: RequestInit['headers']) => fetcher<GetOrganizationBySlugNameQuery, GetOrganizationBySlugNameQueryVariables>(client, GetOrganizationBySlugNameDocument, variables, headers);
 export const GetRelatedJobListingsDocument = `
     query GetRelatedJobListings($jobName: String!) {
   getRelatedJobListings(jobName: $jobName) {
@@ -1812,9 +1994,9 @@ useGetAllProcessesQuery.getKey = (variables?: GetAllProcessesQueryVariables) => 
 ;
 
 useGetAllProcessesQuery.fetcher = (client: GraphQLClient, variables?: GetAllProcessesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, variables, headers);
-export const GetAllRecruitersForOrganizationDocument = `
-    query GetAllRecruitersForOrganization($organizationId: ID!) {
-  getAllRecruitersForOrganization(organizationId: $organizationId) {
+export const GetAllRecruitersForOrganizationBySlugDocument = `
+    query GetAllRecruitersForOrganizationBySlug($organizationSlug: String!) {
+  getAllRecruitersForOrganizationBySlug(organizationSlug: $organizationSlug) {
     id
     user {
       firstName
@@ -1828,27 +2010,27 @@ export const GetAllRecruitersForOrganizationDocument = `
   }
 }
     `;
-export const useGetAllRecruitersForOrganizationQuery = <
-      TData = GetAllRecruitersForOrganizationQuery,
+export const useGetAllRecruitersForOrganizationBySlugQuery = <
+      TData = GetAllRecruitersForOrganizationBySlugQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: GetAllRecruitersForOrganizationQueryVariables,
-      options?: UseQueryOptions<GetAllRecruitersForOrganizationQuery, TError, TData>,
+      variables: GetAllRecruitersForOrganizationBySlugQueryVariables,
+      options?: UseQueryOptions<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetAllRecruitersForOrganizationQuery, TError, TData>(
-      ['GetAllRecruitersForOrganization', variables],
-      fetcher<GetAllRecruitersForOrganizationQuery, GetAllRecruitersForOrganizationQueryVariables>(client, GetAllRecruitersForOrganizationDocument, variables, headers),
+    useQuery<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>(
+      ['GetAllRecruitersForOrganizationBySlug', variables],
+      fetcher<GetAllRecruitersForOrganizationBySlugQuery, GetAllRecruitersForOrganizationBySlugQueryVariables>(client, GetAllRecruitersForOrganizationBySlugDocument, variables, headers),
       options
     );
-useGetAllRecruitersForOrganizationQuery.document = GetAllRecruitersForOrganizationDocument;
+useGetAllRecruitersForOrganizationBySlugQuery.document = GetAllRecruitersForOrganizationBySlugDocument;
 
 
-useGetAllRecruitersForOrganizationQuery.getKey = (variables: GetAllRecruitersForOrganizationQueryVariables) => ['GetAllRecruitersForOrganization', variables];
+useGetAllRecruitersForOrganizationBySlugQuery.getKey = (variables: GetAllRecruitersForOrganizationBySlugQueryVariables) => ['GetAllRecruitersForOrganizationBySlug', variables];
 ;
 
-useGetAllRecruitersForOrganizationQuery.fetcher = (client: GraphQLClient, variables: GetAllRecruitersForOrganizationQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllRecruitersForOrganizationQuery, GetAllRecruitersForOrganizationQueryVariables>(client, GetAllRecruitersForOrganizationDocument, variables, headers);
+useGetAllRecruitersForOrganizationBySlugQuery.fetcher = (client: GraphQLClient, variables: GetAllRecruitersForOrganizationBySlugQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllRecruitersForOrganizationBySlugQuery, GetAllRecruitersForOrganizationBySlugQueryVariables>(client, GetAllRecruitersForOrganizationBySlugDocument, variables, headers);
 export const GetRecruiterByIdDocument = `
     query GetRecruiterById($recruiterId: ID!) {
   getRecruiterById(recruiterId: $recruiterId) {
@@ -1866,8 +2048,11 @@ export const GetRecruiterByIdDocument = `
     organization {
       id
       name
-      industry
-      location
+      slugName
+      activitySector {
+        id
+        name
+      }
       photography
       description
     }
@@ -1917,6 +2102,12 @@ export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInpu
 export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
   return z.object<Properties<CertificationInput>>({
     name: z.string()
+  })
+}
+
+export function CityLookupInputSchema(): z.ZodObject<Properties<CityLookupInput>> {
+  return z.object<Properties<CityLookupInput>>({
+    id: z.string()
   })
 }
 
@@ -1997,14 +2188,22 @@ export const OperatorSchema = z.nativeEnum(Operator);
 
 export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationInput>> {
   return z.object<Properties<OrganizationInput>>({
+    activitySectorId: z.string().min(1),
+    companySize: OrganizationSizeSchema.nullish(),
     description: z.string().min(5),
+    foundedAt: z.date(),
+    headQuartersId: z.string().min(1),
     id: z.string().nullish(),
-    industry: z.string().min(1),
-    location: z.string().min(1),
+    locations: z.array(z.lazy(() => CityLookupInputSchema().nullable())).nullish(),
     name: z.string().min(3),
-    photography: z.string().nullish()
+    photography: z.string().nullish(),
+    slogan: z.string().min(5).max(100, "Field must not be longer than 100 characters"),
+    specializations: z.array(SpecializationSchema.nullable()).nullish(),
+    webSite: definedNonNullAnySchema.nullish()
   })
 }
+
+export const OrganizationSizeSchema = z.nativeEnum(OrganizationSize);
 
 export function ProcessInputSchema(): z.ZodObject<Properties<ProcessInput>> {
   return z.object<Properties<ProcessInput>>({
@@ -2051,6 +2250,8 @@ export function SortsInputSchema(): z.ZodObject<Properties<SortsInput>> {
     key: z.string()
   })
 }
+
+export const SpecializationSchema = z.nativeEnum(Specialization);
 
 export const StatusSchema = z.nativeEnum(Status);
 

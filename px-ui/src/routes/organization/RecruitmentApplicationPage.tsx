@@ -99,8 +99,8 @@ const RecruitmentApplicationPage = () => {
       <Paper shadow={"xs"} p="xs">
         <Breadcrumbs
           excludePaths={[
-            "/app/organizations/:organizationId/recruitment/",
-            "/app/organizations/:organizationId/recruitment/jobs/:jobId/applications",
+            "/app/organizations/:organizationSlug/recruitment/",
+            "/app/organizations/:organizationSlug/recruitment/jobs/:jobId/applications",
           ]}
         />
       </Paper>

@@ -11,7 +11,7 @@ import {
   useGetAllJobListingsQuery,
   useGetAllJobsQuery,
   useGetAllOrganizationsQuery,
-  useGetAllRecruitersForOrganizationQuery,
+  useGetAllRecruitersForOrganizationBySlugQuery,
   useGetCountriesCitiesQuery,
   usePublishJobListingMutation,
   WorkType,
@@ -54,7 +54,8 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function OrganizationPostJobForm() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
-  const { organizationId, jobListingId } = useParams();
+  const { organizationSlug, jobListingId } = useParams();
+  const [orgId, setOrgId] = useState<string | null>(null);
 
   const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -85,7 +86,18 @@ export default function OrganizationPostJobForm() {
     useGetCountriesCitiesQuery(graphqlRequestClient);
 
   const { data: organizations, isLoading: isOrganizationsLoading } =
-    useGetAllOrganizationsQuery(graphqlRequestClient);
+    useGetAllOrganizationsQuery(
+      graphqlRequestClient,
+      {},
+      {
+        onSuccess: (data) => {
+          const org = data.getAllOrganizations?.find(
+            (o) => o?.slugName === organizationSlug
+          );
+          if (org) setOrgId(org.id);
+        },
+      }
+    );
 
   const { data: jobCategoriesData, isLoading: isJobCategoriesLoading } =
     useGetAllJobCategoriesQuery(graphqlRequestClient, undefined, {
@@ -101,13 +113,13 @@ export default function OrganizationPostJobForm() {
     useGetAllJobsQuery(graphqlRequestClient);
 
   const { data: recruitersData, isLoading: isRecruitersLoading } =
-    useGetAllRecruitersForOrganizationQuery(
+    useGetAllRecruitersForOrganizationBySlugQuery(
       graphqlRequestClient,
       {
-        organizationId: organizationId as string,
+        organizationSlug: organizationSlug as string,
       },
       {
-        enabled: !!organizationId,
+        enabled: !!organizationSlug,
       }
     );
 
@@ -173,6 +185,7 @@ export default function OrganizationPostJobForm() {
   const closeModal = useCallback(() => {
     navigate(-1);
     setOpened(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const form = useForm({
@@ -190,7 +203,7 @@ export default function OrganizationPostJobForm() {
       jobId: jobListingItem?.job.id ?? "",
       numberOfVacancies: jobListingItem?.numberOfVacancies ?? 1,
       contractType: jobListingItem?.contractType ?? ContractType["FullTime"],
-      organizationId: organizationId,
+      organizationId: orgId,
       categoryId: jobListingItem?.category?.id ?? "",
       recruiterId: jobListingItem?.recruiter?.id ?? "",
       workType: jobListingItem?.workType ?? WorkType.Hybrid,
@@ -202,7 +215,7 @@ export default function OrganizationPostJobForm() {
     publishJob({
       JobListingInput: {
         ...values,
-        organizationId: organizationId as string,
+        organizationId: orgId as string,
         availableFrom: format(
           values.availableFrom,
           "yyyy-MM-dd"
@@ -304,7 +317,11 @@ export default function OrganizationPostJobForm() {
             if (d) {
               setStartDate(d);
               form.setFieldValue("availableFrom", d);
-            } else new Date();
+            } else {
+              const currDate = new Date();
+              setStartDate(currDate);
+              form.setFieldValue("availableFrom", currDate);
+            }
           }}
         />
         <DatePicker
@@ -396,12 +413,12 @@ export default function OrganizationPostJobForm() {
             mt="md"
             withAsterisk
             itemComponent={SelectItem}
-            readOnly
+            // readOnly
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
               value: o?.id as string,
               image: o?.photography,
-              description: o?.industry,
+              description: o?.activitySector.name,
             }))}
             icon={<BuildingOffice2Icon width={18} />}
             {...form.getInputProps("organizationId")}
@@ -417,19 +434,19 @@ export default function OrganizationPostJobForm() {
             mt="md"
             withAsterisk
             itemComponent={SelectItem}
-            data={(recruitersData?.getAllRecruitersForOrganization ?? [])?.map(
-              (r) => ({
-                label:
-                  r?.user.firstName && r.user.lastName
-                    ? `${r.user.firstName} ${r.user.lastName}`
-                    : r?.user.username,
-                value: r?.id as string,
-                description: r?.user.userProfile.profileTitle,
-                image:
-                  r?.user.userProfile.photography &&
-                  `${APP_IMAGES_API_PATH}/100x100?f=/${r.user.userProfile.photography}`,
-              })
-            )}
+            data={(
+              recruitersData?.getAllRecruitersForOrganizationBySlug ?? []
+            )?.map((r) => ({
+              label:
+                r?.user.firstName && r.user.lastName
+                  ? `${r.user.firstName} ${r.user.lastName}`
+                  : r?.user.username,
+              value: r?.id as string,
+              description: r?.user.userProfile.profileTitle,
+              image:
+                r?.user.userProfile.photography &&
+                `${APP_IMAGES_API_PATH}/100x100?f=/${r.user.userProfile.photography}`,
+            }))}
             icon={<UserIcon width={18} />}
             {...form.getInputProps("recruiterId")}
           />

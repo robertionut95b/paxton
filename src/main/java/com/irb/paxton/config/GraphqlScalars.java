@@ -17,4 +17,9 @@ public class GraphqlScalars {
     public GraphQLScalarType DateTime() {
         return ExtendedScalars.DateTime;
     }
+
+    @Bean
+    public GraphQLScalarType Url() {
+        return ExtendedScalars.Url;
+    }
 }

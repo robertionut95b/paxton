@@ -6,9 +6,11 @@ import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
+  GetOrganizationBySlugNameQuery,
   Operator,
   SortDirection,
   useGetAllJobListingsQuery,
+  useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
 import { Grid, Paper, Text, Title } from "@mantine/core";
@@ -88,10 +90,14 @@ export default function JobsPage() {
             )
           );
           const org = data?.getAllJobListings?.list?.[0]?.organization;
-          queryClient.setQueryData(
-            ["GetOrganizationById", { organizationId: org?.id }],
+          queryClient.setQueryData<GetOrganizationBySlugNameQuery>(
+            [
+              useGetOrganizationBySlugNameQuery.getKey({
+                slugName: org?.slugName,
+              }),
+            ],
             {
-              getOrganizationById: org,
+              getOrganizationBySlugName: org,
             }
           );
         }

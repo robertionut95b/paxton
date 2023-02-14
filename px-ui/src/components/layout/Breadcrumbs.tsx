@@ -3,13 +3,13 @@ import {
   Operator,
   useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
-  useGetOrganizationByIdQuery,
+  useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
-  Breadcrumbs as MantineBreadCrumbs,
   Button,
   Loader,
+  Breadcrumbs as MantineBreadCrumbs,
   Text,
 } from "@mantine/core";
 import { NavLink } from "react-router-dom";
@@ -80,21 +80,22 @@ const ApplicationPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
 };
 
 const OrgPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
-  const orgIdParam = match.params.organizationId;
-  const { data: organizationData, isLoading } = useGetOrganizationByIdQuery(
-    graphqlRequestClient,
-    {
-      organizationId: orgIdParam as string,
-    },
-    {
-      enabled: !!orgIdParam,
-    }
-  );
+  const orgSlugParam = match.params.organizationSlug;
+  const { data: organizationData, isLoading } =
+    useGetOrganizationBySlugNameQuery(
+      graphqlRequestClient,
+      {
+        slugName: orgSlugParam as string,
+      },
+      {
+        enabled: !!orgSlugParam,
+      }
+    );
   if (isLoading) return <Loader size={"xs"} />;
-  if (!organizationData?.getOrganizationById) return orgIdParam;
-  const name = organizationData.getOrganizationById.name;
+  if (!organizationData?.getOrganizationBySlugName) return orgSlugParam;
+  const name = organizationData.getOrganizationBySlugName.name;
 
-  if (!name) return orgIdParam;
+  if (!name) return orgSlugParam;
 
   return <Text>{name}</Text>;
 };
@@ -107,15 +108,15 @@ const routes = [
     breadcrumb: JobPageCrumb,
   },
   {
-    path: "/app/organizations/:organizationId/recruitment/jobs/:jobId",
+    path: "/app/organizations/:organizationSlug/recruitment/jobs/:jobId",
     breadcrumb: JobPageCrumb,
   },
   {
-    path: "/app/organizations/:organizationId/",
+    path: "/app/organizations/:organizationSlug/",
     breadcrumb: OrgPageCrumb,
   },
   {
-    path: "/app/organizations/:organizationId/recruitment/jobs/:jobId/applications/:applicationId",
+    path: "/app/organizations/:organizationSlug/recruitment/jobs/:jobId/applications/:applicationId",
     breadCrumb: ApplicationPageCrumb,
   },
 ];

@@ -1,6 +1,6 @@
 import ShowIf from "@components/visibility/ShowIf";
-import { GetRelatedJobListingsQuery } from "@gql/generated";
 import { ClockIcon } from "@heroicons/react/24/outline";
+import { JobsDataPropsItem } from "@interfaces/jobs.types";
 import {
   Anchor,
   Avatar,
@@ -14,13 +14,11 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type JobListingCardProps = {
-  data: NonNullable<
-    NonNullable<GetRelatedJobListingsQuery["getRelatedJobListings"]>[number]
-  >;
+  job: JobsDataPropsItem;
 };
 
 const JobListingCard = ({
-  data: { id, title, organization, city, availableFrom, applications },
+  job: { id, title, organization, city, availableFrom, applications },
 }: JobListingCardProps) => {
   return (
     <Paper shadow="sm" p="lg" radius="sm" h="100%">

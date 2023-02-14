@@ -1,11 +1,12 @@
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
+  GetOrganizationByIdQuery,
   OrganizationInputSchema,
   useCreateOrUpdateOrganizationMutation,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
-  useGetOrganizationByIdQuery,
+  useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import {
   ChatBubbleBottomCenterTextIcon,
@@ -23,8 +24,8 @@ import {
   Modal,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -35,29 +36,37 @@ import { useNavigate, useParams } from "react-router-dom";
 const OrganizationModal = () => {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
-  const { organizationId } = useParams();
+  const { organizationSlug } = useParams();
   const queryClient = useQueryClient();
-  const [desc, setDesc] = useState<string>("");
+  const prevOrgQuery = queryClient.getQueryData<GetOrganizationByIdQuery>(
+    useGetOrganizationBySlugNameQuery.getKey({
+      slugName: organizationSlug ?? "",
+    })
+  );
+  const [desc, setDesc] = useState<string>(
+    prevOrgQuery?.getOrganizationById?.description ?? ""
+  );
 
   const { data: countries, isLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient);
 
   const { data: organizationData, isInitialLoading: isOrganizationLoading } =
-    useGetOrganizationByIdQuery(
+    useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
       {
-        organizationId: organizationId ?? "",
+        slugName: organizationSlug ?? "",
       },
       {
-        enabled: !!organizationId,
+        enabled: !!organizationSlug,
         onSuccess: (data) => {
           const { recruitmentProcess, ...rest } =
-            data.getOrganizationById ?? {};
+            data.getOrganizationBySlugName ?? {};
           form.setValues({
             ...rest,
-            photography: data.getOrganizationById?.photography ?? "",
+            description: data.getOrganizationBySlugName?.description ?? "",
+            photography: data.getOrganizationBySlugName?.photography ?? "",
           });
-          setDesc(data.getOrganizationById?.description ?? "");
+          setDesc(data.getOrganizationBySlugName?.description ?? "");
         },
       }
     );
@@ -86,12 +95,14 @@ const OrganizationModal = () => {
 
   const form = useForm({
     initialValues: {
-      id: organizationId ?? null,
-      name: organizationData?.getOrganizationById?.name ?? "",
-      description: organizationData?.getOrganizationById?.description ?? "",
-      industry: organizationData?.getOrganizationById?.industry ?? "",
-      location: organizationData?.getOrganizationById?.location ?? "",
-      photography: organizationData?.getOrganizationById?.photography ?? "",
+      id: organizationData?.getOrganizationBySlugName?.id ?? null,
+      name: organizationData?.getOrganizationBySlugName?.name ?? "",
+      description:
+        organizationData?.getOrganizationBySlugName?.description ?? "",
+      industry: organizationData?.getOrganizationBySlugName?.industry ?? "",
+      location: organizationData?.getOrganizationBySlugName?.location ?? "",
+      photography:
+        organizationData?.getOrganizationBySlugName?.photography ?? "",
     },
     validate: zodResolver(OrganizationInputSchema()),
   });

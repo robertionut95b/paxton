@@ -30,8 +30,8 @@ import {
   Modal,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
@@ -247,7 +247,7 @@ export default function ProfileExperienceModal() {
               label: o?.name,
               value: o?.id as string,
               image: o?.photography,
-              description: o?.industry,
+              description: o?.activitySector.name,
             }))}
             icon={<BuildingOffice2Icon width={18} />}
             {...form.getInputProps("organizationId")}

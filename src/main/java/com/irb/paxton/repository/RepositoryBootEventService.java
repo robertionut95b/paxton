@@ -14,10 +14,7 @@ import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.Country;
 import com.irb.paxton.core.location.CountryRepository;
-import com.irb.paxton.core.organization.Organization;
-import com.irb.paxton.core.organization.OrganizationRepository;
-import com.irb.paxton.core.organization.Recruiter;
-import com.irb.paxton.core.organization.RecruiterRepository;
+import com.irb.paxton.core.organization.*;
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.*;
 import com.irb.paxton.core.study.certification.Certification;
@@ -41,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -168,16 +167,24 @@ public class RepositoryBootEventService {
 
     public void setupSampleOrganizationRepository() {
         log.info("Paxton : creating organization objects");
+        URL paxtonUrl = null;
+        try {
+            paxtonUrl = new URL("http://paxton.org");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
 
-        Organization paxtonOrg = new Organization("Paxton", "This is the default application organization, used for testing.", "IT&C", "Bucharest, Ro", null, "https://www.svgrepo.com/show/165262/briefcase.svg", null, null);
-        JobCategory itcJobCategory = new JobCategory("Information Technology & Communications", null);
-        JobCategory educationCategory = new JobCategory("Education", null);
-        JobCategory healthcareCategory = new JobCategory("Healthcare", null);
-        JobCategory lawCategory = new JobCategory("Law", null);
         ActivitySector itFinance = new ActivitySector("Information Technology & Finance");
         ActivitySector healthcare = new ActivitySector("Healthcare");
         ActivitySector education = new ActivitySector("Education");
         ActivitySector law = new ActivitySector("Law");
+        City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
+
+        Organization paxtonOrg = new Organization("Paxton", "paxton", "Find your perfect career with Paxton.", "Paxton is the perfect place to find your dream career. With our easy-to-use platform, you can search for jobs based on your skills and experience. We also have a wide range of resources to help you prepare for your job search. So what are you waiting for? Start your job search today", Buc, null, "https://media.discordapp.net/attachments/1073267180730327153/1073270545321304175/1960_letter_P_logo_flat_round_typography_simple_by_Steff_Geissb_c9a8a26b-7c20-441e-8373-c0ed652626e3.png?width=767&height=767", null, null, paxtonUrl, itFinance, LocalDate.of(2022, 10, 1), OrganizationSize.BETWEEN_1_5, null, List.of(Specialization.IT_and_Software, Specialization.AI, Specialization.Software_Development, Specialization.Software_Product_Design, Specialization.Project_Management), null);
+        JobCategory itcJobCategory = new JobCategory("Information Technology & Communications", null);
+        JobCategory educationCategory = new JobCategory("Education", null);
+        JobCategory healthcareCategory = new JobCategory("Healthcare", null);
+        JobCategory lawCategory = new JobCategory("Law", null);
         this.organizationRepository.save(paxtonOrg);
         this.activitySectorRepository.saveAll(List.of(itFinance, healthcare, education, law));
         this.jobCategoryRepository.saveAll(List.of(itcJobCategory, educationCategory, healthcareCategory, lawCategory));
@@ -188,7 +195,7 @@ public class RepositoryBootEventService {
         Job projectManager = new Job("Project Manager", "Project managers have the responsibility of the planning, procurement and execution of a project, in any undertaking that has a defined scope, defined start and a defined finish; regardless of industry", null);
         this.jobRepository.saveAll(List.of(softwareDeveloper, dataAnalyst, projectManager));
 
-        City Buc = this.cityRepository.findByName("Bucharest").orElseThrow(IllegalArgumentException::new);
+
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
         Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
 

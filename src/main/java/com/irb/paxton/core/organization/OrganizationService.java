@@ -36,4 +36,9 @@ public class OrganizationService {
         organizationRepository.save(organization);
         return organization;
     }
+
+    public Organization findBySlugName(String slugName) {
+        return this.organizationRepository.findBySlugName(slugName)
+                .orElseThrow(() -> new OrganizationNotExistsException("Organization %s does not exist".formatted(slugName)));
+    }
 }

@@ -14,7 +14,7 @@ export default function OrganizationToolbar({
       <Group position="apart">
         <Group spacing="xs">
           <NavLink
-            to={`/app/organizations/${organization?.id}/jobs/publish-job/form`}
+            to={`/app/organizations/${organization?.slugName}/jobs/publish-job/form`}
           >
             <Button
               leftIcon={<ClipboardDocumentIcon width={16} />}
@@ -23,14 +23,14 @@ export default function OrganizationToolbar({
               Publish jobs
             </Button>
           </NavLink>
-          <NavLink to={`/app/organizations/${organization?.id}/contacts`}>
+          <NavLink to={`/app/organizations/${organization?.slugName}/contacts`}>
             <Button leftIcon={<UserIcon width={16} />} variant="light">
               Contacts
             </Button>
           </NavLink>
         </Group>
         <ShowIf if={organization}>
-          <NavLink to={`/app/organizations/${organization?.id}/details`}>
+          <NavLink to={`/app/organizations/${organization?.slugName}/details`}>
             <Group>
               <Text className="hidden sm:block" size={"sm"}>
                 {organization?.name}
@@ -39,6 +39,11 @@ export default function OrganizationToolbar({
                 size="sm"
                 src={organization?.photography}
                 title={organization?.name}
+                styles={{
+                  image: {
+                    objectFit: "contain",
+                  },
+                }}
               >
                 {organization?.name?.[0]}
               </Avatar>

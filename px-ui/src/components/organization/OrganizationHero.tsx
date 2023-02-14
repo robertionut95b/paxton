@@ -1,6 +1,7 @@
+import ShowIf from "@components/visibility/ShowIf";
 import {
   GetAllOrganizationsQuery,
-  GetOrganizationByIdQuery,
+  GetOrganizationBySlugNameQuery,
   Organization,
 } from "@gql/generated";
 import {
@@ -25,7 +26,7 @@ import { NavLink, useLocation } from "react-router-dom";
 type OrganizationHeroProps = {
   organization:
     | Organization
-    | NonNullable<GetOrganizationByIdQuery["getOrganizationById"]>
+    | NonNullable<GetOrganizationBySlugNameQuery["getOrganizationBySlugName"]>
     | NonNullable<
         NonNullable<GetAllOrganizationsQuery["getAllOrganizations"]>[number]
       >;
@@ -38,13 +39,14 @@ function getRandomInt(min: number, max: number) {
 }
 
 const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
-  const { id, name, photography, industry, location } = organization ?? {};
+  const { slugName, name, photography, activitySector, slogan, headQuarters } =
+    organization ?? {};
   const { pathname } = useLocation();
   const backgroundPic = "/images/bg-profile.jpg";
-  const profilePic = photography ?? "/images/bg-profile.jpg";
+  const profilePic = photography ?? backgroundPic;
   const links: { link: string; label: string }[] = [
     {
-      link: `/app/organizations/${id}`,
+      link: `/app/organizations/${slugName}`,
       label: "Home",
     },
     {
@@ -94,6 +96,7 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
           },
           image: {
             backgroundColor: "white",
+            objectFit: "contain",
           },
         }}
         src={profilePic}
@@ -104,12 +107,13 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
         <Title order={3} mb={0}>
           {name}
         </Title>
-        <Text>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget eros
-          dui.
-        </Text>
+        <ShowIf if={slogan}>
+          <Text>{slogan}</Text>
+        </ShowIf>
         <Text size="sm" color="dimmed" mb="sm">
-          {industry} - {location} - {getRandomInt(1, 100000) + " followers"}
+          {activitySector.name} -{" "}
+          {`${headQuarters.country.name}, ${headQuarters.name}`} -{" "}
+          {getRandomInt(1, 100000) + " followers"}
         </Text>
         <Group mb={"sm"}>
           <Avatar.Group spacing="md">

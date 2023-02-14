@@ -9,7 +9,7 @@ import {
   Operator,
   SortDirection,
   useGetAllJobListingsQuery,
-  useGetOrganizationByIdQuery,
+  useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { queryClient } from "@lib/queryClient";
@@ -30,22 +30,22 @@ const OrganizationJobsTab = ({
   editableItems = false,
   itemClickCb,
 }: OrganizationJobsTabsProps) => {
-  const { organizationId } = useParams();
+  const { organizationSlug } = useParams();
   const [p, setP] = useState(1);
   const [ps, setPs] = useState(5);
 
   const { data: organization, isLoading: isLoadingOrganization } =
-    useGetOrganizationByIdQuery(
+    useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
       {
-        organizationId: organizationId as string,
+        slugName: organizationSlug as string,
       },
       {
-        enabled: !!organizationId,
+        enabled: !!organizationSlug,
       }
     );
 
-  const organizationItem = organization?.getOrganizationById;
+  const organizationItem = organization?.getOrganizationBySlugName;
   const { data: orgJobs, isLoading: isOrgJobsLoading } =
     useGetAllJobListingsQuery(
       graphqlRequestClient,

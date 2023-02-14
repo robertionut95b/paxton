@@ -5,14 +5,14 @@ import { Paper, Stack, Title } from "@mantine/core";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function RecruitmentPage() {
-  const { organizationId } = useParams();
+  const { organizationSlug } = useParams();
   const navigate = useNavigate();
 
   return (
     <Stack>
       <Paper shadow={"xs"} p="xs">
         <Breadcrumbs
-          excludePaths={["/app/organizations/:organizationId/recruitment/"]}
+          excludePaths={["/app/organizations/:organizationSlug/recruitment/"]}
         />
       </Paper>
       <Paper shadow={"xs"} p="md" className="px-organization-jobs">
@@ -24,7 +24,7 @@ export default function RecruitmentPage() {
             {
               key: "organization",
               fieldType: FieldType.Long,
-              value: organizationId?.toString() ?? "0",
+              value: organizationSlug?.toString() ?? "",
               operator: Operator.Equal,
             },
           ]}

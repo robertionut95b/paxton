@@ -1,9 +1,9 @@
-import { GetRelatedJobListingsQuery } from "@gql/generated";
+import { JobsListingsDataProps } from "@interfaces/jobs.types";
 import { SimpleGrid } from "@mantine/core";
 import JobListingCard from "./JobListingCard";
 
 type JobListingsProps = {
-  jobs: GetRelatedJobListingsQuery["getRelatedJobListings"];
+  jobs: JobsListingsDataProps;
 };
 
 const JobListingsCards = ({ jobs }: JobListingsProps) => {
@@ -22,7 +22,7 @@ const JobListingsCards = ({ jobs }: JobListingsProps) => {
         (jl) =>
           jl && (
             <div key={jl.id}>
-              <JobListingCard data={jl} />
+              <JobListingCard job={jl} />
             </div>
           )
       )}

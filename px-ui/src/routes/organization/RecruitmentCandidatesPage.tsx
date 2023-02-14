@@ -9,7 +9,7 @@ import {
   useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
   useGetAllProcessesQuery,
-  useGetOrganizationByIdQuery,
+  useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import {
   EyeIcon,
@@ -42,15 +42,15 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { NavLink, useParams } from "react-router-dom";
 
 const RecruitmentCandidatesPage = () => {
-  const { organizationId, jobId } = useParams();
+  const { organizationSlug, jobId } = useParams();
   const { data: organization, isLoading: isLoadingOrganization } =
-    useGetOrganizationByIdQuery(
+    useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
       {
-        organizationId: organizationId as string,
+        slugName: organizationSlug as string,
       },
       {
-        enabled: !!organizationId,
+        enabled: !!organizationSlug,
       }
     );
   const { data: applicationsData, isLoading: isApplicationLoading } =
@@ -95,14 +95,15 @@ const RecruitmentCandidatesPage = () => {
               fieldType: FieldType.Long,
               key: "id",
               operator: Operator.Equal,
-              value: organization?.getOrganizationById?.recruitmentProcess
+              value: organization?.getOrganizationBySlugName?.recruitmentProcess
                 ?.id as string,
             },
           ],
         },
       },
       {
-        enabled: !!organization?.getOrganizationById?.recruitmentProcess?.id,
+        enabled:
+          !!organization?.getOrganizationBySlugName?.recruitmentProcess?.id,
       }
     );
 
@@ -113,7 +114,7 @@ const RecruitmentCandidatesPage = () => {
     isProcessLoading
   )
     return <GenericLoadingSkeleton />;
-  if (!organization?.getOrganizationById) return <NotFoundPage />;
+  if (!organization?.getOrganizationBySlugName) return <NotFoundPage />;
   if (
     !jobListingData?.getAllJobListings ||
     !jobListingData.getAllJobListings.list ||
@@ -146,7 +147,7 @@ const RecruitmentCandidatesPage = () => {
             </Button>
             <Button
               component={NavLink}
-              to={`/app/organizations/${organizationId}/jobs/publish-job/form/${jobId}/update`}
+              to={`/app/organizations/${organizationSlug}/jobs/publish-job/form/${jobId}/update`}
               variant="light"
               leftIcon={<PencilIcon width={16} />}
             >
@@ -275,7 +276,7 @@ const RecruitmentCandidatesPage = () => {
             {applicationsData && (
               <ShowIfElse
                 if={
-                  (applicationsData.getAllApplications?.list?.length ?? []) > 0
+                  (applicationsData.getAllApplications?.list?.length ?? 0) > 0
                 }
                 else={<Text mt="xs">No candidates yet</Text>}
               >
@@ -302,7 +303,7 @@ const RecruitmentCandidatesPage = () => {
                     <ShowIfElse
                       if={
                         (applicationsData.getAllApplications?.list?.length ??
-                          []) > 0
+                          0) > 0
                       }
                       else={<Text mt="xs">No candidates yet</Text>}
                     >

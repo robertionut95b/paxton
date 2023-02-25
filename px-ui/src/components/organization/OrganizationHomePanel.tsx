@@ -8,7 +8,7 @@ import {
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import OrganizationAboutPanel from "./OrganizationAboutPanel";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
 
@@ -53,13 +53,14 @@ const OrganizationHomePanel = () => {
 
   return (
     <Stack>
-      <OrganizationAboutPanel />
+      <OrganizationAboutPanel compact />
       <ShowIf if={jobListings.length > 0}>
         <OrganizationLatestJobs
           organizationSlug={organizationSlug}
           jobs={jobListings}
         />
       </ShowIf>
+      <Outlet />
     </Stack>
   );
 };

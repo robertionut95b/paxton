@@ -5,6 +5,7 @@ import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   ContractType,
   FieldType,
+  GetOrganizationBySlugNameQuery,
   Operator,
   useAddJobCategoryMutation,
   useGetAllJobCategoriesQuery,
@@ -13,6 +14,7 @@ import {
   useGetAllOrganizationsQuery,
   useGetAllRecruitersForOrganizationBySlugQuery,
   useGetCountriesCitiesQuery,
+  useGetOrganizationBySlugNameQuery,
   usePublishJobListingMutation,
   WorkType,
 } from "@gql/generated";
@@ -45,6 +47,7 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { FormJobListingSchema } from "@validator/FormJobListingSchema";
 import { addDays, format } from "date-fns";
@@ -55,7 +58,17 @@ export default function OrganizationPostJobForm() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
   const { organizationSlug, jobListingId } = useParams();
-  const [orgId, setOrgId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
+    useGetOrganizationBySlugNameQuery.getKey({
+      slugName: organizationSlug ?? "",
+    })
+  );
+
+  const [orgId, setOrgId] = useState<string | null>(
+    prevOrgQuery?.getOrganizationBySlugName?.id ?? null
+  );
 
   const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -94,7 +107,10 @@ export default function OrganizationPostJobForm() {
           const org = data.getAllOrganizations?.find(
             (o) => o?.slugName === organizationSlug
           );
-          if (org) setOrgId(org.id);
+          if (org) {
+            setOrgId(org.id);
+            form.setFieldValue("organizationId", org.id);
+          }
         },
       }
     );

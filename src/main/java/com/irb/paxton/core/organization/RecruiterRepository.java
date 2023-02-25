@@ -14,4 +14,8 @@ public interface RecruiterRepository extends JpaRepository<Recruiter, Long> {
     Collection<Recruiter> findByOrganizationId(Long organizationId);
 
     Collection<Recruiter> findByOrganizationSlugName(String organizationSlug);
+
+    boolean existsByUser_IdAndOrganization_Id(Long id, Long id1);
+
+    boolean existsByUser_IdAndOrganization_IdNot(Long id, Long id1);
 }

@@ -1,5 +1,6 @@
 package com.irb.paxton.core.organization;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.activity.ActivitySector;
 import com.irb.paxton.core.jobs.JobListing;
@@ -16,6 +17,7 @@ import javax.validation.constraints.*;
 import java.io.Serial;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 import static com.irb.paxton.utils.StringUtils.slugifyString;
@@ -68,7 +70,7 @@ public class Organization extends PaxtonEntity<Long> {
     private String photography;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Recruiter> recruiters;
 
     @ManyToOne
@@ -92,9 +94,11 @@ public class Organization extends PaxtonEntity<Long> {
     @Column(nullable = false)
     private OrganizationSize companySize;
 
-    @JsonManagedReference
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "organization_id")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = TABLE_PREFIX + "_organization_locations",
+            joinColumns = @JoinColumn(name = "organization_id"),
+            inverseJoinColumns = @JoinColumn(name = "cities_id"))
+    @JsonBackReference
     private Collection<City> locations;
 
     @ElementCollection(targetClass = Specialization.class)
@@ -111,5 +115,26 @@ public class Organization extends PaxtonEntity<Long> {
     @PrePersist
     private void prePersist() {
         this.slugName = slugifyString(this.name);
+    }
+
+    public void addRecruiter(Recruiter recruiter) {
+        if (!this.recruiters.contains(recruiter)) {
+            this.recruiters.add(recruiter);
+        }
+    }
+
+    public void removeRecruiter(Recruiter recruiter) {
+        this.recruiters.remove(recruiter);
+    }
+
+    public void setRecruitersList(Collection<Recruiter> recruitersList) {
+        if (recruitersList != null) {
+            this.getRecruiters().clear();
+            recruitersList.forEach(this::addRecruiter);
+        }
+    }
+
+    public Optional<Recruiter> getRecruiterById(Long recruiterId) {
+        return this.recruiters.stream().filter(r -> r.getId().equals(recruiterId)).findFirst();
     }
 }

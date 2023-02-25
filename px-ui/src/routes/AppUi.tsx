@@ -40,6 +40,9 @@ const OrganizationHomePanel = lazy(
 const OrganizationModal = lazy(
   () => import("@components/organization/OrganizationModal")
 );
+const OrganizationRecruitersModal = lazy(
+  () => import("@components/organization/OrganizationRecruitersModal")
+);
 const MyOrganizationPage = lazy(() => import("./organization/MyOrganization"));
 const NotFoundPage = lazy(() => import("./NotFoundPage"));
 const JobDetailsPage = lazy(() => import("./jobs/JobDetailsPage"));
@@ -118,24 +121,27 @@ export default function AppUI() {
             >
               <Route element={<OrganizationHomePanel />} index />
               <Route path="about" element={<OrganizationAboutPanel />} />
-              <Route path="jobs" element={<OrganizationJobsPanel />} />
+              <Route path="jobs" element={<OrganizationJobsPanel />}>
+                <Route
+                  path="publish-job/form"
+                  element={
+                    <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
+                      <OrganizationPostJobForm />
+                    </IsAllowed>
+                  }
+                />
+                <Route
+                  path="publish-job/form/:jobListingId/update"
+                  element={
+                    <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
+                      <OrganizationPostJobForm />
+                    </IsAllowed>
+                  }
+                />
+              </Route>
+              <Route path="notices" element={<></>} />
               <Route path="people" element={<></>} />
-              <Route
-                path="jobs/publish-job/form"
-                element={
-                  <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
-                    <OrganizationPostJobForm />
-                  </IsAllowed>
-                }
-              />
-              <Route
-                path="jobs/publish-job/form/:jobListingId/update"
-                element={
-                  <IsAllowed roles={[RoleType.ROLE_RECRUITER]}>
-                    <OrganizationPostJobForm />
-                  </IsAllowed>
-                }
-              />
+              <Route path="more" element={<></>} />
             </Route>
             <Route path="organizations/:organizationSlug/recruitment/jobs">
               <Route
@@ -165,7 +171,14 @@ export default function AppUI() {
                 />
               </Route>
             </Route>
-            <Route path="admin-panel" element={<AdminPage />}>
+            <Route
+              path="admin-panel"
+              element={
+                <IsAllowed roles={[RoleType.ROLE_ADMINISTRATOR]}>
+                  <AdminPage />
+                </IsAllowed>
+              }
+            >
               <Route path="collections">
                 <Route path="jobs" element={<AdminJobs />} />
                 <Route
@@ -174,14 +187,17 @@ export default function AppUI() {
                 ></Route>
                 <Route path="organizations" element={<AdminOrganizations />}>
                   <Route path="new" element={<OrganizationModal />} />
-                  <Route
-                    path="update/:organizationSlug"
-                    element={<OrganizationModal />}
-                  />
-                  <Route
-                    path="publish/:organizationSlug"
-                    element={<OrganizationPostJobForm />}
-                  />
+                  <Route path=":organizationSlug">
+                    <Route path="update" element={<OrganizationModal />} />
+                    <Route
+                      path="publish"
+                      element={<OrganizationPostJobForm />}
+                    />
+                    <Route
+                      path="recruiters"
+                      element={<OrganizationRecruitersModal />}
+                    />
+                  </Route>
                 </Route>
               </Route>
             </Route>

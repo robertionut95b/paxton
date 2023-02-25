@@ -10,22 +10,31 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/solid";
 import { Paper, Stack, Tabs, TabsValue } from "@mantine/core";
-import { useCallback } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [currPath, setCurrPath] = useState<string>(
+    location.pathname.split("/").at(-1) ?? "jobs"
+  );
   const navigateTab = useCallback(
     (value: TabsValue) => navigate(`collections/${value}`),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
+  useEffect(() => {
+    setCurrPath(location.pathname.split("/").at(-1) as string);
+  }, [location.pathname]);
+
   return (
     <Stack>
       <Paper shadow="xs" p="md">
         <Tabs
-          defaultValue="jobs"
+          defaultValue={"jobs"}
+          value={currPath ?? "jobs"}
           onTabChange={navigateTab}
           keepMounted={false}
           variant="pills"

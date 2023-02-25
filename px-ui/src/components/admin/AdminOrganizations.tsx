@@ -17,6 +17,8 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { prettyEnumValueCompanySize } from "@utils/enumUtils";
+import { format } from "date-fns";
 import { useCallback } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
@@ -47,12 +49,38 @@ const columns: TypeColumn[] = [
     header: "Description",
   },
   {
-    name: "industry",
-    header: "Industry",
+    name: "slogan",
+    header: "Slogan",
   },
   {
-    name: "location",
-    header: "Location",
+    name: "activitySector",
+    header: "Industry",
+    render: ({ value }) => value.name,
+  },
+  {
+    name: "companySize",
+    header: "Size",
+    render: ({ value }) => `${prettyEnumValueCompanySize(value)} employees`,
+  },
+  {
+    name: "foundedAt",
+    header: "Founded",
+    render: ({ value }) => value && format(new Date(value), "dd MMM yyyy"),
+  },
+  {
+    name: "headQuarters",
+    header: "Headquarters",
+    render: ({ value, data }) =>
+      value ? `${value.name}, ${data.headQuarters.country.name}` : "",
+  },
+  {
+    name: "webSite",
+    header: "Website",
+  },
+  {
+    name: "locations",
+    header: "Locations",
+    render: ({ value }) => (value ?? []).length + " [See details]",
   },
 ];
 
@@ -71,11 +99,11 @@ const AdminOrganizations = () => {
       menuProps.items = [
         {
           label: "Edit organization",
-          onClick: () => navigate(`update/${rowProps.data.slugName}`),
+          onClick: () => navigate(`${rowProps.data.slugName}/update`),
         },
         {
           label: "Publish job listing",
-          onClick: () => navigate(`publish/${rowProps.data.slugName}`),
+          onClick: () => navigate(`${rowProps.data.slugName}/publish`),
         },
         {
           label: "Organization page",
@@ -84,6 +112,7 @@ const AdminOrganizations = () => {
         },
         {
           label: "Show recruiters",
+          onClick: () => navigate(`${rowProps.data.slugName}/recruiters`),
         },
       ];
     },

@@ -65,7 +65,9 @@ public class User extends PaxtonEntity<Long> {
             joinColumns = @JoinColumn(
                     name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
+                    name = "role_id", referencedColumnName = "id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})}
+    )
     private Collection<Role> roles;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -118,5 +120,15 @@ public class User extends PaxtonEntity<Long> {
 
     public String getUserRolesAsString() {
         return getRoles().stream().map(Role::getName).collect(Collectors.joining(","));
+    }
+
+    public String getDisplayName() {
+        return this.firstName != null && this.lastName != null ?
+                "%s %s".formatted(this.lastName, this.firstName)
+                : this.username;
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 }

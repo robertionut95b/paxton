@@ -1,11 +1,20 @@
 import ExpandableText from "@components/visibility/ExpandableText";
-import { JobListing, Organization } from "@gql/generated";
+import {
+  GetAllJobListingsQuery,
+  JobListing,
+  Organization,
+} from "@gql/generated";
 import { Avatar, Group, Paper, Title } from "@mantine/core";
 
 export default function JobOrganizationAboutCard({
   organization,
 }: {
   organization:
+    | NonNullable<
+        NonNullable<
+          NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
+        >[number]
+      >["organization"]
     | Omit<JobListing["organization"], "recruitmentProcess">
     | Organization;
 }) {

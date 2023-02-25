@@ -1,12 +1,35 @@
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import OrganizationJobsTab from "@components/organization/OrganizationJobsTab";
-import { FieldType, Operator } from "@gql/generated";
+import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
+import {
+  FieldType,
+  Operator,
+  useGetOrganizationBySlugNameQuery,
+} from "@gql/generated";
+import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Paper, Stack, Title } from "@mantine/core";
+import NotFoundPage from "@routes/NotFoundPage";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function RecruitmentPage() {
   const { organizationSlug } = useParams();
   const navigate = useNavigate();
+
+  const { data: organizationData, isInitialLoading: isLoadingOrganization } =
+    useGetOrganizationBySlugNameQuery(
+      graphqlRequestClient,
+      {
+        slugName: organizationSlug as string,
+      },
+      {
+        enabled: !!organizationSlug,
+      }
+    );
+
+  const organization = organizationData?.getOrganizationBySlugName;
+
+  if (isLoadingOrganization) return <GenericLoadingSkeleton />;
+  if (!organization) return <NotFoundPage />;
 
   return (
     <Stack>
@@ -24,7 +47,7 @@ export default function RecruitmentPage() {
             {
               key: "organization",
               fieldType: FieldType.Long,
-              value: organizationSlug?.toString() ?? "",
+              value: organization.id.toString() ?? "",
               operator: Operator.Equal,
             },
           ]}

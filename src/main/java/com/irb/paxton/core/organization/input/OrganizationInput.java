@@ -1,6 +1,5 @@
 package com.irb.paxton.core.organization.input;
 
-import com.irb.paxton.core.location.input.CityLookupInput;
 import com.irb.paxton.core.organization.OrganizationSize;
 import com.irb.paxton.core.organization.Specialization;
 import com.irb.paxton.core.process.Process;
@@ -50,10 +49,10 @@ public class OrganizationInput implements Serializable {
     private final Process recruitmentProcess;
 
     private final LocalDate foundedAt;
-    
+
     private final OrganizationSize companySize;
 
-    private final Collection<CityLookupInput> locations;
+    private final Collection<Long> locations;
 
     private final Collection<Specialization> specializations;
 }

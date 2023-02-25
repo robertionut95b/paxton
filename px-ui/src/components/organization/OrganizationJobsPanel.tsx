@@ -10,7 +10,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
 import OrganizationRecommendedJobs from "./OrganizationRecommendedJobs";
 
@@ -60,20 +60,23 @@ const OrganizationJobsPanel = () => {
   if (!organization?.getOrganizationBySlugName || !organizationItem)
     return <NotFoundPage />;
   return (
-    <Stack>
-      <ShowIf if={jobListings.length > 0}>
-        <OrganizationRecommendedJobs
-          jobs={jobListings}
-          organizationSlug={organizationSlug}
-        />
-      </ShowIf>
-      <ShowIf if={jobListings.length > 0}>
-        <OrganizationLatestJobs
-          jobs={jobListings}
-          organizationSlug={organizationSlug}
-        />
-      </ShowIf>
-    </Stack>
+    <>
+      <Stack>
+        <ShowIf if={jobListings.length > 0}>
+          <OrganizationRecommendedJobs
+            jobs={jobListings}
+            organizationSlug={organizationSlug}
+          />
+        </ShowIf>
+        <ShowIf if={jobListings.length > 0}>
+          <OrganizationLatestJobs
+            jobs={jobListings}
+            organizationSlug={organizationSlug}
+          />
+        </ShowIf>
+      </Stack>
+      <Outlet />
+    </>
   );
 };
 

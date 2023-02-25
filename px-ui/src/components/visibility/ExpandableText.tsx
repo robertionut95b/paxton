@@ -1,8 +1,12 @@
 import { Stack, Text, TextProps } from "@mantine/core";
 import { useDarkMode } from "usehooks-ts";
 
-export default function ExpandableText(props: TextProps) {
-  const { children, className, ...rest } = props;
+interface ExpandableTextProps extends TextProps {
+  expanded?: boolean;
+}
+
+export default function ExpandableText(props: ExpandableTextProps) {
+  const { children, className, expanded = false, ...rest } = props;
   const { isDarkMode } = useDarkMode();
   return (
     <Stack className="px-expandable-container flex flex-col">
@@ -22,6 +26,7 @@ export default function ExpandableText(props: TextProps) {
         className="px-expandable-text-expand-btn text-gray-400 text-sm tracking-wide cursor-pointer self-end"
         type={"checkbox"}
         title="Expand"
+        defaultChecked={expanded}
       />
     </Stack>
   );

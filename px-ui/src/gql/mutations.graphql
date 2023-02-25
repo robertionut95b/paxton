@@ -115,3 +115,23 @@ mutation CreateOrUpdateOrganization($OrganizationInput: OrganizationInput!) {
     description
   }
 }
+
+mutation AlterRecruitersInOrganization(
+  $RecruiterInput: [RecruiterInput]!
+  $OrganizationId: ID!
+) {
+  alterRecruitersInOrganization(
+    RecruiterInput: $RecruiterInput
+    OrganizationId: $OrganizationId
+  ) {
+    id
+    user {
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+  }
+}

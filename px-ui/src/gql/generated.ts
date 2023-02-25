@@ -24,7 +24,7 @@ export type Scalars = {
   Float: number;
   Date: Date;
   DateTime: Date;
-  Url: URL;
+  Url: String;
 };
 
 export type ActivitySector = {
@@ -275,6 +275,7 @@ export type Mutation = {
   addJobCategory?: Maybe<JobCategory>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
+  alterRecruitersInOrganization?: Maybe<Array<Maybe<Recruiter>>>;
   applyToJobListing?: Maybe<Application>;
   createOrUpdateOrganization?: Maybe<Organization>;
   createProcess?: Maybe<Process>;
@@ -315,6 +316,12 @@ export type MutationAddUserProfileExperienceArgs = {
 
 export type MutationAddUserProfileStudyArgs = {
   StudyInput: StudyInput;
+};
+
+
+export type MutationAlterRecruitersInOrganizationArgs = {
+  OrganizationId: Scalars['ID'];
+  RecruiterInput: Array<InputMaybe<RecruiterInput>>;
 };
 
 
@@ -402,7 +409,7 @@ export type OrganizationInput = {
   foundedAt: Scalars['Date'];
   headQuartersId: Scalars['ID'];
   id?: InputMaybe<Scalars['ID']>;
-  locations?: InputMaybe<Array<InputMaybe<CityLookupInput>>>;
+  locations?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
   name: Scalars['String'];
   photography?: InputMaybe<Scalars['String']>;
   slogan: Scalars['String'];
@@ -590,6 +597,13 @@ export type Recruiter = {
   lastActive?: Maybe<Scalars['DateTime']>;
   organization: Organization;
   user: User;
+};
+
+export type RecruiterInput = {
+  id: Scalars['ID'];
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  lastActive?: InputMaybe<Scalars['DateTime']>;
+  organizationId?: InputMaybe<Scalars['ID']>;
 };
 
 export type Role = {
@@ -836,12 +850,20 @@ export type CreateOrUpdateOrganizationMutationVariables = Exact<{
 
 export type CreateOrUpdateOrganizationMutation = { __typename?: 'Mutation', createOrUpdateOrganization?: { __typename?: 'Organization', name: string, description: string } | null };
 
+export type AlterRecruitersInOrganizationMutationVariables = Exact<{
+  RecruiterInput: Array<InputMaybe<RecruiterInput>> | InputMaybe<RecruiterInput>;
+  OrganizationId: Scalars['ID'];
+}>;
+
+
+export type AlterRecruitersInOrganizationMutation = { __typename?: 'Mutation', alterRecruitersInOrganization?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -858,7 +880,7 @@ export type GetCountriesCitiesQuery = { __typename?: 'Query', getCountriesCities
 export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, slugName: string, description: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, photography?: string | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string } } | null> | null };
+export type GetAllOrganizationsQuery = { __typename?: 'Query', getAllOrganizations?: Array<{ __typename?: 'Organization', id: string, name: string, slugName: string, description: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, photography?: string | null, webSite?: String | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string }, locations?: Array<{ __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null> | null } | null> | null };
 
 export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -902,7 +924,7 @@ export type GetOrganizationBySlugNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string } } | null };
+export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: String | null, specializations?: Array<Specialization | null> | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string }, locations?: Array<{ __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null> | null, recruiters?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -945,6 +967,11 @@ export type GetRecruiterByIdQueryVariables = Exact<{
 
 
 export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } } | null };
+
+export type GetAllUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1269,6 +1296,40 @@ export const useCreateOrUpdateOrganizationMutation = <
 useCreateOrUpdateOrganizationMutation.getKey = () => ['CreateOrUpdateOrganization'];
 
 useCreateOrUpdateOrganizationMutation.fetcher = (client: GraphQLClient, variables: CreateOrUpdateOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateOrUpdateOrganizationMutation, CreateOrUpdateOrganizationMutationVariables>(client, CreateOrUpdateOrganizationDocument, variables, headers);
+export const AlterRecruitersInOrganizationDocument = `
+    mutation AlterRecruitersInOrganization($RecruiterInput: [RecruiterInput]!, $OrganizationId: ID!) {
+  alterRecruitersInOrganization(
+    RecruiterInput: $RecruiterInput
+    OrganizationId: $OrganizationId
+  ) {
+    id
+    user {
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+  }
+}
+    `;
+export const useAlterRecruitersInOrganizationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AlterRecruitersInOrganizationMutation, TError, AlterRecruitersInOrganizationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AlterRecruitersInOrganizationMutation, TError, AlterRecruitersInOrganizationMutationVariables, TContext>(
+      ['AlterRecruitersInOrganization'],
+      (variables?: AlterRecruitersInOrganizationMutationVariables) => fetcher<AlterRecruitersInOrganizationMutation, AlterRecruitersInOrganizationMutationVariables>(client, AlterRecruitersInOrganizationDocument, variables, headers)(),
+      options
+    );
+useAlterRecruitersInOrganizationMutation.getKey = () => ['AlterRecruitersInOrganization'];
+
+useAlterRecruitersInOrganizationMutation.fetcher = (client: GraphQLClient, variables: AlterRecruitersInOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<AlterRecruitersInOrganizationMutation, AlterRecruitersInOrganizationMutationVariables>(client, AlterRecruitersInOrganizationDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -1297,6 +1358,7 @@ export const GetAllJobListingsDocument = `
       organization {
         id
         name
+        slugName
         activitySector {
           id
           name
@@ -1511,6 +1573,15 @@ export const GetAllOrganizationsDocument = `
     recruitmentProcess {
       id
     }
+    locations {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    webSite
   }
 }
     `;
@@ -1789,6 +1860,27 @@ export const GetOrganizationBySlugNameDocument = `
     description
     recruitmentProcess {
       id
+    }
+    webSite
+    specializations
+    locations {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    recruiters {
+      id
+      user {
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
     }
   }
 }
@@ -2080,6 +2172,40 @@ useGetRecruiterByIdQuery.getKey = (variables: GetRecruiterByIdQueryVariables) =>
 ;
 
 useGetRecruiterByIdQuery.fetcher = (client: GraphQLClient, variables: GetRecruiterByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, variables, headers);
+export const GetAllUsersDocument = `
+    query GetAllUsers {
+  getAllUsers {
+    id
+    firstName
+    lastName
+    userProfile {
+      photography
+      profileTitle
+    }
+  }
+}
+    `;
+export const useGetAllUsersQuery = <
+      TData = GetAllUsersQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllUsersQueryVariables,
+      options?: UseQueryOptions<GetAllUsersQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllUsersQuery, TError, TData>(
+      variables === undefined ? ['GetAllUsers'] : ['GetAllUsers', variables],
+      fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers),
+      options
+    );
+useGetAllUsersQuery.document = GetAllUsersDocument;
+
+
+useGetAllUsersQuery.getKey = (variables?: GetAllUsersQueryVariables) => variables === undefined ? ['GetAllUsers'] : ['GetAllUsers', variables];
+;
+
+useGetAllUsersQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2194,12 +2320,12 @@ export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationIn
     foundedAt: z.date(),
     headQuartersId: z.string().min(1),
     id: z.string().nullish(),
-    locations: z.array(z.lazy(() => CityLookupInputSchema().nullable())).nullish(),
+    locations: z.array(z.string().nullable()).nullish(),
     name: z.string().min(3),
     photography: z.string().nullish(),
     slogan: z.string().min(5).max(100, "Field must not be longer than 100 characters"),
     specializations: z.array(SpecializationSchema.nullable()).nullish(),
-    webSite: definedNonNullAnySchema.nullish()
+    webSite: z.string().url().nullish()
   })
 }
 
@@ -2230,6 +2356,15 @@ export function ProcessStepsInputSchema(): z.ZodObject<Properties<ProcessStepsIn
     processId: z.string(),
     status: StatusSchema,
     stepId: z.string()
+  })
+}
+
+export function RecruiterInputSchema(): z.ZodObject<Properties<RecruiterInput>> {
+  return z.object<Properties<RecruiterInput>>({
+    id: z.string(),
+    isActive: z.boolean().nullish(),
+    lastActive: definedNonNullAnySchema.nullish(),
+    organizationId: z.string().nullish()
   })
 }
 

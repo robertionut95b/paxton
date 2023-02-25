@@ -113,7 +113,9 @@ const JobMainSection = ({
           <Text size="sm">{prettyEnumValue(contractType)} contract</Text>
         </List.Item>
         <List.Item icon={<BuildingOfficeIcon width={18} />}>
-          <Text size="sm">{organization.industry} activity line</Text>
+          <Text size="sm">
+            {organization.activitySector.name} activity line
+          </Text>
         </List.Item>
       </List>
       <ShowIfElse

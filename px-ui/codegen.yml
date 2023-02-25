@@ -18,10 +18,11 @@ generates:
       scalars:
         Date: Date
         DateTime: Date
-        Url: URL
+        Url: String
       scalarSchemas:
         Date: z.date()
         Email: z.string().email()
+        Url: z.string().url()
       schema: zod
       # notAllowEmptyString: true
       directives:

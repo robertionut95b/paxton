@@ -37,7 +37,7 @@ const links: MenuLinkProps[] = [
   {
     icon: <BuildingOffice2Icon width={18} />,
     text: "About organization",
-    to: "details",
+    to: "about",
     allowedRole: RoleType.ROLE_EVERYONE,
   },
 ];

@@ -104,4 +104,8 @@ public class UserService {
         }
         return new CurrentUserDetails();
     }
+
+    public boolean checkUserIsInRole(String userName, String roleName) {
+        return userRepository.existsByRoles_NameAndUsername(roleName, userName);
+    }
 }

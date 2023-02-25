@@ -1,20 +1,27 @@
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
-  GetOrganizationByIdQuery,
+  GetOrganizationBySlugNameQuery,
   OrganizationInputSchema,
+  OrganizationSize,
+  Specialization,
   useCreateOrUpdateOrganizationMutation,
+  useGetAllActivitySectorsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
   useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import {
+  CalendarIcon,
   ChatBubbleBottomCenterTextIcon,
   CheckCircleIcon,
+  CogIcon,
   CubeIcon,
   MapPinIcon,
   PhotoIcon,
+  Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
+import { BuildingOffice2Icon } from "@heroicons/react/24/solid";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
@@ -22,14 +29,18 @@ import {
   Group,
   Loader,
   Modal,
+  MultiSelect,
   Select,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
 } from "@mantine/core";
+import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import { prettyEnumValue, prettyEnumValueCompanySize } from "@utils/enumUtils";
+import { format } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -38,17 +49,20 @@ const OrganizationModal = () => {
   const navigate = useNavigate();
   const { organizationSlug } = useParams();
   const queryClient = useQueryClient();
-  const prevOrgQuery = queryClient.getQueryData<GetOrganizationByIdQuery>(
+  const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
     useGetOrganizationBySlugNameQuery.getKey({
       slugName: organizationSlug ?? "",
     })
   );
   const [desc, setDesc] = useState<string>(
-    prevOrgQuery?.getOrganizationById?.description ?? ""
+    prevOrgQuery?.getOrganizationBySlugName?.description ?? ""
   );
 
   const { data: countries, isLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient);
+
+  const { data: activitySectors, isLoading: isActivitySectorsLoading } =
+    useGetAllActivitySectorsQuery(graphqlRequestClient);
 
   const { data: organizationData, isInitialLoading: isOrganizationLoading } =
     useGetOrganizationBySlugNameQuery(
@@ -59,12 +73,31 @@ const OrganizationModal = () => {
       {
         enabled: !!organizationSlug,
         onSuccess: (data) => {
-          const { recruitmentProcess, ...rest } =
-            data.getOrganizationBySlugName ?? {};
+          const {
+            recruitmentProcess,
+            slugName,
+            headQuarters,
+            activitySector,
+            ...rest
+          } = data.getOrganizationBySlugName ?? {};
+          const trsfLocs = data.getOrganizationBySlugName?.locations?.map(
+            (l) => l?.id
+          );
           form.setValues({
             ...rest,
             description: data.getOrganizationBySlugName?.description ?? "",
             photography: data.getOrganizationBySlugName?.photography ?? "",
+            webSite: data.getOrganizationBySlugName?.webSite ?? "",
+            activitySectorId:
+              data.getOrganizationBySlugName?.activitySector.id ?? "",
+            headQuartersId:
+              data.getOrganizationBySlugName?.headQuarters.id ?? "",
+            foundedAt: data.getOrganizationBySlugName?.foundedAt
+              ? new Date(data.getOrganizationBySlugName.foundedAt)
+              : new Date(),
+            specializations:
+              data.getOrganizationBySlugName?.specializations ?? [],
+            locations: trsfLocs ?? [],
           });
           setDesc(data.getOrganizationBySlugName?.description ?? "");
         },
@@ -77,12 +110,17 @@ const OrganizationModal = () => {
       onSuccess: () => {
         showNotification({
           title: "Organization update",
-          message: "Successfully created organization",
+          message: "Successfully created/updated organization",
           autoClose: 5000,
           icon: <CheckCircleIcon width={20} />,
         });
         closeModal();
         queryClient.invalidateQueries(useGetAllOrganizationsQuery.getKey());
+        queryClient.invalidateQueries(
+          useGetOrganizationBySlugNameQuery.getKey({
+            slugName: organizationSlug ?? "",
+          })
+        );
       },
     }
   );
@@ -99,8 +137,24 @@ const OrganizationModal = () => {
       name: organizationData?.getOrganizationBySlugName?.name ?? "",
       description:
         organizationData?.getOrganizationBySlugName?.description ?? "",
-      industry: organizationData?.getOrganizationBySlugName?.industry ?? "",
-      location: organizationData?.getOrganizationBySlugName?.location ?? "",
+      slogan: organizationData?.getOrganizationBySlugName?.slogan ?? "",
+      activitySectorId:
+        organizationData?.getOrganizationBySlugName?.activitySector.id ?? "",
+      headQuartersId:
+        organizationData?.getOrganizationBySlugName?.headQuarters.id ?? "",
+      companySize:
+        organizationData?.getOrganizationBySlugName?.companySize ??
+        OrganizationSize["Between_1_5"],
+      foundedAt: organizationData?.getOrganizationBySlugName?.foundedAt
+        ? new Date(organizationData?.getOrganizationBySlugName?.foundedAt)
+        : new Date(),
+      webSite: organizationData?.getOrganizationBySlugName?.webSite ?? "",
+      specializations:
+        organizationData?.getOrganizationBySlugName?.specializations ?? [],
+      locations:
+        organizationData?.getOrganizationBySlugName?.locations?.map(
+          (l) => l?.id
+        ) ?? [],
       photography:
         organizationData?.getOrganizationBySlugName?.photography ?? "",
     },
@@ -111,20 +165,25 @@ const OrganizationModal = () => {
     () =>
       countries?.getCountriesCities
         ?.map((c) => {
-          const city = c?.cities?.map((ci) => ci?.name) || [];
+          const city =
+            c?.cities?.map((ci) => ({ name: ci?.name, id: ci?.id })) || [];
           const locs = city.map((ci) => ({
-            label: `${c?.name}, ${ci}`,
-            value: ci as string,
+            value: ci.id as string,
+            label: `${c?.name}, ${ci.name}`,
           }));
           return locs;
         })
         .flat(1) || [],
     [countries]
   );
+
   const handleSubmit = async (values: typeof form["values"]) => {
     mutate({
       OrganizationInput: {
         ...values,
+        locations: values.locations.map((l) => l) as unknown as string[],
+        specializations: values.specializations ?? [],
+        foundedAt: format(values.foundedAt, "yyyy-MM-dd") as unknown as Date,
       },
     });
   };
@@ -186,28 +245,98 @@ const OrganizationModal = () => {
           </Text>
         </Group>
         <TextInput
-          label="Industry"
-          description="The industry of the organization"
+          label="Slogan"
+          description="Describe the organization in one line"
+          mt="md"
           withAsterisk
           icon={<CubeIcon width={18} />}
-          {...form.getInputProps("industry")}
+          {...form.getInputProps("slogan")}
         />
+        <ShowIfElse
+          if={!isActivitySectorsLoading}
+          else={<Loader mt="md" size="sm" variant="dots" />}
+        >
+          <Select
+            label="Activity sector"
+            description="The activity domain of the organization"
+            searchable
+            mt="md"
+            withAsterisk
+            icon={<CogIcon width={18} />}
+            data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
+              label: a?.name,
+              value: a?.id as string,
+            }))}
+            {...form.getInputProps("activitySectorId")}
+          />
+        </ShowIfElse>
         <ShowIfElse
           if={!isCountryListLoading}
           else={<Loader mt="md" size="sm" variant="dots" />}
         >
           <Select
-            label="Location"
-            description="The source location of this organization"
+            label="Headquarters"
+            description="The headquarters location of this organization"
             searchable
             mt="md"
             withAsterisk
             data={locations}
             icon={<MapPinIcon width={18} />}
-            {...form.getInputProps("location")}
+            {...form.getInputProps("headQuartersId")}
           />
         </ShowIfElse>
-        <Divider my={40} />
+        <DatePicker
+          mt="md"
+          label="Founded"
+          description="The date when this organization was founded"
+          icon={<CalendarIcon width={18} />}
+          withAsterisk
+          maxDate={new Date()}
+          clearable={false}
+          {...form.getInputProps("foundedAt")}
+        />
+        <Select
+          label="Company size"
+          description="The approximate size of the organization"
+          mt="md"
+          withAsterisk
+          icon={<BuildingOffice2Icon width={18} />}
+          data={(Object.entries(OrganizationSize) ?? [])?.map(([, value]) => ({
+            label: `${prettyEnumValueCompanySize(value)} employees`,
+            value,
+          }))}
+          {...form.getInputProps("companySize")}
+        />
+        <TextInput
+          label="Website"
+          description="The home page of the organization"
+          mt="md"
+          placeholder="https://acme.example.org"
+          icon={<CubeIcon width={18} />}
+          {...form.getInputProps("webSite")}
+        />
+        <MultiSelect
+          label="Specializations"
+          description="The areas of specialization for your organization"
+          mt="md"
+          searchable
+          data={(Object.entries(Specialization) ?? []).map(([, value]) => ({
+            label: prettyEnumValue(value),
+            value,
+          }))}
+          icon={<Square3Stack3DIcon width={18} />}
+          {...form.getInputProps("specializations")}
+        />
+        <MultiSelect
+          label="Locations"
+          description="The locations of activity for your organization"
+          mt="md"
+          searchable
+          data={locations}
+          icon={<MapPinIcon width={18} />}
+          {...form.getInputProps("locations")}
+        />
+        <Divider my={25} />
         <TextInput
           mt={0}
           placeholder="URL address: https://www.acme.com/branding/logo.png"

@@ -25,6 +25,7 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
       organization {
         id
         name
+        slugName
         activitySector {
           id
           name
@@ -173,6 +174,15 @@ query getAllOrganizations {
     recruitmentProcess {
       id
     }
+    locations {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    webSite
   }
 }
 
@@ -275,6 +285,27 @@ query GetOrganizationBySlugName($slugName: String!) {
     description
     recruitmentProcess {
       id
+    }
+    webSite
+    specializations
+    locations {
+      id
+      name
+      country {
+        code
+        name
+      }
+    }
+    recruiters {
+      id
+      user {
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
     }
   }
 }
@@ -409,6 +440,18 @@ query GetRecruiterById($recruiterId: ID!) {
       }
       photography
       description
+    }
+  }
+}
+
+query GetAllUsers {
+  getAllUsers {
+    id
+    firstName
+    lastName
+    userProfile {
+      photography
+      profileTitle
     }
   }
 }

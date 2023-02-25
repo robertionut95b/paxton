@@ -1,9 +1,5 @@
 import ShowIf from "@components/visibility/ShowIf";
-import {
-  GetAllOrganizationsQuery,
-  GetOrganizationBySlugNameQuery,
-  Organization,
-} from "@gql/generated";
+import { GetOrganizationBySlugNameQuery, Organization } from "@gql/generated";
 import {
   ArrowTopRightOnSquareIcon,
   EllipsisHorizontalIcon,
@@ -26,10 +22,7 @@ import { NavLink, useLocation } from "react-router-dom";
 type OrganizationHeroProps = {
   organization:
     | Organization
-    | NonNullable<GetOrganizationBySlugNameQuery["getOrganizationBySlugName"]>
-    | NonNullable<
-        NonNullable<GetAllOrganizationsQuery["getAllOrganizations"]>[number]
-      >;
+    | NonNullable<GetOrganizationBySlugNameQuery["getOrganizationBySlugName"]>;
 };
 
 function getRandomInt(min: number, max: number) {
@@ -39,8 +32,15 @@ function getRandomInt(min: number, max: number) {
 }
 
 const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
-  const { slugName, name, photography, activitySector, slogan, headQuarters } =
-    organization ?? {};
+  const {
+    slugName,
+    name,
+    photography,
+    activitySector,
+    slogan,
+    headQuarters,
+    webSite,
+  } = organization ?? {};
   const { pathname } = useLocation();
   const backgroundPic = "/images/bg-profile.jpg";
   const profilePic = photography ?? backgroundPic;
@@ -128,12 +128,17 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
         </Group>
         <Group>
           <Button leftIcon={<PlusIcon width={20} />}>Follow</Button>
-          <Button
-            variant="outline"
-            leftIcon={<ArrowTopRightOnSquareIcon width={20} />}
-          >
-            Visit website
-          </Button>
+          <ShowIf if={webSite}>
+            <Button
+              variant="outline"
+              leftIcon={<ArrowTopRightOnSquareIcon width={20} />}
+              component={"a"}
+              href={!webSite ? "#" : (webSite as string)}
+              target="_blank"
+            >
+              Visit website
+            </Button>
+          </ShowIf>
           <Button
             variant="outline"
             rightIcon={<EllipsisHorizontalIcon width={20} />}

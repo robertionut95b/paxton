@@ -58,7 +58,7 @@ export default function JobListingItem({
               >
                 <Anchor
                   component={NavLink}
-                  to={`/app/organizations/${organization.id}/details`}
+                  to={`/app/organizations/${organization.slugName}`}
                 >
                   <Text size={"md"}>{organization.name}</Text>
                 </Anchor>

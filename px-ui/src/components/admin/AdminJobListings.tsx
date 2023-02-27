@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useGetAllJobListingsQuery } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import ReactDataGrid from "@inovua/reactdatagrid-community";

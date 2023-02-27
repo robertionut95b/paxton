@@ -193,8 +193,7 @@ const OrganizationModal = () => {
       setDesc(e.currentTarget.value);
       form.setFieldValue("description", e.currentTarget.value);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [form]
   );
 
   if (isOrganizationLoading) return <ApplicationSpinner />;

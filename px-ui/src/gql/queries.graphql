@@ -455,3 +455,16 @@ query GetAllUsers {
     }
   }
 }
+
+query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
+  getAllJobsPaginated(searchQuery: $searchQuery) {
+    list {
+      id
+      name
+      description
+    }
+    page
+    totalPages
+    totalElements
+  }
+}

@@ -15,6 +15,8 @@ public class JobInput implements Serializable {
     @Serial
     private static final long serialVersionUID = -8537064277048493944L;
 
+    private Long id;
+
     @NotNull
     @NotEmpty
     @NotBlank

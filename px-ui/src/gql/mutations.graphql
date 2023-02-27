@@ -135,3 +135,10 @@ mutation AlterRecruitersInOrganization(
     }
   }
 }
+
+mutation PublishJob($JobInput: JobInput!) {
+  publishJob(JobInput: $JobInput) {
+    name
+    description
+  }
+}

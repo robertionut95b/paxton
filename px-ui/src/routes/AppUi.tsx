@@ -2,6 +2,7 @@ import IsAllowed from "@auth/IsAllowed";
 import RequireAuth from "@auth/RequireAuth";
 import RequireNonAuth from "@auth/RequireNonAuth";
 import RoleType from "@auth/RoleType";
+import JobFormModal from "@components/jobs/JobFormModal";
 import BasicUpdateProfileModal from "@components/user-profile/BasicUpdateProfileModal";
 import ProfileAvatarModal from "@components/user-profile/ProfileAvatarModal";
 import ProfileBannerModal from "@components/user-profile/ProfileBannerModal";
@@ -180,7 +181,10 @@ export default function AppUI() {
               }
             >
               <Route path="collections">
-                <Route path="jobs" element={<AdminJobs />} />
+                <Route path="jobs" element={<AdminJobs />}>
+                  <Route path="new" element={<JobFormModal />} />
+                  <Route path="update/:jobId" element={<JobFormModal />} />
+                </Route>
                 <Route
                   path="job-listings"
                   element={<AdminJobListings />}

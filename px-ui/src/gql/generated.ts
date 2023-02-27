@@ -221,6 +221,7 @@ export type JobCategoryInput = {
 
 export type JobInput = {
   description: Scalars['String'];
+  id?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
 };
 
@@ -262,6 +263,14 @@ export type JobListingInput = {
 export type JobListingPage = {
   __typename?: 'JobListingPage';
   list?: Maybe<Array<Maybe<JobListing>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
+};
+
+export type JobPage = {
+  __typename?: 'JobPage';
+  list?: Maybe<Array<Maybe<Job>>>;
   page: Scalars['Int'];
   totalElements: Scalars['Int'];
   totalPages: Scalars['Int'];
@@ -502,6 +511,7 @@ export type Query = {
   getAllJobCategories?: Maybe<Array<Maybe<JobCategory>>>;
   getAllJobListings?: Maybe<JobListingPage>;
   getAllJobs?: Maybe<Array<Maybe<Job>>>;
+  getAllJobsPaginated?: Maybe<JobPage>;
   getAllOrganizations?: Maybe<Array<Maybe<Organization>>>;
   getAllProcesses?: Maybe<ProcessPage>;
   getAllRecruitersForOrganization?: Maybe<Array<Maybe<Recruiter>>>;
@@ -537,6 +547,11 @@ export type QueryGetAllCandidatesByJobListingIdArgs = {
 
 
 export type QueryGetAllJobListingsArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllJobsPaginatedArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
 };
 
@@ -858,6 +873,13 @@ export type AlterRecruitersInOrganizationMutationVariables = Exact<{
 
 export type AlterRecruitersInOrganizationMutation = { __typename?: 'Mutation', alterRecruitersInOrganization?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
 
+export type PublishJobMutationVariables = Exact<{
+  JobInput: JobInput;
+}>;
+
+
+export type PublishJobMutation = { __typename?: 'Mutation', publishJob?: { __typename?: 'Job', name: string, description: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -972,6 +994,13 @@ export type GetAllUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null };
+
+export type GetAllJobsPaginatedQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
+
+
+export type GetAllJobsPaginatedQuery = { __typename?: 'Query', getAllJobsPaginated?: { __typename?: 'JobPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Job', id: string, name: string, description: string } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1330,6 +1359,30 @@ export const useAlterRecruitersInOrganizationMutation = <
 useAlterRecruitersInOrganizationMutation.getKey = () => ['AlterRecruitersInOrganization'];
 
 useAlterRecruitersInOrganizationMutation.fetcher = (client: GraphQLClient, variables: AlterRecruitersInOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<AlterRecruitersInOrganizationMutation, AlterRecruitersInOrganizationMutationVariables>(client, AlterRecruitersInOrganizationDocument, variables, headers);
+export const PublishJobDocument = `
+    mutation PublishJob($JobInput: JobInput!) {
+  publishJob(JobInput: $JobInput) {
+    name
+    description
+  }
+}
+    `;
+export const usePublishJobMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<PublishJobMutation, TError, PublishJobMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<PublishJobMutation, TError, PublishJobMutationVariables, TContext>(
+      ['PublishJob'],
+      (variables?: PublishJobMutationVariables) => fetcher<PublishJobMutation, PublishJobMutationVariables>(client, PublishJobDocument, variables, headers)(),
+      options
+    );
+usePublishJobMutation.getKey = () => ['PublishJob'];
+
+usePublishJobMutation.fetcher = (client: GraphQLClient, variables: PublishJobMutationVariables, headers?: RequestInit['headers']) => fetcher<PublishJobMutation, PublishJobMutationVariables>(client, PublishJobDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2206,6 +2259,41 @@ useGetAllUsersQuery.getKey = (variables?: GetAllUsersQueryVariables) => variable
 ;
 
 useGetAllUsersQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers);
+export const GetAllJobsPaginatedDocument = `
+    query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
+  getAllJobsPaginated(searchQuery: $searchQuery) {
+    list {
+      id
+      name
+      description
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllJobsPaginatedQuery = <
+      TData = GetAllJobsPaginatedQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllJobsPaginatedQueryVariables,
+      options?: UseQueryOptions<GetAllJobsPaginatedQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllJobsPaginatedQuery, TError, TData>(
+      variables === undefined ? ['GetAllJobsPaginated'] : ['GetAllJobsPaginated', variables],
+      fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, variables, headers),
+      options
+    );
+useGetAllJobsPaginatedQuery.document = GetAllJobsPaginatedDocument;
+
+
+useGetAllJobsPaginatedQuery.getKey = (variables?: GetAllJobsPaginatedQueryVariables) => variables === undefined ? ['GetAllJobsPaginated'] : ['GetAllJobsPaginated', variables];
+;
+
+useGetAllJobsPaginatedQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobsPaginatedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2287,8 +2375,9 @@ export function JobCategoryInputSchema(): z.ZodObject<Properties<JobCategoryInpu
 
 export function JobInputSchema(): z.ZodObject<Properties<JobInput>> {
   return z.object<Properties<JobInput>>({
-    description: z.string(),
-    name: z.string()
+    description: z.string().min(5).max(250, "Field must not be longer than 250 characters"),
+    id: z.string().nullish(),
+    name: z.string().min(5)
   })
 }
 

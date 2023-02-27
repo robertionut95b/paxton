@@ -181,9 +181,17 @@ type Job {
     jobListings: [JobListing]
 }
 
+type JobPage {
+    list: [Job],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 input JobInput {
-    name: String!
-    description: String!
+    id: ID
+    name: String! @constraint(minLength: 5)
+    description: String! @constraint(minLength: 5, maxLength: 250)
 }
 
 input JobListingInput {
@@ -534,6 +542,7 @@ type Query {
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
     getAllJobs: [Job]
+    getAllJobsPaginated(searchQuery: SearchQueryInput): JobPage
     getAllOrganizations: [Organization]
     getOrganizationById(organizationId: ID!): Organization
     getOrganizationBySlugName(slugName: String!): Organization

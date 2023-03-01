@@ -1,9 +1,13 @@
-import { JobListing } from "@gql/generated";
+import { GetAllJobListingsQuery } from "@gql/generated";
 import { Divider } from "@mantine/core";
 import JobListingItem from "./JobListing";
 
 type JobListingsProps = {
-  jobs: (JobListing | null)[];
+  jobs: NonNullable<
+    NonNullable<
+      NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
+    >
+  >;
 };
 
 const JobListings = ({ jobs }: JobListingsProps) => {

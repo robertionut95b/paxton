@@ -1,5 +1,5 @@
 import { JobsListingsDataProps } from "@interfaces/jobs.types";
-import { Button, Center, Stack, Title } from "@mantine/core";
+import { Stack, Title } from "@mantine/core";
 import JobListingsCards from "../JobListingsCards";
 
 type JobsRelatedSectionProps = {
@@ -13,9 +13,6 @@ const JobsRelatedSection = ({ jobs }: JobsRelatedSectionProps) => {
         More jobs like this
       </Title>
       <JobListingsCards jobs={jobs} />
-      <Center mt={"sm"}>
-        <Button>See more similar jobs</Button>
-      </Center>
     </Stack>
   );
 };

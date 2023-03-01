@@ -234,21 +234,21 @@ public class RepositoryBootEventService {
     public void setupNomenclaturesRepository() {
         log.info("Paxton : creating location objects");
 
-        City Buc = new City("Bucharest", null);
-        City Cj = new City("Cluj", null);
-        City Is = new City("Iasi", null);
+        City Buc = new City("Bucharest", null, 26.10626, 44.43225);
+        City Cj = new City("Cluj", null, 23.6, 46.76667);
+        City Is = new City("Iasi", null, 27.57, 47.17);
         List<City> roCities = List.of(Buc, Cj, Is);
         Country Ro = new Country("RO", "Romania", new HashSet<>(roCities));
         roCities.forEach(c -> c.setCountry(Ro));
 
-        City Berlin = new City("Berlin", null);
-        City Stuttgart = new City("Stuttgart", null);
+        City Berlin = new City("Berlin", null, 13.25, 52.30);
+        City Stuttgart = new City("Stuttgart", null, 9.18278, 48.7756);
         List<City> grCities = List.of(Berlin, Stuttgart);
         Country Gr = new Country("GR", "Germany", new HashSet<>(grCities));
         grCities.forEach(c -> c.setCountry(Gr));
 
-        City Rome = new City("Rome", null);
-        City Napoli = new City("Napoli", null);
+        City Rome = new City("Rome", null, 12.4942, 41.8905);
+        City Napoli = new City("Napoli", null, 14.2681244, 40.8517746);
         List<City> itCities = List.of(Rome, Napoli);
         Country It = new Country("IT", "Italy", new HashSet<>(itCities));
         itCities.forEach(c -> c.setCountry(It));

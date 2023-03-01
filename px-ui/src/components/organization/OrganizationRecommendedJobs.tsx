@@ -6,14 +6,17 @@ import { NavLink } from "react-router-dom";
 interface OrganizationRecommendedJobsProps {
   jobs: JobsListingsDataProps;
   organizationSlug?: string;
+  city?: string;
 }
 
 const OrganizationRecommendedJobs = ({
   jobs,
   organizationSlug,
+  city,
 }: OrganizationRecommendedJobsProps) => {
   const params = new URLSearchParams("");
   organizationSlug && params.set("org", organizationSlug);
+  city && params.set("city", city);
 
   return (
     <Paper p="md" shadow="xs">

@@ -1,20 +1,23 @@
 import { useAuth } from "@auth/useAuth";
 import JobListings from "@components/jobs/JobListings";
-import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import PageFooter from "@components/layout/PageFooter";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
+import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
+  GetUserProfileQuery,
   Operator,
   SortDirection,
   useGetAllJobListingsQuery,
+  useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
 import { Grid, Paper, Text, Title } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import graphqlRequestClient from "../../lib/graphqlRequestClient";
 import JobsLeftMenu from "./JobsLeftMenu";
 
@@ -25,6 +28,48 @@ export default function JobsPage() {
   const [ps, setPs] = useState<number>(5);
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const prevUserProfileQueryData =
+    queryClient.getQueryData<GetUserProfileQuery>(
+      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
+    );
+
+  const orgParam = searchParams.get("org");
+  const upJobId = searchParams.get("jobId");
+  const refPage = searchParams.get("ref");
+  const cityId =
+    searchParams.get("city") ??
+    (!refPage && prevUserProfileQueryData?.getUserProfile?.city?.id);
+
+  const { data: organizationData, isInitialLoading: isOrgLoading } =
+    useGetOrganizationBySlugNameQuery(
+      graphqlRequestClient,
+      {
+        slugName: orgParam ?? "",
+      },
+      {
+        enabled: !!orgParam,
+      }
+    );
+
+  const { data: userProfile, isInitialLoading: isProfileLoading } =
+    useGetUserProfileQuery(
+      graphqlRequestClient,
+      {
+        profileSlugUrl: user?.profileSlugUrl,
+      },
+      {
+        onSuccess: (data) => {
+          if (refPage) return;
+          if (data.getUserProfile?.city) {
+            const currentSearchParams = searchParams;
+            currentSearchParams.set("city", data.getUserProfile.city.id);
+            setSearchParams(currentSearchParams);
+          }
+        },
+      }
+    );
 
   const { data, isLoading: jobsLoading } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -45,6 +90,36 @@ export default function JobsPage() {
             value: todayIsoFmt,
             operator: Operator.LessThanEqual,
           },
+          ...(organizationData?.getOrganizationBySlugName
+            ? [
+                {
+                  key: "organization",
+                  fieldType: FieldType.Long,
+                  value: organizationData?.getOrganizationBySlugName?.id ?? "",
+                  operator: Operator.Equal,
+                },
+              ]
+            : []),
+          ...(upJobId
+            ? [
+                {
+                  key: "job",
+                  fieldType: FieldType.Long,
+                  value: upJobId,
+                  operator: Operator.Equal,
+                },
+              ]
+            : []),
+          ...(cityId
+            ? [
+                {
+                  key: "city",
+                  fieldType: FieldType.Long,
+                  value: cityId,
+                  operator: Operator.Equal,
+                },
+              ]
+            : []),
         ],
         sorts: [
           {
@@ -89,20 +164,25 @@ export default function JobsPage() {
           );
         }
       },
+      enabled: !isOrgLoading && !isProfileLoading,
     }
   );
+
+  useEffect(() => {
+    if (refPage) return;
+    if (userProfile?.getUserProfile?.city?.id) {
+      const currentSearchParams = searchParams;
+      currentSearchParams.set("city", userProfile.getUserProfile.city.id);
+      setSearchParams(currentSearchParams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile?.getUserProfile?.city?.id, searchParams]);
+
   const totalPages = data?.getAllJobListings?.totalPages ?? 0;
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
 
-  const { data: userProfile, isLoading } = useGetUserProfileQuery(
-    graphqlRequestClient,
-    {
-      profileSlugUrl: user?.profileSlugUrl,
-    }
-  );
-
-  if (isLoading || jobsLoading) return <JobsListingsSkeleton />;
+  if (isProfileLoading || jobsLoading) return <ApplicationSpinner />;
 
   if (jobs.length === 0) {
     return (
@@ -131,7 +211,6 @@ export default function JobsPage() {
               {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
             </ShowIfElse>
           </Title>
-          {/* @ts-expect-error("types-check") */}
           <JobListings jobs={jobs} />
           <Paper className="px-jobs-pagination">
             <PaginationToolbar

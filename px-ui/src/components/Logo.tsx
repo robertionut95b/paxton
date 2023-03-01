@@ -3,7 +3,8 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { TextInput, Title } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { useCallback, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Logo() {
   return (
@@ -19,6 +20,24 @@ export function Logo() {
 }
 
 export function LogoWithSearch() {
+  const [q, setQ] = useState<string>("");
+  const navigate = useNavigate();
+
+  const changeQueryCb = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setQ(e.currentTarget.value),
+    []
+  );
+
+  const submitQueryCb = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        navigate(`/app/search/results/all?keywords=${q}`);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [q]
+  );
+
   return (
     <div className="px-logo flex justify-center items-center gap-x-2">
       <Link className="flex justify-center items-center gap-x-2" to="/app">
@@ -32,6 +51,9 @@ export function LogoWithSearch() {
         ml="sm"
         placeholder="Search anything"
         icon={<MagnifyingGlassIcon width={16} />}
+        value={q}
+        onChange={changeQueryCb}
+        onKeyDown={submitQueryCb}
       />
     </div>
   );

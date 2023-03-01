@@ -100,6 +100,8 @@ export type City = {
   __typename?: 'City';
   country: Country;
   id: Scalars['ID'];
+  latitude?: Maybe<Scalars['Float']>;
+  longitude?: Maybe<Scalars['Float']>;
   name: Scalars['String'];
 };
 
@@ -216,6 +218,7 @@ export type JobCategory = {
 };
 
 export type JobCategoryInput = {
+  id?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
 };
 
@@ -946,7 +949,7 @@ export type GetOrganizationBySlugNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: String | null, specializations?: Array<Specialization | null> | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string }, locations?: Array<{ __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } } | null> | null, recruiters?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
+export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: string, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: String | null, specializations?: Array<Specialization | null> | null, headQuarters: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: string, name: string }, recruitmentProcess: { __typename?: 'Process', id: string }, locations?: Array<{ __typename?: 'City', id: string, name: string, longitude?: number | null, latitude?: number | null, country: { __typename?: 'Country', code: string, name: string } } | null> | null, recruiters?: Array<{ __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String'];
@@ -1923,6 +1926,8 @@ export const GetOrganizationBySlugNameDocument = `
         code
         name
       }
+      longitude
+      latitude
     }
     recruiters {
       id
@@ -2369,6 +2374,7 @@ export function InstitutionInputSchema(): z.ZodObject<Properties<InstitutionInpu
 
 export function JobCategoryInputSchema(): z.ZodObject<Properties<JobCategoryInput>> {
   return z.object<Properties<JobCategoryInput>>({
+    id: z.string().nullish(),
     name: z.string()
   })
 }

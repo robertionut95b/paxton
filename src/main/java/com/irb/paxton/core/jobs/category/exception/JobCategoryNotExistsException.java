@@ -18,15 +18,11 @@ public class JobCategoryNotExistsException extends RuntimeException implements G
     @Serial
     private static final long serialVersionUID = 5960638623851594191L;
 
-    private String invalidField;
+    private final String path;
 
-    public JobCategoryNotExistsException(String message) {
+    public JobCategoryNotExistsException(String message, String path) {
         super(message);
-    }
-
-    public JobCategoryNotExistsException(String message, String invalidField) {
-        super(message);
-        this.invalidField = invalidField;
+        this.path = path;
     }
 
     @Override
@@ -41,6 +37,6 @@ public class JobCategoryNotExistsException extends RuntimeException implements G
 
     @Override
     public Map<String, Object> getExtensions() {
-        return Collections.singletonMap("invalidField", invalidField);
+        return Collections.singletonMap("invalidField", path);
     }
 }

@@ -34,4 +34,8 @@ public class City extends PaxtonEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "country_code")
     private Country country;
+
+    private Double longitude;
+
+    private Double latitude;
 }

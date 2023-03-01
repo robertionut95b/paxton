@@ -30,7 +30,10 @@ const ApplicationRecordCard = ({
               <Avatar
                 size={"lg"}
                 radius="xl"
-                src={`${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`}
+                src={
+                  userProfile.photography &&
+                  `${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`
+                }
               >
                 {user?.username?.[0].toUpperCase() ?? "U"}
               </Avatar>

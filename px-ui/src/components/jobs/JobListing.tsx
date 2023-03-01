@@ -1,6 +1,6 @@
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { JobListing } from "@gql/generated";
+import { GetAllJobListingsQuery } from "@gql/generated";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
 import { differenceInBusinessDays, formatDistanceToNowStrict } from "date-fns";
@@ -19,7 +19,13 @@ export default function JobListingItem({
   compact = false,
   navigable = true,
 }: {
-  data: JobListing;
+  data: NonNullable<
+    NonNullable<
+      NonNullable<
+        NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
+      >
+    >[number]
+  >;
   compact?: boolean;
   navigable?: boolean;
 }) {

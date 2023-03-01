@@ -295,6 +295,8 @@ query GetOrganizationBySlugName($slugName: String!) {
         code
         name
       }
+      longitude
+      latitude
     }
     recruiters {
       id

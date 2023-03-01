@@ -110,7 +110,10 @@ const RecruitmentApplicationPage = () => {
             <Avatar
               size={"xl"}
               radius="xl"
-              src={`${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`}
+              src={
+                userProfile.photography &&
+                `${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`
+              }
             >
               {candidate.user?.username?.[0].toUpperCase() ?? "U"}
             </Avatar>

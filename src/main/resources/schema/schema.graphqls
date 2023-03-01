@@ -89,6 +89,8 @@ type City {
     id: ID!
     name: String!
     country: Country!
+    longitude: Float
+    latitude: Float
 }
 
 input CityLookupInput {
@@ -171,6 +173,7 @@ type JobCategory {
 }
 
 input JobCategoryInput {
+    id: ID
     name: String!
 }
 

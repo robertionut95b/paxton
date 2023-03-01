@@ -1,3 +1,4 @@
+import { useAuth } from "@auth/useAuth";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
 import {
@@ -6,6 +7,7 @@ import {
   SortDirection,
   useGetAllJobListingsQuery,
   useGetOrganizationBySlugNameQuery,
+  useGetUserProfileQuery,
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
@@ -15,6 +17,7 @@ import OrganizationLatestJobs from "./OrganizationLatestJobs";
 import OrganizationRecommendedJobs from "./OrganizationRecommendedJobs";
 
 const OrganizationJobsPanel = () => {
+  const { user } = useAuth();
   const { organizationSlug } = useParams();
   const { data: organization, isInitialLoading: isLoadingOrganization } =
     useGetOrganizationBySlugNameQuery(
@@ -26,6 +29,7 @@ const OrganizationJobsPanel = () => {
         enabled: !!organizationSlug,
       }
     );
+
   const { data: jobListingsData } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
@@ -52,6 +56,43 @@ const OrganizationJobsPanel = () => {
     }
   );
 
+  const { data: userProfileData } = useGetUserProfileQuery(
+    graphqlRequestClient,
+    {
+      profileSlugUrl: user?.profileSlugUrl,
+    }
+  );
+
+  const { data: recommendedJobsData } = useGetAllJobListingsQuery(
+    graphqlRequestClient,
+    {
+      searchQuery: {
+        filters: [
+          {
+            fieldType: FieldType.Long,
+            key: "organization",
+            operator: Operator.Equal,
+            value: organization?.getOrganizationBySlugName?.id ?? "",
+          },
+          ...(userProfileData?.getUserProfile?.city?.id
+            ? [
+                {
+                  fieldType: FieldType.Long,
+                  key: "city",
+                  operator: Operator.Equal,
+                  value: userProfileData.getUserProfile.city.id,
+                },
+              ]
+            : []),
+        ],
+        size: 4,
+      },
+    },
+    {
+      enabled: !!userProfileData?.getUserProfile?.city?.id,
+    }
+  );
+
   const jobListings = jobListingsData?.getAllJobListings?.list ?? [];
 
   const organizationItem = organization?.getOrganizationBySlugName;
@@ -62,10 +103,13 @@ const OrganizationJobsPanel = () => {
   return (
     <>
       <Stack>
-        <ShowIf if={jobListings.length > 0}>
+        <ShowIf
+          if={(recommendedJobsData?.getAllJobListings?.list?.length ?? 0) > 0}
+        >
           <OrganizationRecommendedJobs
-            jobs={jobListings}
+            jobs={recommendedJobsData?.getAllJobListings?.list ?? []}
             organizationSlug={organizationSlug}
+            city={userProfileData?.getUserProfile?.city?.id}
           />
         </ShowIf>
         <ShowIf if={jobListings.length > 0}>

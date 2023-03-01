@@ -28,7 +28,7 @@ export default function UserProfile() {
   const userProfile = data.getUserProfile;
   const coverPhoto =
     userProfile?.coverPhotography && userProfile.coverPhotography !== null
-      ? `${APP_IMAGES_API_PATH}/800x250?f=${userProfile.coverPhotography}`
+      ? `${APP_IMAGES_API_PATH}/800x450?f=${userProfile.coverPhotography}`
       : "/images/bg-profile.jpg";
 
   const isCurrentUser = userProfile?.user.username === user?.username;

@@ -14,6 +14,7 @@ const OrganizationLatestJobs = ({
 }: OrganizationLatestJobsProps) => {
   const params = new URLSearchParams("");
   organizationSlug && params.set("org", organizationSlug);
+  params.set("ref", "orgPage");
 
   return (
     <Paper p="md" shadow="xs">

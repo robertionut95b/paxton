@@ -1,7 +1,12 @@
 import { refreshLogin } from "@auth/authApi";
 import { APP_API_BASE_URL } from "@constants/Properties";
 import { FullAPiResponse } from "@interfaces/api.resp.types";
-import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
 import graphqlRequestClient from "./graphqlRequestClient";
 
 const api = axios.create({
@@ -11,7 +16,7 @@ const api = axios.create({
 
 let access_token: string | null = null;
 
-api.interceptors.request.use((config: AxiosRequestConfig) => {
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   config.headers = { ...config.headers } as AxiosHeaders;
   if (access_token) {
     config.headers.set("Authorization", `Bearer ${access_token}`);
@@ -19,7 +24,6 @@ api.interceptors.request.use((config: AxiosRequestConfig) => {
   return config;
 });
 
-// refresh jwt cookie
 api.interceptors.response.use(
   (resp) => {
     return resp;

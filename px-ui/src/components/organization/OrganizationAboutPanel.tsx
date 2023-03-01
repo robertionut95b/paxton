@@ -20,6 +20,7 @@ import {
 import NotFoundPage from "@routes/NotFoundPage";
 import { prettyEnumValue, prettyEnumValueCompanySize } from "@utils/enumUtils";
 import { format } from "date-fns";
+import { useMemo } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
 
@@ -43,6 +44,16 @@ const OrganizationAboutPanel = ({
       }
     );
   const organizationItem = organization?.getOrganizationBySlugName;
+
+  const mapMarkers = useMemo(
+    () =>
+      (organizationItem?.locations ?? []).map((l) => ({
+        name: l?.name ?? "",
+        lng: l?.longitude?.toString() ?? "",
+        lat: l?.latitude?.toString() ?? "",
+      })),
+    [organizationItem?.locations]
+  );
 
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
   if (!organization?.getOrganizationBySlugName || !organizationItem)
@@ -177,10 +188,7 @@ const OrganizationAboutPanel = ({
                   )
               )}
             </List>
-            <MapChart
-              darkMode={isDarkMode}
-              markers={locations.map((l) => (l ? l.name : ""))}
-            />
+            <MapChart darkMode={isDarkMode} markers={mapMarkers} />
           </Paper>
         )}
       </ShowIf>

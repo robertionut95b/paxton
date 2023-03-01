@@ -26,7 +26,7 @@ import static com.irb.paxton.utils.StringUtils.slugifyString;
 @Table(name = TABLE_PREFIX + "_ORGANIZATION", indexes = {
         @Index(name = "px_org_slug_idx", columnList = "slug_name", unique = true)
 }, uniqueConstraints = {
-        @UniqueConstraint(name = "px_uc_organization_name_slug-name", columnNames = {"name", "slug_name"})
+        @UniqueConstraint(name = "px_uc_organization_name_slug_name", columnNames = {"name", "slug_name"})
 })
 @NoArgsConstructor
 @AllArgsConstructor

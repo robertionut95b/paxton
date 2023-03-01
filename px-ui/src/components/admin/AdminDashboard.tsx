@@ -29,6 +29,11 @@ const AdminDashboard = () => {
     setCurrPath(location.pathname.split("/").at(-1) as string);
   }, [location.pathname]);
 
+  useEffect(() => {
+    navigate("collections/jobs");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Stack>
       <Paper shadow="xs" p="md">

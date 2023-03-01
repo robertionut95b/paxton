@@ -11,8 +11,10 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 public class JobCategoryInput {
 
+    private Long id;
+
     @NotNull
     @NotBlank
     @NotEmpty
-    String name;
+    private String name;
 }

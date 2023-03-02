@@ -13,7 +13,7 @@ const JobsLeftMenu = () => {
       <Paper shadow="sm" p="lg" className="px-jobs-left-menu">
         <List spacing={"sm"} size="sm">
           <List.Item icon={<BookmarkIcon width={18} />}>
-            <Anchor component={NavLink} to="my-items" variant="text">
+            <Anchor component={NavLink} to="/app/my-items" variant="text">
               My jobs
             </Anchor>
           </List.Item>

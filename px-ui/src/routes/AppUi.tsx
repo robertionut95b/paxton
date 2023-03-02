@@ -11,6 +11,7 @@ import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SearchPage from "./user/SearchPage";
+import UserJobsPage from "./user/UserJobsPage";
 
 const AccessDenied = lazy(() => import("./AccessDenied"));
 const ClientApp = lazy(() => import("./ClientApp"));
@@ -211,6 +212,7 @@ export default function AppUI() {
                 <Route path="all" element={<></>} />
               </Route>
             </Route>
+            <Route path="my-items" element={<UserJobsPage />} />
             <Route path="notifications" element={<NotificationsPage />}></Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

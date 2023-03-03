@@ -16,4 +16,8 @@ public class ApplicationMutationResolver implements GraphQLMutationResolver {
     Application applyToJobListing(ApplicationInput applicationInput) {
         return applicationService.applyToJobListing(applicationInput);
     }
+
+    Application updateApplication(ApplicationInput applicationInput) {
+        return applicationService.updateApplication(applicationInput);
+    }
 }

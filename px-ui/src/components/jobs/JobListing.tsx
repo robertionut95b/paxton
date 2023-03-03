@@ -3,7 +3,11 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetAllJobListingsQuery } from "@gql/generated";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
-import { differenceInBusinessDays, formatDistanceToNowStrict } from "date-fns";
+import {
+  differenceInBusinessDays,
+  differenceInDays,
+  formatDistanceToNowStrict,
+} from "date-fns";
 import { NavLink } from "react-router-dom";
 
 export default function JobListingItem({
@@ -85,11 +89,22 @@ export default function JobListingItem({
             </li>
             <li>
               <Group>
-                <Text mt={2} size="xs" color="dimmed">
-                  {formatDistanceToNowStrict?.(new Date(availableFrom), {
-                    addSuffix: true,
-                  }) ?? "Invalid date"}
-                </Text>
+                <ShowIfElse
+                  if={
+                    differenceInDays(new Date(availableFrom), new Date()) !== 0
+                  }
+                  else={
+                    <Text mt={2} size="xs" color="dimmed">
+                      Today
+                    </Text>
+                  }
+                >
+                  <Text mt={2} size="xs" color="dimmed">
+                    {formatDistanceToNowStrict?.(new Date(availableFrom), {
+                      addSuffix: true,
+                    }) ?? "Invalid date"}
+                  </Text>
+                </ShowIfElse>
                 {availableTo && (
                   <ShowIf
                     if={

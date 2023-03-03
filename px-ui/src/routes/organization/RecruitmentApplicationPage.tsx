@@ -1,4 +1,6 @@
+import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
+import ApplicationCandidatureTimeline from "@components/jobs/job-page/ApplicationCandidatureTimeline";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIfElse from "@components/visibility/ShowIfElse";
@@ -6,14 +8,12 @@ import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   FieldType,
   Operator,
-  useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
+  useGetAllProcessesQuery,
+  useGetApplicationForJobListingRecruitmentQuery,
+  useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import {
-  ClipboardDocumentIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Avatar,
@@ -26,34 +26,26 @@ import {
   Stack,
   Text,
   Textarea,
-  Timeline,
   Title,
 } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
-import { format, formatDistanceToNowStrict } from "date-fns";
+import { format } from "date-fns";
 import { NavLink, useParams } from "react-router-dom";
+import { useUpdateApplicationMutation } from "../../gql/generated";
 
 const RecruitmentApplicationPage = () => {
-  const { user } = useAuth();
-  const { jobId, applicationId } = useParams();
-  const { data: applicationData, isLoading } = useGetAllApplicationsQuery(
-    graphqlRequestClient,
-    {
-      searchQuery: {
-        filters: [
-          {
-            fieldType: FieldType.Long,
-            key: "id",
-            operator: Operator.Equal,
-            value: applicationId as string,
-          },
-        ],
+  const { user, isAuthorized } = useAuth();
+  const { jobId, organizationSlug } = useParams();
+  const { data: applicationData, isLoading } =
+    useGetApplicationForJobListingRecruitmentQuery(
+      graphqlRequestClient,
+      {
+        JobListingId: jobId ?? "",
       },
-    },
-    {
-      enabled: !!applicationId,
-    }
-  );
+      {
+        enabled: !!jobId,
+      }
+    );
   const { data: jobListingData, isLoading: isJobListingLoading } =
     useGetAllJobListingsQuery(graphqlRequestClient, {
       searchQuery: {
@@ -71,28 +63,109 @@ const RecruitmentApplicationPage = () => {
     useGetUserProfileQuery(graphqlRequestClient, {
       profileSlugUrl: user?.profileSlugUrl ?? "",
     });
+  const { data: organizationData, isLoading: isOrganizationLoading } =
+    useGetOrganizationBySlugNameQuery(
+      graphqlRequestClient,
+      {
+        slugName:
+          organizationSlug ??
+          jobListingData?.getAllJobListings?.list?.[0]?.organization.slugName ??
+          "",
+      },
+      {
+        enabled:
+          !!organizationSlug ||
+          !!jobListingData?.getAllJobListings?.list?.[0]?.organization.slugName,
+      }
+    );
+  const { data: processData, isInitialLoading: isProcessLoading } =
+    useGetAllProcessesQuery(
+      graphqlRequestClient,
+      {
+        searchQuery: {
+          filters: [
+            {
+              fieldType: FieldType.Long,
+              key: "id",
+              operator: Operator.Equal,
+              value:
+                organizationData?.getOrganizationBySlugName?.recruitmentProcess
+                  .id ?? "",
+            },
+          ],
+        },
+      },
+      {
+        enabled: !!organizationData && isAuthorized([RoleType.ROLE_RECRUITER]),
+      }
+    );
+  const { mutate: updateApplication } =
+    useUpdateApplicationMutation(graphqlRequestClient);
 
-  if (isLoading || isJobListingLoading || isLoadingCurrentProfile)
+  if (
+    isLoading ||
+    isJobListingLoading ||
+    isLoadingCurrentProfile ||
+    isProcessLoading ||
+    isOrganizationLoading
+  )
     return <GenericLoadingSkeleton />;
   if (
-    !applicationData?.getAllApplications ||
-    applicationData.getAllApplications.totalElements === 0 ||
+    !applicationData?.getApplicationForJobListing ||
     !jobListingData?.getAllJobListings ||
     jobListingData.getAllJobListings.totalElements === 0
   )
     return <NotFoundPage />;
   if (
-    !applicationData.getAllApplications.list?.[0] ||
+    !applicationData.getApplicationForJobListing ||
     !jobListingData.getAllJobListings.list?.[0]
   )
     return <NotFoundPage />;
 
-  const candidate = applicationData.getAllApplications.list[0].candidate;
+  const candidate = applicationData.getApplicationForJobListing.candidate;
   const userProfile =
-    applicationData.getAllApplications.list[0].applicantProfile;
+    applicationData.getApplicationForJobListing.applicantProfile;
   const jobListing = jobListingData.getAllJobListings.list[0];
   const dateOfApplication =
-    applicationData.getAllApplications.list[0].dateOfApplication;
+    applicationData.getApplicationForJobListing.dateOfApplication;
+
+  const currentStepProcesses =
+    applicationData.getApplicationForJobListing.processSteps;
+  const currentStepProcess =
+    currentStepProcesses?.[currentStepProcesses.length - 1 ?? 0];
+  const nextStepProcess = processData?.getAllProcesses?.list?.[0]?.processSteps;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const nextStep = nextStepProcess?.find(
+    (sp) =>
+      sp?.order ===
+      (currentStepProcess?.processStep?.order ?? Number.NEGATIVE_INFINITY) + 1
+  );
+
+  console.log(currentStepProcess, nextStep);
+
+  const submitApplication = () => {
+    updateApplication({
+      ApplicationInput: {
+        applicantProfileId: userProfile.id,
+        jobListingId: jobId ?? "",
+        userId: user?.userId ?? "",
+        id: applicationData.getApplicationForJobListing?.id,
+        processSteps: [
+          ...(currentStepProcesses?.map((cp) => ({
+            applicationId: applicationData.getApplicationForJobListing?.id,
+            id: cp?.id,
+            processStepId: cp?.processStep.id,
+            registeredAt: cp?.registeredAt,
+          })) ?? []),
+          {
+            applicationId: applicationData.getApplicationForJobListing?.id,
+            processStepId: nextStep?.step.id,
+            registeredAt: new Date(),
+          },
+        ],
+      },
+    });
+  };
 
   return (
     <Stack>
@@ -101,6 +174,8 @@ const RecruitmentApplicationPage = () => {
           excludePaths={[
             "/app/organizations/:organizationSlug/recruitment/",
             "/app/organizations/:organizationSlug/recruitment/jobs/:jobId/applications",
+            "/app/jobs/view",
+            "/app/jobs/view/:jobId/applications",
           ]}
         />
       </Paper>
@@ -110,6 +185,7 @@ const RecruitmentApplicationPage = () => {
             <Avatar
               size={"xl"}
               radius="xl"
+              variant={!userProfile?.photography ? "filled" : "light"}
               src={
                 userProfile.photography &&
                 `${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`
@@ -141,10 +217,12 @@ const RecruitmentApplicationPage = () => {
             </Group>
           </Stack>
         </Group>
-        <Group>
-          <Button variant="default">Cancel</Button>
-          <Button>Proceed</Button>
-        </Group>
+        {isAuthorized([RoleType.ROLE_RECRUITER]) && (
+          <Group>
+            <Button variant="default">Cancel</Button>
+            <Button onClick={() => submitApplication()}>Proceed</Button>
+          </Group>
+        )}
       </Group>
       <Grid>
         <Grid.Col span={12} md={8}>
@@ -210,42 +288,9 @@ const RecruitmentApplicationPage = () => {
           </Paper>
         </Grid.Col>
         <Grid.Col span={12} md={4}>
-          <Paper shadow="xs" p="md" h="100%">
-            <Title order={4} mb={"md"}>
-              Timeline
-            </Title>
-            <Timeline active={0} bulletSize={30}>
-              <Timeline.Item
-                bullet={<UserCircleIcon width={20} />}
-                title="New candidate"
-              >
-                <Text color="dimmed" size="sm">
-                  User submitted application
-                </Text>
-                <Text size="xs" mt={4}>
-                  {formatDistanceToNowStrict(new Date(dateOfApplication), {
-                    addSuffix: true,
-                  }) ?? "Invalid date"}
-                </Text>
-              </Timeline.Item>
-              <Timeline.Item
-                bullet={<ClipboardDocumentIcon width={20} />}
-                title="To be reviewed"
-              >
-                <Text color="dimmed" size="sm">
-                  Candidature will be taken under review by recruiter
-                </Text>
-                <Text size="xs" mt={4}>
-                  {formatDistanceToNowStrict(new Date(dateOfApplication), {
-                    addSuffix: true,
-                  }) ?? "Invalid date"}
-                </Text>
-              </Timeline.Item>
-            </Timeline>
-            <Button mt="md" fullWidth>
-              Advance
-            </Button>
-          </Paper>
+          <ApplicationCandidatureTimeline
+            application={applicationData.getApplicationForJobListing}
+          />
         </Grid.Col>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">
@@ -261,9 +306,14 @@ const RecruitmentApplicationPage = () => {
               <Avatar
                 size="lg"
                 radius="xl"
-                src={`${APP_IMAGES_API_PATH}/100x100?f=${currentUserProfile?.getUserProfile?.photography}`}
+                src={
+                  currentUserProfile?.getUserProfile?.photography &&
+                  `${APP_IMAGES_API_PATH}/100x100?f=${currentUserProfile?.getUserProfile?.photography}`
+                }
               >
-                U
+                {currentUserProfile?.getUserProfile?.user
+                  ? `${currentUserProfile?.getUserProfile?.user.firstName?.[0].toUpperCase()}${currentUserProfile?.getUserProfile?.user.lastName?.[0].toUpperCase()}`
+                  : currentUserProfile?.getUserProfile?.user.username?.[0].toUpperCase()}
               </Avatar>
               <Textarea
                 w={"100%"}

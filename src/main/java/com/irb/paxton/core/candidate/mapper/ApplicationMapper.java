@@ -9,6 +9,7 @@ import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.exception.JobNotExistsException;
 import com.irb.paxton.core.process.ProcessSteps;
+import com.irb.paxton.core.process.ProcessStepsRepository;
 import com.irb.paxton.core.process.Status;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
@@ -16,15 +17,14 @@ import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring",
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ApplicationProcessStepsMapper.class})
 public abstract class ApplicationMapper {
 
     @Autowired
@@ -38,6 +38,9 @@ public abstract class ApplicationMapper {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProcessStepsRepository processStepsRepository;
 
     @Mapping(target = "processSteps", source = "applicationInput", qualifiedByName = "mapProcessStep")
     @Mapping(target = "modifiedBy", ignore = true)
@@ -83,4 +86,7 @@ public abstract class ApplicationMapper {
         }
         return List.of(new ApplicationProcessSteps(candidatureStep));
     }
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    public abstract Application partialUpdate(ApplicationInput applicationInput, @MappingTarget Application application);
 }

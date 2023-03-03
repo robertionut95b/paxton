@@ -86,15 +86,10 @@ export default function AppUI() {
             <Route path="jobs">
               <Route index element={<JobsPage />} />
               <Route path={"view/:jobId"} element={<JobDetailsPage />} />
+              <Route path={"view/:jobId/applications/:applicationId"}>
+                <Route index element={<RecruitmentApplicationPage />} />
+              </Route>
             </Route>
-            <Route
-              path="candidature"
-              element={
-                <IsAllowed roles={[RoleType.ROLE_EVERYONE]}>
-                  <></>
-                </IsAllowed>
-              }
-            />
             <Route path="up/:profileSlug/" element={<UserProfile />}>
               <Route path="update/banner" element={<ProfileBannerModal />} />
               <Route path="update/avatar" element={<ProfileAvatarModal />} />
@@ -212,7 +207,9 @@ export default function AppUI() {
                 <Route path="all" element={<></>} />
               </Route>
             </Route>
-            <Route path="my-items" element={<UserJobsPage />} />
+            <Route path="my-items">
+              <Route path="saved-jobs" element={<UserJobsPage />}></Route>
+            </Route>
             <Route path="notifications" element={<NotificationsPage />}></Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

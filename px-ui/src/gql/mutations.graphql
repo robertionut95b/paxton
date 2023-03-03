@@ -142,3 +142,21 @@ mutation PublishJob($JobInput: JobInput!) {
     description
   }
 }
+
+mutation updateApplication($ApplicationInput: ApplicationInput!) {
+  updateApplication(ApplicationInput: $ApplicationInput) {
+    id
+    processSteps {
+      id
+      processStep {
+        id
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+  }
+}

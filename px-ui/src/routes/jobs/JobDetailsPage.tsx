@@ -1,5 +1,6 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
+import ApplicationCandidatureTimeline from "@components/jobs/job-page/ApplicationCandidatureTimeline";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobMeetRecruitersSection from "@components/jobs/job-page/JobMeetRecruitersSection";
@@ -60,20 +61,21 @@ const JobDetailsPage = () => {
         jobName: job?.job.name ?? "",
       },
       {
-        enabled: !!job,
+        enabled: !!job?.job.name,
         select: (data) =>
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
       }
     );
-  const { data: myApplication } = useGetMyApplicationForJobListingQuery(
-    graphqlRequestClient,
-    {
-      JobListingId: job?.id ?? "",
-    },
-    {
-      enabled: !isCandidatureAllowed && !!job?.id,
-    }
-  );
+  const { data: myApplication, isInitialLoading: isMyApplicationLoading } =
+    useGetMyApplicationForJobListingQuery(
+      graphqlRequestClient,
+      {
+        JobListingId: jobId ?? "",
+      },
+      {
+        enabled: !isCandidatureAllowed && !!job?.id,
+      }
+    );
 
   const { isLoading: isApplyLoading, mutate } = useApplyToJobListingMutation(
     graphqlRequestClient,
@@ -143,8 +145,15 @@ const JobDetailsPage = () => {
             (job.isActive ?? false) && !isCandidatureAllowed
           }
           submitCandidatureFn={submitCandidature}
-          isCandidatureLoading={isApplyLoading}
+          isCandidatureLoading={isApplyLoading || isMyApplicationLoading}
         />
+        <ShowIf if={myApplication?.getMyApplicationForJobListing}>
+          {myApplication?.getMyApplicationForJobListing && (
+            <ApplicationCandidatureTimeline
+              application={myApplication?.getMyApplicationForJobListing}
+            />
+          )}
+        </ShowIf>
         <ShowIf if={recruiter}>
           {recruiter && <JobMeetRecruitersSection recruiter={recruiter} />}
         </ShowIf>

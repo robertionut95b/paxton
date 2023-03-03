@@ -342,6 +342,61 @@ query GetMyApplicationForJobListing($JobListingId: ID!) {
   getMyApplicationForJobListing(JobListingId: $JobListingId) {
     id
     dateOfApplication
+    processSteps {
+      id
+      processStep {
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+    jobListing {
+      id
+    }
+  }
+}
+
+query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
+  getApplicationForJobListing(JobListingId: $JobListingId) {
+    id
+    dateOfApplication
+    applicantProfile {
+      id
+      profileSlugUrl
+      profileTitle
+      photography
+    }
+    candidate {
+      user {
+        firstName
+        lastName
+        username
+        birthDate
+        email
+      }
+    }
+    processSteps {
+      id
+      processStep {
+        id
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+    jobListing {
+      id
+      organization {
+        id
+        slugName
+      }
+    }
   }
 }
 
@@ -468,5 +523,31 @@ query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
     page
     totalPages
     totalElements
+  }
+}
+
+query GetMyApplications($userId: ID!) {
+  getMyApplications(userId: $userId) {
+    id
+    dateOfApplication
+    jobListing {
+      id
+      title
+      organization {
+        id
+        name
+        photography
+        slugName
+      }
+      city {
+        name
+        country {
+          name
+        }
+      }
+    }
+    processSteps {
+      id
+    }
   }
 }

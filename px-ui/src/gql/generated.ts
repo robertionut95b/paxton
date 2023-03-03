@@ -36,6 +36,7 @@ export type ActivitySector = {
 export type Application = {
   __typename?: 'Application';
   applicantProfile: UserProfile;
+  applicationDocuments?: Maybe<Array<Maybe<ApplicationDocument>>>;
   candidate: Candidate;
   dateOfApplication: Scalars['DateTime'];
   id: Scalars['ID'];
@@ -51,7 +52,9 @@ export type ApplicationDocument = {
 
 export type ApplicationInput = {
   applicantProfileId: Scalars['ID'];
+  id?: InputMaybe<Scalars['ID']>;
   jobListingId: Scalars['ID'];
+  processSteps?: InputMaybe<Array<InputMaybe<ApplicationProcessStepsInput>>>;
   userId: Scalars['ID'];
 };
 
@@ -69,6 +72,13 @@ export type ApplicationProcessSteps = {
   id: Scalars['ID'];
   processStep: ProcessSteps;
   registeredAt: Scalars['DateTime'];
+};
+
+export type ApplicationProcessStepsInput = {
+  applicationId?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  processStepId?: InputMaybe<Scalars['ID']>;
+  registeredAt?: InputMaybe<Scalars['DateTime']>;
 };
 
 export type Candidate = {
@@ -294,6 +304,7 @@ export type Mutation = {
   healthCheckPost?: Maybe<Scalars['String']>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
+  updateApplication?: Maybe<Application>;
   updateProcess?: Maybe<Process>;
   updateUserProfile?: Maybe<UserProfile>;
   updateUserProfileExperience?: Maybe<UserProfile>;
@@ -359,6 +370,11 @@ export type MutationPublishJobArgs = {
 
 export type MutationPublishJobListingArgs = {
   JobListingInput: JobListingInput;
+};
+
+
+export type MutationUpdateApplicationArgs = {
+  ApplicationInput: ApplicationInput;
 };
 
 
@@ -521,9 +537,11 @@ export type Query = {
   getAllRecruitersForOrganizationBySlug?: Maybe<Array<Maybe<Recruiter>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
+  getApplicationForJobListing?: Maybe<Application>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMyApplicationForJobListing?: Maybe<Application>;
+  getMyApplications?: Maybe<Array<Maybe<Application>>>;
   getOrganizationById?: Maybe<Organization>;
   getOrganizationBySlugName?: Maybe<Organization>;
   getRecruiterById?: Maybe<Recruiter>;
@@ -574,8 +592,18 @@ export type QueryGetAllRecruitersForOrganizationBySlugArgs = {
 };
 
 
+export type QueryGetApplicationForJobListingArgs = {
+  JobListingId: Scalars['ID'];
+};
+
+
 export type QueryGetMyApplicationForJobListingArgs = {
   JobListingId: Scalars['ID'];
+};
+
+
+export type QueryGetMyApplicationsArgs = {
+  userId: Scalars['ID'];
 };
 
 
@@ -883,6 +911,13 @@ export type PublishJobMutationVariables = Exact<{
 
 export type PublishJobMutation = { __typename?: 'Mutation', publishJob?: { __typename?: 'Job', name: string, description: string } | null };
 
+export type UpdateApplicationMutationVariables = Exact<{
+  ApplicationInput: ApplicationInput;
+}>;
+
+
+export type UpdateApplicationMutation = { __typename?: 'Mutation', updateApplication?: { __typename?: 'Application', id: string, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -963,7 +998,14 @@ export type GetMyApplicationForJobListingQueryVariables = Exact<{
 }>;
 
 
-export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date } | null };
+export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string } } | null };
+
+export type GetApplicationForJobListingRecruitmentQueryVariables = Exact<{
+  JobListingId: Scalars['ID'];
+}>;
+
+
+export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } } } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1004,6 +1046,13 @@ export type GetAllJobsPaginatedQueryVariables = Exact<{
 
 
 export type GetAllJobsPaginatedQuery = { __typename?: 'Query', getAllJobsPaginated?: { __typename?: 'JobPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Job', id: string, name: string, description: string } | null> | null } | null };
+
+export type GetMyApplicationsQueryVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type GetMyApplicationsQuery = { __typename?: 'Query', getMyApplications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, jobListing: { __typename?: 'JobListing', id: string, title: string, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null, slugName: string }, city: { __typename?: 'City', name: string, country: { __typename?: 'Country', name: string } } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string } | null> | null } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1386,6 +1435,41 @@ export const usePublishJobMutation = <
 usePublishJobMutation.getKey = () => ['PublishJob'];
 
 usePublishJobMutation.fetcher = (client: GraphQLClient, variables: PublishJobMutationVariables, headers?: RequestInit['headers']) => fetcher<PublishJobMutation, PublishJobMutationVariables>(client, PublishJobDocument, variables, headers);
+export const UpdateApplicationDocument = `
+    mutation updateApplication($ApplicationInput: ApplicationInput!) {
+  updateApplication(ApplicationInput: $ApplicationInput) {
+    id
+    processSteps {
+      id
+      processStep {
+        id
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+  }
+}
+    `;
+export const useUpdateApplicationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateApplicationMutation, TError, UpdateApplicationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateApplicationMutation, TError, UpdateApplicationMutationVariables, TContext>(
+      ['updateApplication'],
+      (variables?: UpdateApplicationMutationVariables) => fetcher<UpdateApplicationMutation, UpdateApplicationMutationVariables>(client, UpdateApplicationDocument, variables, headers)(),
+      options
+    );
+useUpdateApplicationMutation.getKey = () => ['updateApplication'];
+
+useUpdateApplicationMutation.fetcher = (client: GraphQLClient, variables: UpdateApplicationMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateApplicationMutation, UpdateApplicationMutationVariables>(client, UpdateApplicationDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2017,6 +2101,20 @@ export const GetMyApplicationForJobListingDocument = `
   getMyApplicationForJobListing(JobListingId: $JobListingId) {
     id
     dateOfApplication
+    processSteps {
+      id
+      processStep {
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+    jobListing {
+      id
+    }
   }
 }
     `;
@@ -2041,6 +2139,69 @@ useGetMyApplicationForJobListingQuery.getKey = (variables: GetMyApplicationForJo
 ;
 
 useGetMyApplicationForJobListingQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationForJobListingQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers);
+export const GetApplicationForJobListingRecruitmentDocument = `
+    query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
+  getApplicationForJobListing(JobListingId: $JobListingId) {
+    id
+    dateOfApplication
+    applicantProfile {
+      id
+      profileSlugUrl
+      profileTitle
+      photography
+    }
+    candidate {
+      user {
+        firstName
+        lastName
+        username
+        birthDate
+        email
+      }
+    }
+    processSteps {
+      id
+      processStep {
+        id
+        order
+        step {
+          title
+          description
+        }
+      }
+      registeredAt
+    }
+    jobListing {
+      id
+      organization {
+        id
+        slugName
+      }
+    }
+  }
+}
+    `;
+export const useGetApplicationForJobListingRecruitmentQuery = <
+      TData = GetApplicationForJobListingRecruitmentQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetApplicationForJobListingRecruitmentQueryVariables,
+      options?: UseQueryOptions<GetApplicationForJobListingRecruitmentQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetApplicationForJobListingRecruitmentQuery, TError, TData>(
+      ['GetApplicationForJobListingRecruitment', variables],
+      fetcher<GetApplicationForJobListingRecruitmentQuery, GetApplicationForJobListingRecruitmentQueryVariables>(client, GetApplicationForJobListingRecruitmentDocument, variables, headers),
+      options
+    );
+useGetApplicationForJobListingRecruitmentQuery.document = GetApplicationForJobListingRecruitmentDocument;
+
+
+useGetApplicationForJobListingRecruitmentQuery.getKey = (variables: GetApplicationForJobListingRecruitmentQueryVariables) => ['GetApplicationForJobListingRecruitment', variables];
+;
+
+useGetApplicationForJobListingRecruitmentQuery.fetcher = (client: GraphQLClient, variables: GetApplicationForJobListingRecruitmentQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationForJobListingRecruitmentQuery, GetApplicationForJobListingRecruitmentQueryVariables>(client, GetApplicationForJobListingRecruitmentDocument, variables, headers);
 export const GetAllApplicationsDocument = `
     query GetAllApplications($searchQuery: SearchQueryInput) {
   getAllApplications(searchQuery: $searchQuery) {
@@ -2299,6 +2460,54 @@ useGetAllJobsPaginatedQuery.getKey = (variables?: GetAllJobsPaginatedQueryVariab
 ;
 
 useGetAllJobsPaginatedQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobsPaginatedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, variables, headers);
+export const GetMyApplicationsDocument = `
+    query GetMyApplications($userId: ID!) {
+  getMyApplications(userId: $userId) {
+    id
+    dateOfApplication
+    jobListing {
+      id
+      title
+      organization {
+        id
+        name
+        photography
+        slugName
+      }
+      city {
+        name
+        country {
+          name
+        }
+      }
+    }
+    processSteps {
+      id
+    }
+  }
+}
+    `;
+export const useGetMyApplicationsQuery = <
+      TData = GetMyApplicationsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetMyApplicationsQueryVariables,
+      options?: UseQueryOptions<GetMyApplicationsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetMyApplicationsQuery, TError, TData>(
+      ['GetMyApplications', variables],
+      fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, variables, headers),
+      options
+    );
+useGetMyApplicationsQuery.document = GetMyApplicationsDocument;
+
+
+useGetMyApplicationsQuery.getKey = (variables: GetMyApplicationsQueryVariables) => ['GetMyApplications', variables];
+;
+
+useGetMyApplicationsQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2313,8 +2522,19 @@ export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny
 export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInput>> {
   return z.object<Properties<ApplicationInput>>({
     applicantProfileId: z.string(),
+    id: z.string().nullish(),
     jobListingId: z.string(),
+    processSteps: z.array(z.lazy(() => ApplicationProcessStepsInputSchema().nullable())).nullish(),
     userId: z.string()
+  })
+}
+
+export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<ApplicationProcessStepsInput>> {
+  return z.object<Properties<ApplicationProcessStepsInput>>({
+    applicationId: z.string().nullish(),
+    id: z.string().nullish(),
+    processStepId: z.string().nullish(),
+    registeredAt: definedNonNullAnySchema.nullish()
   })
 }
 

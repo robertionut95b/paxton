@@ -4,10 +4,13 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 @Data
 @RequiredArgsConstructor
 public class ApplicationInput {
+
+    private Long id;
 
     @NotNull
     private Long userId;
@@ -17,4 +20,6 @@ public class ApplicationInput {
 
     @NotNull
     private Long jobListingId;
+
+    private Collection<ApplicationProcessStepsInput> processSteps;
 }

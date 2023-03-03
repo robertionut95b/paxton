@@ -18,13 +18,18 @@ import {
   Button,
   Group,
   List,
+  Loader,
   Paper,
   Space,
   Text,
   Title,
 } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
-import { formatDistanceToNowStrict, isFuture } from "date-fns";
+import {
+  differenceInDays,
+  formatDistanceToNowStrict,
+  isFuture,
+} from "date-fns";
 
 type OmitApplicationFieldsType = NonNullable<
   NonNullable<
@@ -99,10 +104,15 @@ const JobMainSection = ({
                 </Text>
               }
             >
-              Published{" "}
-              {formatDistanceToNowStrict(new Date(availableFrom), {
-                addSuffix: true,
-              }) ?? "Invalid date"}
+              <ShowIfElse
+                if={differenceInDays(new Date(availableFrom), new Date()) !== 0}
+                else={"Published today"}
+              >
+                Published{" "}
+                {formatDistanceToNowStrict(new Date(availableFrom), {
+                  addSuffix: true,
+                }) ?? "Invalid date"}
+              </ShowIfElse>
             </ShowIfElse>
           </Text>
         </List.Item>
@@ -129,30 +139,33 @@ const JobMainSection = ({
         }
       >
         <ShowIf if={isAllowedCandidature}>
-          <Group>
-            <ShowIfElse
-              if={!applied}
-              else={
-                <Button
-                  disabled
-                  leftIcon={<CheckCircleIcon width={18} />}
-                  loading={isCandidatureLoading}
+          <ShowIfElse
+            if={isCandidatureLoading}
+            else={
+              <Group>
+                <ShowIfElse
+                  if={!applied}
+                  else={
+                    <Button disabled leftIcon={<CheckCircleIcon width={18} />}>
+                      Candidature sent
+                    </Button>
+                  }
                 >
-                  Candidature sent
+                  <Button
+                    onClick={submitCandidatureFn}
+                    leftIcon={<CheckCircleIcon width={18} />}
+                  >
+                    Apply
+                  </Button>
+                </ShowIfElse>
+                <Button variant="light" leftIcon={<BookmarkIcon width={18} />}>
+                  Save this job
                 </Button>
-              }
-            >
-              <Button
-                onClick={submitCandidatureFn}
-                leftIcon={<CheckCircleIcon width={18} />}
-              >
-                Apply
-              </Button>
-            </ShowIfElse>
-            <Button variant="light" leftIcon={<BookmarkIcon width={18} />}>
-              Save this job
-            </Button>
-          </Group>
+              </Group>
+            }
+          >
+            <Loader mt="md" size="xs" variant="dots" />
+          </ShowIfElse>
         </ShowIf>
       </ShowIfElse>
     </Paper>

@@ -1,7 +1,6 @@
-package com.irb.paxton.core.candidate.mapper;
+package com.irb.paxton.core.model.mapper;
 
-import com.irb.paxton.core.model.AbstractInput;
-import com.irb.paxton.core.model.PaxtonEntity;
+import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.SneakyThrows;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.TargetType;
@@ -18,7 +17,7 @@ public class ReferenceMapper {
 
     @SneakyThrows
     @ObjectFactory
-    public <T extends PaxtonEntity<Long>> T resolve(AbstractInput abstractInput, @TargetType Class<T> type) {
+    public <T> T resolve(AbstractInput abstractInput, @TargetType Class<T> type) {
         if (abstractInput.getId() == null) {
             return type.newInstance();
         }

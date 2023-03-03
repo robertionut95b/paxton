@@ -1,6 +1,6 @@
 package com.irb.paxton.core.candidate.input;
 
-import com.irb.paxton.core.model.AbstractInput;
+import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

@@ -1,14 +1,14 @@
 package com.irb.paxton.core.candidate.input;
 
+import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 
 @Data
-@RequiredArgsConstructor
-public class ApplicationInput {
+public class ApplicationInput extends AbstractInput {
 
     private Long id;
 
@@ -22,4 +22,6 @@ public class ApplicationInput {
     private Long jobListingId;
 
     private Collection<ApplicationProcessStepsInput> processSteps;
+
+    private OffsetDateTime dateOfApplication;
 }

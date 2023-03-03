@@ -52,6 +52,7 @@ export type ApplicationDocument = {
 
 export type ApplicationInput = {
   applicantProfileId: Scalars['ID'];
+  dateOfApplication?: InputMaybe<Scalars['DateTime']>;
   id?: InputMaybe<Scalars['ID']>;
   jobListingId: Scalars['ID'];
   processSteps?: InputMaybe<Array<InputMaybe<ApplicationProcessStepsInput>>>;
@@ -2522,6 +2523,7 @@ export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny
 export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInput>> {
   return z.object<Properties<ApplicationInput>>({
     applicantProfileId: z.string(),
+    dateOfApplication: definedNonNullAnySchema.nullish(),
     id: z.string().nullish(),
     jobListingId: z.string(),
     processSteps: z.array(z.lazy(() => ApplicationProcessStepsInputSchema().nullable())).nullish(),

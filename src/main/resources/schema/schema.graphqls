@@ -49,6 +49,7 @@ input ApplicationInput {
     applicantProfileId: ID!
     jobListingId: ID!
     processSteps: [ApplicationProcessStepsInput]
+    dateOfApplication: DateTime
 }
 
 type ApplicationPage {

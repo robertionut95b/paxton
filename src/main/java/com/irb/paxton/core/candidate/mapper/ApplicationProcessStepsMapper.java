@@ -5,6 +5,7 @@ import com.irb.paxton.core.candidate.ApplicationProcessSteps;
 import com.irb.paxton.core.candidate.ApplicationRepository;
 import com.irb.paxton.core.candidate.exception.ApplicationNotFoundException;
 import com.irb.paxton.core.candidate.input.ApplicationProcessStepsInput;
+import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
 import com.irb.paxton.core.process.exception.ProcessNotExistsException;
@@ -24,6 +25,8 @@ public abstract class ApplicationProcessStepsMapper {
     @Mapping(target = "application", source = "applicationProcessStepsInput.applicationId")
     public abstract ApplicationProcessSteps toEntity(ApplicationProcessStepsInput applicationProcessStepsInput);
 
+    @Mapping(target = "processStep", source = "applicationProcessStepsInput.processStepId")
+    @Mapping(target = "application", source = "applicationProcessStepsInput.applicationId")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract ApplicationProcessSteps partialUpdate(ApplicationProcessStepsInput applicationProcessStepsInput, @MappingTarget ApplicationProcessSteps applicationProcessSteps);
 

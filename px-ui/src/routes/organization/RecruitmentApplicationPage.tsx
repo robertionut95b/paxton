@@ -134,14 +134,11 @@ const RecruitmentApplicationPage = () => {
   const currentStepProcess =
     currentStepProcesses?.[currentStepProcesses.length - 1 ?? 0];
   const nextStepProcess = processData?.getAllProcesses?.list?.[0]?.processSteps;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const nextStep = nextStepProcess?.find(
     (sp) =>
       sp?.order ===
       (currentStepProcess?.processStep?.order ?? Number.NEGATIVE_INFINITY) + 1
   );
-
-  console.log(currentStepProcess, nextStep);
 
   const submitApplication = () => {
     updateApplication({
@@ -163,9 +160,13 @@ const RecruitmentApplicationPage = () => {
             registeredAt: new Date(),
           },
         ],
+        dateOfApplication:
+          applicationData.getApplicationForJobListing?.dateOfApplication,
       },
     });
   };
+
+  console.log(nextStep);
 
   return (
     <Stack>
@@ -219,8 +220,12 @@ const RecruitmentApplicationPage = () => {
         </Group>
         {isAuthorized([RoleType.ROLE_RECRUITER]) && (
           <Group>
-            <Button variant="default">Cancel</Button>
-            <Button onClick={() => submitApplication()}>Proceed</Button>
+            <Button variant="default" disabled={!nextStep}>
+              Cancel
+            </Button>
+            <Button onClick={() => submitApplication()} disabled={!nextStep}>
+              Proceed
+            </Button>
           </Group>
         )}
       </Group>

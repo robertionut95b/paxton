@@ -8,6 +8,7 @@ import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.exception.JobNotExistsException;
+import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
 import com.irb.paxton.core.process.Status;
@@ -24,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring",
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ApplicationProcessStepsMapper.class})
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ApplicationProcessStepsMapper.class, ReferenceMapper.class})
 public abstract class ApplicationMapper {
 
     @Autowired
@@ -43,17 +44,29 @@ public abstract class ApplicationMapper {
     ProcessStepsRepository processStepsRepository;
 
     @Mapping(target = "processSteps", source = "applicationInput", qualifiedByName = "mapProcessStep")
-    @Mapping(target = "modifiedBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "jobListing", source = "applicationInput.jobListingId")
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dateOfApplication", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "candidate", source = "applicationInput.userId")
-    @Mapping(target = "applicationDocuments", ignore = true)
     @Mapping(target = "applicantProfile", source = "applicationInput.applicantProfileId")
     public abstract Application inputToApplication(ApplicationInput applicationInput);
+
+    @Named("mapProcessStep")
+    public Collection<ApplicationProcessSteps> mapProcessStep(ApplicationInput applicationInput) {
+        JobListing jobListing = this.mapJobListing(applicationInput.getJobListingId());
+        Collection<ProcessSteps> processSteps = jobListing.getOrganization().getRecruitmentProcess().getProcessSteps();
+        ProcessSteps candidatureStep = null;
+        try {
+            candidatureStep = processSteps.stream().filter(p -> p.getOrder() == 1 && p.getStatus().equals(Status.ACTIVE)).toList().get(0);
+        } catch (IndexOutOfBoundsException ex) {
+            throw new IllegalStateException(String.format("There is no active starting step for the recruitment process of job posting %s", applicationInput.getJobListingId()));
+        }
+        return List.of(new ApplicationProcessSteps(candidatureStep));
+    }
+
+    @Mapping(target = "applicantProfile", source = "applicationInput.applicantProfileId")
+    @Mapping(target = "jobListing", source = "applicationInput.jobListingId")
+    @Mapping(target = "candidate", source = "applicationInput.userId")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    public abstract Application partialUpdate(ApplicationInput applicationInput, @MappingTarget Application application);
 
     public JobListing mapJobListing(Long jobListingId) {
         return jobListingRepository.findById(jobListingId)
@@ -73,20 +86,4 @@ public abstract class ApplicationMapper {
         return userProfileRepository.findById(userProfileId)
                 .orElseThrow(() -> new UserProfileNotFoundException(String.format("User profile by id %d does not exist", userProfileId), "applicantProfileId"));
     }
-
-    @Named("mapProcessStep")
-    public Collection<ApplicationProcessSteps> mapProcessStep(ApplicationInput applicationInput) {
-        JobListing jobListing = this.mapJobListing(applicationInput.getJobListingId());
-        Collection<ProcessSteps> processSteps = jobListing.getOrganization().getRecruitmentProcess().getProcessSteps();
-        ProcessSteps candidatureStep = null;
-        try {
-            candidatureStep = processSteps.stream().filter(p -> p.getOrder() == 1 && p.getStatus().equals(Status.ACTIVE)).toList().get(0);
-        } catch (IndexOutOfBoundsException ex) {
-            throw new IllegalStateException(String.format("There is no active starting step for the recruitment process of job posting %s", applicationInput.getJobListingId()));
-        }
-        return List.of(new ApplicationProcessSteps(candidatureStep));
-    }
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract Application partialUpdate(ApplicationInput applicationInput, @MappingTarget Application application);
 }

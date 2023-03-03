@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 
@@ -24,6 +25,9 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 public class Application extends PaxtonEntity<Long> {
+
+    @Serial
+    private static final long serialVersionUID = -9186763748718953611L;
 
     @NotNull
     private OffsetDateTime dateOfApplication = OffsetDateTime.now();

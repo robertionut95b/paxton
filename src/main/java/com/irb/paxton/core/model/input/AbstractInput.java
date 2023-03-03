@@ -1,4 +1,4 @@
-package com.irb.paxton.core.model;
+package com.irb.paxton.core.model.input;
 
 public abstract class AbstractInput {
 

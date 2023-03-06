@@ -8,6 +8,7 @@ import {
   Divider,
   Grid,
   Group,
+  Loader,
   Paper,
   SegmentedControl,
   Stack,
@@ -21,15 +22,16 @@ type SegOptions = "applied" | "saved" | "archived";
 const UserJobsPage = () => {
   const { user } = useAuth();
   const [segValue, setSegValue] = useState<SegOptions>("applied");
-  const { data: applicationsData } = useGetMyApplicationsQuery(
-    graphqlRequestClient,
-    {
-      userId: user?.userId ?? "",
-    },
-    {
-      enabled: !!user && segValue === "applied",
-    }
-  );
+  const { data: applicationsData, isInitialLoading } =
+    useGetMyApplicationsQuery(
+      graphqlRequestClient,
+      {
+        userId: user?.userId ?? "",
+      },
+      {
+        enabled: !!user && segValue === "applied",
+      }
+    );
 
   return (
     <Grid>
@@ -65,26 +67,30 @@ const UserJobsPage = () => {
           </Group>
           <Divider color="#f5f2f2" my="sm" mx={"-16px"} />
           <Stack>
-            <ShowIfElse
-              if={
-                applicationsData &&
-                (applicationsData.getMyApplications?.length ?? 0) > 0
-              }
-              else={<Text>No applications found</Text>}
-            >
-              {applicationsData?.getMyApplications &&
-                applicationsData.getMyApplications.map(
-                  (a, idx) =>
-                    a && (
-                      <div key={a.id}>
-                        <UserJobApplicationItem application={a} />
-                        {idx !==
-                          (applicationsData?.getMyApplications?.length ?? 0) -
-                            1 && <Divider color="#edebeb" mt="sm" />}
-                      </div>
-                    )
-                )}
-            </ShowIfElse>
+            {isInitialLoading ? (
+              <Loader size="sm" variant="dots" />
+            ) : (
+              <ShowIfElse
+                if={
+                  applicationsData &&
+                  (applicationsData.getMyApplications?.length ?? 0) > 0
+                }
+                else={<Text>No applications found</Text>}
+              >
+                {applicationsData?.getMyApplications &&
+                  applicationsData.getMyApplications.map(
+                    (a, idx) =>
+                      a && (
+                        <div key={a.id}>
+                          <UserJobApplicationItem application={a} />
+                          {idx !==
+                            (applicationsData?.getMyApplications?.length ?? 0) -
+                              1 && <Divider color="#edebeb" mt="sm" />}
+                        </div>
+                      )
+                  )}
+              </ShowIfElse>
+            )}
           </Stack>
         </Paper>
       </Grid.Col>

@@ -1,5 +1,7 @@
 package com.irb.paxton.core.candidate.input;
 
+import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
+import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
@@ -21,7 +23,9 @@ public class ApplicationInput extends AbstractInput {
     @NotNull
     private Long jobListingId;
 
+    @ValidOrganizationProcessSteps
+    @OrderedProcessSteps
     private Collection<ApplicationProcessStepsInput> processSteps;
 
-    private OffsetDateTime dateOfApplication;
+    private OffsetDateTime dateOfApplication = OffsetDateTime.now();
 }

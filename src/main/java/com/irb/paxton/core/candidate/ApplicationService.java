@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class ApplicationService {
         );
     }
 
-    @PostAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR') or returnObject.createdBy == principal.username")
+    @PostFilter("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR') or filterObject.createdBy == principal.username")
     public Collection<Application> getApplicationsForUserId(Long userId) {
         return applicationRepository.findByCandidate_User_Id(userId);
     }

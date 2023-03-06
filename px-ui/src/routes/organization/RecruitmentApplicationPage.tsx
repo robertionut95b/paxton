@@ -1,19 +1,23 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
+import CandidateApplicationHero from "@components/candidates/CandidateApplicationHero";
+import CandidateInformationSection from "@components/candidates/CandidateInformationSection";
 import ApplicationCandidatureTimeline from "@components/jobs/job-page/ApplicationCandidatureTimeline";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   FieldType,
   Operator,
+  Status,
   useGetAllJobListingsQuery,
   useGetAllProcessesQuery,
   useGetApplicationForJobListingRecruitmentQuery,
   useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
+  useUpdateApplicationMutation,
 } from "@gql/generated";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Avatar,
@@ -28,14 +32,15 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import NotFoundPage from "@routes/NotFoundPage";
-import { format } from "date-fns";
-import { NavLink, useParams } from "react-router-dom";
-import { useUpdateApplicationMutation } from "../../gql/generated";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
 const RecruitmentApplicationPage = () => {
   const { user, isAuthorized } = useAuth();
   const { jobId, organizationSlug } = useParams();
+  const queryClient = useQueryClient();
   const { data: applicationData, isLoading } =
     useGetApplicationForJobListingRecruitmentQuery(
       graphqlRequestClient,
@@ -99,8 +104,24 @@ const RecruitmentApplicationPage = () => {
         enabled: !!organizationData && isAuthorized([RoleType.ROLE_RECRUITER]),
       }
     );
-  const { mutate: updateApplication } =
-    useUpdateApplicationMutation(graphqlRequestClient);
+  const { mutate: updateApplication } = useUpdateApplicationMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: () => {
+        showNotification({
+          title: "Application update",
+          message: "Successfully updated application status",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+        queryClient.invalidateQueries(
+          useGetApplicationForJobListingRecruitmentQuery.getKey({
+            JobListingId: jobId ?? "",
+          })
+        );
+      },
+    }
+  );
 
   if (
     isLoading ||
@@ -126,9 +147,6 @@ const RecruitmentApplicationPage = () => {
   const userProfile =
     applicationData.getApplicationForJobListing.applicantProfile;
   const jobListing = jobListingData.getAllJobListings.list[0];
-  const dateOfApplication =
-    applicationData.getApplicationForJobListing.dateOfApplication;
-
   const currentStepProcesses =
     applicationData.getApplicationForJobListing.processSteps;
   const currentStepProcess =
@@ -137,36 +155,37 @@ const RecruitmentApplicationPage = () => {
   const nextStep = nextStepProcess?.find(
     (sp) =>
       sp?.order ===
-      (currentStepProcess?.processStep?.order ?? Number.NEGATIVE_INFINITY) + 1
+        (currentStepProcess?.processStep?.order ?? Number.NEGATIVE_INFINITY) +
+          1 && sp.status === Status.Active
   );
 
-  const submitApplication = () => {
+  const submitApplication = () =>
     updateApplication({
       ApplicationInput: {
         applicantProfileId: userProfile.id,
         jobListingId: jobId ?? "",
-        userId: user?.userId ?? "",
-        id: applicationData.getApplicationForJobListing?.id,
+        userId:
+          applicationData.getApplicationForJobListing?.candidate.user.id ?? "",
+        id: applicationData?.getApplicationForJobListing?.id,
         processSteps: [
           ...(currentStepProcesses?.map((cp) => ({
-            applicationId: applicationData.getApplicationForJobListing?.id,
+            applicationId:
+              applicationData?.getApplicationForJobListing?.id ?? "",
             id: cp?.id,
-            processStepId: cp?.processStep.id,
+            processStepId: cp?.processStep.id ?? "",
             registeredAt: cp?.registeredAt,
           })) ?? []),
           {
-            applicationId: applicationData.getApplicationForJobListing?.id,
-            processStepId: nextStep?.step.id,
+            applicationId:
+              applicationData?.getApplicationForJobListing?.id ?? "",
+            processStepId: nextStep?.step.id ?? "",
             registeredAt: new Date(),
           },
         ],
         dateOfApplication:
-          applicationData.getApplicationForJobListing?.dateOfApplication,
+          applicationData?.getApplicationForJobListing?.dateOfApplication,
       },
     });
-  };
-
-  console.log(nextStep);
 
   return (
     <Stack>
@@ -181,121 +200,49 @@ const RecruitmentApplicationPage = () => {
         />
       </Paper>
       <Group position="apart" p="md">
-        <Group>
-          {userProfile && (
-            <Avatar
-              size={"xl"}
-              radius="xl"
-              variant={!userProfile?.photography ? "filled" : "light"}
-              src={
-                userProfile.photography &&
-                `${APP_IMAGES_API_PATH}/100x100?f=${userProfile.photography}`
-              }
-            >
-              {candidate.user?.username?.[0].toUpperCase() ?? "U"}
-            </Avatar>
-          )}
-          <Stack spacing={2}>
-            <ShowIfElse
-              if={candidate.user.firstName && candidate.user.lastName}
-              else={<Title order={3}>{candidate.user.username}</Title>}
-            >
-              <Title order={3}>
-                {`${candidate.user.firstName} ${candidate.user.lastName}`}
-              </Title>
-            </ShowIfElse>
-            <Group spacing={4}>
-              <Text size={"sm"} color="dimmed">
-                Applied for
-              </Text>
-              <Text size="sm" weight="bold">
-                {jobListing.title}
-              </Text>
-              <Text size="sm" color="dimmed">
-                {" "}
-                on {format(new Date(dateOfApplication), "MMMM dd, yyyy")}
-              </Text>
-            </Group>
-          </Stack>
-        </Group>
+        <CandidateApplicationHero
+          candidate={candidate}
+          dateOfApplication={
+            applicationData.getApplicationForJobListing.dateOfApplication
+          }
+          jobTitle={jobListing.title}
+          profilePhotoUrl={
+            userProfile.photography
+              ? `${APP_IMAGES_API_PATH}/200x200?f=${userProfile.photography}`
+              : undefined
+          }
+        />
         {isAuthorized([RoleType.ROLE_RECRUITER]) && (
           <Group>
             <Button variant="default" disabled={!nextStep}>
               Cancel
             </Button>
-            <Button onClick={() => submitApplication()} disabled={!nextStep}>
-              Proceed
+            <Button onClick={submitApplication} disabled={!nextStep}>
+              {nextStep ? `Proceed to "${nextStep.step.title}"` : "Proceed"}
             </Button>
           </Group>
         )}
       </Group>
       <Grid>
         <Grid.Col span={12} md={8}>
-          <Paper shadow={"xs"} p="md" h="100%">
-            <Title order={4} mb={5}>
-              Applicant information
-            </Title>
-            <Text color="dimmed" size="sm">
-              Personal details of the applicant
-            </Text>
-            <Divider my="lg" />
-            <Stack spacing={"xl"}>
-              <Stack spacing={0}>
-                <Title order={5} mb={5} color="dimmed" weight="normal">
-                  Profile
-                </Title>
-                <NavLink
-                  to={`/app/up/${userProfile.profileSlugUrl ?? userProfile.id}`}
-                >
-                  <Text size="sm" variant="link">
-                    User&apos;s profile
-                  </Text>
-                </NavLink>
-              </Stack>
-              <Group spacing={"xl"}>
-                <Stack spacing={0}>
-                  <Title order={5} mb={5} color="dimmed" weight="normal">
-                    Full name
-                  </Title>
-                  <Text size="sm">
-                    {`${candidate.user.firstName} ${candidate.user.lastName}`}
-                  </Text>
-                </Stack>
-                <Stack spacing={0}>
-                  <Title order={5} mb={5} color="dimmed" weight="normal">
-                    Email address
-                  </Title>
-                  <Text size="sm">{candidate.user.email}</Text>
-                </Stack>
-                {candidate.user.birthDate && (
-                  <Stack spacing={0}>
-                    <Title order={5} mb={5} color="dimmed" weight="normal">
-                      Birthdate
-                    </Title>
-                    <Text size="sm">
-                      {format(
-                        new Date(candidate.user.birthDate),
-                        "MMMM dd, yyyy"
-                      )}
-                    </Text>
-                  </Stack>
-                )}
-              </Group>
-              <Stack spacing={2}>
-                <Title order={5} mb={5} color="dimmed" weight="normal">
-                  Attachments
-                </Title>
-                <Stack>
-                  <Text size="sm">No attachments added</Text>
-                </Stack>
-              </Stack>
-            </Stack>
-          </Paper>
+          <CandidateInformationSection
+            candidate={applicationData.getApplicationForJobListing.candidate}
+            userProfileUrl={`/app/up/${
+              userProfile.profileSlugUrl ?? userProfile.id
+            }`}
+          />
         </Grid.Col>
         <Grid.Col span={12} md={4}>
           <ApplicationCandidatureTimeline
             application={applicationData.getApplicationForJobListing}
           />
+        </Grid.Col>
+        <Grid.Col span={12} md={8}>
+          <Paper shadow={"xs"} p="md">
+            <Title order={4} mb={0}>
+              Add attachments
+            </Title>
+          </Paper>
         </Grid.Col>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">

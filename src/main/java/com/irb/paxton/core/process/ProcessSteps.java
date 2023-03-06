@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Objects;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
@@ -19,7 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProcessSteps extends PaxtonEntity<Long> {
+public class ProcessSteps extends PaxtonEntity<Long> implements Comparable<ProcessSteps> {
 
     @ManyToOne
     @JoinColumn(name = "process_id")
@@ -44,5 +46,23 @@ public class ProcessSteps extends PaxtonEntity<Long> {
         this.step = step;
         this.status = status;
         this.order = order;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ProcessSteps that = (ProcessSteps) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public int compareTo(@org.jetbrains.annotations.NotNull ProcessSteps o) {
+        return Integer.compare(this.getOrder(), o.getOrder());
     }
 }

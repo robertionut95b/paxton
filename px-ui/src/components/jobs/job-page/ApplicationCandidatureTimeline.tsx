@@ -26,14 +26,18 @@ const ApplicationCandidatureTimeline = ({
           View application
         </Anchor>
       </Group>
-      <Timeline active={0} bulletSize={10} lineWidth={2}>
+      <Timeline
+        active={(processSteps?.length ?? 1) - 1}
+        bulletSize={10}
+        lineWidth={2}
+      >
         {processSteps?.map(
           (p) =>
             p && (
               <Timeline.Item
                 key={p.id}
                 title={p.processStep.step.title}
-                lineVariant="dashed"
+                lineVariant="solid"
                 style={{
                   fontSize: 14,
                 }}

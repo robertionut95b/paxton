@@ -1,5 +1,7 @@
 package com.irb.paxton.core.candidate;
 
+import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
+import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
@@ -47,6 +49,8 @@ public class Application extends PaxtonEntity<Long> {
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     private Collection<ApplicationDocument> applicationDocuments;
 
+    @ValidOrganizationProcessSteps
+    @OrderedProcessSteps
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     private Collection<ApplicationProcessSteps> processSteps;
 }

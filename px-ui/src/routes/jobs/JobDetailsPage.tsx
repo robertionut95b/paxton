@@ -21,6 +21,7 @@ import {
   useGetRelatedJobListingsQuery,
 } from "@gql/generated";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Button, Center, Container, Paper, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -74,6 +75,11 @@ const JobDetailsPage = () => {
       },
       {
         enabled: !isCandidatureAllowed && !!job?.id,
+        onError: (err: GraphqlApiResponse) => {
+          if (err.response.errors?.[0].message.includes("does not exist")) {
+            //pass
+          }
+        },
       }
     );
 
@@ -120,6 +126,7 @@ const JobDetailsPage = () => {
           applicantProfileId: user?.profileId.toString() ?? "",
           jobListingId: job?.id ?? "",
           userId: user?.userId ?? "",
+          dateOfApplication: new Date(),
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

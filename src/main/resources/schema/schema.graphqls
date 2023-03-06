@@ -61,8 +61,8 @@ type ApplicationPage {
 
 input ApplicationProcessStepsInput {
     id: ID
-    processStepId: ID
-    applicationId: ID
+    processStepId: ID!
+    applicationId: ID!
     registeredAt: DateTime
 }
 

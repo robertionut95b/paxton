@@ -76,9 +76,9 @@ export type ApplicationProcessSteps = {
 };
 
 export type ApplicationProcessStepsInput = {
-  applicationId?: InputMaybe<Scalars['ID']>;
+  applicationId: Scalars['ID'];
   id?: InputMaybe<Scalars['ID']>;
-  processStepId?: InputMaybe<Scalars['ID']>;
+  processStepId: Scalars['ID'];
   registeredAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -1006,7 +1006,7 @@ export type GetApplicationForJobListingRecruitmentQueryVariables = Exact<{
 }>;
 
 
-export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } } } | null };
+export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } } } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -2153,6 +2153,7 @@ export const GetApplicationForJobListingRecruitmentDocument = `
     }
     candidate {
       user {
+        id
         firstName
         lastName
         username
@@ -2533,9 +2534,9 @@ export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInpu
 
 export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<ApplicationProcessStepsInput>> {
   return z.object<Properties<ApplicationProcessStepsInput>>({
-    applicationId: z.string().nullish(),
+    applicationId: z.string(),
     id: z.string().nullish(),
-    processStepId: z.string().nullish(),
+    processStepId: z.string(),
     registeredAt: definedNonNullAnySchema.nullish()
   })
 }

@@ -371,6 +371,7 @@ query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
     }
     candidate {
       user {
+        id
         firstName
         lastName
         username

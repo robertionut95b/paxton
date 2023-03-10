@@ -15,6 +15,7 @@ import {
   APP_APPLICATION_DOCS_PATH,
   APP_IMAGES_API_PATH,
 } from "@constants/Properties";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   ApplicationStatus,
   FieldType,
@@ -131,6 +132,8 @@ const RecruitmentApplicationPage = () => {
       },
     }
   );
+
+  const [parent] = useAutoAnimate();
 
   if (
     isLoading ||
@@ -300,6 +303,7 @@ const RecruitmentApplicationPage = () => {
                 mt="sm"
                 spacing="xl"
                 p="sm"
+                ref={parent}
               >
                 {applicationData.getApplicationForJobListing.applicationDocuments?.map(
                   (doc) =>
@@ -332,6 +336,18 @@ const RecruitmentApplicationPage = () => {
                   },
                 }}
                 pondProps={{
+                  onprocessfiles: () =>
+                    queryClient.invalidateQueries(
+                      useGetApplicationForJobListingRecruitmentQuery.getKey({
+                        JobListingId: jobId as string,
+                      })
+                    ),
+                  onremovefile: () =>
+                    queryClient.invalidateQueries(
+                      useGetApplicationForJobListingRecruitmentQuery.getKey({
+                        JobListingId: jobId as string,
+                      })
+                    ),
                   server: {
                     process: {
                       url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationForJobListing.id}/documents/upload`,

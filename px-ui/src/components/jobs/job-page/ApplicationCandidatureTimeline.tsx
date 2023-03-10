@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetMyApplicationForJobListingQuery } from "@gql/generated";
 import { Anchor, Group, Paper, Text, Timeline, Title } from "@mantine/core";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
@@ -14,6 +15,7 @@ type ApplicationCandidatureTimelineProps = {
 const ApplicationCandidatureTimeline = ({
   application: { processSteps, jobListing, id },
 }: ApplicationCandidatureTimelineProps) => {
+  const [parent] = useAutoAnimate();
   return (
     <Paper shadow={"xs"} p="md">
       <Group mb="md" align="center">
@@ -30,6 +32,7 @@ const ApplicationCandidatureTimeline = ({
         active={(processSteps?.length ?? 1) - 1}
         bulletSize={10}
         lineWidth={2}
+        ref={parent}
       >
         {processSteps?.map(
           (p) =>

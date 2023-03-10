@@ -10,6 +10,10 @@ public class ApiErrorResponse extends ApiResponse {
 
     private List<String> errors;
 
+    public ApiErrorResponse(int status, String message) {
+        super(message, status);
+    }
+
     public ApiErrorResponse(int status, String message, List<String> errors) {
         super();
         this.status = status;

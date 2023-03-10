@@ -28,7 +28,7 @@ export default function UserProfile() {
   const userProfile = data.getUserProfile;
   const coverPhoto =
     userProfile?.coverPhotography && userProfile.coverPhotography !== null
-      ? `${APP_IMAGES_API_PATH}/800x450?f=${userProfile.coverPhotography}`
+      ? `${APP_IMAGES_API_PATH}/800x450/${userProfile.coverPhotography}`
       : "/images/bg-profile.jpg";
 
   const isCurrentUser = userProfile?.user.username === user?.username;
@@ -57,7 +57,7 @@ export default function UserProfile() {
                 }
                 photography={
                   userProfile?.photography &&
-                  `${APP_IMAGES_API_PATH}/300x200?f=${userProfile.photography}`
+                  `${APP_IMAGES_API_PATH}/300x200/${userProfile.photography}`
                 }
                 title={userProfile?.profileTitle}
                 firstName={userProfile.user?.firstName}

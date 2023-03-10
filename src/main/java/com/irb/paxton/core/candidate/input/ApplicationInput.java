@@ -1,5 +1,6 @@
 package com.irb.paxton.core.candidate.input;
 
+import com.irb.paxton.core.candidate.ApplicationStatus;
 import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
 import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.model.input.AbstractInput;
@@ -22,6 +23,8 @@ public class ApplicationInput extends AbstractInput {
 
     @NotNull
     private Long jobListingId;
+
+    private ApplicationStatus status = ApplicationStatus.IN_PROGRESS;
 
     @ValidOrganizationProcessSteps
     @OrderedProcessSteps

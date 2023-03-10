@@ -1,7 +1,7 @@
 package com.irb.paxton.core.process;
 
 import com.irb.paxton.core.organization.Organization;
-import com.irb.paxton.core.process.exception.ProcessNotExistsException;
+import com.irb.paxton.core.process.exception.ProcessNotFoundException;
 import com.irb.paxton.core.process.input.ProcessInput;
 import com.irb.paxton.core.process.input.ProcessInputUpdate;
 import com.irb.paxton.core.process.mapper.ProcessMapper;
@@ -45,7 +45,7 @@ public class ProcessService {
         Process process = processRepository
                 .findById(processInputUpdate.getId())
                 .orElseThrow(() ->
-                        new ProcessNotExistsException("Process by id %s does not exist".formatted(processInputUpdate.getId())
+                        new ProcessNotFoundException("Process by id %s does not exist".formatted(processInputUpdate.getId())
                         ));
         return processMapper.inputToProcessUpdate(process, processInputUpdate);
     }
@@ -54,7 +54,7 @@ public class ProcessService {
         Process process = this.processRepository
                 .findByName(DEFAULT_PROCESS_NAME)
                 .orElseThrow(() ->
-                        new ProcessNotExistsException("Process by name [%s] does not exist".formatted(DEFAULT_PROCESS_NAME)
+                        new ProcessNotFoundException("Process by name [%s] does not exist".formatted(DEFAULT_PROCESS_NAME)
                         ));
         organization.setRecruitmentProcess(process);
     }

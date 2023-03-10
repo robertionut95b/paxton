@@ -31,7 +31,7 @@ export default function Login() {
     validate: zodResolver(FormLoginSchema),
   });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     const username = values.username;
     const password = values.password;
     form.setValues({

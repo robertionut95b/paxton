@@ -28,12 +28,19 @@ type ActivitySector {
     name: String!
 }
 
+enum ApplicationStatus {
+    IN_PROGRESS,
+    FINISHED,
+    CANCELED
+}
+
 type Application {
     id: ID!
     dateOfApplication: DateTime!
     applicantProfile: UserProfile!
     candidate: Candidate!
     jobListing: JobListing!
+    status: ApplicationStatus!
     processSteps: [ApplicationProcessSteps]
     applicationDocuments: [ApplicationDocument]
 }
@@ -48,6 +55,7 @@ input ApplicationInput {
     userId: ID!
     applicantProfileId: ID!
     jobListingId: ID!
+    status: ApplicationStatus
     processSteps: [ApplicationProcessStepsInput]
     dateOfApplication: DateTime
 }
@@ -125,7 +133,6 @@ type Country {
 
 type Document {
     name: String!
-    url: String!
 }
 
 type Domain {

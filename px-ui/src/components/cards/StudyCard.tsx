@@ -26,7 +26,7 @@ export default function StudyCard({
         >
           {study?.institution.name[0]}
         </Avatar>
-        <div className="px-study-card flex justify-between w-full">
+        <div className="px-study-card flex w-full justify-between">
           <div className="px-study-card-content grow">
             <Text className="font-bold" size="md">
               {study?.institution.name ?? "No title provided"}

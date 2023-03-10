@@ -5,8 +5,18 @@ import CandidateInformationSection from "@components/candidates/CandidateInforma
 import ApplicationCandidatureTimeline from "@components/jobs/job-page/ApplicationCandidatureTimeline";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import AttachmentItem from "@components/upload/AttachmentItem";
+import AttachmentUpload from "@components/upload/AttachmentUpload";
+import ShowIf from "@components/visibility/ShowIf";
+import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
+  APP_API_BASE_URL,
+  APP_API_PATH,
+  APP_APPLICATION_DOCS_PATH,
+  APP_IMAGES_API_PATH,
+} from "@constants/Properties";
+import {
+  ApplicationStatus,
   FieldType,
   Operator,
   Status,
@@ -22,7 +32,6 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Avatar,
   Button,
-  Divider,
   Grid,
   Group,
   Paper,
@@ -38,7 +47,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 const RecruitmentApplicationPage = () => {
-  const { user, isAuthorized } = useAuth();
+  const { user, isAuthorized, accessToken } = useAuth();
   const { jobId, organizationSlug } = useParams();
   const queryClient = useQueryClient();
   const { data: applicationData, isLoading } =
@@ -182,8 +191,21 @@ const RecruitmentApplicationPage = () => {
             registeredAt: new Date(),
           },
         ],
+        status: applicationData.getApplicationForJobListing?.status,
         dateOfApplication:
           applicationData?.getApplicationForJobListing?.dateOfApplication,
+      },
+    });
+
+  const cancelApplication = () =>
+    updateApplication({
+      ApplicationInput: {
+        id: applicationData.getApplicationForJobListing?.id,
+        applicantProfileId: userProfile.id,
+        jobListingId: jobId ?? "",
+        userId:
+          applicationData.getApplicationForJobListing?.candidate.user.id ?? "",
+        status: ApplicationStatus.Canceled,
       },
     });
 
@@ -208,16 +230,35 @@ const RecruitmentApplicationPage = () => {
           jobTitle={jobListing.title}
           profilePhotoUrl={
             userProfile.photography
-              ? `${APP_IMAGES_API_PATH}/200x200?f=${userProfile.photography}`
+              ? `${APP_IMAGES_API_PATH}/200x200/${userProfile.photography}`
               : undefined
           }
         />
         {isAuthorized([RoleType.ROLE_RECRUITER]) && (
           <Group>
-            <Button variant="default" disabled={!nextStep}>
+            <Button
+              variant="default"
+              onClick={cancelApplication}
+              disabled={
+                !nextStep ||
+                applicationData.getApplicationForJobListing.status ===
+                  ApplicationStatus.Canceled ||
+                applicationData.getApplicationForJobListing.status ===
+                  ApplicationStatus.Finished
+              }
+            >
               Cancel
             </Button>
-            <Button onClick={submitApplication} disabled={!nextStep}>
+            <Button
+              onClick={submitApplication}
+              disabled={
+                !nextStep ||
+                applicationData.getApplicationForJobListing.status ===
+                  ApplicationStatus.Canceled ||
+                applicationData.getApplicationForJobListing.status ===
+                  ApplicationStatus.Finished
+              }
+            >
               {nextStep ? `Proceed to "${nextStep.step.title}"` : "Proceed"}
             </Button>
           </Group>
@@ -239,17 +280,87 @@ const RecruitmentApplicationPage = () => {
         </Grid.Col>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">
-            <Title order={4} mb={0}>
-              Add attachments
+            <Title order={4} mb={5}>
+              Attachments
             </Title>
+            <Text size="sm">Documents added to this application</Text>
+            <ShowIfElse
+              if={
+                (applicationData.getApplicationForJobListing
+                  .applicationDocuments?.length ?? 0) > 0
+              }
+              else={
+                <Text mt="sm" size="xs">
+                  No documents added yet
+                </Text>
+              }
+            >
+              <Group
+                className="rounded-lg bg-gray-50"
+                mt="sm"
+                spacing="xl"
+                p="sm"
+              >
+                {applicationData.getApplicationForJobListing.applicationDocuments?.map(
+                  (doc) =>
+                    doc && (
+                      <AttachmentItem
+                        key={doc?.id}
+                        fileName={doc.document.name}
+                        src={"/images/pdf-icon.svg"}
+                        apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationForJobListing?.id}/documents/${doc.document.name}`}
+                      />
+                    )
+                )}
+              </Group>
+            </ShowIfElse>
           </Paper>
         </Grid.Col>
+        <ShowIf if={!isAuthorized([RoleType.ROLE_RECRUITER])}>
+          <Grid.Col span={12} md={8}>
+            <Paper shadow={"xs"} p="md">
+              <Title order={4} mb={5}>
+                Add attachments
+              </Title>
+              <Text size="sm">
+                Attachments will be uploaded as you add them
+              </Text>
+              <AttachmentUpload
+                rootProps={{
+                  style: {
+                    padding: "0.65rem",
+                  },
+                }}
+                pondProps={{
+                  server: {
+                    process: {
+                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationForJobListing.id}/documents/upload`,
+                      withCredentials: true,
+                      headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
+                    },
+                    revert: {
+                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationForJobListing.id}/documents/delete`,
+                      withCredentials: true,
+                      headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
+                    },
+                  },
+                  acceptedFileTypes: ["application/pdf"],
+                  fileValidateTypeLabelExpectedTypes:
+                    "Expected .pdf/.doc(x) files",
+                }}
+              />
+            </Paper>
+          </Grid.Col>
+        </ShowIf>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">
-            <Title order={4} mb={0}>
+            <Title order={4} mb={5}>
               Messages
             </Title>
-            <Divider mt="lg" mb="md" />
             <Stack>
               <Text size="sm">There are no messages yet</Text>
             </Stack>
@@ -260,7 +371,7 @@ const RecruitmentApplicationPage = () => {
                 radius="xl"
                 src={
                   currentUserProfile?.getUserProfile?.photography &&
-                  `${APP_IMAGES_API_PATH}/100x100?f=${currentUserProfile?.getUserProfile?.photography}`
+                  `${APP_IMAGES_API_PATH}/100x100/${currentUserProfile?.getUserProfile?.photography}`
                 }
               >
                 {currentUserProfile?.getUserProfile?.user

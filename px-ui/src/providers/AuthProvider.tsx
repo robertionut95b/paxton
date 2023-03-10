@@ -44,12 +44,14 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshIntervalInSec, setRefreshIntervalInSec] = useState<
     number | null
   >(expToMillis(60));
   const [loading, setLoading] = useState(true);
 
   const loadMetaFromToken = (accessToken: string) => {
+    setAccessToken(accessToken);
     const bearer = `Bearer ${accessToken}`;
     // set authorization headers
     api.defaults.headers.Authorization = bearer;
@@ -153,6 +155,7 @@ export default function AuthProvider({
       loading: (!user || user === null) && loading,
       setUser,
       isAuthorized,
+      accessToken,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]

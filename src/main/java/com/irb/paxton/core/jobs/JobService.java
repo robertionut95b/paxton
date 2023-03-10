@@ -2,7 +2,7 @@ package com.irb.paxton.core.jobs;
 
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.exception.JobAlreadyExistsException;
-import com.irb.paxton.core.jobs.exception.JobNotExistsException;
+import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.jobs.input.JobInput;
 import com.irb.paxton.core.jobs.mapper.JobMapper;
 import com.irb.paxton.core.organization.OrganizationRepository;
@@ -38,7 +38,7 @@ public class JobService {
         Job job;
         if (jobInput.getId() != null) {
             job = this.jobRepository.findById(jobInput.getId())
-                    .orElseThrow(() -> new JobNotExistsException("Job by id %d does not exist".formatted(jobInput.getId())));
+                    .orElseThrow(() -> new JobNotFoundException("Job by id %d does not exist".formatted(jobInput.getId())));
             jobMapper.partialUpdate(jobInput, job);
         } else {
             Optional<Job> jobOptional = jobRepository.findByName(jobInput.getName());

@@ -77,8 +77,9 @@ export const resetPassword = async (bodyData: ResetPasswordProps) => {
 };
 
 export const changeProfileCover = async (bodyData: FormData) => {
+  const userId = bodyData.get("userId");
   const { data } = await api.post(
-    `${APP_API_PATH}/users/upload/profile-banner`,
+    `${APP_API_PATH}/users/${userId?.toString()}/upload/banner`,
     bodyData,
     {
       headers: {
@@ -90,8 +91,9 @@ export const changeProfileCover = async (bodyData: FormData) => {
 };
 
 export const changeProfileAvatar = async (bodyData: FormData) => {
+  const userId = bodyData.get("userId");
   const { data } = await api.post(
-    `${APP_API_PATH}/users/upload/profile-avatar`,
+    `${APP_API_PATH}/users/${userId?.toString()}/upload/avatar`,
     bodyData,
     {
       headers: {
@@ -101,3 +103,9 @@ export const changeProfileAvatar = async (bodyData: FormData) => {
   );
   return data;
 };
+
+export const downloadApiFile = async (url: string) =>
+  api.get<Blob>(url, {
+    method: "GET",
+    responseType: "blob",
+  });

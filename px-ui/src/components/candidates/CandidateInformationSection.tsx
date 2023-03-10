@@ -58,14 +58,6 @@ const CandidateInformationSection = ({
             </Stack>
           )}
         </Group>
-        <Stack spacing={2}>
-          <Title order={5} mb={5} color="dimmed" weight="normal">
-            Attachments
-          </Title>
-          <Stack>
-            <Text size="sm">No attachments added</Text>
-          </Stack>
-        </Stack>
       </Stack>
     </Paper>
   );

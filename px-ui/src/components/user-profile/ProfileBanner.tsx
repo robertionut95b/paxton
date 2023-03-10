@@ -23,7 +23,7 @@ export default function ProfileBanner({
             label={<PencilIcon width={16} />}
           >
             <img
-              className="px-profile-banner-img h-60 w-full object-cover rounded-md"
+              className="px-profile-banner-img h-60 w-full rounded-md object-cover"
               src={coverPhoto}
               loading="lazy"
             />
@@ -35,7 +35,7 @@ export default function ProfileBanner({
     return (
       <div className="px-profile-banner relative">
         <img
-          className="px-profile-banner-img h-60 w-full object-cover rounded-md"
+          className="px-profile-banner-img h-60 w-full rounded-md object-cover"
           src={coverPhoto}
           loading="lazy"
         />

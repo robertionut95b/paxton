@@ -67,7 +67,7 @@ export default function ForgotPassword() {
     },
   });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     const email = values.email;
     recover({ email });
   };

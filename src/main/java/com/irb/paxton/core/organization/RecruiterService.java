@@ -2,7 +2,7 @@ package com.irb.paxton.core.organization;
 
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.organization.exception.EmptyUsersListException;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.exception.RecruiterAlreadyAssignedException;
 import com.irb.paxton.core.organization.exception.RecruiterExistingJobsException;
 import com.irb.paxton.core.organization.input.RecruiterInput;
@@ -48,7 +48,7 @@ public class RecruiterService {
             throw new EmptyUsersListException("Empty input list of users provided");
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(
-                        () -> new OrganizationNotExistsException("Organization by id %s does not exist".formatted(organizationId), "organizationId")
+                        () -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(organizationId), "organizationId")
                 );
 
         List<Recruiter> currentRecruiters = (List<Recruiter>) organization.getRecruiters();

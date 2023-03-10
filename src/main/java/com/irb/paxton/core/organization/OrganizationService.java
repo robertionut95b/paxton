@@ -1,6 +1,6 @@
 package com.irb.paxton.core.organization;
 
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.input.OrganizationInput;
 import com.irb.paxton.core.organization.mapper.OrganizationMapper;
 import com.irb.paxton.core.process.ProcessService;
@@ -27,7 +27,7 @@ public class OrganizationService {
         if (organizationInput.getId() != null) {
             organization = this.organizationRepository
                     .findById(organizationInput.getId())
-                    .orElseThrow(() -> new OrganizationNotExistsException("Organization by id %s does not exist".formatted(organizationInput.getId())));
+                    .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(organizationInput.getId())));
             organizationMapper.updateOrganizationFromOrganizationInput(organizationInput, organization);
         } else {
             organization = organizationMapper.organizationInputToOrganization(organizationInput);
@@ -39,6 +39,6 @@ public class OrganizationService {
 
     public Organization findBySlugName(String slugName) {
         return this.organizationRepository.findBySlugName(slugName)
-                .orElseThrow(() -> new OrganizationNotExistsException("Organization %s does not exist".formatted(slugName)));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization %s does not exist".formatted(slugName)));
     }
 }

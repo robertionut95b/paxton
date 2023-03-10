@@ -23,7 +23,7 @@ export default function ExpandableText(props: ExpandableTextProps) {
         </pre>
       </Text>
       <input
-        className="px-expandable-text-expand-btn text-gray-400 text-sm tracking-wide cursor-pointer self-end"
+        className="px-expandable-text-expand-btn cursor-pointer self-end text-sm tracking-wide text-gray-400"
         type={"checkbox"}
         title="Expand"
         defaultChecked={expanded}

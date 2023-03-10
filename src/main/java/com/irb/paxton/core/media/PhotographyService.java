@@ -1,8 +1,8 @@
 package com.irb.paxton.core.media;
 
+import com.irb.paxton.core.media.exception.PhotographyNotFoundException;
 import com.irb.paxton.core.media.input.PhotographyInput;
 import com.irb.paxton.core.profile.UserProfile;
-import com.irb.paxton.core.profile.UserProfileRepository;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
 import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.FileStorageService;
@@ -14,8 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 
-@Service
 @Slf4j
+@Service
 public class PhotographyService {
 
     @Autowired
@@ -25,10 +25,13 @@ public class PhotographyService {
     private UserProfileMapper userProfileMapper;
 
     @Autowired
-    private UserProfileRepository userProfileRepository;
-
-    @Autowired
     private FileStorageService fileStorageService;
+
+    public Photography findByName(String imageName) {
+        return this.photographyRepository
+                .findByName(imageName)
+                .orElseThrow(() -> new PhotographyNotFoundException("Image by name %s does not exist".formatted(imageName)));
+    }
 
     @Transactional
     public Photography changeProfileBanner(@NotNull PhotographyInput photographyInput) {
@@ -38,8 +41,7 @@ public class PhotographyService {
         String currentBanner = userProfile.getCoverPhotography();
 
         String id = userProfile.getUser().getId().toString();
-
-        FileResponse fr = fileStorageService.storeFile(part, id);
+        FileResponse fr = fileStorageService.storeWithPaths(part, id);
         String filePath = fr.getPath();
 
         photography.setName(fr.getName());
@@ -47,11 +49,11 @@ public class PhotographyService {
         userProfile.setCoverPhotography(null);
 
         if (currentBanner != null && !currentBanner.equals(filePath)) {
-            fileStorageService.removeFile(currentBanner);
+            fileStorageService.remove(currentBanner);
             log.info("Cleaned old cover photography file within service");
         }
         photographyRepository.save(photography);
-        userProfile.setCoverPhotography(photography.getPath());
+        userProfile.setCoverPhotography(photography.getName());
         return photography;
     }
 
@@ -63,8 +65,7 @@ public class PhotographyService {
         String currentAvatar = userProfile.getPhotography();
 
         String id = userProfile.getUser().getId().toString();
-
-        FileResponse fr = fileStorageService.storeFile(part, id);
+        FileResponse fr = fileStorageService.storeWithPaths(part, id);
         String filePath = fr.getPath();
 
         photography.setName(fr.getName());
@@ -72,11 +73,11 @@ public class PhotographyService {
         userProfile.setPhotography(null);
 
         if (currentAvatar != null && !currentAvatar.equals(filePath)) {
-            fileStorageService.removeFile(currentAvatar);
+            fileStorageService.remove(currentAvatar);
             log.info("Cleaned old avatar photography file within service");
         }
         photographyRepository.save(photography);
-        userProfile.setPhotography(photography.getPath());
+        userProfile.setPhotography(photography.getName());
         return photography;
     }
 }

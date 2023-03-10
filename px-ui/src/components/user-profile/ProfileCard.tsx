@@ -37,7 +37,7 @@ export default function ProfileCard({
         <Text size="md" color={"dimmed"}>
           {title ?? "No title available"}
         </Text>
-        <Text size="md" className="capitalize font-semibold">
+        <Text size="md" className="font-semibold capitalize">
           <ShowIfElse if={firstName && lastName} else={username}>
             {`${firstName} ${lastName}`}
           </ShowIfElse>

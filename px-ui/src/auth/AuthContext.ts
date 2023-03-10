@@ -13,6 +13,7 @@ interface AuthContextType {
     roleNames?: RoleType[] | string[],
     permissionsNames?: string[]
   ) => boolean;
+  accessToken: string | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

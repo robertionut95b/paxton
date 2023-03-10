@@ -76,7 +76,7 @@ export default function ClientApp() {
             profileLink={profileData?.getUserProfile?.profileSlugUrl}
             avatarSrc={
               profileData?.getUserProfile?.photography &&
-              `${APP_IMAGES_API_PATH}/100x100?f=${profileData?.getUserProfile?.photography}`
+              `${APP_IMAGES_API_PATH}/100x100/${profileData?.getUserProfile?.photography}`
             }
           />
         }

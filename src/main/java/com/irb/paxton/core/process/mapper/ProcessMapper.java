@@ -2,11 +2,11 @@ package com.irb.paxton.core.process.mapper;
 
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
-import com.irb.paxton.core.process.exception.ProcessNotExistsException;
+import com.irb.paxton.core.process.exception.ProcessNotFoundException;
 import com.irb.paxton.core.process.input.ProcessInput;
 import com.irb.paxton.core.process.input.ProcessInputUpdate;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public abstract class ProcessMapper {
     public Collection<Organization> mapOrganization(Long organizationId) {
         return List.of(this.organizationRepository
                 .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization %s does not exist", organizationId))));
+                .orElseThrow(() -> new OrganizationNotFoundException(String.format("Organization %s does not exist", organizationId))));
     }
 
     @Mapping(target = "organizations", source = "processInputUpdate.organizationId")
@@ -53,7 +53,7 @@ public abstract class ProcessMapper {
     public Collection<ProcessSteps> mapProcessStepsUpdate(@NotNull List<Long> ids) {
         return ids.stream()
                 .map(id -> processStepsRepository.findById(id)
-                        .orElseThrow(() -> new ProcessNotExistsException(String.format("Process step by id %s does not exist", id))))
+                        .orElseThrow(() -> new ProcessNotFoundException(String.format("Process step by id %s does not exist", id))))
                 .toList();
     }
 }

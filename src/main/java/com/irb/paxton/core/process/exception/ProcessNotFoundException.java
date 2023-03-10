@@ -1,5 +1,6 @@
 package com.irb.paxton.core.process.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -13,22 +14,22 @@ import java.util.List;
 import java.util.Optional;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ProcessNotExistsException extends RuntimeException implements GraphQLError {
+public class ProcessNotFoundException extends AbstractNotFoundException implements GraphQLError {
     @Serial
     private static final long serialVersionUID = -8403733063791722770L;
 
     private String path;
 
-    public ProcessNotExistsException(String message) {
+    public ProcessNotFoundException(String message) {
         super(message);
     }
 
-    public ProcessNotExistsException(String message, String path) {
+    public ProcessNotFoundException(String message, String path) {
         super(message);
         this.path = path;
     }
 
-    public ProcessNotExistsException(String message, Throwable cause) {
+    public ProcessNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -1,5 +1,6 @@
 package com.irb.paxton.core.profile.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -11,7 +12,7 @@ import java.io.Serial;
 import java.util.List;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class UserProfileNotFoundException extends RuntimeException implements GraphQLError {
+public class UserProfileNotFoundException extends AbstractNotFoundException implements GraphQLError {
 
     @Serial
     private static final long serialVersionUID = 6279111236144163855L;

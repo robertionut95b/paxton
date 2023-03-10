@@ -1,5 +1,8 @@
 package com.irb.paxton.core.candidate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.irb.paxton.core.candidate.documents.ApplicationDocument;
 import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
 import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
@@ -34,23 +37,42 @@ public class Application extends PaxtonEntity<Long> {
     @NotNull
     private OffsetDateTime dateOfApplication = OffsetDateTime.now();
 
+    @JsonBackReference(value = "application_profile_id")
     @ManyToOne
     @JoinColumn(name = "application_profile_id")
     private UserProfile applicantProfile;
 
+    @JsonBackReference(value = "candidate_id")
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
     @ManyToOne
+    @JsonBackReference(value = "jobListing_id")
     @JoinColumn(name = "jobListing_id")
     private JobListing jobListing;
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+    @NotNull
+    private ApplicationStatus status = ApplicationStatus.IN_PROGRESS;
+
+    @JsonManagedReference(value = "applicationDocuments")
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ApplicationDocument> applicationDocuments;
 
     @ValidOrganizationProcessSteps
     @OrderedProcessSteps
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "applicationProcessSteps")
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ApplicationProcessSteps> processSteps;
+
+    public Application addApplicationDocument(ApplicationDocument applicationDocument) {
+        this.applicationDocuments.add(applicationDocument);
+        return this;
+    }
+
+    public Application removeApplicationDocument(ApplicationDocument applicationDocument) {
+        this.applicationDocuments.remove(applicationDocument);
+        applicationDocument.setDocument(null);
+        return this;
+    }
 }

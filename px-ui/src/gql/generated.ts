@@ -42,6 +42,7 @@ export type Application = {
   id: Scalars['ID'];
   jobListing: JobListing;
   processSteps?: Maybe<Array<Maybe<ApplicationProcessSteps>>>;
+  status: ApplicationStatus;
 };
 
 export type ApplicationDocument = {
@@ -56,6 +57,7 @@ export type ApplicationInput = {
   id?: InputMaybe<Scalars['ID']>;
   jobListingId: Scalars['ID'];
   processSteps?: InputMaybe<Array<InputMaybe<ApplicationProcessStepsInput>>>;
+  status?: InputMaybe<ApplicationStatus>;
   userId: Scalars['ID'];
 };
 
@@ -81,6 +83,12 @@ export type ApplicationProcessStepsInput = {
   processStepId: Scalars['ID'];
   registeredAt?: InputMaybe<Scalars['DateTime']>;
 };
+
+export enum ApplicationStatus {
+  Canceled = 'CANCELED',
+  Finished = 'FINISHED',
+  InProgress = 'IN_PROGRESS'
+}
 
 export type Candidate = {
   __typename?: 'Candidate';
@@ -140,7 +148,6 @@ export type Country = {
 export type Document = {
   __typename?: 'Document';
   name: Scalars['String'];
-  url: Scalars['String'];
 };
 
 export type Domain = {
@@ -1006,7 +1013,7 @@ export type GetApplicationForJobListingRecruitmentQueryVariables = Exact<{
 }>;
 
 
-export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } } } | null };
+export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -2144,6 +2151,7 @@ export const GetApplicationForJobListingRecruitmentDocument = `
     query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
   getApplicationForJobListing(JobListingId: $JobListingId) {
     id
+    status
     dateOfApplication
     applicantProfile {
       id
@@ -2178,6 +2186,12 @@ export const GetApplicationForJobListingRecruitmentDocument = `
       organization {
         id
         slugName
+      }
+    }
+    applicationDocuments {
+      id
+      document {
+        name
       }
     }
   }
@@ -2528,6 +2542,7 @@ export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInpu
     id: z.string().nullish(),
     jobListingId: z.string(),
     processSteps: z.array(z.lazy(() => ApplicationProcessStepsInputSchema().nullable())).nullish(),
+    status: ApplicationStatusSchema.nullish(),
     userId: z.string()
   })
 }
@@ -2540,6 +2555,8 @@ export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<App
     registeredAt: definedNonNullAnySchema.nullish()
   })
 }
+
+export const ApplicationStatusSchema = z.nativeEnum(ApplicationStatus);
 
 export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
   return z.object<Properties<CertificationInput>>({

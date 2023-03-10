@@ -1,109 +1,157 @@
 package com.irb.paxton.storage;
 
-import com.irb.paxton.storage.exception.FileNotFoundException;
+import com.irb.paxton.config.properties.FileStorageProperties;
+import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
 import com.irb.paxton.storage.exception.FileStorageException;
-import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Objects;
 
-import static com.irb.paxton.storage.FileStorageProperties.USER_STORAGE_UPLOAD_PATH;
-
 @Service
-@Slf4j
-public class FileStorageService {
+public class FileStorageService implements StorageService {
 
-    private final Path filesUserUploadsStorageLoc;
+    private final Path rootLocation;
 
     @Autowired
-    public FileStorageService() {
-        this.filesUserUploadsStorageLoc = Paths.get(USER_STORAGE_UPLOAD_PATH)
-                .toAbsolutePath().normalize();
+    public FileStorageService(FileStorageProperties properties) {
+        this.rootLocation = Paths.get(
+                "%s/%s/".formatted(properties.getStorageRootPath(), properties.getStorageUserPath())
+        );
+    }
+
+    @Override
+    public void init() {
         try {
-            Files.createDirectories(this.filesUserUploadsStorageLoc);
-        } catch (Exception ex) {
-            throw new FileStorageException("Cannot create the storage directory", ex);
+            Files.createDirectories(rootLocation);
+        } catch (IOException e) {
+            throw new FileStorageException("Could not initialize storage", e);
         }
     }
 
-    public FileResponse storeFile(@NotNull MultipartFile file, String path) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+    @Override
+    public void store(MultipartFile file) {
         try {
-            // Check if the file's name contains invalid characters
-            if (fileName.contains("..")) {
-                throw new FileStorageException("File name contains invalid path sequence " + fileName);
+            if (file.isEmpty()) {
+                throw new FileStorageException("Failed to store empty file.");
             }
-            if (path != null) {
-                Files.createDirectories(this.filesUserUploadsStorageLoc.resolve(path));
+            Path destinationFile = this.rootLocation.resolve(
+                            Paths.get(Objects.requireNonNull(file.getOriginalFilename()))
+                    )
+                    .normalize();
+            if (!destinationFile.getParent().startsWith(this.rootLocation)) {
+                throw new FileStorageException("Cannot store file outside current directory.");
             }
-            // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = path != null ?
-                    this.filesUserUploadsStorageLoc.resolve(path).resolve(fileName)
-                    : this.filesUserUploadsStorageLoc.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            String urlLocation = String.format("%s/%s", path, fileName);
-
-            return new FileResponse(fileName, urlLocation);
-        } catch (IOException ex) {
-            throw new FileStorageException(String.format("Could not store file %s", fileName), ex);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to store file.", e);
         }
     }
 
-    public Resource loadFileAsResource(String fileName) {
+    public FileResponse storeWithPaths(MultipartFile file, String... additionalPath) {
+        Path destinationFile;
         try {
-            Path filePath = this.filesUserUploadsStorageLoc.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
+            if (file.isEmpty()) {
+                throw new FileStorageException("Failed to store empty file.");
+            }
+            if (file.getOriginalFilename() == null) {
+                throw new FileStorageException("File has no name.");
+            }
+            Path additionalPaths = Paths.get("", additionalPath);
+            destinationFile = this.rootLocation
+                    .resolve(additionalPaths)
+                    .resolve(Paths.get(file.getOriginalFilename()))
+                    .normalize();
+            // create subdirectories if not exists
+            Files.createDirectories(destinationFile);
+            if (!destinationFile.getParent().startsWith(this.rootLocation)) {
+                throw new FileStorageException("Cannot store file outside current directory.");
+            }
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (FileAlreadyExistsException e) {
+            throw new FileAlreadyExistsExceptionException("This file already exists.", e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to store file.", e);
+        }
+        return new FileResponse(file.getOriginalFilename(), destinationFile.toString());
+    }
+
+    @Override
+    public Path load(String filename) {
+        return rootLocation.resolve(filename);
+    }
+
+    @Override
+    public Resource loadAsResource(String filename) {
+        try {
+            Path file = load(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new FileNotFoundException("File not found " + fileName);
+                throw new FileStorageException("Could not read file: %s".formatted(filename));
             }
-        } catch (MalformedURLException ex) {
-            throw new FileNotFoundException("File not found " + fileName, ex);
+        } catch (MalformedURLException e) {
+            throw new FileStorageException("Could not read file: %s".formatted(filename), e);
         }
     }
 
-    public boolean removeFile(@NotNull String path) {
-        Path targetPath = Path.of(USER_STORAGE_UPLOAD_PATH, path);
+    @Override
+    public Resource loadAsResourceFromFullPath(String filePath) {
         try {
-            return Files.deleteIfExists(targetPath);
+            Path file = Paths.get(filePath);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new FileStorageException("Could not read file: " + filePath);
+            }
+        } catch (MalformedURLException e) {
+            throw new FileStorageException("Could not read file: " + filePath, e);
+        }
+    }
+
+    @Override
+    public void remove(String filename) {
+        Path targetPath = Paths.get(filename);
+        if (!targetPath.getParent().startsWith(this.rootLocation)) {
+            throw new FileStorageException("Cannot delete file outside current directory.");
+        }
+        try {
+            Files.deleteIfExists(targetPath);
         } catch (IOException e) {
-            log.warn(String.format("Could not delete : File not found %s", targetPath), e);
+            throw new FileStorageException("Could not delete : File not found %s".formatted(targetPath));
         }
-        return false;
     }
 
-    public int[] splitStringSizesParameter(String size) {
-        String[] sizes = size.split("x");
-        if (sizes.length != 2) {
-            throw new IllegalArgumentException("Image sizes must be valid");
+    @Override
+    public void remove(Path filePath) {
+        Path targetPath = this.load(filePath.toString());
+        if (!filePath.getParent().startsWith(this.rootLocation)) {
+            throw new FileStorageException("Cannot delete file outside current directory.");
         }
-        int width = Integer.parseInt(sizes[0]);
-        int height = Integer.parseInt(sizes[1]);
-        return new int[]{width, height};
+        try {
+            Files.deleteIfExists(targetPath);
+        } catch (IOException e) {
+            throw new FileStorageException("Could not delete : File not found %s".formatted(filePath));
+        }
     }
 
-    public BufferedImage loadResourceAsImageResized(BufferedImage bufferedImage, int width, int height) throws IOException {
-        if (width == 0 || height == 0) {
-            return bufferedImage;
-        }
-        return Thumbnails.of(bufferedImage)
-                .size(width, height)
-                .asBufferedImage();
+    @Override
+    public void deleteAll() {
+        FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
+
 }

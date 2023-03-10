@@ -1,5 +1,6 @@
 package com.irb.paxton.core.profile.experience.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -7,7 +8,7 @@ import graphql.language.SourceLocation;
 
 import java.util.List;
 
-public class ExperienceNotFoundException extends RuntimeException implements GraphQLError {
+public class ExperienceNotFoundException extends AbstractNotFoundException implements GraphQLError {
 
     private final String path;
 

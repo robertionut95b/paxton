@@ -42,8 +42,7 @@ const ApplicationCandidatureTimeline = ({
                   fontSize: 14,
                 }}
               >
-                <Text size="xs" mt={"xs"}>
-                  Added {""}
+                <Text size="xs">
                   {formatDistanceToNowStrict(new Date(p.registeredAt), {
                     addSuffix: true,
                   }) ?? "Invalid date"}

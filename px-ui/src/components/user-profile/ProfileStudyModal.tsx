@@ -205,7 +205,7 @@ export default function ProfileStudyModal() {
       },
     });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     const id = values.id;
     const institution = values.institution as string;
     const domainStudy = values.domainStudy as string;

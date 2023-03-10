@@ -48,7 +48,7 @@ export default function FeedPage() {
             <BackgroundImage
               src={
                 upd?.getUserProfile?.coverPhotography
-                  ? `${APP_IMAGES_API_PATH}/300x150?f=${upd.getUserProfile.coverPhotography}`
+                  ? `${APP_IMAGES_API_PATH}/300x150/${upd.getUserProfile.coverPhotography}`
                   : "/images/bg-profile.jpg"
               }
               radius="sm"
@@ -67,7 +67,7 @@ export default function FeedPage() {
                   }}
                   src={
                     upd && upd.getUserProfile && upd.getUserProfile.photography
-                      ? `${APP_IMAGES_API_PATH}/150x100?f=${upd.getUserProfile.photography}`
+                      ? `${APP_IMAGES_API_PATH}/150x100/${upd.getUserProfile.photography}`
                       : undefined
                   }
                 >
@@ -99,7 +99,7 @@ export default function FeedPage() {
                     size="md"
                     src={
                       upd.getUserProfile.photography &&
-                      `${APP_IMAGES_API_PATH}/100x100?f=${upd.getUserProfile.photography}`
+                      `${APP_IMAGES_API_PATH}/100x100/${upd.getUserProfile.photography}`
                     }
                   >
                     {user?.firstName && user?.lastName

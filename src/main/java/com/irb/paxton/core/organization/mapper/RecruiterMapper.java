@@ -3,7 +3,7 @@ package com.irb.paxton.core.organization.mapper;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.input.RecruiterInput;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
@@ -33,7 +33,7 @@ public abstract class RecruiterMapper {
 
     public Organization mapOrganization(Long id) {
         return organizationRepository.findById(id)
-                .orElseThrow(() -> new OrganizationNotExistsException("Organization by id %s does not exist".formatted(id), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(id), "organizationId"));
     }
 
     @Mapping(target = "organization", source = "recruiterInput.organizationId")

@@ -8,7 +8,7 @@ import com.irb.paxton.core.candidate.input.ApplicationProcessStepsInput;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
-import com.irb.paxton.core.process.exception.ProcessNotExistsException;
+import com.irb.paxton.core.process.exception.ProcessNotFoundException;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +32,7 @@ public abstract class ApplicationProcessStepsMapper {
 
     public ProcessSteps mapProcessStep(Long value) {
         return processStepsRepository.findById(value)
-                .orElseThrow(() -> new ProcessNotExistsException("Process step by id %s does not exist".formatted(value)));
+                .orElseThrow(() -> new ProcessNotFoundException("Process step by id %s does not exist".formatted(value)));
     }
 
     public Application mapApplication(Long value) {

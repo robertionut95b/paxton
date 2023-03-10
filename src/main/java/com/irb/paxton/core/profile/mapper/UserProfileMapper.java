@@ -2,7 +2,7 @@ package com.irb.paxton.core.profile.mapper;
 
 import com.irb.paxton.core.activity.ActivitySector;
 import com.irb.paxton.core.activity.ActivitySectorRepository;
-import com.irb.paxton.core.activity.exception.ActivitySectorNotExistsException;
+import com.irb.paxton.core.activity.exception.ActivitySectorNotFoundException;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.exception.CityNotFoundException;
@@ -10,7 +10,7 @@ import com.irb.paxton.core.media.Photography;
 import com.irb.paxton.core.media.input.PhotographyInput;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
 import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
@@ -120,11 +120,6 @@ public abstract class UserProfileMapper {
     @Mapping(target = "createdAt", ignore = true)
     public abstract Experience addUserProfileExperience(ExperienceInput experienceInput);
 
-    public UserProfile mapUserProfile(Long userProfileId) {
-        return this.userProfileRepository.findById(userProfileId)
-                .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userProfileId), "userProfileId"));
-    }
-
     public UserProfile mapUserProfileBySlugUrl(String userProfileSlugUrl) {
         return this.userProfileRepository.findByProfileSlugUrl(userProfileSlugUrl)
                 .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userProfileSlugUrl), "userProfileId"));
@@ -132,12 +127,12 @@ public abstract class UserProfileMapper {
 
     public Organization mapOrganization(Long organizationId) {
         return this.organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotExistsException(String.format("%s does not exist", organizationId), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException(String.format("%s does not exist", organizationId), "organizationId"));
     }
 
     public ActivitySector mapActivitySector(Long activitySectorId) {
         return this.activitySectorRepository.findById(activitySectorId)
-                .orElseThrow(() -> new ActivitySectorNotExistsException(String.format("%s does not exist", activitySectorId), "activitySectorId"));
+                .orElseThrow(() -> new ActivitySectorNotFoundException(String.format("%s does not exist", activitySectorId), "activitySectorId"));
     }
 
     @Mapping(target = "userProfile", source = "experienceInput.userProfileSlugUrl")
@@ -188,13 +183,18 @@ public abstract class UserProfileMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     public abstract Study updateUserProfileStudy(@MappingTarget Study actualStudy, StudyInput studyInput);
 
-    @Mapping(target = "userProfile", source = "photographyInput.userProfileSlugUrl")
+    @Mapping(target = "userProfile", source = "photographyInput.userId")
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "path", ignore = true)
     public abstract Photography updateUserProfileBanner(PhotographyInput photographyInput);
 
-    @Mapping(target = "userProfile", source = "photographyInput.userProfileSlugUrl")
+    @Mapping(target = "userProfile", source = "photographyInput.userId")
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "path", ignore = true)
     public abstract Photography updateUserProfileAvatar(PhotographyInput photographyInput);
+
+    public UserProfile mapUserProfile(Long userId) {
+        return this.userProfileRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userId), "userProfileId"));
+    }
 }

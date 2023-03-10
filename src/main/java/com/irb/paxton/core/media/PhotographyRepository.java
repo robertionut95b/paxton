@@ -7,9 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface PhotographyRepository extends JpaRepository<Photography, Long> {
-
-    Optional<Photography> findByUserProfileId(Long userProfileId);
-
-    Optional<Photography> findByUserProfileProfileSlugUrl(String profileSlugUrl);
+    Optional<Photography> findByName(String name);
 
 }

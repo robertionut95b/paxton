@@ -177,7 +177,7 @@ const OrganizationModal = () => {
     [countries]
   );
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     mutate({
       OrganizationInput: {
         ...values,

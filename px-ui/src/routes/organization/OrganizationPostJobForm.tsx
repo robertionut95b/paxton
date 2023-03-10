@@ -227,7 +227,7 @@ export default function OrganizationPostJobForm() {
     validate: zodResolver(FormJobListingSchema),
   });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     publishJob({
       JobListingInput: {
         ...values,
@@ -461,7 +461,7 @@ export default function OrganizationPostJobForm() {
               description: r?.user.userProfile.profileTitle,
               image:
                 r?.user.userProfile.photography &&
-                `${APP_IMAGES_API_PATH}/100x100?f=/${r.user.userProfile.photography}`,
+                `${APP_IMAGES_API_PATH}/100x100/${r.user.userProfile.photography}`,
             }))}
             icon={<UserIcon width={18} />}
             {...form.getInputProps("recruiterId")}

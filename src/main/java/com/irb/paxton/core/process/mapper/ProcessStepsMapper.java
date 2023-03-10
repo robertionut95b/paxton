@@ -2,7 +2,7 @@ package com.irb.paxton.core.process.mapper;
 
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.*;
-import com.irb.paxton.core.process.exception.ProcessNotExistsException;
+import com.irb.paxton.core.process.exception.ProcessNotFoundException;
 import com.irb.paxton.core.process.input.ProcessStepsInput;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -36,6 +36,6 @@ public abstract class ProcessStepsMapper {
     public Process mapProcess(Long processId) {
         return this.processRepository
                 .findById(processId)
-                .orElseThrow(() -> new ProcessNotExistsException(String.format("Process by id %s does not exist", processId)));
+                .orElseThrow(() -> new ProcessNotFoundException(String.format("Process by id %s does not exist", processId)));
     }
 }

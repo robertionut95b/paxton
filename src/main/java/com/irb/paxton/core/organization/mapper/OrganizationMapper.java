@@ -2,7 +2,7 @@ package com.irb.paxton.core.organization.mapper;
 
 import com.irb.paxton.core.activity.ActivitySector;
 import com.irb.paxton.core.activity.ActivitySectorRepository;
-import com.irb.paxton.core.activity.exception.ActivitySectorNotExistsException;
+import com.irb.paxton.core.activity.exception.ActivitySectorNotFoundException;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.exception.CityNotFoundException;
@@ -44,7 +44,7 @@ public abstract class OrganizationMapper {
 
     public ActivitySector mapActivitySector(Long activitySectorId) {
         return activitySectorRepository.findById(activitySectorId)
-                .orElseThrow(() -> new ActivitySectorNotExistsException("Activity sector %s does not exist".formatted(activitySectorId), "activitySectorId"));
+                .orElseThrow(() -> new ActivitySectorNotFoundException("Activity sector %s does not exist".formatted(activitySectorId), "activitySectorId"));
     }
 
     public Collection<Long> mapCities(Collection<City> value) {

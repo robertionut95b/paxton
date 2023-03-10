@@ -47,7 +47,7 @@ export default function SignUp() {
     },
   });
 
-  const handleSubmit = async (values: typeof form["values"]) =>
+  const handleSubmit = async (values: (typeof form)["values"]) =>
     registerUser(values);
 
   return (

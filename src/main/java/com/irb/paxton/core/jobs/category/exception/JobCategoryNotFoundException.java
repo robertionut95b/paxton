@@ -1,5 +1,6 @@
 package com.irb.paxton.core.jobs.category.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -13,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class JobCategoryNotExistsException extends RuntimeException implements GraphQLError {
+public class JobCategoryNotFoundException extends AbstractNotFoundException implements GraphQLError {
 
     @Serial
     private static final long serialVersionUID = 5960638623851594191L;
 
     private final String path;
 
-    public JobCategoryNotExistsException(String message, String path) {
+    public JobCategoryNotFoundException(String message, String path) {
         super(message);
         this.path = path;
     }

@@ -362,6 +362,7 @@ query GetMyApplicationForJobListing($JobListingId: ID!) {
 query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
   getApplicationForJobListing(JobListingId: $JobListingId) {
     id
+    status
     dateOfApplication
     applicantProfile {
       id
@@ -396,6 +397,12 @@ query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
       organization {
         id
         slugName
+      }
+    }
+    applicationDocuments {
+      id
+      document {
+        name
       }
     }
   }

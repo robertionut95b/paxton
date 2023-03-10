@@ -1,5 +1,6 @@
 package com.irb.paxton.core.location.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -10,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class CityNotFoundException extends RuntimeException implements GraphQLError {
+public class CityNotFoundException extends AbstractNotFoundException implements GraphQLError {
 
     @Serial
     private static final long serialVersionUID = 8056432388593090725L;

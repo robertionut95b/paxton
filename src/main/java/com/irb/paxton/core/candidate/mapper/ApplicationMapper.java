@@ -7,7 +7,7 @@ import com.irb.paxton.core.candidate.CandidateRepository;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
-import com.irb.paxton.core.jobs.exception.JobNotExistsException;
+import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
@@ -70,7 +70,7 @@ public abstract class ApplicationMapper {
 
     public JobListing mapJobListing(Long jobListingId) {
         return jobListingRepository.findById(jobListingId)
-                .orElseThrow(() -> new JobNotExistsException(String.format("Job listing by id %d does not exist", jobListingId), "jobListingId"));
+                .orElseThrow(() -> new JobNotFoundException(String.format("Job listing by id %d does not exist", jobListingId), "jobListingId"));
     }
 
     public Candidate mapCandidate(Long userId) {

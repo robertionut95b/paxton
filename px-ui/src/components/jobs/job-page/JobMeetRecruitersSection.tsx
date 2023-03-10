@@ -47,7 +47,7 @@ const JobMeetRecruitersSection = ({
               size={76}
               src={
                 recruiter?.user.userProfile.photography
-                  ? `${APP_IMAGES_API_PATH}/100x100?f=${recruiter?.user.userProfile.photography}`
+                  ? `${APP_IMAGES_API_PATH}/100x100/${recruiter?.user.userProfile.photography}`
                   : null
               }
             >

@@ -5,8 +5,8 @@ import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobService;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
-import com.irb.paxton.core.jobs.category.exception.JobCategoryNotExistsException;
-import com.irb.paxton.core.jobs.exception.JobNotExistsException;
+import com.irb.paxton.core.jobs.category.exception.JobCategoryNotFoundException;
+import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.jobs.input.JobListingInput;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
@@ -14,7 +14,7 @@ import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.process.ProcessRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.Mapper;
@@ -57,12 +57,12 @@ public abstract class JobListingMapper {
 
     public Organization mapOrganization(Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization by id %d does not exist", organizationId), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException(String.format("Organization by id %d does not exist", organizationId), "organizationId"));
     }
 
     public JobCategory mapJobCategory(Long categoryId) {
         return jobCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new JobCategoryNotExistsException(String.format("Job Category by id %d does not exist", categoryId), "categoryId"));
+                .orElseThrow(() -> new JobCategoryNotFoundException(String.format("Job Category by id %d does not exist", categoryId), "categoryId"));
     }
 
     public City mapCity(String location) {
@@ -71,7 +71,7 @@ public abstract class JobListingMapper {
 
     public Job mapJob(Long jobId) {
         return jobService.findById(jobId)
-                .orElseThrow(() -> new JobNotExistsException(String.format("Job by id %d does not exist", jobId), "jobId"));
+                .orElseThrow(() -> new JobNotFoundException(String.format("Job by id %d does not exist", jobId), "jobId"));
     }
 
     public Recruiter mapRecruiter(Long recruiterId) {

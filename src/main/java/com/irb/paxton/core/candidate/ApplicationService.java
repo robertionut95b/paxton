@@ -3,6 +3,8 @@ package com.irb.paxton.core.candidate;
 import com.irb.paxton.core.candidate.exception.ApplicationNotFoundException;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.candidate.mapper.ApplicationMapper;
+import com.irb.paxton.core.process.Process;
+import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
@@ -22,10 +24,19 @@ public class ApplicationService {
 
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     private ApplicationRepository applicationRepository;
+
     @Autowired
     private ApplicationMapper applicationMapper;
+
+    @PostAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
+    public Application findById(Long applicationId) {
+        return applicationRepository
+                .findById(applicationId)
+                .orElseThrow(() -> new ApplicationNotFoundException("Application by id %s does not exist".formatted(applicationId)));
+    }
 
     @PreAuthorize("!hasRole('ROLE_RECRUITER') or !hasRole('ROLE_ADMINISTRATOR')")
     public Application applyToJobListing(ApplicationInput applicationInput) {
@@ -66,10 +77,26 @@ public class ApplicationService {
                 .orElseThrow(() -> new ApplicationNotFoundException("Application for job id %s and candidate name %s does not exist".formatted(jobListingId, username), "jobListingId"));
     }
 
+    @PreAuthorize("hasRole('ROLE_RECRUITER')")
     public Application updateApplication(ApplicationInput applicationInput) {
         Application application = applicationRepository.findById(applicationInput.getId())
                 .orElseThrow(() -> new ApplicationNotFoundException("Application by id %s does not exist".formatted(applicationInput.getId()), "id"));
         application = applicationMapper.partialUpdate(applicationInput, application);
+        // change status if there are no more steps to process
+        Collection<ApplicationProcessSteps> applicationProcessSteps = application.getProcessSteps();
+        var processStep = applicationProcessSteps.stream().findFirst();
+        if (processStep.isPresent()) {
+            Process orgProcess = processStep.get().getProcessStep().getProcess();
+            Collection<ProcessSteps> appProcessSteps = applicationProcessSteps.stream().map(ApplicationProcessSteps::getProcessStep).toList();
+
+            if (!appProcessSteps.containsAll(orgProcess.getProcessSteps()) && application.getStatus().equals(ApplicationStatus.FINISHED)) {
+                throw new IllegalStateException("Application cannot have finished state before registering all process steps");
+            }
+
+            if (appProcessSteps.containsAll(orgProcess.getProcessSteps())) {
+                application.setStatus(ApplicationStatus.FINISHED);
+            }
+        }
         applicationRepository.save(application);
         return application;
     }

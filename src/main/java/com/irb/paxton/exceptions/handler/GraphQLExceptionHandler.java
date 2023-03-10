@@ -1,5 +1,6 @@
 package com.irb.paxton.exceptions.handler;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorType;
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
@@ -41,6 +42,12 @@ public class GraphQLExceptionHandler implements GraphQLErrorHandler {
                     .errorType(error.getErrorType())
                     .locations(error.getLocations())
                     .path(error.getPath());
+
+            if (exceptionError.getException() instanceof AbstractNotFoundException abstractNotFoundException) {
+                return errorBuilder
+                        .message(abstractNotFoundException.getMessage())
+                        .build();
+            }
 
             if (exceptionError.getException() instanceof ConstraintViolationException violationException) {
                 return errorBuilder

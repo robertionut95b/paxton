@@ -3,7 +3,7 @@ package com.irb.paxton.core.organization.resolver;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.OrganizationService;
-import com.irb.paxton.core.organization.exception.OrganizationNotExistsException;
+import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ public class OrganizationQueryResolver implements GraphQLQueryResolver {
 
     public Organization getOrganizationById(Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotExistsException(String.format("Organization %s does not exist", organizationId), "id"));
+                .orElseThrow(() -> new OrganizationNotFoundException(String.format("Organization %s does not exist", organizationId), "id"));
     }
 
     public Organization getOrganizationBySlugName(String slugName) {

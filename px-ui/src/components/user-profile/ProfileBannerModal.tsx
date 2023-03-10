@@ -47,12 +47,12 @@ export default function ProfileBannerModal() {
 
   const handleSubmit = (values: typeof form.values) => {
     const photography = values.photography;
-    const profileSlugUrl = user?.profileSlugUrl as string;
+    const userId = user?.userId as string;
 
-    if (photography && profileSlugUrl) {
+    if (photography && userId) {
       const formData = new FormData();
       formData.append("photography", photography);
-      formData.append("userProfileSlugUrl", profileSlugUrl);
+      formData.append("userId", userId);
       mutate(formData);
     }
   };

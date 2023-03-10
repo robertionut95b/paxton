@@ -157,7 +157,7 @@ export default function ProfileExperienceModal() {
     validate: zodResolver(FormAddExperienceSchema),
   });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     const contractType = values.contractType as ContractType;
     const startDate = values.startDate;
     const endDate = values?.endDate;

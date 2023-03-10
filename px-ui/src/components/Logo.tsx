@@ -8,8 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 export function Logo() {
   return (
-    <div className="px-logo flex justify-center items-center gap-x-2">
-      <Link className="flex justify-center items-center gap-x-2" to="/app">
+    <div className="px-logo flex items-center justify-center gap-x-2">
+      <Link className="flex items-center justify-center gap-x-2" to="/app">
         <BriefcaseIcon width={32} color={"#7950f2"} />
         <Title className="tracking-wider" mt={4} order={4}>
           Paxton
@@ -39,8 +39,8 @@ export function LogoWithSearch() {
   );
 
   return (
-    <div className="px-logo flex justify-center items-center gap-x-2">
-      <Link className="flex justify-center items-center gap-x-2" to="/app">
+    <div className="px-logo flex items-center justify-center gap-x-2">
+      <Link className="flex items-center justify-center gap-x-2" to="/app">
         <BriefcaseIcon width={32} color={"#7950f2"} />
         <Title className="tracking-wider" mt={4} order={4}>
           Paxton

@@ -45,7 +45,7 @@ const recrToTrsfItem = (
     description: r?.user.userProfile.profileTitle,
     image:
       r?.user.userProfile.photography &&
-      `${APP_IMAGES_API_PATH}/50x50?f=${r?.user.userProfile.photography}`,
+      `${APP_IMAGES_API_PATH}/50x50/${r?.user.userProfile.photography}`,
   }));
 };
 
@@ -60,7 +60,7 @@ const usrToTrsfItem = (
     description: u?.userProfile.profileTitle,
     image:
       u?.userProfile.photography &&
-      `${APP_IMAGES_API_PATH}/50x50?f=${u?.userProfile.photography}`,
+      `${APP_IMAGES_API_PATH}/50x50/${u?.userProfile.photography}`,
   }));
 };
 

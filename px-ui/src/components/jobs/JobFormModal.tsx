@@ -111,7 +111,7 @@ const JobFormModal = () => {
     [form]
   );
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     publishJob({
       JobInput: {
         id: jobId ?? null,

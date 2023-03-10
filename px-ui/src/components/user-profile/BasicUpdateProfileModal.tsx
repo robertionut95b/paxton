@@ -139,7 +139,7 @@ export default function BasicUpdateProfileModal() {
     }
   );
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     mutate({
       UserProfileInput: values,
     });

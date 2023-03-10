@@ -53,7 +53,7 @@ export default function ForgotPasswordReset() {
     },
   });
 
-  const handleSubmit = async (values: typeof form["values"]) => {
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     const newPassword = values.newPassword;
     const confirmPassword = values.confirmPassword;
     reset({

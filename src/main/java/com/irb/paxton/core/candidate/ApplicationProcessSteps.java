@@ -1,5 +1,6 @@
 package com.irb.paxton.core.candidate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.ProcessSteps;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,12 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Setter
 public class ApplicationProcessSteps extends PaxtonEntity<Long> {
 
+    @JsonBackReference(value = "processStep")
     @ManyToOne
     @JoinColumn(name = "process_step_id")
     private ProcessSteps processStep;
 
+    @JsonBackReference(value = "applicationProcessSteps")
     @ManyToOne
     @JoinColumn(name = "application_id")
     private Application application;

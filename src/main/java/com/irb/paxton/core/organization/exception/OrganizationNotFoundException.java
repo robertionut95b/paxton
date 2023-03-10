@@ -1,5 +1,6 @@
 package com.irb.paxton.core.organization.exception;
 
+import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
 import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
@@ -13,22 +14,22 @@ import java.util.List;
 import java.util.Optional;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class OrganizationNotExistsException extends RuntimeException implements GraphQLError {
+public class OrganizationNotFoundException extends AbstractNotFoundException implements GraphQLError {
 
     @Serial
     private static final long serialVersionUID = 7276059009498227434L;
     private String path;
 
-    public OrganizationNotExistsException(String message) {
+    public OrganizationNotFoundException(String message) {
         super(message);
     }
 
-    public OrganizationNotExistsException(String message, String path) {
+    public OrganizationNotFoundException(String message, String path) {
         super(message);
         this.path = path;
     }
 
-    public OrganizationNotExistsException(String message, Throwable cause) {
+    public OrganizationNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 

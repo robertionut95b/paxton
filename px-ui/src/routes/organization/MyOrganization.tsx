@@ -1,17 +1,28 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
-import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import { useGetRecruiterByIdQuery } from "@gql/generated";
+import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
+import {
+  GetRecruiterByIdQuery,
+  useGetRecruiterByIdQuery,
+} from "@gql/generated";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
-import { useNavigate } from "react-router-dom";
-import { useEffectOnce } from "usehooks-ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function MyOrganizationPage() {
   const { user, isAuthorized } = useAuth();
   const navigate = useNavigate();
-  const { data, isLoading } = useGetRecruiterByIdQuery(
+  const queryClient = useQueryClient();
+
+  const prevQuery = queryClient.getQueryData<GetRecruiterByIdQuery>(
+    useGetRecruiterByIdQuery.getKey({
+      recruiterId: user?.userId as string,
+    })
+  );
+
+  const { isInitialLoading } = useGetRecruiterByIdQuery(
     graphqlRequestClient,
     {
       recruiterId: user?.userId as string,
@@ -26,7 +37,7 @@ export default function MyOrganizationPage() {
       onError: () => {
         showNotification({
           title: "Data error",
-          message: "You are not assigned to any organization",
+          message: "You are not assigned recruiter to any organization",
           autoClose: 5000,
           icon: <ExclamationTriangleIcon width={20} />,
         });
@@ -35,18 +46,12 @@ export default function MyOrganizationPage() {
     }
   );
 
-  useEffectOnce(() => {
-    if (
-      data &&
-      data.getRecruiterById?.organization.id &&
-      isAuthorized([RoleType.ROLE_RECRUITER])
-    ) {
-      const organizationSlug = data.getRecruiterById?.organization?.slugName;
-      navigate(`/app/organizations/${organizationSlug}/`);
-    } else navigate(`/app`);
-  });
-
-  if (isLoading) return <GenericLoadingSkeleton />;
-
-  return null;
+  if (isInitialLoading) return <ApplicationSpinner />;
+  if (prevQuery?.getRecruiterById && isAuthorized([RoleType.ROLE_RECRUITER])) {
+    return (
+      <Navigate
+        to={`/app/organizations/${prevQuery.getRecruiterById.organization.slugName}/`}
+      />
+    );
+  } else return <Navigate to={`/app`} />;
 }

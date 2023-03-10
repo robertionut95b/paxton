@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
@@ -41,37 +42,34 @@ public class PhotographyController {
         return new int[]{width, height};
     }
 
-    @GetMapping(value = "/images/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getOriginalImage(@PathVariable(value = "imageName") String imageName) throws IOException {
+    @GetMapping(value = {"/images/{size}/{imageName}", "/images/{imageName}"}, produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable(value = "size", required = false) Optional<String> size, @PathVariable(value = "imageName") String imageName) throws IOException {
         Photography photography = photographyService.findByName(imageName);
         Resource image = fileStorageService.loadAsResourceFromFullPath(photography.getPath());
-        try (InputStream in = image.getInputStream()) {
+        if (size.isEmpty()) {
+            try (InputStream in = image.getInputStream()) {
+                return ResponseEntity
+                        .ok().contentType(MediaType.IMAGE_JPEG)
+                        .body(IOUtils.toByteArray(in));
+            }
+        } else {
+            InputStream in = image.getInputStream();
+            BufferedImage bufferedImage = ImageIO.read(in);
+            in.close();
+
+            int[] sizes = this.splitStringSizesParameter(size.get());
+            BufferedImage bufferedImg = Thumbnails.of(bufferedImage)
+                    .size(sizes[0], sizes[1])
+                    .outputFormat("jpg")
+                    .asBufferedImage();
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImg, "jpg", outStream);
+            InputStream is = new ByteArrayInputStream(outStream.toByteArray());
+
             return ResponseEntity
                     .ok().contentType(MediaType.IMAGE_JPEG)
-                    .body(IOUtils.toByteArray(in));
+                    .body(IOUtils.toByteArray(is));
         }
-    }
-
-    @GetMapping(value = "/images/{size}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getResizedImage(@PathVariable(value = "imageName") String imageName, @PathVariable String size) throws IOException {
-        Photography photography = photographyService.findByName(imageName);
-        Resource image = fileStorageService.loadAsResourceFromFullPath(photography.getPath());
-        InputStream in = image.getInputStream();
-        BufferedImage bufferedImage = ImageIO.read(in);
-        in.close();
-
-        int[] sizes = this.splitStringSizesParameter(size);
-        BufferedImage bufferedImg = Thumbnails.of(bufferedImage)
-                .size(sizes[0], sizes[1])
-                .outputFormat("jpg")
-                .asBufferedImage();
-
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImg, "jpg", outStream);
-        InputStream is = new ByteArrayInputStream(outStream.toByteArray());
-
-        return ResponseEntity
-                .ok().contentType(MediaType.IMAGE_JPEG)
-                .body(IOUtils.toByteArray(is));
     }
 }

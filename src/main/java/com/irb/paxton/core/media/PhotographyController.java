@@ -5,6 +5,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
@@ -46,10 +48,12 @@ public class PhotographyController {
     public ResponseEntity<byte[]> getImage(@PathVariable(value = "size", required = false) Optional<String> size, @PathVariable(value = "imageName") String imageName) throws IOException {
         Photography photography = photographyService.findByName(imageName);
         Resource image = fileStorageService.loadAsResourceFromFullPath(photography.getPath());
+        CacheControl cacheControl = CacheControl.maxAge(60, TimeUnit.SECONDS).noTransform().mustRevalidate();
         if (size.isEmpty()) {
             try (InputStream in = image.getInputStream()) {
                 return ResponseEntity
                         .ok().contentType(MediaType.IMAGE_JPEG)
+                        .cacheControl(cacheControl)
                         .body(IOUtils.toByteArray(in));
             }
         } else {
@@ -69,6 +73,7 @@ public class PhotographyController {
 
             return ResponseEntity
                     .ok().contentType(MediaType.IMAGE_JPEG)
+                    .cacheControl(cacheControl)
                     .body(IOUtils.toByteArray(is));
         }
     }

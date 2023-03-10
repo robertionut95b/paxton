@@ -112,10 +112,6 @@ type City {
     latitude: Float
 }
 
-input CityLookupInput {
-    id: ID!
-}
-
 type Certification {
     id: ID!
     name: String!

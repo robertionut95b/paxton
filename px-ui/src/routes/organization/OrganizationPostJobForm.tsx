@@ -438,6 +438,11 @@ export default function OrganizationPostJobForm() {
             }))}
             icon={<BuildingOffice2Icon width={18} />}
             {...form.getInputProps("organizationId")}
+            value={orgId}
+            onChange={(val) => {
+              setOrgId(val);
+              form.setFieldValue("organizationId", val as string);
+            }}
           />
         </ShowIfElse>
         <ShowIfElse

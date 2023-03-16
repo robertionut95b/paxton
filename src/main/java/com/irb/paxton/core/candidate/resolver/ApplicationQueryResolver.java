@@ -2,6 +2,8 @@ package com.irb.paxton.core.candidate.resolver;
 
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationService;
+import com.irb.paxton.core.candidate.input.ApplicationsCountByStepInput;
+import com.irb.paxton.core.candidate.projection.ApplicationsCountByStep;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.security.SecurityUtils;
@@ -24,8 +26,12 @@ public class ApplicationQueryResolver implements GraphQLQueryResolver {
         return applicationService.findByJobListingIdAndCandidateUsername(JobListingId, username);
     }
 
-    public Application getApplicationForJobListing(Long JobListingId) {
-        return this.applicationService.findByJobListingId(JobListingId);
+    public Application getApplicationById(Long applicationId) {
+        return this.applicationService.findByApplicationId(applicationId);
+    }
+
+    public Collection<ApplicationsCountByStep> getApplicationsForJobIdCountBySteps(Long jobId) {
+        return this.applicationService.getApplicationsForJobIdCountBySteps(jobId);
     }
 
     public PaginatedResponse<Application> getAllApplications(SearchRequest searchRequest) {
@@ -34,5 +40,9 @@ public class ApplicationQueryResolver implements GraphQLQueryResolver {
 
     public Collection<Application> getMyApplications(Long userId) {
         return this.applicationService.getApplicationsForUserId(userId);
+    }
+
+    public PaginatedResponse<Application> getAllApplicationsByStepTitle(ApplicationsCountByStepInput applicationsCountByStepInput) {
+        return this.applicationService.getAllApplicationsByStepTitle(applicationsCountByStepInput);
     }
 }

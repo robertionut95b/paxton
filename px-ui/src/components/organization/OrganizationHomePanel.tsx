@@ -8,9 +8,12 @@ import {
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
+import { formatISO } from "date-fns";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationAboutPanel from "./OrganizationAboutPanel";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
+
+const todayIsoFmt = formatISO(new Date());
 
 const OrganizationHomePanel = () => {
   const { organizationSlug } = useParams();
@@ -33,6 +36,12 @@ const OrganizationHomePanel = () => {
             key: "organization",
             operator: Operator.Equal,
             value: organizationData?.getOrganizationBySlugName?.id ?? "",
+          },
+          {
+            key: "availableTo",
+            fieldType: FieldType.Date,
+            value: todayIsoFmt,
+            operator: Operator.GreaterThan,
           },
         ],
         sorts: [

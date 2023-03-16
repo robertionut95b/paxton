@@ -23,12 +23,20 @@ import {
   Status,
   useGetAllJobListingsQuery,
   useGetAllProcessesQuery,
-  useGetApplicationForJobListingRecruitmentQuery,
+  useGetApplicationByIdQuery,
+  useGetApplicationsForJobIdCountByStepsQuery,
   useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
   useUpdateApplicationMutation,
 } from "@gql/generated";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ShieldExclamationIcon,
+} from "@heroicons/react/24/outline";
+import {
+  GraphqlApiResponse,
+  isGraphqlApiResponse,
+} from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Avatar,
@@ -43,24 +51,43 @@ import {
   Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import AccessDenied from "@routes/AccessDenied";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 const RecruitmentApplicationPage = () => {
   const { user, isAuthorized, accessToken } = useAuth();
-  const { jobId, organizationSlug } = useParams();
+  const { applicationId, jobId, organizationSlug } = useParams();
   const queryClient = useQueryClient();
-  const { data: applicationData, isLoading } =
-    useGetApplicationForJobListingRecruitmentQuery(
-      graphqlRequestClient,
-      {
-        JobListingId: jobId ?? "",
+  const {
+    data: applicationData,
+    isLoading,
+    isError: isApplicationError,
+    error,
+  } = useGetApplicationByIdQuery(
+    graphqlRequestClient,
+    {
+      applicationId: applicationId as string,
+    },
+    {
+      enabled: !!jobId,
+      onError: (error: GraphqlApiResponse) => {
+        if (
+          error.response.errors?.[0].message
+            .toLowerCase()
+            .includes("access is denied")
+        ) {
+          showNotification({
+            title: "Unauthorized access",
+            message: "Access is denied to this resource",
+            autoClose: 5000,
+            icon: <ShieldExclamationIcon width={20} />,
+          });
+        }
       },
-      {
-        enabled: !!jobId,
-      }
-    );
+    }
+  );
   const { data: jobListingData, isLoading: isJobListingLoading } =
     useGetAllJobListingsQuery(graphqlRequestClient, {
       searchQuery: {
@@ -78,7 +105,7 @@ const RecruitmentApplicationPage = () => {
     useGetUserProfileQuery(graphqlRequestClient, {
       profileSlugUrl: user?.profileSlugUrl ?? "",
     });
-  const { data: organizationData, isLoading: isOrganizationLoading } =
+  const { data: organizationData, isInitialLoading: isOrganizationLoading } =
     useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
       {
@@ -89,8 +116,10 @@ const RecruitmentApplicationPage = () => {
       },
       {
         enabled:
-          !!organizationSlug ||
-          !!jobListingData?.getAllJobListings?.list?.[0]?.organization.slugName,
+          (!!organizationSlug ||
+            !!jobListingData?.getAllJobListings?.list?.[0]?.organization
+              .slugName) &&
+          isAuthorized([RoleType.ROLE_RECRUITER]),
       }
     );
   const { data: processData, isInitialLoading: isProcessLoading } =
@@ -125,10 +154,29 @@ const RecruitmentApplicationPage = () => {
           icon: <CheckCircleIcon width={20} />,
         });
         queryClient.invalidateQueries(
-          useGetApplicationForJobListingRecruitmentQuery.getKey({
-            JobListingId: jobId ?? "",
+          useGetApplicationByIdQuery.getKey({
+            applicationId: applicationId as string,
           })
         );
+        queryClient.invalidateQueries(
+          useGetApplicationsForJobIdCountByStepsQuery.getKey({
+            jobId: jobId as string,
+          })
+        );
+      },
+      onError: (error: GraphqlApiResponse) => {
+        if (
+          error.response.errors?.[0].message
+            .toLowerCase()
+            .includes("access is denied")
+        ) {
+          showNotification({
+            title: "Unauthorized access",
+            message: "You are not allowed change this application",
+            autoClose: 5000,
+            icon: <ShieldExclamationIcon width={20} />,
+          });
+        }
       },
     }
   );
@@ -143,24 +191,34 @@ const RecruitmentApplicationPage = () => {
     isOrganizationLoading
   )
     return <GenericLoadingSkeleton />;
+
+  if (isApplicationError) {
+    if (
+      isGraphqlApiResponse(error) &&
+      error.response.errors?.[0].message
+        .toLowerCase()
+        .includes("access is denied")
+    ) {
+      return <AccessDenied />;
+    }
+  }
+
   if (
-    !applicationData?.getApplicationForJobListing ||
+    !applicationData?.getApplicationById ||
     !jobListingData?.getAllJobListings ||
     jobListingData.getAllJobListings.totalElements === 0
   )
     return <NotFoundPage />;
   if (
-    !applicationData.getApplicationForJobListing ||
+    !applicationData.getApplicationById ||
     !jobListingData.getAllJobListings.list?.[0]
   )
     return <NotFoundPage />;
 
-  const candidate = applicationData.getApplicationForJobListing.candidate;
-  const userProfile =
-    applicationData.getApplicationForJobListing.applicantProfile;
+  const candidate = applicationData.getApplicationById.candidate;
+  const userProfile = applicationData.getApplicationById.applicantProfile;
   const jobListing = jobListingData.getAllJobListings.list[0];
-  const currentStepProcesses =
-    applicationData.getApplicationForJobListing.processSteps;
+  const currentStepProcesses = applicationData.getApplicationById.processSteps;
   const currentStepProcess =
     currentStepProcesses?.[currentStepProcesses.length - 1 ?? 0];
   const nextStepProcess = processData?.getAllProcesses?.list?.[0]?.processSteps;
@@ -176,38 +234,34 @@ const RecruitmentApplicationPage = () => {
       ApplicationInput: {
         applicantProfileId: userProfile.id,
         jobListingId: jobId ?? "",
-        userId:
-          applicationData.getApplicationForJobListing?.candidate.user.id ?? "",
-        id: applicationData?.getApplicationForJobListing?.id,
+        userId: applicationData.getApplicationById?.candidate.user.id ?? "",
+        id: applicationData?.getApplicationById?.id,
         processSteps: [
           ...(currentStepProcesses?.map((cp) => ({
-            applicationId:
-              applicationData?.getApplicationForJobListing?.id ?? "",
+            applicationId: applicationData?.getApplicationById?.id ?? "",
             id: cp?.id,
             processStepId: cp?.processStep.id ?? "",
             registeredAt: cp?.registeredAt,
           })) ?? []),
           {
-            applicationId:
-              applicationData?.getApplicationForJobListing?.id ?? "",
+            applicationId: applicationData?.getApplicationById?.id ?? "",
             processStepId: nextStep?.step.id ?? "",
             registeredAt: new Date(),
           },
         ],
-        status: applicationData.getApplicationForJobListing?.status,
+        status: applicationData.getApplicationById?.status,
         dateOfApplication:
-          applicationData?.getApplicationForJobListing?.dateOfApplication,
+          applicationData?.getApplicationById?.dateOfApplication,
       },
     });
 
   const cancelApplication = () =>
     updateApplication({
       ApplicationInput: {
-        id: applicationData.getApplicationForJobListing?.id,
+        id: applicationData.getApplicationById?.id,
         applicantProfileId: userProfile.id,
         jobListingId: jobId ?? "",
-        userId:
-          applicationData.getApplicationForJobListing?.candidate.user.id ?? "",
+        userId: applicationData.getApplicationById?.candidate.user.id ?? "",
         status: ApplicationStatus.Canceled,
       },
     });
@@ -228,7 +282,7 @@ const RecruitmentApplicationPage = () => {
         <CandidateApplicationHero
           candidate={candidate}
           dateOfApplication={
-            applicationData.getApplicationForJobListing.dateOfApplication
+            applicationData.getApplicationById.dateOfApplication
           }
           jobTitle={jobListing.title}
           profilePhotoUrl={
@@ -244,9 +298,9 @@ const RecruitmentApplicationPage = () => {
               onClick={cancelApplication}
               disabled={
                 !nextStep ||
-                applicationData.getApplicationForJobListing.status ===
+                applicationData.getApplicationById.status ===
                   ApplicationStatus.Canceled ||
-                applicationData.getApplicationForJobListing.status ===
+                applicationData.getApplicationById.status ===
                   ApplicationStatus.Finished
               }
             >
@@ -256,9 +310,9 @@ const RecruitmentApplicationPage = () => {
               onClick={submitApplication}
               disabled={
                 !nextStep ||
-                applicationData.getApplicationForJobListing.status ===
+                applicationData.getApplicationById.status ===
                   ApplicationStatus.Canceled ||
-                applicationData.getApplicationForJobListing.status ===
+                applicationData.getApplicationById.status ===
                   ApplicationStatus.Finished
               }
             >
@@ -270,15 +324,16 @@ const RecruitmentApplicationPage = () => {
       <Grid>
         <Grid.Col span={12} md={8}>
           <CandidateInformationSection
-            candidate={applicationData.getApplicationForJobListing.candidate}
+            candidate={applicationData.getApplicationById.candidate}
             userProfileUrl={`/app/up/${
               userProfile.profileSlugUrl ?? userProfile.id
             }`}
+            applicationStatus={applicationData.getApplicationById.status}
           />
         </Grid.Col>
         <Grid.Col span={12} md={4}>
           <ApplicationCandidatureTimeline
-            application={applicationData.getApplicationForJobListing}
+            application={applicationData.getApplicationById}
           />
         </Grid.Col>
         <Grid.Col span={12} md={8}>
@@ -289,8 +344,8 @@ const RecruitmentApplicationPage = () => {
             <Text size="sm">Documents added to this application</Text>
             <ShowIfElse
               if={
-                (applicationData.getApplicationForJobListing
-                  .applicationDocuments?.length ?? 0) > 0
+                (applicationData.getApplicationById.applicationDocuments
+                  ?.length ?? 0) > 0
               }
               else={
                 <Text mt="sm" size="xs">
@@ -305,14 +360,14 @@ const RecruitmentApplicationPage = () => {
                 p="sm"
                 ref={parent}
               >
-                {applicationData.getApplicationForJobListing.applicationDocuments?.map(
+                {applicationData.getApplicationById.applicationDocuments?.map(
                   (doc) =>
                     doc && (
                       <AttachmentItem
                         key={doc?.id}
                         fileName={doc.document.name}
                         src={"/images/pdf-icon.svg"}
-                        apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationForJobListing?.id}/documents/${doc.document.name}`}
+                        apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationById?.id}/documents/${doc.document.name}`}
                       />
                     )
                 )}
@@ -338,26 +393,26 @@ const RecruitmentApplicationPage = () => {
                 pondProps={{
                   onprocessfiles: () =>
                     queryClient.invalidateQueries(
-                      useGetApplicationForJobListingRecruitmentQuery.getKey({
-                        JobListingId: jobId as string,
+                      useGetApplicationByIdQuery.getKey({
+                        applicationId: applicationId as string,
                       })
                     ),
                   onremovefile: () =>
                     queryClient.invalidateQueries(
-                      useGetApplicationForJobListingRecruitmentQuery.getKey({
-                        JobListingId: jobId as string,
+                      useGetApplicationByIdQuery.getKey({
+                        applicationId: applicationId as string,
                       })
                     ),
                   server: {
                     process: {
-                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationForJobListing.id}/documents/upload`,
+                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationById.id}/documents/upload`,
                       withCredentials: true,
                       headers: {
                         Authorization: `Bearer ${accessToken}`,
                       },
                     },
                     revert: {
-                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationForJobListing.id}/documents/delete`,
+                      url: `${APP_API_BASE_URL}${APP_API_PATH}/applications/${applicationData.getApplicationById.id}/documents/delete`,
                       withCredentials: true,
                       headers: {
                         Authorization: `Bearer ${accessToken}`,

@@ -13,7 +13,7 @@ import {
   useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
-import { Grid, Paper, Text, Title } from "@mantine/core";
+import { Box, Grid, Paper, Text, Title } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useEffect, useState } from "react";
@@ -82,7 +82,7 @@ export default function JobsPage() {
             key: "availableTo",
             fieldType: FieldType.Date,
             value: todayIsoFmt,
-            operator: Operator.GreaterThanEqual,
+            operator: Operator.GreaterThan,
           },
           {
             key: "availableFrom",
@@ -184,17 +184,6 @@ export default function JobsPage() {
 
   if (isProfileLoading || jobsLoading) return <ApplicationSpinner />;
 
-  if (jobs.length === 0) {
-    return (
-      <Paper shadow="sm" p="md">
-        <Title mb={8} order={4}>
-          No suitable jobs found
-        </Title>
-        <Text>You should consider updating your profile</Text>
-      </Paper>
-    );
-  }
-
   return (
     <Grid className="px-jobs-page">
       <Grid.Col sm={3} span={12}>
@@ -202,26 +191,40 @@ export default function JobsPage() {
       </Grid.Col>
       <Grid.Col sm={6} span={12}>
         <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
-          <Title mb={"xs"} order={4}>
-            <ShowIfElse
-              if={userProfile?.getUserProfile?.city}
-              else={"Recommended jobs"}
-            >
-              Jobs of interest in:{" "}
-              {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
-            </ShowIfElse>
-          </Title>
-          <JobListings jobs={jobs} />
-          <Paper className="px-jobs-pagination">
-            <PaginationToolbar
-              page={p}
-              setPage={setP}
-              pageSize={ps}
-              setPageSize={setPs}
-              totalElements={totalElements}
-              totalPages={totalPages}
-            />
-          </Paper>
+          <ShowIfElse
+            if={jobs.length > 0}
+            else={
+              <Box>
+                <Title mb={8} order={4}>
+                  No suitable jobs found
+                </Title>
+                <Text size="sm">
+                  Consider updating your profile to find better job matches
+                </Text>
+              </Box>
+            }
+          >
+            <Title mb={"xs"} order={4}>
+              <ShowIfElse
+                if={userProfile?.getUserProfile?.city}
+                else={"Recommended jobs"}
+              >
+                Jobs of interest in:{" "}
+                {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
+              </ShowIfElse>
+            </Title>
+            <JobListings jobs={jobs} />
+            <Paper className="px-jobs-pagination">
+              <PaginationToolbar
+                page={p}
+                setPage={setP}
+                pageSize={ps}
+                setPageSize={setPs}
+                totalElements={totalElements}
+                totalPages={totalPages}
+              />
+            </Paper>
+          </ShowIfElse>
         </Paper>
       </Grid.Col>
       <Grid.Col sm={3} span={12}>

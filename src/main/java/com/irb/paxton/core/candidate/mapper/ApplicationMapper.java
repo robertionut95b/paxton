@@ -47,6 +47,7 @@ public abstract class ApplicationMapper {
     @Mapping(target = "jobListing", source = "applicationInput.jobListingId")
     @Mapping(target = "candidate", source = "applicationInput.userId")
     @Mapping(target = "applicantProfile", source = "applicationInput.applicantProfileId")
+    @Mapping(target = "currentStep", source = "applicationInput", qualifiedByName = "mapCurrentStep")
     public abstract Application inputToApplication(ApplicationInput applicationInput);
 
     @Named("mapProcessStep")
@@ -60,6 +61,19 @@ public abstract class ApplicationMapper {
             throw new IllegalStateException(String.format("There is no active starting step for the recruitment process of job posting %s", applicationInput.getJobListingId()));
         }
         return List.of(new ApplicationProcessSteps(candidatureStep));
+    }
+
+    @Named("mapCurrentStep")
+    public ProcessSteps mapCurrentStep(ApplicationInput applicationInput) {
+        JobListing jobListing = this.mapJobListing(applicationInput.getJobListingId());
+        Collection<ProcessSteps> processSteps = jobListing.getOrganization().getRecruitmentProcess().getProcessSteps();
+        ProcessSteps candidatureStep;
+        try {
+            candidatureStep = processSteps.stream().filter(p -> p.getOrder() == 1 && p.getStatus().equals(Status.ACTIVE)).toList().get(0);
+        } catch (IndexOutOfBoundsException ex) {
+            throw new IllegalStateException(String.format("There is no active starting step for the recruitment process of job posting %s", applicationInput.getJobListingId()));
+        }
+        return candidatureStep;
     }
 
     @Mapping(target = "applicantProfile", source = "applicationInput.applicantProfileId")

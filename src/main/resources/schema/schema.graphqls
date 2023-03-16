@@ -45,6 +45,18 @@ type Application {
     applicationDocuments: [ApplicationDocument]
 }
 
+type ApplicationsCountByStep {
+    applicationsCount: Int!
+    stepTitle: String!
+}
+
+input ApplicationsCountByStepInput {
+    stepTitle: String!
+    applicationStatus: ApplicationStatus
+    page: Int
+    size: Int
+}
+
 type ApplicationDocument {
     id: ID!
     document: Document!
@@ -575,7 +587,9 @@ type Query {
     getAllInstitutions: [Institution]
     getAllDomains: [Domain]
     getAllCertifications: [Certification]
-    getApplicationForJobListing(JobListingId: ID!): Application
+    getApplicationById(applicationId: ID!): Application
+    getApplicationsForJobIdCountBySteps(jobId: ID!): [ApplicationsCountByStep]
+    getAllApplicationsByStepTitle(applicationsCountByStepInput: ApplicationsCountByStepInput): ApplicationPage
     getMyApplicationForJobListing(JobListingId: ID!): Application
     getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
     getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage

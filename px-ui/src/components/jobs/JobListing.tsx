@@ -3,11 +3,7 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetAllJobListingsQuery } from "@gql/generated";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
-import {
-  differenceInBusinessDays,
-  differenceInDays,
-  formatDistanceToNowStrict,
-} from "date-fns";
+import { differenceInBusinessDays, intlFormatDistance } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 export default function JobListingItem({
@@ -88,23 +84,15 @@ export default function JobListingItem({
               </Group>
             </li>
             <li>
-              <Group>
-                <ShowIfElse
-                  if={
-                    differenceInDays(new Date(availableFrom), new Date()) !== 0
-                  }
-                  else={
-                    <Text mt={2} size="xs" color="dimmed">
-                      Today
-                    </Text>
-                  }
-                >
+              <Group spacing={"sm"}>
+                <Group spacing={4}>
+                  <ClockIcon width={14} />
                   <Text mt={2} size="xs" color="dimmed">
-                    {formatDistanceToNowStrict?.(new Date(availableFrom), {
-                      addSuffix: true,
-                    }) ?? "Invalid date"}
+                    {intlFormatDistance(new Date(availableFrom), new Date(), {
+                      unit: "day",
+                    })}
                   </Text>
-                </ShowIfElse>
+                </Group>
                 {availableTo && (
                   <ShowIf
                     if={
@@ -115,12 +103,12 @@ export default function JobListingItem({
                     }
                   >
                     <Group spacing={4}>
-                      <ClockIcon width={16} color="red" />
+                      <ClockIcon width={14} color="red" />
                       <Text mt={2} size="xs" color="red">
                         expires{" "}
-                        {formatDistanceToNowStrict?.(new Date(availableTo), {
-                          addSuffix: true,
-                        }) ?? "Invalid date"}
+                        {intlFormatDistance(new Date(availableTo), new Date(), {
+                          unit: "day",
+                        })}
                       </Text>
                     </Group>
                   </ShowIf>

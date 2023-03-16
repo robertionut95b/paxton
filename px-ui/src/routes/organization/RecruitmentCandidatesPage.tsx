@@ -1,48 +1,35 @@
+import ApplicationJobHero from "@components/application/ApplicationJobHero";
 import ApplicationRecordCard from "@components/candidates/CandidateRecordCard";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
+import UnassignedProcessBanner from "@components/process/UnassignedProcessBanner";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
+  useGetAllApplicationsByStepTitleQuery,
   useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
-  useGetAllProcessesQuery,
+  useGetApplicationsForJobIdCountByStepsQuery,
   useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
+import { ShieldExclamationIcon } from "@heroicons/react/24/outline";
 import {
-  EyeIcon,
-  EyeSlashIcon,
-  ShieldExclamationIcon,
-} from "@heroicons/react/24/outline";
-import {
-  BriefcaseIcon,
-  CalendarDaysIcon,
-  LinkIcon,
-  MapIcon,
-  PencilIcon,
-} from "@heroicons/react/24/solid";
+  GraphqlApiResponse,
+  isGraphqlApiResponse,
+} from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import {
-  Alert,
-  Badge,
-  Button,
-  Divider,
-  Group,
-  Paper,
-  Stack,
-  Tabs,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Badge, Divider, Paper, Stack, Tabs, Text, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import AccessDenied from "@routes/AccessDenied";
 import NotFoundPage from "@routes/NotFoundPage";
-import { prettyEnumValue } from "@utils/enumUtils";
-import { formatDistanceToNowStrict } from "date-fns";
-import { NavLink, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 const RecruitmentCandidatesPage = () => {
   const { organizationSlug, jobId } = useParams();
+  const [tabValue, setTabValue] = useState<string | null>("all");
   const { data: organization, isLoading: isLoadingOrganization } =
     useGetOrganizationBySlugNameQuery(
       graphqlRequestClient,
@@ -53,25 +40,43 @@ const RecruitmentCandidatesPage = () => {
         enabled: !!organizationSlug,
       }
     );
-  const { data: applicationsData, isLoading: isApplicationLoading } =
-    useGetAllApplicationsQuery(
-      graphqlRequestClient,
-      {
-        searchQuery: {
-          filters: [
-            {
-              fieldType: FieldType.Long,
-              key: "jobListing",
-              operator: Operator.Equal,
-              value: jobId as string,
-            },
-          ],
-        },
+  const {
+    data: applicationsData,
+    isLoading: isApplicationLoading,
+    isError: isApplicationError,
+    error,
+  } = useGetAllApplicationsQuery(
+    graphqlRequestClient,
+    {
+      searchQuery: {
+        filters: [
+          {
+            fieldType: FieldType.Long,
+            key: "jobListing",
+            operator: Operator.Equal,
+            value: jobId as string,
+          },
+        ],
       },
-      {
-        enabled: !!jobId,
-      }
-    );
+    },
+    {
+      enabled: !!jobId,
+      onError: (error: GraphqlApiResponse) => {
+        if (
+          error.response.errors?.[0].message
+            .toLowerCase()
+            .includes("access is denied")
+        ) {
+          showNotification({
+            title: "Unauthorized access",
+            message: "Access is denied to this resource",
+            autoClose: 5000,
+            icon: <ShieldExclamationIcon width={20} />,
+          });
+        }
+      },
+    }
+  );
   const { data: jobListingData, isLoading: isJobListingLoading } =
     useGetAllJobListingsQuery(graphqlRequestClient, {
       searchQuery: {
@@ -85,33 +90,33 @@ const RecruitmentCandidatesPage = () => {
         ],
       },
     });
-  const { data: processData, isInitialLoading: isProcessLoading } =
-    useGetAllProcessesQuery(
-      graphqlRequestClient,
-      {
-        searchQuery: {
-          filters: [
-            {
-              fieldType: FieldType.Long,
-              key: "id",
-              operator: Operator.Equal,
-              value: organization?.getOrganizationBySlugName?.recruitmentProcess
-                ?.id as string,
-            },
-          ],
-        },
+  const {
+    data: applicationsByStepCountData,
+    isInitialLoading: isApplicationsByStepCountLoading,
+  } = useGetApplicationsForJobIdCountByStepsQuery(graphqlRequestClient, {
+    jobId: jobId as string,
+  });
+  const {
+    data: applicationByStepTitleData,
+    isInitialLoading: isApplicationByStepTitleLoading,
+  } = useGetAllApplicationsByStepTitleQuery(
+    graphqlRequestClient,
+    {
+      applicationsCountByStepInput: {
+        stepTitle: tabValue ?? "",
       },
-      {
-        enabled:
-          !!organization?.getOrganizationBySlugName?.recruitmentProcess?.id,
-      }
-    );
+    },
+    {
+      enabled: tabValue !== "all",
+    }
+  );
 
   if (
     isLoadingOrganization ||
     isApplicationLoading ||
     isJobListingLoading ||
-    isProcessLoading
+    isApplicationsByStepCountLoading ||
+    isApplicationByStepTitleLoading
   )
     return <GenericLoadingSkeleton />;
   if (!organization?.getOrganizationBySlugName) return <NotFoundPage />;
@@ -126,6 +131,17 @@ const RecruitmentCandidatesPage = () => {
   const { title, contractType, availableFrom, isActive, availableTo } =
     jobListingData.getAllJobListings.list[0];
 
+  if (isApplicationError) {
+    if (
+      isGraphqlApiResponse(error) &&
+      error.response.errors?.[0].message
+        .toLowerCase()
+        .includes("access is denied")
+    ) {
+      return <AccessDenied />;
+    }
+  }
+
   return (
     <Stack>
       <Paper shadow={"xs"} p="xs">
@@ -133,107 +149,28 @@ const RecruitmentCandidatesPage = () => {
           excludePaths={["/app/organizations/:organizationId/recruitment/"]}
         />
       </Paper>
-      <Paper shadow={"xs"} p="md">
-        <Group position="apart" align={"center"} mb={"sm"}>
-          <Title order={3}>{title}</Title>
-          <Group spacing={"xs"} align="center">
-            <Button
-              component={NavLink}
-              to={`/app/jobs/view/${jobId}`}
-              variant="light"
-              leftIcon={<LinkIcon width={16} />}
-            >
-              View
-            </Button>
-            <Button
-              component={NavLink}
-              to={`/app/organizations/${organizationSlug}/jobs/publish-job/form/${jobId}/update`}
-              variant="light"
-              leftIcon={<PencilIcon width={16} />}
-            >
-              Edit
-            </Button>
-            <ShowIfElse
-              if={isActive}
-              else={
-                <Button variant="light" leftIcon={<EyeIcon width={16} />}>
-                  Extend
-                </Button>
-              }
-            >
-              <Button variant="filled" leftIcon={<EyeSlashIcon width={16} />}>
-                Stop candidature
-              </Button>
-            </ShowIfElse>
-          </Group>
-        </Group>
-        <Group spacing={"md"}>
-          <Group spacing={5}>
-            <BriefcaseIcon width={16} />
-            <Text size="sm">
-              {prettyEnumValue(contractType ?? "")} contract
-            </Text>
-          </Group>
-          <Group spacing={5}>
-            <MapIcon width={16} />
-            <Text size="sm">Remote/On-site work</Text>
-          </Group>
-          <Group spacing={5}>
-            <CalendarDaysIcon width={16} />
-            <Text size="sm">
-              <ShowIfElse
-                if={isActive}
-                else={
-                  <Text color="dimmed">
-                    Becomes available{" "}
-                    {formatDistanceToNowStrict(new Date(availableFrom), {
-                      addSuffix: true,
-                    }) ?? "Invalid date"}
-                  </Text>
-                }
-              >
-                Published{" "}
-                {formatDistanceToNowStrict(new Date(availableFrom), {
-                  addSuffix: true,
-                }) ?? "Invalid date"}
-              </ShowIfElse>
-            </Text>
-          </Group>
-          <Group spacing={5}>
-            <CalendarDaysIcon width={16} />
-            <Text size="sm">
-              Closing{" "}
-              {formatDistanceToNowStrict(new Date(availableTo), {
-                addSuffix: true,
-              }) ?? "Invalid date"}
-            </Text>
-          </Group>
-        </Group>
-      </Paper>
-      <ShowIf if={!processData?.getAllProcesses?.list?.[0]}>
-        <Alert
-          icon={<ShieldExclamationIcon width={30} />}
-          title="Process is unavailable"
-          color="red"
-          variant="filled"
-          styles={{
-            message: {
-              lineHeight: 1.7,
-            },
-          }}
-        >
-          Hello recruiter! <br />
-          Unfortunately this job listing does not have a recruitment process
-          allocated! <br /> Please edit the job and select your process and
-          it&apos;s respective steps. You can also set it as a default process
-          for all further job postings.
-        </Alert>
+      <ApplicationJobHero
+        jobTitle={title}
+        viewUrl={`/app/jobs/view/${jobId}`}
+        editUrl={`/app/organizations/${organizationSlug}/jobs/publish-job/form/${jobId}/update`}
+        jobIsActive={isActive ?? false}
+        contractType={contractType}
+        availableFrom={availableFrom}
+        availableTo={availableTo}
+      />
+      <ShowIf if={!organization.getOrganizationBySlugName.recruitmentProcess}>
+        <UnassignedProcessBanner />
       </ShowIf>
       <Paper shadow={"xs"} p="md" className="px-candidates">
         <Title mb="xs" order={4}>
           Candidates
         </Title>
-        <Tabs defaultValue="all" keepMounted={false}>
+        <Tabs
+          defaultValue="all"
+          keepMounted={false}
+          value={tabValue}
+          onTabChange={setTabValue}
+        >
           <Tabs.List>
             <Tabs.Tab
               value="all"
@@ -250,12 +187,15 @@ const RecruitmentCandidatesPage = () => {
             >
               All
             </Tabs.Tab>
-            {(processData?.getAllProcesses?.list?.[0]?.processSteps ?? []).map(
-              (p) =>
-                p && (
+            {(
+              applicationsByStepCountData?.getApplicationsForJobIdCountBySteps ??
+              []
+            ).map(
+              (ap) =>
+                ap && (
                   <Tabs.Tab
-                    key={p.id}
-                    value={p.step.title}
+                    key={ap.stepTitle}
+                    value={ap.stepTitle}
                     rightSection={
                       <Badge
                         sx={{ width: 16, height: 16, pointerEvents: "none" }}
@@ -263,11 +203,11 @@ const RecruitmentCandidatesPage = () => {
                         size="xs"
                         p={0}
                       >
-                        0
+                        {ap.applicationsCount}
                       </Badge>
                     }
                   >
-                    {p.step.title}
+                    {ap.stepTitle}
                   </Tabs.Tab>
                 )
             )}
@@ -284,7 +224,7 @@ const RecruitmentCandidatesPage = () => {
                   (a, idx) =>
                     a && (
                       <div key={a.id} className="mt-4">
-                        <ApplicationRecordCard candidate={a} />
+                        <ApplicationRecordCard application={a} />
                         {idx !==
                           (applicationsData.getAllApplications?.list?.length ??
                             1) -
@@ -295,10 +235,13 @@ const RecruitmentCandidatesPage = () => {
               </ShowIfElse>
             )}
           </Tabs.Panel>
-          {(processData?.getAllProcesses?.list?.[0]?.processSteps ?? []).map(
-            (p) =>
-              p && (
-                <Tabs.Panel key={p.id} value={p.step.title}>
+          {(
+            applicationsByStepCountData?.getApplicationsForJobIdCountBySteps ??
+            []
+          ).map(
+            (ap) =>
+              ap && (
+                <Tabs.Panel key={ap.stepTitle} value={ap.stepTitle}>
                   {applicationsData && (
                     <ShowIfElse
                       if={
@@ -307,13 +250,14 @@ const RecruitmentCandidatesPage = () => {
                       }
                       else={<Text mt="xs">No candidates yet</Text>}
                     >
-                      {applicationsData.getAllApplications?.list?.map(
+                      {applicationByStepTitleData?.getAllApplicationsByStepTitle?.list?.map(
                         (a, idx) =>
                           a && (
                             <div key={a.id} className="mt-4">
-                              <ApplicationRecordCard candidate={a} />
+                              <ApplicationRecordCard application={a} />
                               {idx !==
-                                (applicationsData.getAllApplications?.list
+                                (applicationByStepTitleData
+                                  .getAllApplicationsByStepTitle?.list
                                   ?.length ?? 1) -
                                   1 && <Divider mt="sm" />}
                             </div>

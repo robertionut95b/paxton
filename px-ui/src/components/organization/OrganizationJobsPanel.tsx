@@ -12,9 +12,12 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
+import { formatISO } from "date-fns";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
 import OrganizationRecommendedJobs from "./OrganizationRecommendedJobs";
+
+const todayIsoFmt = formatISO(new Date());
 
 const OrganizationJobsPanel = () => {
   const { user } = useAuth();
@@ -40,6 +43,12 @@ const OrganizationJobsPanel = () => {
             key: "organization",
             operator: Operator.Equal,
             value: organization?.getOrganizationBySlugName?.id ?? "",
+          },
+          {
+            key: "availableTo",
+            fieldType: FieldType.Date,
+            value: todayIsoFmt,
+            operator: Operator.GreaterThan,
           },
         ],
         sorts: [

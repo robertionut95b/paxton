@@ -20,8 +20,7 @@ export default function UserResume({
   const experiences =
     groupBy(userProfile?.experiences, "organization.id") ?? [];
 
-  const placeholder =
-    "No information was provided. Start by adding some to your profile.";
+  const placeholder = "No information was provided";
 
   return (
     <Stack className="px-user-resume">

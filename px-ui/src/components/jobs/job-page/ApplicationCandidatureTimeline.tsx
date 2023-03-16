@@ -1,7 +1,7 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetMyApplicationForJobListingQuery } from "@gql/generated";
 import { Anchor, Group, Paper, Text, Timeline, Title } from "@mantine/core";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type ApplicationCandidatureTimelineProps = {

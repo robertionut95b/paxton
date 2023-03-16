@@ -90,6 +90,19 @@ export enum ApplicationStatus {
   InProgress = 'IN_PROGRESS'
 }
 
+export type ApplicationsCountByStep = {
+  __typename?: 'ApplicationsCountByStep';
+  applicationsCount: Scalars['Int'];
+  stepTitle: Scalars['String'];
+};
+
+export type ApplicationsCountByStepInput = {
+  applicationStatus?: InputMaybe<ApplicationStatus>;
+  page?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  stepTitle: Scalars['String'];
+};
+
 export type Candidate = {
   __typename?: 'Candidate';
   applications?: Maybe<Array<Maybe<Application>>>;
@@ -122,10 +135,6 @@ export type City = {
   latitude?: Maybe<Scalars['Float']>;
   longitude?: Maybe<Scalars['Float']>;
   name: Scalars['String'];
-};
-
-export type CityLookupInput = {
-  id: Scalars['ID'];
 };
 
 export enum ContractType {
@@ -530,6 +539,7 @@ export type Query = {
   __typename?: 'Query';
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
   getAllApplications?: Maybe<ApplicationPage>;
+  getAllApplicationsByStepTitle?: Maybe<ApplicationPage>;
   getAllCandidates?: Maybe<CandidatePage>;
   getAllCandidatesByJobListingId?: Maybe<CandidatePage>;
   getAllCertifications?: Maybe<Array<Maybe<Certification>>>;
@@ -545,7 +555,8 @@ export type Query = {
   getAllRecruitersForOrganizationBySlug?: Maybe<Array<Maybe<Recruiter>>>;
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
-  getApplicationForJobListing?: Maybe<Application>;
+  getApplicationById?: Maybe<Application>;
+  getApplicationsForJobIdCountBySteps?: Maybe<Array<Maybe<ApplicationsCountByStep>>>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMyApplicationForJobListing?: Maybe<Application>;
@@ -562,6 +573,11 @@ export type Query = {
 
 export type QueryGetAllApplicationsArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetAllApplicationsByStepTitleArgs = {
+  applicationsCountByStepInput?: InputMaybe<ApplicationsCountByStepInput>;
 };
 
 
@@ -600,8 +616,13 @@ export type QueryGetAllRecruitersForOrganizationBySlugArgs = {
 };
 
 
-export type QueryGetApplicationForJobListingArgs = {
-  JobListingId: Scalars['ID'];
+export type QueryGetApplicationByIdArgs = {
+  applicationId: Scalars['ID'];
+};
+
+
+export type QueryGetApplicationsForJobIdCountByStepsArgs = {
+  jobId: Scalars['ID'];
 };
 
 
@@ -1008,19 +1029,19 @@ export type GetMyApplicationForJobListingQueryVariables = Exact<{
 
 export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: string, dateOfApplication: Date, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string } } | null };
 
-export type GetApplicationForJobListingRecruitmentQueryVariables = Exact<{
-  JobListingId: Scalars['ID'];
+export type GetApplicationByIdQueryVariables = Exact<{
+  applicationId: Scalars['ID'];
 }>;
 
 
-export type GetApplicationForJobListingRecruitmentQuery = { __typename?: 'Query', getApplicationForJobListing?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null } | null };
+export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
 
 
-export type GetAllApplicationsQuery = { __typename?: 'Query', getAllApplications?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, step: { __typename?: 'Step', id: string, title: string } } } | null> | null } | null> | null } | null };
+export type GetAllApplicationsQuery = { __typename?: 'Query', getAllApplications?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, status: ApplicationStatus, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, step: { __typename?: 'Step', id: string, title: string } } } | null> | null } | null> | null } | null };
 
 export type GetAllProcessesQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1061,6 +1082,20 @@ export type GetMyApplicationsQueryVariables = Exact<{
 
 
 export type GetMyApplicationsQuery = { __typename?: 'Query', getMyApplications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, jobListing: { __typename?: 'JobListing', id: string, title: string, organization: { __typename?: 'Organization', id: string, name: string, photography?: string | null, slugName: string }, city: { __typename?: 'City', name: string, country: { __typename?: 'Country', name: string } } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string } | null> | null } | null> | null };
+
+export type GetApplicationsForJobIdCountByStepsQueryVariables = Exact<{
+  jobId: Scalars['ID'];
+}>;
+
+
+export type GetApplicationsForJobIdCountByStepsQuery = { __typename?: 'Query', getApplicationsForJobIdCountBySteps?: Array<{ __typename?: 'ApplicationsCountByStep', applicationsCount: number, stepTitle: string } | null> | null };
+
+export type GetAllApplicationsByStepTitleQueryVariables = Exact<{
+  applicationsCountByStepInput?: InputMaybe<ApplicationsCountByStepInput>;
+}>;
+
+
+export type GetAllApplicationsByStepTitleQuery = { __typename?: 'Query', getAllApplicationsByStepTitle?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, status: ApplicationStatus, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, step: { __typename?: 'Step', id: string, title: string } } } | null> | null } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -2147,9 +2182,9 @@ useGetMyApplicationForJobListingQuery.getKey = (variables: GetMyApplicationForJo
 ;
 
 useGetMyApplicationForJobListingQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationForJobListingQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers);
-export const GetApplicationForJobListingRecruitmentDocument = `
-    query GetApplicationForJobListingRecruitment($JobListingId: ID!) {
-  getApplicationForJobListing(JobListingId: $JobListingId) {
+export const GetApplicationByIdDocument = `
+    query GetApplicationById($applicationId: ID!) {
+  getApplicationById(applicationId: $applicationId) {
     id
     status
     dateOfApplication
@@ -2197,33 +2232,34 @@ export const GetApplicationForJobListingRecruitmentDocument = `
   }
 }
     `;
-export const useGetApplicationForJobListingRecruitmentQuery = <
-      TData = GetApplicationForJobListingRecruitmentQuery,
+export const useGetApplicationByIdQuery = <
+      TData = GetApplicationByIdQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: GetApplicationForJobListingRecruitmentQueryVariables,
-      options?: UseQueryOptions<GetApplicationForJobListingRecruitmentQuery, TError, TData>,
+      variables: GetApplicationByIdQueryVariables,
+      options?: UseQueryOptions<GetApplicationByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetApplicationForJobListingRecruitmentQuery, TError, TData>(
-      ['GetApplicationForJobListingRecruitment', variables],
-      fetcher<GetApplicationForJobListingRecruitmentQuery, GetApplicationForJobListingRecruitmentQueryVariables>(client, GetApplicationForJobListingRecruitmentDocument, variables, headers),
+    useQuery<GetApplicationByIdQuery, TError, TData>(
+      ['GetApplicationById', variables],
+      fetcher<GetApplicationByIdQuery, GetApplicationByIdQueryVariables>(client, GetApplicationByIdDocument, variables, headers),
       options
     );
-useGetApplicationForJobListingRecruitmentQuery.document = GetApplicationForJobListingRecruitmentDocument;
+useGetApplicationByIdQuery.document = GetApplicationByIdDocument;
 
 
-useGetApplicationForJobListingRecruitmentQuery.getKey = (variables: GetApplicationForJobListingRecruitmentQueryVariables) => ['GetApplicationForJobListingRecruitment', variables];
+useGetApplicationByIdQuery.getKey = (variables: GetApplicationByIdQueryVariables) => ['GetApplicationById', variables];
 ;
 
-useGetApplicationForJobListingRecruitmentQuery.fetcher = (client: GraphQLClient, variables: GetApplicationForJobListingRecruitmentQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationForJobListingRecruitmentQuery, GetApplicationForJobListingRecruitmentQueryVariables>(client, GetApplicationForJobListingRecruitmentDocument, variables, headers);
+useGetApplicationByIdQuery.fetcher = (client: GraphQLClient, variables: GetApplicationByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationByIdQuery, GetApplicationByIdQueryVariables>(client, GetApplicationByIdDocument, variables, headers);
 export const GetAllApplicationsDocument = `
     query GetAllApplications($searchQuery: SearchQueryInput) {
   getAllApplications(searchQuery: $searchQuery) {
     list {
       id
       dateOfApplication
+      status
       applicantProfile {
         id
         profileSlugUrl
@@ -2524,6 +2560,97 @@ useGetMyApplicationsQuery.getKey = (variables: GetMyApplicationsQueryVariables) 
 ;
 
 useGetMyApplicationsQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, variables, headers);
+export const GetApplicationsForJobIdCountByStepsDocument = `
+    query GetApplicationsForJobIdCountBySteps($jobId: ID!) {
+  getApplicationsForJobIdCountBySteps(jobId: $jobId) {
+    applicationsCount
+    stepTitle
+  }
+}
+    `;
+export const useGetApplicationsForJobIdCountByStepsQuery = <
+      TData = GetApplicationsForJobIdCountByStepsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetApplicationsForJobIdCountByStepsQueryVariables,
+      options?: UseQueryOptions<GetApplicationsForJobIdCountByStepsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetApplicationsForJobIdCountByStepsQuery, TError, TData>(
+      ['GetApplicationsForJobIdCountBySteps', variables],
+      fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers),
+      options
+    );
+useGetApplicationsForJobIdCountByStepsQuery.document = GetApplicationsForJobIdCountByStepsDocument;
+
+
+useGetApplicationsForJobIdCountByStepsQuery.getKey = (variables: GetApplicationsForJobIdCountByStepsQueryVariables) => ['GetApplicationsForJobIdCountBySteps', variables];
+;
+
+useGetApplicationsForJobIdCountByStepsQuery.fetcher = (client: GraphQLClient, variables: GetApplicationsForJobIdCountByStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers);
+export const GetAllApplicationsByStepTitleDocument = `
+    query GetAllApplicationsByStepTitle($applicationsCountByStepInput: ApplicationsCountByStepInput) {
+  getAllApplicationsByStepTitle(
+    applicationsCountByStepInput: $applicationsCountByStepInput
+  ) {
+    list {
+      id
+      dateOfApplication
+      status
+      applicantProfile {
+        id
+        profileSlugUrl
+        profileTitle
+        photography
+      }
+      candidate {
+        user {
+          firstName
+          lastName
+          username
+          birthDate
+          email
+        }
+      }
+      processSteps {
+        processStep {
+          id
+          step {
+            id
+            title
+          }
+        }
+        registeredAt
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllApplicationsByStepTitleQuery = <
+      TData = GetAllApplicationsByStepTitleQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllApplicationsByStepTitleQueryVariables,
+      options?: UseQueryOptions<GetAllApplicationsByStepTitleQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllApplicationsByStepTitleQuery, TError, TData>(
+      variables === undefined ? ['GetAllApplicationsByStepTitle'] : ['GetAllApplicationsByStepTitle', variables],
+      fetcher<GetAllApplicationsByStepTitleQuery, GetAllApplicationsByStepTitleQueryVariables>(client, GetAllApplicationsByStepTitleDocument, variables, headers),
+      options
+    );
+useGetAllApplicationsByStepTitleQuery.document = GetAllApplicationsByStepTitleDocument;
+
+
+useGetAllApplicationsByStepTitleQuery.getKey = (variables?: GetAllApplicationsByStepTitleQueryVariables) => variables === undefined ? ['GetAllApplicationsByStepTitle'] : ['GetAllApplicationsByStepTitle', variables];
+;
+
+useGetAllApplicationsByStepTitleQuery.fetcher = (client: GraphQLClient, variables?: GetAllApplicationsByStepTitleQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllApplicationsByStepTitleQuery, GetAllApplicationsByStepTitleQueryVariables>(client, GetAllApplicationsByStepTitleDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2558,15 +2685,18 @@ export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<App
 
 export const ApplicationStatusSchema = z.nativeEnum(ApplicationStatus);
 
-export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
-  return z.object<Properties<CertificationInput>>({
-    name: z.string()
+export function ApplicationsCountByStepInputSchema(): z.ZodObject<Properties<ApplicationsCountByStepInput>> {
+  return z.object<Properties<ApplicationsCountByStepInput>>({
+    applicationStatus: ApplicationStatusSchema.nullish(),
+    page: z.number().nullish(),
+    size: z.number().nullish(),
+    stepTitle: z.string()
   })
 }
 
-export function CityLookupInputSchema(): z.ZodObject<Properties<CityLookupInput>> {
-  return z.object<Properties<CityLookupInput>>({
-    id: z.string()
+export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
+  return z.object<Properties<CertificationInput>>({
+    name: z.string()
   })
 }
 

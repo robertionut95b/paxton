@@ -5,6 +5,7 @@ import {
   Organization,
 } from "@gql/generated";
 import { Avatar, Group, Paper, Title } from "@mantine/core";
+import { NavLink } from "react-router-dom";
 
 export default function JobOrganizationAboutCard({
   organization,
@@ -23,14 +24,16 @@ export default function JobOrganizationAboutCard({
       <Title mb={"md"} order={4}>
         About the company
       </Title>
-      <Group>
-        <Avatar src={organization.photography} mb={"md"}>
-          {organization.name[0]}
-        </Avatar>
-        <Title mb={8} order={5}>
-          {organization.name}
-        </Title>
-      </Group>
+      <NavLink to={`/app/organizations/${organization.slugName}`}>
+        <Group>
+          <Avatar src={organization.photography} mb={"md"}>
+            {organization.name[0]}
+          </Avatar>
+          <Title mb={8} order={5}>
+            {organization.name}
+          </Title>
+        </Group>
+      </NavLink>
       <ExpandableText size={"sm"}>{organization.description}</ExpandableText>
     </Paper>
   );

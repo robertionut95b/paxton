@@ -7,7 +7,7 @@ const JobDescriptionSection = ({ description }: { description: string }) => {
       <Title mb={"md"} order={4}>
         About the job
       </Title>
-      <Title mb={"md"} order={5}>
+      <Title mb={"md"} order={5} weight="normal">
         Job description
       </Title>
       <ExpandableText size={"sm"}>{description}</ExpandableText>

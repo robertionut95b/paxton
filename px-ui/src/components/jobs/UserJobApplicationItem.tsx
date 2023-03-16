@@ -14,7 +14,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { formatDistanceToNowStrict } from "date-fns";
+import { intlFormatDistance } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type UserJobApplicationItemProps = {
@@ -61,9 +61,9 @@ const UserJobApplicationItem = ({
               <ClockIcon width={14} />
               <Text size="xs" color="dimmed">
                 Applied{" "}
-                {formatDistanceToNowStrict?.(new Date(dateOfApplication), {
-                  addSuffix: true,
-                }) ?? "Invalid date"}
+                {intlFormatDistance(new Date(dateOfApplication), new Date(), {
+                  unit: "day",
+                })}
               </Text>
             </Group>
           )}

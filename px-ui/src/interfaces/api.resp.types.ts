@@ -52,3 +52,10 @@ interface Error {
 interface Extensions {
   classification: string;
 }
+
+export function isGraphqlApiResponse(
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  object: any
+): object is GraphqlApiResponse {
+  return "response" in object;
+}

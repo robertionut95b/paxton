@@ -1,24 +1,36 @@
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
-import { Application, GetAllApplicationsQuery } from "@gql/generated";
+import {
+  Application,
+  ApplicationStatus,
+  GetAllApplicationsQuery,
+} from "@gql/generated";
 import {
   ChatBubbleLeftEllipsisIcon,
   ClipboardDocumentListIcon,
   EllipsisHorizontalCircleIcon,
 } from "@heroicons/react/24/outline";
-import { ActionIcon, Avatar, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Avatar,
+  Badge,
+  Group,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { prettyEnumValue } from "@utils/enumUtils";
+import { intlFormatDistance } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type ApplicationRecordCardProps = {
-  candidate:
+  application:
     | Application
     | NonNullable<
         NonNullable<GetAllApplicationsQuery["getAllApplications"]>["list"]
       >[number];
 };
 
-const ApplicationRecordCard = ({
-  candidate: application,
-}: ApplicationRecordCardProps) => {
+const ApplicationRecordCard = ({ application }: ApplicationRecordCardProps) => {
   const user = application?.candidate.user;
   const userProfile = application?.applicantProfile;
   return (
@@ -51,6 +63,30 @@ const ApplicationRecordCard = ({
           </Group>
         </NavLink>
         <Group spacing={"xs"}>
+          <Badge
+            variant="dot"
+            color={
+              application?.status === ApplicationStatus.InProgress
+                ? "green"
+                : "red"
+            }
+          >
+            {prettyEnumValue(
+              application?.status ?? ApplicationStatus.InProgress
+            )}
+          </Badge>
+          {application?.dateOfApplication && (
+            <Text size="xs" color="dimmed">
+              Applied{" "}
+              {intlFormatDistance(
+                new Date(application.dateOfApplication),
+                new Date(),
+                {
+                  unit: "day",
+                }
+              )}
+            </Text>
+          )}
           <ActionIcon
             variant="subtle"
             size="md"

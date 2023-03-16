@@ -199,8 +199,11 @@ public class RepositoryBootEventService {
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
         Recruiter recruiter = new Recruiter(pxRecruiter, paxtonOrg, true, null);
 
+        LocalDate now = LocalDate.now();
+        now = now.plusMonths(1);
+        now = now.plusDays(15);
         JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
-                LocalDate.of(2023, 3, 15), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, recruiter, WorkType.HYBRID);
+                LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth()), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, recruiter, WorkType.HYBRID);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
         jobListingRepository.save(jobListingPaxtonSoftwareDev);

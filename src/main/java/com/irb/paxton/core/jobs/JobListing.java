@@ -44,12 +44,12 @@ public class JobListing extends PaxtonEntity<Long> {
     @Column(nullable = false)
     private String description;
 
-    @FutureOrPresent(message = "Date must be in present or future")
+    @FutureOrPresent
     @Column(nullable = false)
     @NotNull
     private LocalDate availableFrom;
 
-    @Future(message = "Date must be exclusively in the future")
+    @FutureOrPresent
     @Column(nullable = false)
     @NotNull
     private LocalDate availableTo;

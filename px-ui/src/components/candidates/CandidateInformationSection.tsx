@@ -1,5 +1,17 @@
-import { GetApplicationForJobListingRecruitmentQuery } from "@gql/generated";
-import { Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import {
+  ApplicationStatus,
+  GetApplicationForJobListingRecruitmentQuery,
+} from "@gql/generated";
+import {
+  Badge,
+  Divider,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { prettyEnumValue } from "@utils/enumUtils";
 import { format } from "date-fns";
 import { NavLink } from "react-router-dom";
 
@@ -8,11 +20,13 @@ type CandidateInformationSectionProps = {
     GetApplicationForJobListingRecruitmentQuery["getApplicationForJobListing"]
   >["candidate"];
   userProfileUrl: string;
+  applicationStatus: ApplicationStatus;
 };
 
 const CandidateInformationSection = ({
   candidate: { user },
   userProfileUrl,
+  applicationStatus,
 }: CandidateInformationSectionProps) => {
   return (
     <Paper shadow={"xs"} p="md" h="100%">
@@ -25,7 +39,7 @@ const CandidateInformationSection = ({
       <Divider my="lg" />
       <Stack spacing={"xl"}>
         <Stack spacing={0}>
-          <Title order={5} mb={5} color="dimmed" weight="normal">
+          <Title order={6} mb={5} color="dimmed" weight="normal">
             Profile
           </Title>
           <NavLink to={userProfileUrl}>
@@ -36,20 +50,20 @@ const CandidateInformationSection = ({
         </Stack>
         <Group spacing={"xl"}>
           <Stack spacing={0}>
-            <Title order={5} mb={5} color="dimmed" weight="normal">
+            <Title order={6} mb={5} color="dimmed" weight="normal">
               Full name
             </Title>
             <Text size="sm">{`${user.firstName} ${user.lastName}`}</Text>
           </Stack>
           <Stack spacing={0}>
-            <Title order={5} mb={5} color="dimmed" weight="normal">
+            <Title order={6} mb={5} color="dimmed" weight="normal">
               Email address
             </Title>
             <Text size="sm">{user.email}</Text>
           </Stack>
           {user.birthDate && (
             <Stack spacing={0}>
-              <Title order={5} mb={5} color="dimmed" weight="normal">
+              <Title order={6} mb={5} color="dimmed" weight="normal">
                 Birthdate
               </Title>
               <Text size="sm">
@@ -58,6 +72,23 @@ const CandidateInformationSection = ({
             </Stack>
           )}
         </Group>
+        {applicationStatus && (
+          <Stack align={"flex-start"} spacing={0}>
+            <Title order={6} mb={5} color="dimmed" weight="normal">
+              Application status
+            </Title>
+            <Badge
+              variant="dot"
+              color={
+                applicationStatus === ApplicationStatus.InProgress
+                  ? "green"
+                  : "red"
+              }
+            >
+              {prettyEnumValue(applicationStatus)}
+            </Badge>
+          </Stack>
+        )}
       </Stack>
     </Paper>
   );

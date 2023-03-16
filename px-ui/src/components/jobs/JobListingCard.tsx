@@ -10,7 +10,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { formatDistanceToNowStrict } from "date-fns";
+import { intlFormatDistance } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type JobListingCardProps = {
@@ -46,16 +46,17 @@ const JobListingCard = ({
       <Space h="lg" />
       <Group spacing={4}>
         <Group spacing={2}>
-          <ClockIcon width={16} />
-          <Text size={13}>
-            {formatDistanceToNowStrict(new Date(availableFrom), {
-              addSuffix: true,
-            }) ?? "Invalid date"}
+          <ClockIcon width={14} />
+          <Text size={12}>
+            {intlFormatDistance(new Date(availableFrom), new Date(), {
+              unit: "day",
+              style: "narrow",
+            })}
           </Text>
         </Group>
         <ShowIf if={applications && applications.length > 0}>
           {" - "}
-          <Text size={13}>{applications?.length} candidates</Text>
+          <Text size={12}>{applications?.length} candidates</Text>
         </ShowIf>
       </Group>
     </Paper>

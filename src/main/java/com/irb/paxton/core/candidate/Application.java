@@ -3,10 +3,12 @@ package com.irb.paxton.core.candidate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.candidate.documents.ApplicationDocument;
+import com.irb.paxton.core.candidate.listener.ApplicationListener;
 import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
 import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.model.PaxtonEntity;
+import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.profile.UserProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
+@EntityListeners(value = {ApplicationListener.class})
 public class Application extends PaxtonEntity<Long> {
 
     @Serial
@@ -54,6 +57,12 @@ public class Application extends PaxtonEntity<Long> {
 
     @NotNull
     private ApplicationStatus status = ApplicationStatus.IN_PROGRESS;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "current_step_id")
+    @JsonBackReference(value = "current_step_id")
+    private ProcessSteps currentStep;
 
     @JsonManagedReference(value = "applicationDocuments")
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)

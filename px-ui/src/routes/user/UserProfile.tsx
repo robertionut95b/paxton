@@ -66,7 +66,8 @@ export default function UserProfile() {
                 isEmailConfirmed={user?.isEmailConfirmed}
               />
               <>
-                {isCurrentUserCb() && (
+                {(isCurrentUserCb() ||
+                  isAuthorized([RoleType.ROLE_ADMINISTRATOR])) && (
                   <NavLink
                     to={`/app/up/${data?.getUserProfile?.profileSlugUrl}/update/intro`}
                   >
@@ -84,7 +85,10 @@ export default function UserProfile() {
               isCurrentUser || isAuthorized([RoleType.ROLE_ADMINISTRATOR])
             }
           />
-          <>{isCurrentUserCb() && <Outlet />}</>
+          <>
+            {(isCurrentUserCb() ||
+              isAuthorized([RoleType.ROLE_ADMINISTRATOR])) && <Outlet />}
+          </>
         </Stack>
       </Grid.Col>
       <Grid.Col span={12} sm={3}>

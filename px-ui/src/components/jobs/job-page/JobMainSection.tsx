@@ -25,11 +25,7 @@ import {
   Title,
 } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
-import {
-  differenceInDays,
-  formatDistanceToNowStrict,
-  isFuture,
-} from "date-fns";
+import { intlFormatDistance, isFuture } from "date-fns";
 
 type OmitApplicationFieldsType = NonNullable<
   NonNullable<
@@ -46,7 +42,6 @@ const JobMainSection = ({
     availableFrom,
     contractType,
     availableTo,
-    isActive,
     workType,
   },
   applied = false,
@@ -90,30 +85,13 @@ const JobMainSection = ({
         </ShowIf>
       </Group>
       <Space h="md" />
-      <List size="sm" spacing={"xs"} mb="sm" center>
+      <List size="sm" spacing={"xs"} center>
         <List.Item icon={<CalendarDaysIcon width={18} />}>
           <Text size={"sm"}>
-            <ShowIfElse
-              if={isActive}
-              else={
-                <Text color="dimmed">
-                  Becomes available{" "}
-                  {formatDistanceToNowStrict(new Date(availableFrom), {
-                    addSuffix: true,
-                  }) ?? "Invalid date"}
-                </Text>
-              }
-            >
-              <ShowIfElse
-                if={differenceInDays(new Date(availableFrom), new Date()) !== 0}
-                else={"Published today"}
-              >
-                Published{" "}
-                {formatDistanceToNowStrict(new Date(availableFrom), {
-                  addSuffix: true,
-                }) ?? "Invalid date"}
-              </ShowIfElse>
-            </ShowIfElse>
+            Published{" "}
+            {intlFormatDistance(new Date(availableFrom), new Date(), {
+              unit: "day",
+            })}
           </Text>
         </List.Item>
         <List.Item icon={<MapIcon width={18} />}>
@@ -127,47 +105,53 @@ const JobMainSection = ({
             {organization.activitySector.name} activity line
           </Text>
         </List.Item>
-      </List>
-      <ShowIfElse
-        if={availableTo && isFuture(new Date(availableTo))}
-        else={
-          <List.Item icon={<XMarkIcon width={18} color="red" />}>
-            <Text color="red" size="sm">
-              Candidature is no longer allowed for this job
-            </Text>
-          </List.Item>
-        }
-      >
-        <ShowIf if={isAllowedCandidature}>
-          <ShowIfElse
-            if={isCandidatureLoading}
-            else={
-              <Group>
-                <ShowIfElse
-                  if={!applied}
-                  else={
-                    <Button disabled leftIcon={<CheckCircleIcon width={18} />}>
-                      Candidature sent
-                    </Button>
-                  }
-                >
-                  <Button
-                    onClick={submitCandidatureFn}
-                    leftIcon={<CheckCircleIcon width={18} />}
+        <ShowIfElse
+          if={isFuture(new Date(availableTo))}
+          else={
+            <List.Item icon={<XMarkIcon width={18} color="red" />}>
+              <Text color="red" size="sm">
+                Candidature is no longer allowed for this job
+              </Text>
+            </List.Item>
+          }
+        >
+          <ShowIf if={isAllowedCandidature}>
+            <ShowIfElse
+              if={isCandidatureLoading}
+              else={
+                <Group>
+                  <ShowIfElse
+                    if={!applied}
+                    else={
+                      <Button
+                        disabled
+                        leftIcon={<CheckCircleIcon width={18} />}
+                      >
+                        Candidature sent
+                      </Button>
+                    }
                   >
-                    Apply
+                    <Button
+                      onClick={submitCandidatureFn}
+                      leftIcon={<CheckCircleIcon width={18} />}
+                    >
+                      Apply
+                    </Button>
+                  </ShowIfElse>
+                  <Button
+                    variant="light"
+                    leftIcon={<BookmarkIcon width={18} />}
+                  >
+                    Save this job
                   </Button>
-                </ShowIfElse>
-                <Button variant="light" leftIcon={<BookmarkIcon width={18} />}>
-                  Save this job
-                </Button>
-              </Group>
-            }
-          >
-            <Loader mt="md" size="xs" variant="dots" />
-          </ShowIfElse>
-        </ShowIf>
-      </ShowIfElse>
+                </Group>
+              }
+            >
+              <Loader mt="md" size="xs" variant="dots" />
+            </ShowIfElse>
+          </ShowIf>
+        </ShowIfElse>
+      </List>
     </Paper>
   );
 };

@@ -13,6 +13,7 @@ import { User } from "@interfaces/user.types";
 import { api } from "@lib/axiosClient";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckUserHasRolesOrPermissions } from "@utils/security";
 import jwtDecode from "jwt-decode";
 import { useCallback, useMemo, useState } from "react";
@@ -49,6 +50,7 @@ export default function AuthProvider({
     number | null
   >(expToMillis(60));
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   const loadMetaFromToken = (accessToken: string) => {
     setAccessToken(accessToken);
@@ -125,6 +127,7 @@ export default function AuthProvider({
     logOut();
     setUser(null);
     setRefreshIntervalInSec(null);
+    queryClient.clear();
     callback?.();
   };
 

@@ -10,6 +10,7 @@ import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.jobs.input.JobListingInput;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
+import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
@@ -17,11 +18,13 @@ import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.process.ProcessRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ReferenceMapper.class})
 public abstract class JobListingMapper {
 
     @Autowired
@@ -47,12 +50,6 @@ public abstract class JobListingMapper {
     @Mapping(target = "job", source = "jobListingInput.jobId")
     @Mapping(target = "city", source = "jobListingInput.location")
     @Mapping(target = "category", source = "jobListingInput.categoryId")
-    @Mapping(target = "modifiedBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "applications", ignore = true)
-    @Mapping(target = "active", ignore = true)
     public abstract JobListing inputToJobListing(JobListingInput jobListingInput);
 
     public Organization mapOrganization(Long organizationId) {

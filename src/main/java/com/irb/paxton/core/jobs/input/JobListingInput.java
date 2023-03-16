@@ -2,6 +2,7 @@ package com.irb.paxton.core.jobs.input;
 
 import com.irb.paxton.core.jobs.contract.ContractType;
 import com.irb.paxton.core.jobs.worktype.WorkType;
+import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
 import javax.persistence.Enumerated;
@@ -13,7 +14,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-public class JobListingInput implements Serializable {
+public class JobListingInput extends AbstractInput implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -2048899776051052428L;

@@ -43,6 +43,8 @@ public class ApplicationService {
     }
 
     @PreAuthorize("!hasRole('ROLE_RECRUITER') or !hasRole('ROLE_ADMINISTRATOR')")
+    @PostAuthorize("!@paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)")
+    @Transactional
     public Application applyToJobListing(ApplicationInput applicationInput) {
         Application application = applicationMapper.inputToApplication(applicationInput);
         application.getProcessSteps().forEach(ps -> ps.setApplication(application));
@@ -65,7 +67,7 @@ public class ApplicationService {
         );
     }
 
-    @PostFilter("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR') or filterObject.createdBy == principal.username")
+    @PostFilter("(hasRole('ROLE_RECRUITER') or @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject) or hasRole('ROLE_ADMINISTRATOR') or filterObject.createdBy == principal.username")
     public Collection<Application> getApplicationsForUserId(Long userId) {
         return applicationRepository.findByCandidate_User_Id(userId);
     }

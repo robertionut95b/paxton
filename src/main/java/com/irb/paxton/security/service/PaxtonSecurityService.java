@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service(value = "paxtonSecurityService")
 public class PaxtonSecurityService {
     /**
@@ -41,5 +43,27 @@ public class PaxtonSecurityService {
                         );
             } else return false;
         });
+    }
+
+    public boolean isOrganizationRecruiter(Authentication authentication, Collection<Object> response) {
+        return response.stream().allMatch(o -> {
+            if (o instanceof Application application) {
+                Organization organization = application.getJobListing().getOrganization();
+                return organization
+                        .getRecruiters()
+                        .stream()
+                        .anyMatch(
+                                recruiter -> recruiter.getUser().getUsername()
+                                        .equals(authentication.getName())
+                        );
+            } else return false;
+        });
+    }
+
+    public boolean isJobApplicationRecruiter(Authentication authentication, Application application) {
+        return application
+                .getJobListing()
+                .getRecruiter().getUser().getUsername()
+                .equals(authentication.getName());
     }
 }

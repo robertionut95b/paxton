@@ -53,7 +53,7 @@ public class ApplicationDocumentService {
         return document;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or hasRole('ROLE_RECRUITER') or @paxtonSecurityService.isOwner(authentication, #application.candidate.user.username)")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isJobApplicationRecruiter(authentication, #application)) or @paxtonSecurityService.isOwner(authentication, #application.candidate.user.username)")
     public Resource loadApplicationDocumentByApplicationAndName(Application application, String fileName) {
         Optional<ApplicationDocument> applicationDocument = application.getApplicationDocuments()
                 .stream()
@@ -68,7 +68,7 @@ public class ApplicationDocumentService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or hasRole('ROLE_RECRUITER') or @paxtonSecurityService.isOwner(authentication, #application.candidate.user.username)")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isJobApplicationRecruiter(authentication, #application)) or @paxtonSecurityService.isOwner(authentication, #application.candidate.user.username)")
     public void deleteDocumentByApplicationAndDocumentId(Application application, String documentInput) {
         if (application.getStatus().equals(ApplicationStatus.FINISHED)) {
             throw new IllegalStateException("Cannot delete documents of a concluded application");

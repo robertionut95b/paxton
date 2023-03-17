@@ -2,7 +2,6 @@ package com.irb.paxton.core.candidate.resolver;
 
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationService;
-import com.irb.paxton.core.candidate.input.ApplicationsCountByStepInput;
 import com.irb.paxton.core.candidate.projection.ApplicationsCountByStep;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
@@ -40,9 +39,5 @@ public class ApplicationQueryResolver implements GraphQLQueryResolver {
 
     public Collection<Application> getMyApplications(Long userId) {
         return this.applicationService.getApplicationsForUserId(userId);
-    }
-
-    public PaginatedResponse<Application> getAllApplicationsByStepTitle(ApplicationsCountByStepInput applicationsCountByStepInput) {
-        return this.applicationService.getAllApplicationsByStepTitle(applicationsCountByStepInput);
     }
 }

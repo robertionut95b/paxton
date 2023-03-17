@@ -41,6 +41,7 @@ type Application {
     candidate: Candidate!
     jobListing: JobListing!
     status: ApplicationStatus!
+    currentStep: ProcessSteps!
     processSteps: [ApplicationProcessSteps]
     applicationDocuments: [ApplicationDocument]
 }
@@ -48,13 +49,6 @@ type Application {
 type ApplicationsCountByStep {
     applicationsCount: Int!
     stepTitle: String!
-}
-
-input ApplicationsCountByStepInput {
-    stepTitle: String!
-    applicationStatus: ApplicationStatus
-    page: Int
-    size: Int
 }
 
 type ApplicationDocument {
@@ -546,7 +540,9 @@ input FiltersInput {
     key: String!
     operator: Operator!
     fieldType: FieldType!
-    value: String!
+    value: String
+    values: [String]
+    valueTo: String
 }
 
 enum SortDirection {
@@ -589,7 +585,6 @@ type Query {
     getAllCertifications: [Certification]
     getApplicationById(applicationId: ID!): Application
     getApplicationsForJobIdCountBySteps(jobId: ID!): [ApplicationsCountByStep]
-    getAllApplicationsByStepTitle(applicationsCountByStepInput: ApplicationsCountByStepInput): ApplicationPage
     getMyApplicationForJobListing(JobListingId: ID!): Application
     getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
     getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage

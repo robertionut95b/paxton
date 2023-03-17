@@ -2,7 +2,6 @@ package com.irb.paxton.core.candidate;
 
 import com.irb.paxton.core.candidate.exception.ApplicationNotFoundException;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
-import com.irb.paxton.core.candidate.input.ApplicationsCountByStepInput;
 import com.irb.paxton.core.candidate.mapper.ApplicationMapper;
 import com.irb.paxton.core.candidate.projection.ApplicationsCountByStep;
 import com.irb.paxton.core.process.Process;
@@ -14,7 +13,6 @@ import com.irb.paxton.security.auth.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,13 +34,6 @@ public class ApplicationService {
 
     @Autowired
     private ApplicationMapper applicationMapper;
-
-    private Specification<Application> applicationsByStepTitle(String stepTitle, ApplicationStatus applicationStatus) {
-        return (root, query, cb) -> cb.and(
-                cb.equal(root.get("status"), applicationStatus),
-                cb.equal(root.join("currentStep").join("step").get("title"), stepTitle)
-        );
-    }
 
     @PostAuthorize("(hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
     public Application findById(Long applicationId) {
@@ -66,27 +57,6 @@ public class ApplicationService {
         SearchSpecification<Application> applicationSearchSpecification = new SearchSpecification<>(searchRequest);
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
         Page<Application> results = this.applicationRepository.findAll(applicationSearchSpecification, pageable);
-        return new PaginatedResponse<>(
-                results,
-                searchRequest.getPage(),
-                results.getTotalPages(),
-                results.getTotalElements()
-        );
-    }
-
-    @PreAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR')")
-    @PostAuthorize("@paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject)")
-    public PaginatedResponse<Application> getAllApplicationsByStepTitle(ApplicationsCountByStepInput applicationsCountByStepInput) {
-        SearchRequest searchRequest = new SearchRequest();
-        var applicationStatus = ApplicationStatus.IN_PROGRESS;
-        if (applicationsCountByStepInput.getPage() != null)
-            searchRequest.setPage(applicationsCountByStepInput.getPage());
-        if (applicationsCountByStepInput.getSize() != null)
-            searchRequest.setSize(applicationsCountByStepInput.getSize());
-        if (applicationsCountByStepInput.getApplicationStatus() != null)
-            applicationStatus = applicationsCountByStepInput.getApplicationStatus();
-        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
-        Page<Application> results = this.applicationRepository.findAll(applicationsByStepTitle(applicationsCountByStepInput.getStepTitle(), applicationStatus), pageable);
         return new PaginatedResponse<>(
                 results,
                 searchRequest.getPage(),

@@ -1,13 +1,11 @@
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { GetApplicationForJobListingRecruitmentQuery } from "@gql/generated";
+import { GetApplicationByIdQuery } from "@gql/generated";
 import { Avatar, Group, Stack, Text, Title } from "@mantine/core";
 import { format } from "date-fns";
 
 type CandidateApplicationHeroProps = {
   candidate: NonNullable<
-    NonNullable<
-      GetApplicationForJobListingRecruitmentQuery["getApplicationForJobListing"]
-    >["candidate"]
+    NonNullable<GetApplicationByIdQuery["getApplicationById"]>["candidate"]
   >;
   jobTitle: string;
   dateOfApplication: Date;

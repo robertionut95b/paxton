@@ -8,7 +8,6 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
-  useGetAllApplicationsByStepTitleQuery,
   useGetAllApplicationsQuery,
   useGetAllJobListingsQuery,
   useGetApplicationsForJobIdCountByStepsQuery,
@@ -99,11 +98,24 @@ const RecruitmentCandidatesPage = () => {
   const {
     data: applicationByStepTitleData,
     isInitialLoading: isApplicationByStepTitleLoading,
-  } = useGetAllApplicationsByStepTitleQuery(
+  } = useGetAllApplicationsQuery(
     graphqlRequestClient,
     {
-      applicationsCountByStepInput: {
-        stepTitle: tabValue ?? "",
+      searchQuery: {
+        filters: [
+          {
+            fieldType: FieldType.Long,
+            key: "jobListing",
+            operator: Operator.Equal,
+            value: jobId as string,
+          },
+          {
+            fieldType: FieldType.String,
+            key: "currentStep.step.title",
+            operator: Operator.Equal,
+            value: tabValue as string,
+          },
+        ],
       },
     },
     {
@@ -165,12 +177,7 @@ const RecruitmentCandidatesPage = () => {
         <Title mb="xs" order={4}>
           Candidates
         </Title>
-        <Tabs
-          defaultValue="all"
-          keepMounted={false}
-          value={tabValue}
-          onTabChange={setTabValue}
-        >
+        <Tabs defaultValue="all" value={tabValue} onTabChange={setTabValue}>
           <Tabs.List>
             <Tabs.Tab
               value="all"
@@ -250,15 +257,14 @@ const RecruitmentCandidatesPage = () => {
                       }
                       else={<Text mt="xs">No candidates yet</Text>}
                     >
-                      {applicationByStepTitleData?.getAllApplicationsByStepTitle?.list?.map(
+                      {applicationByStepTitleData?.getAllApplications?.list?.map(
                         (a, idx) =>
                           a && (
                             <div key={a.id} className="mt-4">
                               <ApplicationRecordCard application={a} />
                               {idx !==
-                                (applicationByStepTitleData
-                                  .getAllApplicationsByStepTitle?.list
-                                  ?.length ?? 1) -
+                                (applicationByStepTitleData.getAllApplications
+                                  ?.list?.length ?? 1) -
                                   1 && <Divider mt="sm" />}
                             </div>
                           )

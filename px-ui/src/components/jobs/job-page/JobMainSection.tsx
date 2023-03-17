@@ -119,7 +119,7 @@ const JobMainSection = ({
             <ShowIfElse
               if={isCandidatureLoading}
               else={
-                <Group>
+                <Group mt="sm">
                   <ShowIfElse
                     if={!applied}
                     else={

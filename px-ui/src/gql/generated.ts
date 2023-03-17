@@ -38,6 +38,7 @@ export type Application = {
   applicantProfile: UserProfile;
   applicationDocuments?: Maybe<Array<Maybe<ApplicationDocument>>>;
   candidate: Candidate;
+  currentStep: ProcessSteps;
   dateOfApplication: Scalars['DateTime'];
   id: Scalars['ID'];
   jobListing: JobListing;
@@ -93,13 +94,6 @@ export enum ApplicationStatus {
 export type ApplicationsCountByStep = {
   __typename?: 'ApplicationsCountByStep';
   applicationsCount: Scalars['Int'];
-  stepTitle: Scalars['String'];
-};
-
-export type ApplicationsCountByStepInput = {
-  applicationStatus?: InputMaybe<ApplicationStatus>;
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
   stepTitle: Scalars['String'];
 };
 
@@ -212,7 +206,9 @@ export type FiltersInput = {
   fieldType: FieldType;
   key: Scalars['String'];
   operator: Operator;
-  value: Scalars['String'];
+  value?: InputMaybe<Scalars['String']>;
+  valueTo?: InputMaybe<Scalars['String']>;
+  values?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Institution = {
@@ -539,7 +535,6 @@ export type Query = {
   __typename?: 'Query';
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
   getAllApplications?: Maybe<ApplicationPage>;
-  getAllApplicationsByStepTitle?: Maybe<ApplicationPage>;
   getAllCandidates?: Maybe<CandidatePage>;
   getAllCandidatesByJobListingId?: Maybe<CandidatePage>;
   getAllCertifications?: Maybe<Array<Maybe<Certification>>>;
@@ -573,11 +568,6 @@ export type Query = {
 
 export type QueryGetAllApplicationsArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
-};
-
-
-export type QueryGetAllApplicationsByStepTitleArgs = {
-  applicationsCountByStepInput?: InputMaybe<ApplicationsCountByStepInput>;
 };
 
 
@@ -1089,13 +1079,6 @@ export type GetApplicationsForJobIdCountByStepsQueryVariables = Exact<{
 
 
 export type GetApplicationsForJobIdCountByStepsQuery = { __typename?: 'Query', getApplicationsForJobIdCountBySteps?: Array<{ __typename?: 'ApplicationsCountByStep', applicationsCount: number, stepTitle: string } | null> | null };
-
-export type GetAllApplicationsByStepTitleQueryVariables = Exact<{
-  applicationsCountByStepInput?: InputMaybe<ApplicationsCountByStepInput>;
-}>;
-
-
-export type GetAllApplicationsByStepTitleQuery = { __typename?: 'Query', getAllApplicationsByStepTitle?: { __typename?: 'ApplicationPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date, status: ApplicationStatus, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, step: { __typename?: 'Step', id: string, title: string } } } | null> | null } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -2589,68 +2572,6 @@ useGetApplicationsForJobIdCountByStepsQuery.getKey = (variables: GetApplications
 ;
 
 useGetApplicationsForJobIdCountByStepsQuery.fetcher = (client: GraphQLClient, variables: GetApplicationsForJobIdCountByStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers);
-export const GetAllApplicationsByStepTitleDocument = `
-    query GetAllApplicationsByStepTitle($applicationsCountByStepInput: ApplicationsCountByStepInput) {
-  getAllApplicationsByStepTitle(
-    applicationsCountByStepInput: $applicationsCountByStepInput
-  ) {
-    list {
-      id
-      dateOfApplication
-      status
-      applicantProfile {
-        id
-        profileSlugUrl
-        profileTitle
-        photography
-      }
-      candidate {
-        user {
-          firstName
-          lastName
-          username
-          birthDate
-          email
-        }
-      }
-      processSteps {
-        processStep {
-          id
-          step {
-            id
-            title
-          }
-        }
-        registeredAt
-      }
-    }
-    page
-    totalPages
-    totalElements
-  }
-}
-    `;
-export const useGetAllApplicationsByStepTitleQuery = <
-      TData = GetAllApplicationsByStepTitleQuery,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables?: GetAllApplicationsByStepTitleQueryVariables,
-      options?: UseQueryOptions<GetAllApplicationsByStepTitleQuery, TError, TData>,
-      headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllApplicationsByStepTitleQuery, TError, TData>(
-      variables === undefined ? ['GetAllApplicationsByStepTitle'] : ['GetAllApplicationsByStepTitle', variables],
-      fetcher<GetAllApplicationsByStepTitleQuery, GetAllApplicationsByStepTitleQueryVariables>(client, GetAllApplicationsByStepTitleDocument, variables, headers),
-      options
-    );
-useGetAllApplicationsByStepTitleQuery.document = GetAllApplicationsByStepTitleDocument;
-
-
-useGetAllApplicationsByStepTitleQuery.getKey = (variables?: GetAllApplicationsByStepTitleQueryVariables) => variables === undefined ? ['GetAllApplicationsByStepTitle'] : ['GetAllApplicationsByStepTitle', variables];
-;
-
-useGetAllApplicationsByStepTitleQuery.fetcher = (client: GraphQLClient, variables?: GetAllApplicationsByStepTitleQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllApplicationsByStepTitleQuery, GetAllApplicationsByStepTitleQueryVariables>(client, GetAllApplicationsByStepTitleDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2684,15 +2605,6 @@ export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<App
 }
 
 export const ApplicationStatusSchema = z.nativeEnum(ApplicationStatus);
-
-export function ApplicationsCountByStepInputSchema(): z.ZodObject<Properties<ApplicationsCountByStepInput>> {
-  return z.object<Properties<ApplicationsCountByStepInput>>({
-    applicationStatus: ApplicationStatusSchema.nullish(),
-    page: z.number().nullish(),
-    size: z.number().nullish(),
-    stepTitle: z.string()
-  })
-}
 
 export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
   return z.object<Properties<CertificationInput>>({
@@ -2730,7 +2642,9 @@ export function FiltersInputSchema(): z.ZodObject<Properties<FiltersInput>> {
     fieldType: FieldTypeSchema,
     key: z.string(),
     operator: OperatorSchema,
-    value: z.string()
+    value: z.string().nullish(),
+    valueTo: z.string().nullish(),
+    values: z.array(z.string().nullable()).nullish()
   })
 }
 

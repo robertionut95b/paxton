@@ -4,6 +4,8 @@ import CandidateApplicationHero from "@components/candidates/CandidateApplicatio
 import CandidateInformationSection from "@components/candidates/CandidateInformationSection";
 import ApplicationCandidatureTimeline from "@components/jobs/job-page/ApplicationCandidatureTimeline";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
+import ChatSection from "@components/messaging/chat/ChatSection";
+import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import AttachmentItem from "@components/upload/AttachmentItem";
 import AttachmentUpload from "@components/upload/AttachmentUpload";
@@ -21,6 +23,7 @@ import {
   FieldType,
   Operator,
   Status,
+  useAddMessageToApplicationChatMutation,
   useGetAllJobListingsQuery,
   useGetAllProcessesQuery,
   useGetApplicationByIdQuery,
@@ -39,7 +42,6 @@ import {
 } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
-  Avatar,
   Button,
   Grid,
   Group,
@@ -47,7 +49,6 @@ import {
   Space,
   Stack,
   Text,
-  Textarea,
   Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -177,6 +178,25 @@ const RecruitmentApplicationPage = () => {
             icon: <ShieldExclamationIcon width={20} />,
           });
         }
+      },
+    }
+  );
+
+  const { mutate: addMessage } = useAddMessageToApplicationChatMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: () => {
+        showNotification({
+          title: "Application update",
+          message: "Successfully added message to this chat",
+          autoClose: 5000,
+          icon: <CheckCircleIcon width={20} />,
+        });
+        queryClient.invalidateQueries(
+          useGetApplicationByIdQuery.getKey({
+            applicationId: applicationId as string,
+          })
+        );
       },
     }
   );
@@ -429,34 +449,42 @@ const RecruitmentApplicationPage = () => {
         </ShowIf>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">
-            <Title order={4} mb={5}>
+            <Title order={4} mb={"sm"}>
               Messages
             </Title>
-            <Stack>
-              <Text size="sm">There are no messages yet</Text>
-            </Stack>
-            <Space h="lg" />
-            <Group spacing={"md"} noWrap>
-              <Avatar
-                size="lg"
-                radius="xl"
-                src={
-                  currentUserProfile?.getUserProfile?.photography &&
-                  `${APP_IMAGES_API_PATH}/100x100/${currentUserProfile?.getUserProfile?.photography}`
+            <ShowIfElse
+              if={
+                (applicationData.getApplicationById.chat.messages?.length ??
+                  0) > 0
+              }
+              else={<Text size="sm">There are no messages yet</Text>}
+            >
+              <ChatSection
+                currentUser={user}
+                messages={
+                  applicationData.getApplicationById.chat.messages ?? []
                 }
-              >
-                {currentUserProfile?.getUserProfile?.user
-                  ? `${currentUserProfile?.getUserProfile?.user.firstName?.[0].toUpperCase()}${currentUserProfile?.getUserProfile?.user.lastName?.[0].toUpperCase()}`
-                  : currentUserProfile?.getUserProfile?.user.username?.[0].toUpperCase()}
-              </Avatar>
-              <Textarea
-                w={"100%"}
-                placeholder="Add a message in the application chat"
               />
-            </Group>
-            <Group position="right" mt="sm">
-              <Button>Comment</Button>
-            </Group>
+            </ShowIfElse>
+            <Space h="lg" />
+            <MessageAddForm
+              currentUser={user}
+              currentUserAvatar={
+                currentUserProfile?.getUserProfile?.photography
+              }
+              onSubmit={(values) =>
+                addMessage({
+                  applicationId: applicationData.getApplicationById
+                    ?.id as string,
+                  MessageInput: {
+                    chatId: applicationData.getApplicationById?.chat
+                      .id as string,
+                    content: values.content,
+                    senderUserId: values.senderUserId as string,
+                  },
+                })
+              }
+            />
           </Paper>
         </Grid.Col>
       </Grid>

@@ -44,6 +44,7 @@ type Application {
     currentStep: ProcessSteps!
     processSteps: [ApplicationProcessSteps]
     applicationDocuments: [ApplicationDocument]
+    chat: Chat!
 }
 
 type ApplicationsCountByStep {
@@ -98,6 +99,12 @@ type CandidatePage {
     page: Int!
     totalPages: Int!
     totalElements: Int!
+}
+
+type Chat {
+    id: ID!
+    messages: [Message]
+    users: [User]
 }
 
 enum ContractType {
@@ -256,6 +263,22 @@ type JobListingPage {
     page: Int!
     totalPages: Int!
     totalElements: Int!
+}
+
+type Message {
+    id: ID!
+    content: String!
+    sender: User!
+    deliveredAt: DateTime!
+    seenAt: DateTime
+    chat: Chat
+}
+
+input MessageInput {
+    id: ID
+    content: String!
+    senderUserId: ID!
+    chatId: ID!
 }
 
 enum OrganizationSize {
@@ -614,4 +637,5 @@ type Mutation {
     createOrUpdateOrganization(OrganizationInput: OrganizationInput!): Organization
     alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: ID!): [Recruiter]
     updateApplication(ApplicationInput: ApplicationInput!): Application
+    addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: ID!): Application
 }

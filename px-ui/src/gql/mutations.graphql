@@ -160,3 +160,15 @@ mutation updateApplication($ApplicationInput: ApplicationInput!) {
     }
   }
 }
+
+mutation AddMessageToApplicationChat(
+  $MessageInput: MessageInput!
+  $applicationId: ID!
+) {
+  addMessageToApplicationChat(
+    MessageInput: $MessageInput
+    applicationId: $applicationId
+  ) {
+    id
+  }
+}

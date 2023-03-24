@@ -8,7 +8,9 @@ import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.exception.JobNotFoundException;
+import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
+import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
 import com.irb.paxton.core.process.Status;
@@ -21,6 +23,7 @@ import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,7 +51,16 @@ public abstract class ApplicationMapper {
     @Mapping(target = "candidate", source = "applicationInput.userId")
     @Mapping(target = "applicantProfile", source = "applicationInput.applicantProfileId")
     @Mapping(target = "currentStep", source = "applicationInput", qualifiedByName = "mapCurrentStep")
+    @Mapping(target = "chat", source = "applicationInput", qualifiedByName = "mapChat")
     public abstract Application inputToApplication(ApplicationInput applicationInput);
+
+    @Named("mapChat")
+    public Chat mapChat(ApplicationInput applicationInput) {
+        Candidate candidate = this.mapCandidate(applicationInput.getUserId());
+        Recruiter recruiter = this.mapJobListing(applicationInput.getJobListingId()).getRecruiter();
+        Collection<User> chatUsers = new ArrayList<>(List.of(candidate.getUser(), recruiter.getUser()));
+        return new Chat(null, chatUsers);
+    }
 
     @Named("mapProcessStep")
     public Collection<ApplicationProcessSteps> mapProcessStep(ApplicationInput applicationInput) {

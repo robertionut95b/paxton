@@ -7,6 +7,7 @@ import com.irb.paxton.core.candidate.listener.ApplicationListener;
 import com.irb.paxton.core.candidate.validator.OrderedProcessSteps;
 import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.jobs.JobListing;
+import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.profile.UserProfile;
@@ -74,8 +75,15 @@ public class Application extends PaxtonEntity<Long> {
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ApplicationProcessSteps> processSteps;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chat_id")
+    @NotNull
+    private Chat chat;
+
     public Application addApplicationDocument(ApplicationDocument applicationDocument) {
-        this.applicationDocuments.add(applicationDocument);
+        if (!this.applicationDocuments.contains(applicationDocument)) {
+            this.applicationDocuments.add(applicationDocument);
+        }
         return this;
     }
 

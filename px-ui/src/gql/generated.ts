@@ -38,6 +38,7 @@ export type Application = {
   applicantProfile: UserProfile;
   applicationDocuments?: Maybe<Array<Maybe<ApplicationDocument>>>;
   candidate: Candidate;
+  chat: Chat;
   currentStep: ProcessSteps;
   dateOfApplication: Scalars['DateTime'];
   id: Scalars['ID'];
@@ -120,6 +121,13 @@ export type Certification = {
 
 export type CertificationInput = {
   name: Scalars['String'];
+};
+
+export type Chat = {
+  __typename?: 'Chat';
+  id: Scalars['ID'];
+  messages?: Maybe<Array<Maybe<Message>>>;
+  users?: Maybe<Array<Maybe<User>>>;
 };
 
 export type City = {
@@ -302,12 +310,30 @@ export type JobPage = {
   totalPages: Scalars['Int'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  chat?: Maybe<Chat>;
+  content: Scalars['String'];
+  deliveredAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  seenAt?: Maybe<Scalars['DateTime']>;
+  sender: User;
+};
+
+export type MessageInput = {
+  chatId: Scalars['ID'];
+  content: Scalars['String'];
+  id?: InputMaybe<Scalars['ID']>;
+  senderUserId: Scalars['ID'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addCertification?: Maybe<Certification>;
   addDomain?: Maybe<Domain>;
   addInstitution?: Maybe<Institution>;
   addJobCategory?: Maybe<JobCategory>;
+  addMessageToApplicationChat?: Maybe<Application>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
   alterRecruitersInOrganization?: Maybe<Array<Maybe<Recruiter>>>;
@@ -342,6 +368,12 @@ export type MutationAddInstitutionArgs = {
 
 export type MutationAddJobCategoryArgs = {
   JobCategoryInput: JobCategoryInput;
+};
+
+
+export type MutationAddMessageToApplicationChatArgs = {
+  MessageInput: MessageInput;
+  applicationId: Scalars['ID'];
 };
 
 
@@ -937,6 +969,14 @@ export type UpdateApplicationMutationVariables = Exact<{
 
 export type UpdateApplicationMutation = { __typename?: 'Mutation', updateApplication?: { __typename?: 'Application', id: string, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null } | null };
 
+export type AddMessageToApplicationChatMutationVariables = Exact<{
+  MessageInput: MessageInput;
+  applicationId: Scalars['ID'];
+}>;
+
+
+export type AddMessageToApplicationChatMutation = { __typename?: 'Mutation', addMessageToApplicationChat?: { __typename?: 'Application', id: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1024,7 +1064,7 @@ export type GetApplicationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null } | null };
+export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null, chat: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1496,6 +1536,32 @@ export const useUpdateApplicationMutation = <
 useUpdateApplicationMutation.getKey = () => ['updateApplication'];
 
 useUpdateApplicationMutation.fetcher = (client: GraphQLClient, variables: UpdateApplicationMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateApplicationMutation, UpdateApplicationMutationVariables>(client, UpdateApplicationDocument, variables, headers);
+export const AddMessageToApplicationChatDocument = `
+    mutation AddMessageToApplicationChat($MessageInput: MessageInput!, $applicationId: ID!) {
+  addMessageToApplicationChat(
+    MessageInput: $MessageInput
+    applicationId: $applicationId
+  ) {
+    id
+  }
+}
+    `;
+export const useAddMessageToApplicationChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddMessageToApplicationChatMutation, TError, AddMessageToApplicationChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddMessageToApplicationChatMutation, TError, AddMessageToApplicationChatMutationVariables, TContext>(
+      ['AddMessageToApplicationChat'],
+      (variables?: AddMessageToApplicationChatMutationVariables) => fetcher<AddMessageToApplicationChatMutation, AddMessageToApplicationChatMutationVariables>(client, AddMessageToApplicationChatDocument, variables, headers)(),
+      options
+    );
+useAddMessageToApplicationChatMutation.getKey = () => ['AddMessageToApplicationChat'];
+
+useAddMessageToApplicationChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageToApplicationChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageToApplicationChatMutation, AddMessageToApplicationChatMutationVariables>(client, AddMessageToApplicationChatDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2212,6 +2278,22 @@ export const GetApplicationByIdDocument = `
         name
       }
     }
+    chat {
+      id
+      messages {
+        id
+        content
+        sender {
+          id
+          username
+          userProfile {
+            photography
+          }
+        }
+        deliveredAt
+        seenAt
+      }
+    }
   }
 }
     `;
@@ -2686,6 +2768,15 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     recruiterId: z.string().min(1),
     title: z.string().min(5),
     workType: WorkTypeSchema
+  })
+}
+
+export function MessageInputSchema(): z.ZodObject<Properties<MessageInput>> {
+  return z.object<Properties<MessageInput>>({
+    chatId: z.string(),
+    content: z.string(),
+    id: z.string().nullish(),
+    senderUserId: z.string()
   })
 }
 

@@ -3,6 +3,7 @@ package com.irb.paxton.core.candidate.resolver;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
+import com.irb.paxton.core.messaging.input.MessageInput;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,5 +20,9 @@ public class ApplicationMutationResolver implements GraphQLMutationResolver {
 
     Application updateApplication(ApplicationInput applicationInput) {
         return applicationService.updateApplication(applicationInput);
+    }
+
+    Application addMessageToApplicationChat(MessageInput messageInput, Long applicationId) {
+        return applicationService.addMessageToApplicationChat(messageInput, applicationId);
     }
 }

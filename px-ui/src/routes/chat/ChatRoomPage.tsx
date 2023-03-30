@@ -184,7 +184,7 @@ const ChatRoomPage = () => {
                 </Text>
               }
             >
-              {chatData.getPrivateChatById.latestMessage && (
+              {chatData.getPrivateChatById.latestMessage ? (
                 <Text size="xs">
                   Last activity:{" "}
                   {intlFormatDistance(
@@ -194,6 +194,8 @@ const ChatRoomPage = () => {
                     new Date()
                   )}
                 </Text>
+              ) : (
+                <Text size="xs">Group chat</Text>
               )}
             </ShowIfElse>
           </Stack>

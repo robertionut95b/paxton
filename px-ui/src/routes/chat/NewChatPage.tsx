@@ -3,6 +3,7 @@ import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import { SelectItem } from "@components/select-items/SelectItem";
+import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
@@ -164,10 +165,10 @@ const NewChatPage = () => {
   return (
     <Stack spacing={6} justify="space-between" h={"100%"}>
       <Box>
-        <Title order={6} mb={0}>
+        <Title order={5} mb={12}>
           New message
         </Title>
-        <Divider mt={16} mb={12} />
+        <Divider mt={20} mb={12} />
         <MultiSelect
           data={users}
           placeholder="Choose one or more names"
@@ -187,6 +188,17 @@ const NewChatPage = () => {
         else={
           <div className="h-full grow">
             <ChatSection currentUser={user} messages={chatMessages} />
+            <ShowIf if={searchUsers.length > 0}>
+              <Divider />
+              <Stack justify="center" align="center" spacing="xs">
+                <Text size="sm" my="xs" align="center" weight="bold">
+                  Or create a new one
+                </Text>
+                <Button onClick={createNewChat} fullWidth={false}>
+                  New chat
+                </Button>
+              </Stack>
+            </ShowIf>
           </div>
         }
       >

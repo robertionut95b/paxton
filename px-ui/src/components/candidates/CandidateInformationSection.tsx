@@ -1,7 +1,4 @@
-import {
-  ApplicationStatus,
-  GetApplicationForJobListingRecruitmentQuery,
-} from "@gql/generated";
+import { ApplicationStatus, GetApplicationByIdQuery } from "@gql/generated";
 import {
   Badge,
   Divider,
@@ -17,7 +14,7 @@ import { NavLink } from "react-router-dom";
 
 type CandidateInformationSectionProps = {
   candidate: NonNullable<
-    GetApplicationForJobListingRecruitmentQuery["getApplicationForJobListing"]
+    GetApplicationByIdQuery["getApplicationById"]
   >["candidate"];
   userProfileUrl: string;
   applicationStatus: ApplicationStatus;

@@ -11,6 +11,7 @@ import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -130,5 +132,18 @@ public class User extends PaxtonEntity<Long> {
 
     public void removeRole(Role role) {
         this.roles.remove(role);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -8,7 +8,6 @@ import javax.persistence.criteria.*;
 import javax.persistence.metamodel.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -127,7 +126,7 @@ public enum Operator {
 
     IN {
         public <T> Predicate build(Root<T> root, CriteriaBuilder cb, FilterRequest request, Predicate predicate) {
-            List<Object> values = Collections.singletonList(request.getValues());
+            List<Object> values = request.getValues();
             CriteriaBuilder.In<Object> inClause = cb.in(this.parseProperty(request.getKey(), root));
             for (Object value : values) {
                 inClause.value(request.getFieldType().parse(value.toString()));

@@ -10,6 +10,7 @@ type MessageAddFormProps = {
   currentUserAvatar?: string | null;
   maxLength?: number;
   onSubmit: (values: FormValues) => void;
+  disabled?: boolean;
 };
 
 type FormValues = {
@@ -22,6 +23,7 @@ const MessageAddForm = ({
   currentUserAvatar,
   onSubmit,
   maxLength = 250,
+  disabled = false,
 }: MessageAddFormProps) => {
   const [content, setContent] = useState<string>("");
 
@@ -50,8 +52,10 @@ const MessageAddForm = ({
     [form]
   );
 
-  const handleSubmit = async (values: (typeof form)["values"]) =>
+  const handleSubmit = async (values: (typeof form)["values"]) => {
     onSubmit(values);
+    if (form.isValid()) form.reset();
+  };
 
   return (
     <form
@@ -90,7 +94,9 @@ const MessageAddForm = ({
         </Group>
       </Group>
       <Group position="right" mt="sm">
-        <Button type="submit">Comment</Button>
+        <Button type="submit" disabled={content.length === 0 || disabled}>
+          Send
+        </Button>
       </Group>
     </form>
   );

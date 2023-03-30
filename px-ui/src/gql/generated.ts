@@ -125,10 +125,35 @@ export type CertificationInput = {
 
 export type Chat = {
   __typename?: 'Chat';
+  chatType?: Maybe<ChatType>;
   id: Scalars['ID'];
+  latestMessage?: Maybe<Message>;
   messages?: Maybe<Array<Maybe<Message>>>;
+  title?: Maybe<Scalars['String']>;
+  unreadMessagesCount: Scalars['Int'];
   users?: Maybe<Array<Maybe<User>>>;
 };
+
+export type ChatInput = {
+  chatType?: InputMaybe<ChatType>;
+  id?: InputMaybe<Scalars['ID']>;
+  messages?: InputMaybe<Array<InputMaybe<MessageInput>>>;
+  users: Array<InputMaybe<Scalars['ID']>>;
+};
+
+export type ChatPage = {
+  __typename?: 'ChatPage';
+  list?: Maybe<Array<Maybe<Chat>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
+};
+
+export enum ChatType {
+  ApplicationChat = 'APPLICATION_CHAT',
+  GroupPrivateChat = 'GROUP_PRIVATE_CHAT',
+  PrivateChat = 'PRIVATE_CHAT'
+}
 
 export type City = {
   __typename?: 'City';
@@ -316,7 +341,7 @@ export type Message = {
   content: Scalars['String'];
   deliveredAt: Scalars['DateTime'];
   id: Scalars['ID'];
-  seenAt?: Maybe<Scalars['DateTime']>;
+  seenBy?: Maybe<Array<Maybe<MessageSeenBy>>>;
   sender: User;
 };
 
@@ -327,6 +352,18 @@ export type MessageInput = {
   senderUserId: Scalars['ID'];
 };
 
+export type MessageSeenBy = {
+  __typename?: 'MessageSeenBy';
+  message: Message;
+  seenAt: Scalars['DateTime'];
+  user: User;
+};
+
+export type MessageSeenInput = {
+  id?: InputMaybe<Scalars['ID']>;
+  userId?: InputMaybe<Scalars['ID']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addCertification?: Maybe<Certification>;
@@ -334,16 +371,20 @@ export type Mutation = {
   addInstitution?: Maybe<Institution>;
   addJobCategory?: Maybe<JobCategory>;
   addMessageToApplicationChat?: Maybe<Application>;
+  addMessageToChat?: Maybe<Chat>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
   alterRecruitersInOrganization?: Maybe<Array<Maybe<Recruiter>>>;
   applyToJobListing?: Maybe<Application>;
+  createChat?: Maybe<Chat>;
   createOrUpdateOrganization?: Maybe<Organization>;
   createProcess?: Maybe<Process>;
   healthCheckPost?: Maybe<Scalars['String']>;
+  markAllMessagesAsSeen?: Maybe<Chat>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
   updateApplication?: Maybe<Application>;
+  updateChat?: Maybe<Chat>;
   updateProcess?: Maybe<Process>;
   updateUserProfile?: Maybe<UserProfile>;
   updateUserProfileExperience?: Maybe<UserProfile>;
@@ -377,6 +418,11 @@ export type MutationAddMessageToApplicationChatArgs = {
 };
 
 
+export type MutationAddMessageToChatArgs = {
+  MessageInput: MessageInput;
+};
+
+
 export type MutationAddUserProfileExperienceArgs = {
   ExperienceInput: ExperienceInput;
 };
@@ -398,6 +444,11 @@ export type MutationApplyToJobListingArgs = {
 };
 
 
+export type MutationCreateChatArgs = {
+  ChatInput: ChatInput;
+};
+
+
 export type MutationCreateOrUpdateOrganizationArgs = {
   OrganizationInput: OrganizationInput;
 };
@@ -405,6 +456,12 @@ export type MutationCreateOrUpdateOrganizationArgs = {
 
 export type MutationCreateProcessArgs = {
   ProcessInput: ProcessInput;
+};
+
+
+export type MutationMarkAllMessagesAsSeenArgs = {
+  chatId: Scalars['ID'];
+  userId: Scalars['ID'];
 };
 
 
@@ -420,6 +477,11 @@ export type MutationPublishJobListingArgs = {
 
 export type MutationUpdateApplicationArgs = {
   ApplicationInput: ApplicationInput;
+};
+
+
+export type MutationUpdateChatArgs = {
+  ChatInput: ChatInput;
 };
 
 
@@ -584,12 +646,15 @@ export type Query = {
   getAllUsers?: Maybe<Array<Maybe<User>>>;
   getApplicationById?: Maybe<Application>;
   getApplicationsForJobIdCountBySteps?: Maybe<Array<Maybe<ApplicationsCountByStep>>>;
+  getChatAdvSearch?: Maybe<ChatPage>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMyApplicationForJobListing?: Maybe<Application>;
   getMyApplications?: Maybe<Array<Maybe<Application>>>;
   getOrganizationById?: Maybe<Organization>;
   getOrganizationBySlugName?: Maybe<Organization>;
+  getPrivateChatById?: Maybe<Chat>;
+  getPrivateChatsByUserId?: Maybe<Array<Maybe<Chat>>>;
   getRecruiterById?: Maybe<Recruiter>;
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
@@ -648,6 +713,11 @@ export type QueryGetApplicationsForJobIdCountByStepsArgs = {
 };
 
 
+export type QueryGetChatAdvSearchArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
 export type QueryGetMyApplicationForJobListingArgs = {
   JobListingId: Scalars['ID'];
 };
@@ -665,6 +735,16 @@ export type QueryGetOrganizationByIdArgs = {
 
 export type QueryGetOrganizationBySlugNameArgs = {
   slugName: Scalars['String'];
+};
+
+
+export type QueryGetPrivateChatByIdArgs = {
+  chatId: Scalars['ID'];
+};
+
+
+export type QueryGetPrivateChatsByUserIdArgs = {
+  userId: Scalars['ID'];
 };
 
 
@@ -977,6 +1057,35 @@ export type AddMessageToApplicationChatMutationVariables = Exact<{
 
 export type AddMessageToApplicationChatMutation = { __typename?: 'Mutation', addMessageToApplicationChat?: { __typename?: 'Application', id: string } | null };
 
+export type CreateChatMutationVariables = Exact<{
+  ChatInput: ChatInput;
+}>;
+
+
+export type CreateChatMutation = { __typename?: 'Mutation', createChat?: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } | null };
+
+export type AddMessageToChatMutationVariables = Exact<{
+  MessageInput: MessageInput;
+}>;
+
+
+export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'Chat', id: string, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
+
+export type MarkAllMessagesAsSeenMutationVariables = Exact<{
+  chatId: Scalars['ID'];
+  userId: Scalars['ID'];
+}>;
+
+
+export type MarkAllMessagesAsSeenMutation = { __typename?: 'Mutation', markAllMessagesAsSeen?: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, deliveredAt: Date, seenBy?: Array<{ __typename?: 'MessageSeenBy', seenAt: Date, user: { __typename?: 'User', id: string } } | null> | null } | null> | null } | null };
+
+export type UpdateChatMutationVariables = Exact<{
+  ChatInput: ChatInput;
+}>;
+
+
+export type UpdateChatMutation = { __typename?: 'Mutation', updateChat?: { __typename?: 'Chat', id: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1064,7 +1173,7 @@ export type GetApplicationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null, chat: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } } | null };
+export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null, chat: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1119,6 +1228,27 @@ export type GetApplicationsForJobIdCountByStepsQueryVariables = Exact<{
 
 
 export type GetApplicationsForJobIdCountByStepsQuery = { __typename?: 'Query', getApplicationsForJobIdCountBySteps?: Array<{ __typename?: 'ApplicationsCountByStep', applicationsCount: number, stepTitle: string } | null> | null };
+
+export type GetPrivateChatByIdQueryVariables = Exact<{
+  chatId: Scalars['ID'];
+}>;
+
+
+export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'Chat', id: string, title?: string | null, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date } | null } | null };
+
+export type GetPrivateChatsByUserIdQueryVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type GetPrivateChatsByUserIdQuery = { __typename?: 'Query', getPrivateChatsByUserId?: Array<{ __typename?: 'Chat', id: string, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null };
+
+export type GetChatAdvSearchQueryVariables = Exact<{
+  searchQuery: SearchQueryInput;
+}>;
+
+
+export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1562,6 +1692,132 @@ export const useAddMessageToApplicationChatMutation = <
 useAddMessageToApplicationChatMutation.getKey = () => ['AddMessageToApplicationChat'];
 
 useAddMessageToApplicationChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageToApplicationChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageToApplicationChatMutation, AddMessageToApplicationChatMutationVariables>(client, AddMessageToApplicationChatDocument, variables, headers);
+export const CreateChatDocument = `
+    mutation CreateChat($ChatInput: ChatInput!) {
+  createChat(ChatInput: $ChatInput) {
+    id
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+  }
+}
+    `;
+export const useCreateChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateChatMutation, TError, CreateChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateChatMutation, TError, CreateChatMutationVariables, TContext>(
+      ['CreateChat'],
+      (variables?: CreateChatMutationVariables) => fetcher<CreateChatMutation, CreateChatMutationVariables>(client, CreateChatDocument, variables, headers)(),
+      options
+    );
+useCreateChatMutation.getKey = () => ['CreateChat'];
+
+useCreateChatMutation.fetcher = (client: GraphQLClient, variables: CreateChatMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateChatMutation, CreateChatMutationVariables>(client, CreateChatDocument, variables, headers);
+export const AddMessageToChatDocument = `
+    mutation AddMessageToChat($MessageInput: MessageInput!) {
+  addMessageToChat(MessageInput: $MessageInput) {
+    id
+    latestMessage {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+  }
+}
+    `;
+export const useAddMessageToChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddMessageToChatMutation, TError, AddMessageToChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddMessageToChatMutation, TError, AddMessageToChatMutationVariables, TContext>(
+      ['AddMessageToChat'],
+      (variables?: AddMessageToChatMutationVariables) => fetcher<AddMessageToChatMutation, AddMessageToChatMutationVariables>(client, AddMessageToChatDocument, variables, headers)(),
+      options
+    );
+useAddMessageToChatMutation.getKey = () => ['AddMessageToChat'];
+
+useAddMessageToChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageToChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageToChatMutation, AddMessageToChatMutationVariables>(client, AddMessageToChatDocument, variables, headers);
+export const MarkAllMessagesAsSeenDocument = `
+    mutation MarkAllMessagesAsSeen($chatId: ID!, $userId: ID!) {
+  markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
+    id
+    messages {
+      id
+      deliveredAt
+      seenBy {
+        user {
+          id
+        }
+        seenAt
+      }
+    }
+  }
+}
+    `;
+export const useMarkAllMessagesAsSeenMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<MarkAllMessagesAsSeenMutation, TError, MarkAllMessagesAsSeenMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<MarkAllMessagesAsSeenMutation, TError, MarkAllMessagesAsSeenMutationVariables, TContext>(
+      ['MarkAllMessagesAsSeen'],
+      (variables?: MarkAllMessagesAsSeenMutationVariables) => fetcher<MarkAllMessagesAsSeenMutation, MarkAllMessagesAsSeenMutationVariables>(client, MarkAllMessagesAsSeenDocument, variables, headers)(),
+      options
+    );
+useMarkAllMessagesAsSeenMutation.getKey = () => ['MarkAllMessagesAsSeen'];
+
+useMarkAllMessagesAsSeenMutation.fetcher = (client: GraphQLClient, variables: MarkAllMessagesAsSeenMutationVariables, headers?: RequestInit['headers']) => fetcher<MarkAllMessagesAsSeenMutation, MarkAllMessagesAsSeenMutationVariables>(client, MarkAllMessagesAsSeenDocument, variables, headers);
+export const UpdateChatDocument = `
+    mutation UpdateChat($ChatInput: ChatInput!) {
+  updateChat(ChatInput: $ChatInput) {
+    id
+  }
+}
+    `;
+export const useUpdateChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateChatMutation, TError, UpdateChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateChatMutation, TError, UpdateChatMutationVariables, TContext>(
+      ['UpdateChat'],
+      (variables?: UpdateChatMutationVariables) => fetcher<UpdateChatMutation, UpdateChatMutationVariables>(client, UpdateChatDocument, variables, headers)(),
+      options
+    );
+useUpdateChatMutation.getKey = () => ['UpdateChat'];
+
+useUpdateChatMutation.fetcher = (client: GraphQLClient, variables: UpdateChatMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateChatMutation, UpdateChatMutationVariables>(client, UpdateChatDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2291,7 +2547,6 @@ export const GetApplicationByIdDocument = `
           }
         }
         deliveredAt
-        seenAt
       }
     }
   }
@@ -2654,6 +2909,175 @@ useGetApplicationsForJobIdCountByStepsQuery.getKey = (variables: GetApplications
 ;
 
 useGetApplicationsForJobIdCountByStepsQuery.fetcher = (client: GraphQLClient, variables: GetApplicationsForJobIdCountByStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers);
+export const GetPrivateChatByIdDocument = `
+    query GetPrivateChatById($chatId: ID!) {
+  getPrivateChatById(chatId: $chatId) {
+    id
+    title
+    unreadMessagesCount
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+    }
+  }
+}
+    `;
+export const useGetPrivateChatByIdQuery = <
+      TData = GetPrivateChatByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetPrivateChatByIdQueryVariables,
+      options?: UseQueryOptions<GetPrivateChatByIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetPrivateChatByIdQuery, TError, TData>(
+      ['GetPrivateChatById', variables],
+      fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers),
+      options
+    );
+useGetPrivateChatByIdQuery.document = GetPrivateChatByIdDocument;
+
+
+useGetPrivateChatByIdQuery.getKey = (variables: GetPrivateChatByIdQueryVariables) => ['GetPrivateChatById', variables];
+;
+
+useGetPrivateChatByIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers);
+export const GetPrivateChatsByUserIdDocument = `
+    query GetPrivateChatsByUserId($userId: ID!) {
+  getPrivateChatsByUserId(userId: $userId) {
+    id
+    title
+    unreadMessagesCount
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
+  }
+}
+    `;
+export const useGetPrivateChatsByUserIdQuery = <
+      TData = GetPrivateChatsByUserIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetPrivateChatsByUserIdQueryVariables,
+      options?: UseQueryOptions<GetPrivateChatsByUserIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetPrivateChatsByUserIdQuery, TError, TData>(
+      ['GetPrivateChatsByUserId', variables],
+      fetcher<GetPrivateChatsByUserIdQuery, GetPrivateChatsByUserIdQueryVariables>(client, GetPrivateChatsByUserIdDocument, variables, headers),
+      options
+    );
+useGetPrivateChatsByUserIdQuery.document = GetPrivateChatsByUserIdDocument;
+
+
+useGetPrivateChatsByUserIdQuery.getKey = (variables: GetPrivateChatsByUserIdQueryVariables) => ['GetPrivateChatsByUserId', variables];
+;
+
+useGetPrivateChatsByUserIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatsByUserIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatsByUserIdQuery, GetPrivateChatsByUserIdQueryVariables>(client, GetPrivateChatsByUserIdDocument, variables, headers);
+export const GetChatAdvSearchDocument = `
+    query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
+  getChatAdvSearch(searchQuery: $searchQuery) {
+    list {
+      id
+      unreadMessagesCount
+      messages {
+        id
+        content
+        sender {
+          id
+          username
+          userProfile {
+            photography
+          }
+        }
+        deliveredAt
+      }
+      users {
+        id
+        username
+        firstName
+        lastName
+        userProfile {
+          photography
+        }
+      }
+      latestMessage {
+        id
+        content
+        deliveredAt
+        sender {
+          firstName
+          lastName
+        }
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetChatAdvSearchQuery = <
+      TData = GetChatAdvSearchQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetChatAdvSearchQueryVariables,
+      options?: UseQueryOptions<GetChatAdvSearchQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetChatAdvSearchQuery, TError, TData>(
+      ['GetChatAdvSearch', variables],
+      fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers),
+      options
+    );
+useGetChatAdvSearchQuery.document = GetChatAdvSearchDocument;
+
+
+useGetChatAdvSearchQuery.getKey = (variables: GetChatAdvSearchQueryVariables) => ['GetChatAdvSearch', variables];
+;
+
+useGetChatAdvSearchQuery.fetcher = (client: GraphQLClient, variables: GetChatAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -2693,6 +3117,17 @@ export function CertificationInputSchema(): z.ZodObject<Properties<Certification
     name: z.string()
   })
 }
+
+export function ChatInputSchema(): z.ZodObject<Properties<ChatInput>> {
+  return z.object<Properties<ChatInput>>({
+    chatType: ChatTypeSchema.nullish(),
+    id: z.string().nullish(),
+    messages: z.array(z.lazy(() => MessageInputSchema().nullable())).nullish(),
+    users: z.array(z.string().nullable())
+  })
+}
+
+export const ChatTypeSchema = z.nativeEnum(ChatType);
 
 export const ContractTypeSchema = z.nativeEnum(ContractType);
 
@@ -2777,6 +3212,13 @@ export function MessageInputSchema(): z.ZodObject<Properties<MessageInput>> {
     content: z.string(),
     id: z.string().nullish(),
     senderUserId: z.string()
+  })
+}
+
+export function MessageSeenInputSchema(): z.ZodObject<Properties<MessageSeenInput>> {
+  return z.object<Properties<MessageSeenInput>>({
+    id: z.string().nullish(),
+    userId: z.string().nullish()
   })
 }
 

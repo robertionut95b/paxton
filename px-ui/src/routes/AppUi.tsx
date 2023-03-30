@@ -10,8 +10,6 @@ import ProfileExperienceModal from "@components/user-profile/ProfileExperienceMo
 import ProfileStudyModal from "@components/user-profile/ProfileStudyModal";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SearchPage from "./user/SearchPage";
-import UserJobsPage from "./user/UserJobsPage";
 
 const AccessDenied = lazy(() => import("./AccessDenied"));
 const ClientApp = lazy(() => import("./ClientApp"));
@@ -64,6 +62,11 @@ const AdminOrganizations = lazy(
   () => import("../components/admin/AdminOrganizations")
 );
 const NotificationsPage = lazy(() => import("./NotificationsPage"));
+const ChatPage = lazy(() => import("./ChatPage"));
+const SearchPage = lazy(() => import("./user/SearchPage"));
+const UserJobsPage = lazy(() => import("./user/UserJobsPage"));
+const NewChatPage = lazy(() => import("./chat/NewChatPage"));
+const ChatRoomPage = lazy(() => import("./chat/ChatRoomPage"));
 
 export default function AppUI() {
   return (
@@ -211,6 +214,10 @@ export default function AppUI() {
               <Route path="saved-jobs" element={<UserJobsPage />}></Route>
             </Route>
             <Route path="notifications" element={<NotificationsPage />}></Route>
+            <Route path="inbox/messages" element={<ChatPage />}>
+              <Route path="chat/new" element={<NewChatPage />} />
+              <Route path="chat/:chatId" element={<ChatRoomPage />} />
+            </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

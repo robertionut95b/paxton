@@ -101,10 +101,34 @@ type CandidatePage {
     totalElements: Int!
 }
 
+input ChatInput {
+    id: ID
+    users: [ID]!
+    messages: [MessageInput]
+    chatType: ChatType
+}
+
 type Chat {
     id: ID!
+    title: String
+    chatType: ChatType
+    unreadMessagesCount: Int!
     messages: [Message]
     users: [User]
+    latestMessage: Message
+}
+
+type ChatPage {
+    list: [Chat]
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
+enum ChatType {
+    PRIVATE_CHAT,
+    GROUP_PRIVATE_CHAT,
+    APPLICATION_CHAT
 }
 
 enum ContractType {
@@ -270,8 +294,8 @@ type Message {
     content: String!
     sender: User!
     deliveredAt: DateTime!
-    seenAt: DateTime
     chat: Chat
+    seenBy: [MessageSeenBy]
 }
 
 input MessageInput {
@@ -279,6 +303,17 @@ input MessageInput {
     content: String!
     senderUserId: ID!
     chatId: ID!
+}
+
+input MessageSeenInput {
+    id: ID
+    userId: ID
+}
+
+type MessageSeenBy {
+    user: User!
+    message: Message!
+    seenAt: DateTime!
 }
 
 enum OrganizationSize {
@@ -616,6 +651,9 @@ type Query {
     getRecruiterById(recruiterId: ID!): Recruiter
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
+    getPrivateChatById(chatId: ID!): Chat
+    getPrivateChatsByUserId(userId: ID!): [Chat]
+    getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
 }
 
 type Mutation {
@@ -638,4 +676,8 @@ type Mutation {
     alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: ID!): [Recruiter]
     updateApplication(ApplicationInput: ApplicationInput!): Application
     addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: ID!): Application
+    addMessageToChat(MessageInput: MessageInput!): Chat
+    createChat(ChatInput: ChatInput!): Chat
+    updateChat(ChatInput: ChatInput!): Chat
+    markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
 }

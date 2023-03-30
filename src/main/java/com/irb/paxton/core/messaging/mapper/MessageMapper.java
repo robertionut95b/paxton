@@ -1,6 +1,5 @@
 package com.irb.paxton.core.messaging.mapper;
 
-import com.irb.paxton.core.candidate.mapper.ApplicationProcessStepsMapper;
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatRepository;
 import com.irb.paxton.core.messaging.Message;
@@ -13,7 +12,7 @@ import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring",
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ApplicationProcessStepsMapper.class, ReferenceMapper.class})
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ReferenceMapper.class})
 public abstract class MessageMapper {
 
     @Autowired
@@ -26,6 +25,8 @@ public abstract class MessageMapper {
     @Mapping(target = "sender", source = "messageInput.senderUserId")
     public abstract Message toEntity(MessageInput messageInput);
 
+    @Mapping(target = "chat", source = "messageInput.chatId")
+    @Mapping(target = "sender", source = "messageInput.senderUserId")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract Message partialUpdate(MessageInput messageInput, @MappingTarget Message message);
 

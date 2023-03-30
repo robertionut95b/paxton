@@ -12,7 +12,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
@@ -38,11 +40,19 @@ public class Message extends PaxtonEntity<Long> {
     @NotNull
     private OffsetDateTime deliveredAt = OffsetDateTime.now();
 
-    private OffsetDateTime seenAt;
+    @ManyToMany(mappedBy = "message", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private Set<MessageSeenBy> seenBy = new LinkedHashSet<>();
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
+
+    public Message markAsSeenBy(User user) {
+        Set<MessageSeenBy> currentSeens = this.getSeenBy();
+        currentSeens.add(new MessageSeenBy(user, this, OffsetDateTime.now()));
+        this.setSeenBy(currentSeens);
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

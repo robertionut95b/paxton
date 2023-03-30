@@ -172,3 +172,61 @@ mutation AddMessageToApplicationChat(
     id
   }
 }
+
+mutation CreateChat($ChatInput: ChatInput!) {
+  createChat(ChatInput: $ChatInput) {
+    id
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+  }
+}
+
+mutation AddMessageToChat($MessageInput: MessageInput!) {
+  addMessageToChat(MessageInput: $MessageInput) {
+    id
+    latestMessage {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+  }
+}
+
+mutation MarkAllMessagesAsSeen($chatId: ID!, $userId: ID!) {
+  markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
+    id
+    messages {
+      id
+      deliveredAt
+      seenBy {
+        user {
+          id
+        }
+        seenAt
+      }
+    }
+  }
+}
+
+mutation UpdateChat($ChatInput: ChatInput!) {
+  updateChat(ChatInput: $ChatInput) {
+    id
+  }
+}

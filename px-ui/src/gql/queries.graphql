@@ -418,7 +418,6 @@ query GetApplicationById($applicationId: ID!) {
           }
         }
         deliveredAt
-        seenAt
       }
     }
   }
@@ -581,5 +580,108 @@ query GetApplicationsForJobIdCountBySteps($jobId: ID!) {
   getApplicationsForJobIdCountBySteps(jobId: $jobId) {
     applicationsCount
     stepTitle
+  }
+}
+
+query GetPrivateChatById($chatId: ID!) {
+  getPrivateChatById(chatId: $chatId) {
+    id
+    title
+    unreadMessagesCount
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+    }
+  }
+}
+
+query GetPrivateChatsByUserId($userId: ID!) {
+  getPrivateChatsByUserId(userId: $userId) {
+    id
+    title
+    unreadMessagesCount
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
+  getChatAdvSearch(searchQuery: $searchQuery) {
+    list {
+      id
+      unreadMessagesCount
+      messages {
+        id
+        content
+        sender {
+          id
+          username
+          userProfile {
+            photography
+          }
+        }
+        deliveredAt
+      }
+      users {
+        id
+        username
+        firstName
+        lastName
+        userProfile {
+          photography
+        }
+      }
+      latestMessage {
+        id
+        content
+        deliveredAt
+        sender {
+          firstName
+          lastName
+        }
+      }
+    }
+    page
+    totalPages
+    totalElements
   }
 }

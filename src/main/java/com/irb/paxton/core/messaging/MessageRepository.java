@@ -1,6 +1,6 @@
 package com.irb.paxton.core.messaging;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 
-public interface MessageRepository extends JpaRepository<Message, Long> {
+public interface MessageRepository extends AbstractRepository<Message, Long> {
 }

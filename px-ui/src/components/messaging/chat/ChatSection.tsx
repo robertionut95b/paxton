@@ -13,9 +13,14 @@ type ChatSectionProps = {
     >["messages"]
   >;
   currentUser: User | null;
+  height?: string | number;
 };
 
-const ChatSection = ({ messages, currentUser }: ChatSectionProps) => {
+const ChatSection = ({
+  messages,
+  currentUser,
+  height = 320,
+}: ChatSectionProps) => {
   const viewport = useRef<HTMLDivElement>(null);
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
@@ -34,7 +39,7 @@ const ChatSection = ({ messages, currentUser }: ChatSectionProps) => {
 
   return (
     <ScrollArea
-      h={320}
+      h={height}
       className="px-chat-wrapper"
       scrollbarSize={6}
       viewportRef={viewport}
@@ -95,6 +100,7 @@ const ChatSection = ({ messages, currentUser }: ChatSectionProps) => {
                 >
                   {intlFormatDistance(new Date(m.deliveredAt), new Date(), {
                     numeric: "always",
+                    style: "short",
                   })}
                 </Text>
               </Group>

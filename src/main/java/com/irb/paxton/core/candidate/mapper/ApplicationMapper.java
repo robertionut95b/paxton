@@ -9,6 +9,7 @@ import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingRepository;
 import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.messaging.Chat;
+import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.process.ProcessSteps;
@@ -59,7 +60,7 @@ public abstract class ApplicationMapper {
         Candidate candidate = this.mapCandidate(applicationInput.getUserId());
         Recruiter recruiter = this.mapJobListing(applicationInput.getJobListingId()).getRecruiter();
         Collection<User> chatUsers = new ArrayList<>(List.of(candidate.getUser(), recruiter.getUser()));
-        return new Chat(null, chatUsers);
+        return new Chat(null, chatUsers, ChatType.APPLICATION_CHAT);
     }
 
     @Named("mapProcessStep")

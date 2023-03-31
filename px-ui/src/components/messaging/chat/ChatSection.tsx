@@ -1,5 +1,8 @@
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
-import { GetApplicationByIdQuery } from "@gql/generated";
+import {
+  GetApplicationByIdQuery,
+  GetPrivateChatByIdQuery,
+} from "@gql/generated";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import { Avatar, Group, ScrollArea, Stack, Text } from "@mantine/core";
@@ -7,11 +10,17 @@ import { intlFormatDistance } from "date-fns";
 import { useEffect, useRef } from "react";
 
 type ChatSectionProps = {
-  messages: NonNullable<
-    NonNullable<
-      NonNullable<GetApplicationByIdQuery["getApplicationById"]>["chat"]
-    >["messages"]
-  >;
+  messages:
+    | NonNullable<
+        NonNullable<
+          NonNullable<GetApplicationByIdQuery["getApplicationById"]>["chat"]
+        >["messages"]
+      >
+    | NonNullable<
+        NonNullable<
+          NonNullable<GetPrivateChatByIdQuery["getPrivateChatById"]>["messages"]
+        >
+      >;
   currentUser: User | null;
   height?: string | number;
 };
@@ -24,9 +33,15 @@ const ChatSection = ({
   const viewport = useRef<HTMLDivElement>(null);
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
-  const displayInitials =
-    currentUser &&
-    `${currentUser.firstName[0].toUpperCase()}${currentUser.lastName[0].toUpperCase()}`;
+
+  const displayInitials = (
+    fallback: string,
+    firstName?: string,
+    lastName?: string
+  ) =>
+    firstName && lastName
+      ? `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
+      : fallback?.[0].toUpperCase();
 
   useEffect(() => {
     if (viewport.current) {
@@ -66,7 +81,11 @@ const ChatSection = ({
             size="md"
             title={m?.sender.username}
           >
-            {displayInitials}
+            {displayInitials(
+              m?.sender.username ?? "",
+              m?.sender.firstName,
+              m?.sender.lastName
+            )}
           </Avatar>
           <Stack
             p="xs"

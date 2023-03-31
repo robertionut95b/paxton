@@ -60,8 +60,9 @@ public class ChatService extends AbstractService<Chat, Long> {
                 .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
     }
 
-    public Collection<Chat> findPrivateChatsByUserId(Long userId) {
-        return this.chatRepository.findByUsers_IdAndChatType(userId, ChatType.PRIVATE_CHAT);
+    public Collection<Chat> findPrivateChatsByUserId(Long userId, String msgSearch) {
+        return msgSearch == null ? this.chatRepository.findByUsers_IdAndChatType(userId, ChatType.PRIVATE_CHAT)
+                : this.chatRepository.findByUsers_IdAndChatTypeAndMessages_ContentContainsIgnoreCase(userId, ChatType.PRIVATE_CHAT, msgSearch);
     }
 
     @Transactional

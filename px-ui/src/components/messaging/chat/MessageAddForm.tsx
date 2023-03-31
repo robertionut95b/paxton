@@ -1,8 +1,24 @@
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import {
+  FaceSmileIcon,
+  PaperClipIcon,
+  PhotoIcon,
+} from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
-import { Avatar, Button, Group, Text, Textarea } from "@mantine/core";
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Group,
+  Popover,
+  Text,
+  Textarea,
+} from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useCallback, useState } from "react";
+import { useDarkMode } from "usehooks-ts";
 import { z } from "zod";
 
 type MessageAddFormProps = {
@@ -21,11 +37,13 @@ type FormValues = {
 const MessageAddForm = ({
   currentUser,
   currentUserAvatar,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSubmit,
   maxLength = 250,
   disabled = false,
 }: MessageAddFormProps) => {
   const [content, setContent] = useState<string>("");
+  const { isDarkMode } = useDarkMode();
 
   const displayInitials =
     currentUser &&
@@ -54,7 +72,10 @@ const MessageAddForm = ({
 
   const handleSubmit = async (values: (typeof form)["values"]) => {
     onSubmit(values);
-    if (form.isValid()) form.reset();
+    if (form.isValid()) {
+      form.reset();
+      setContent("");
+    }
   };
 
   return (
@@ -78,25 +99,67 @@ const MessageAddForm = ({
           w={"100%"}
           label="Message"
           withAsterisk
-          placeholder="Add a message in this chat"
+          placeholder="Type in a message..."
           {...form.getInputProps("content")}
           value={content}
           onChange={changeMsgCb}
         />
-        <Group position="right">
-          <Text
-            size="xs"
-            color={!form.errors.description ? "dimmed" : "red"}
-            mt={4}
-          >
-            {content.length}/{maxLength}
-          </Text>
-        </Group>
       </Group>
-      <Group position="right" mt="sm">
-        <Button type="submit" disabled={content.length === 0 || disabled}>
-          Send
-        </Button>
+      <Group mt="sm" position="apart">
+        <Group ml={70} spacing="xs">
+          <Popover withArrow shadow="md">
+            <Popover.Target>
+              <ActionIcon>
+                <FaceSmileIcon width={26} />
+              </ActionIcon>
+            </Popover.Target>
+            <Popover.Dropdown p={0}>
+              <Picker
+                theme={isDarkMode ? "dark" : "light"}
+                data={data}
+                // @ts-expect-error(missing types)
+                onEmojiSelect={({ unified }) => {
+                  const newContent = content.concat(
+                    String.fromCodePoint(parseInt(unified, 16))
+                  );
+                  setContent(newContent);
+                  form.setFieldValue("content", newContent);
+                }}
+                previewEmoji={false}
+              />
+            </Popover.Dropdown>
+          </Popover>
+          <Popover withArrow shadow="md" disabled>
+            <Popover.Target>
+              <ActionIcon disabled>
+                <PhotoIcon width={26} />
+              </ActionIcon>
+            </Popover.Target>
+            <Popover.Dropdown p={0}></Popover.Dropdown>
+          </Popover>
+          <Popover withArrow shadow="md" disabled>
+            <Popover.Target>
+              <ActionIcon disabled>
+                <PaperClipIcon width={26} />
+              </ActionIcon>
+            </Popover.Target>
+            <Popover.Dropdown p={0}></Popover.Dropdown>
+          </Popover>
+        </Group>
+        <Group>
+          <Group position="right">
+            <Text
+              size="xs"
+              color={!form.errors.description ? "dimmed" : "red"}
+              mt={4}
+            >
+              {content.length}/{maxLength}
+            </Text>
+          </Group>
+          <Button type="submit" disabled={content.length === 0 || disabled}>
+            Send
+          </Button>
+        </Group>
       </Group>
     </form>
   );

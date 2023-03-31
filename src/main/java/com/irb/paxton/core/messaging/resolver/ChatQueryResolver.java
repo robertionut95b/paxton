@@ -20,10 +20,10 @@ public class ChatQueryResolver implements GraphQLQueryResolver {
         return chatService.getPrivateChatById(chatId);
     }
 
-    public Collection<Chat> getPrivateChatsByUserId(Long userId) {
-        return chatService.findPrivateChatsByUserId(userId);
+    public Collection<Chat> getPrivateChatsByUserId(Long userId, String msgSearch) {
+        return chatService.findPrivateChatsByUserId(userId, msgSearch);
     }
-    
+
     public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
         return chatService.advSearch(searchRequest);
     }

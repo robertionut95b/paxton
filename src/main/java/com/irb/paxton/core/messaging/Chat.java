@@ -81,6 +81,7 @@ public class Chat extends PaxtonEntity<Long> {
         this.messages
                 .stream()
                 .filter(m -> !m.getSender().getUsername().equals(user.getUsername()))
+                .filter(m -> m.getSeenBy().stream().noneMatch(ms -> ms.getUser().getUsername().equals(user.getUsername())))
                 .forEach(m -> this.markMessageAsSeenByUser(m, user));
         return this;
     }

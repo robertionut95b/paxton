@@ -44,6 +44,9 @@ public class User extends PaxtonEntity<Long> {
     @NotNull
     private String lastName;
 
+    @Transient
+    private String displayName;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate birthDate;
@@ -118,6 +121,11 @@ public class User extends PaxtonEntity<Long> {
     public void updateCreatedModifiedBy() {
         this.setCreatedBy(this.getUsername());
         this.setModifiedBy(this.getUsername());
+    }
+
+    @PostLoad
+    public void onLoad() {
+        this.displayName = this.getDisplayName();
     }
 
     public String getUserRolesAsString() {

@@ -14,6 +14,8 @@
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.1.2",
+    "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.10.6",
     "@formkit/auto-animate": "^1.0.0-beta.6",
     "@heroicons/react": "^2.0.16",
@@ -29,6 +31,7 @@
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.7",
     "embla-carousel-react": "^7.0.9",
+    "emoji-mart": "^5.5.2",
     "filepond": "^4.30.4",
     "filepond-plugin-file-validate-type": "^1.2.8",
     "filepond-plugin-image-crop": "^2.0.6",

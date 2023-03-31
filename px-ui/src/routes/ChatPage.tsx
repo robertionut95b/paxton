@@ -22,14 +22,20 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useSearchParams } from "react-router-dom";
+import { useDebounce } from "usehooks-ts";
 
 const ChatPage = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
+  const debouncedSearch = useDebounce<string>(search, 1000);
   const { data: chatData, isLoading } = useGetPrivateChatsByUserIdQuery(
     graphqlRequestClient,
     {
       userId: user?.userId as string,
+      msgSearch: debouncedSearch.length > 2 ? debouncedSearch : undefined,
     },
     {
       select: (data) => ({
@@ -47,6 +53,17 @@ const ChatPage = () => {
   );
 
   const chatLines = chatData?.getPrivateChatsByUserId ?? [];
+
+  useEffect(() => {
+    if (search) {
+      const currentSearchParams = searchParams;
+      currentSearchParams.set("m", search);
+      setSearchParams(currentSearchParams);
+    } else {
+      searchParams.delete("m");
+      setSearchParams(searchParams);
+    }
+  }, [search, searchParams, setSearchParams]);
 
   return (
     <Grid justify={"center"}>
@@ -73,6 +90,8 @@ const ChatPage = () => {
               <Stack>
                 <TextInput
                   placeholder="Search messages"
+                  value={search}
+                  onChange={(e) => setSearch(e.currentTarget.value)}
                   icon={<MagnifyingGlassIcon width={16} />}
                 />
               </Stack>

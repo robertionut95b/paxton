@@ -1,6 +1,7 @@
 package com.irb.paxton.core.messaging;
 
 import com.irb.paxton.core.model.PaxtonEntity;
+import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,9 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
@@ -43,6 +42,9 @@ public class Message extends PaxtonEntity<Long> {
     @ManyToMany(mappedBy = "message", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<MessageSeenBy> seenBy = new LinkedHashSet<>();
 
+    @Transient
+    private OffsetDateTime seenAt = null;
+
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
@@ -52,6 +54,20 @@ public class Message extends PaxtonEntity<Long> {
         currentSeens.add(new MessageSeenBy(user, this, OffsetDateTime.now()));
         this.setSeenBy(currentSeens);
         return this;
+    }
+
+    @PostLoad
+    public void onLoad() {
+        Optional<String> usernameOpt = SecurityUtils.getCurrentUserLogin();
+        if (usernameOpt.isPresent()) {
+            String username = usernameOpt.get();
+            this.seenAt = this.seenBy.stream()
+                    .filter(ms -> ms.getMessage().getId().equals(this.getId()))
+                    .filter(ms -> ms.getUser().getUsername().equals(username))
+                    .max(Comparator.comparing(MessageSeenBy::getSeenAt))
+                    .map(MessageSeenBy::getSeenAt)
+                    .orElse(null);
+        }
     }
 
     @Override

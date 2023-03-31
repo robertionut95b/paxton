@@ -296,6 +296,7 @@ type Message {
     deliveredAt: DateTime!
     chat: Chat
     seenBy: [MessageSeenBy]
+    seenAt: DateTime
 }
 
 input MessageInput {
@@ -534,6 +535,7 @@ type User {
     id: ID!
     firstName: String!
     lastName: String!
+    displayName: String!
     birthDate: Date
     email: String!
     username: String!
@@ -652,7 +654,7 @@ type Query {
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
     getPrivateChatById(chatId: ID!): Chat
-    getPrivateChatsByUserId(userId: ID!): [Chat]
+    getPrivateChatsByUserId(userId: ID!, msgSearch: String): [Chat]
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
 }
 

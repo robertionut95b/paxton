@@ -413,6 +413,8 @@ query GetApplicationById($applicationId: ID!) {
         sender {
           id
           username
+          firstName
+          lastName
           userProfile {
             photography
           }
@@ -594,11 +596,14 @@ query GetPrivateChatById($chatId: ID!) {
       sender {
         id
         username
+        firstName
+        lastName
         userProfile {
           photography
         }
       }
       deliveredAt
+      seenAt
     }
     users {
       id
@@ -618,8 +623,8 @@ query GetPrivateChatById($chatId: ID!) {
   }
 }
 
-query GetPrivateChatsByUserId($userId: ID!) {
-  getPrivateChatsByUserId(userId: $userId) {
+query GetPrivateChatsByUserId($userId: ID!, $msgSearch: String) {
+  getPrivateChatsByUserId(userId: $userId, msgSearch: $msgSearch) {
     id
     title
     unreadMessagesCount
@@ -655,6 +660,8 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
         sender {
           id
           username
+          firstName
+          lastName
           userProfile {
             photography
           }

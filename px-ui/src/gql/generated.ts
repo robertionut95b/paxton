@@ -341,6 +341,7 @@ export type Message = {
   content: Scalars['String'];
   deliveredAt: Scalars['DateTime'];
   id: Scalars['ID'];
+  seenAt?: Maybe<Scalars['DateTime']>;
   seenBy?: Maybe<Array<Maybe<MessageSeenBy>>>;
   sender: User;
 };
@@ -744,6 +745,7 @@ export type QueryGetPrivateChatByIdArgs = {
 
 
 export type QueryGetPrivateChatsByUserIdArgs = {
+  msgSearch?: InputMaybe<Scalars['String']>;
   userId: Scalars['ID'];
 };
 
@@ -1173,7 +1175,7 @@ export type GetApplicationByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null, chat: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } } | null };
+export type GetApplicationByIdQuery = { __typename?: 'Query', getApplicationById?: { __typename?: 'Application', id: string, status: ApplicationStatus, dateOfApplication: Date, applicantProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, profileTitle: string, photography?: string | null }, candidate: { __typename?: 'Candidate', user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, birthDate?: Date | null, email: string } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: string, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', id: string, order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: string, organization: { __typename?: 'Organization', id: string, slugName: string } }, applicationDocuments?: Array<{ __typename?: 'ApplicationDocument', id: string, document: { __typename?: 'Document', name: string } } | null> | null, chat: { __typename?: 'Chat', id: string, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } } | null };
 
 export type GetAllApplicationsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1234,10 +1236,11 @@ export type GetPrivateChatByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'Chat', id: string, title?: string | null, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date } | null } | null };
+export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'Chat', id: string, title?: string | null, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date } | null } | null };
 
 export type GetPrivateChatsByUserIdQueryVariables = Exact<{
   userId: Scalars['ID'];
+  msgSearch?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -1248,7 +1251,7 @@ export type GetChatAdvSearchQueryVariables = Exact<{
 }>;
 
 
-export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
+export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -2542,6 +2545,8 @@ export const GetApplicationByIdDocument = `
         sender {
           id
           username
+          firstName
+          lastName
           userProfile {
             photography
           }
@@ -2921,11 +2926,14 @@ export const GetPrivateChatByIdDocument = `
       sender {
         id
         username
+        firstName
+        lastName
         userProfile {
           photography
         }
       }
       deliveredAt
+      seenAt
     }
     users {
       id
@@ -2967,8 +2975,8 @@ useGetPrivateChatByIdQuery.getKey = (variables: GetPrivateChatByIdQueryVariables
 
 useGetPrivateChatByIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers);
 export const GetPrivateChatsByUserIdDocument = `
-    query GetPrivateChatsByUserId($userId: ID!) {
-  getPrivateChatsByUserId(userId: $userId) {
+    query GetPrivateChatsByUserId($userId: ID!, $msgSearch: String) {
+  getPrivateChatsByUserId(userId: $userId, msgSearch: $msgSearch) {
     id
     title
     unreadMessagesCount
@@ -3026,6 +3034,8 @@ export const GetChatAdvSearchDocument = `
         sender {
           id
           username
+          firstName
+          lastName
           userProfile {
             photography
           }

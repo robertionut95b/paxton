@@ -37,6 +37,7 @@ export const queryClient = new QueryClient({
               autoClose: 5000,
               icon: <ShieldExclamationIcon width={20} />,
             });
+            return;
           }
         }
         showNotification({

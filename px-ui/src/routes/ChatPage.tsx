@@ -11,6 +11,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   ActionIcon,
+  Center,
   Divider,
   Grid,
   Group,
@@ -23,11 +24,12 @@ import {
   Title,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
 const ChatPage = () => {
   const { user } = useAuth();
+  const { chatId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
   const debouncedSearch = useDebounce<string>(search, 1000);
@@ -96,7 +98,14 @@ const ChatPage = () => {
                 />
               </Stack>
               <ScrollArea h={"75vh"} offsetScrollbars>
-                <ShowIfElse if={!isLoading} else={<Loader mt="sm" size="sm" />}>
+                <ShowIfElse
+                  if={!isLoading}
+                  else={
+                    <Center mt="xs">
+                      <Loader mt="sm" size="sm" />
+                    </Center>
+                  }
+                >
                   <ShowIfElse
                     if={chatLines.length > 0}
                     else={
@@ -107,7 +116,7 @@ const ChatPage = () => {
                   >
                     {chatLines.map((c) => (
                       <div key={c?.id}>
-                        <ChatLine chat={c} />
+                        <ChatLine chat={c} active={chatId === c.id} />
                       </div>
                     ))}
                   </ShowIfElse>

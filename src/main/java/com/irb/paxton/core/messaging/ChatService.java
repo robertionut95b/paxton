@@ -12,6 +12,7 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -55,18 +56,20 @@ public class ChatService extends AbstractService<Chat, Long> {
         return this.create(chatMapper.toEntity(chatInput));
     }
 
+    @PreAuthorize("@chatSecurityService.isCurrentUserChatMember(#chatId)")
     public Chat getPrivateChatById(Long chatId) {
         return this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
                 .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
     }
 
     public Collection<Chat> findPrivateChatsByUserId(Long userId, String msgSearch) {
-        return msgSearch == null ? this.chatRepository.findByUsers_IdAndChatType(userId, ChatType.PRIVATE_CHAT)
+        return msgSearch == null ? this.chatRepository.findByUsers_IdAndChatTypeOrderByModifiedAtDesc(userId, ChatType.PRIVATE_CHAT)
                 : this.chatRepository.findByUsers_IdAndChatTypeAndMessages_ContentContainsIgnoreCase(userId, ChatType.PRIVATE_CHAT, msgSearch);
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PostAuthorize("@chatSecurityService.isCurrentUserChatMember(returnObject.id)")
     public Chat updateChat(ChatInput chatInput) {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);

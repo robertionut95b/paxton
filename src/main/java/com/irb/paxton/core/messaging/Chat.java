@@ -95,7 +95,7 @@ public class Chat extends PaxtonEntity<Long> {
         if (usernameOpt.isPresent()) {
             String username = usernameOpt.get();
             this.unreadMessagesCount = messages.stream()
-                    .filter(m -> !m.getSender().getUsername().equals(username))
+                    .filter(m -> m.getSender() != null && !m.getSender().getUsername().equals(username))
                     .filter(m -> m.getSeenBy().stream().noneMatch(ms -> ms.getUser().getUsername().equals(username)))
                     .count();
         } else this.unreadMessagesCount = 0;

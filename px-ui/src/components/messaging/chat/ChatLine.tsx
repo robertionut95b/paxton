@@ -11,9 +11,10 @@ type ChatLineProps = {
   chat: NonNullable<
     NonNullable<GetPrivateChatsByUserIdQuery>["getPrivateChatsByUserId"]
   >[number];
+  active?: boolean;
 };
 
-const ChatLine = ({ chat: c }: ChatLineProps) => {
+const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
   const avatar =
     (c?.users?.length ?? 0) > 1 ? (
       <Avatar.Group spacing={20}>
@@ -62,7 +63,9 @@ const ChatLine = ({ chat: c }: ChatLineProps) => {
       <Grid
         my="sm"
         p="xs"
-        className="hover:cursor-pointer hover:bg-slate-50"
+        className={`hover:cursor-pointer hover:bg-slate-50 ${
+          active && "bg-slate-100"
+        }`}
         grow
         gutter={2}
         align="center"

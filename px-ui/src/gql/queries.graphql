@@ -415,6 +415,7 @@ query GetApplicationById($applicationId: ID!) {
           username
           firstName
           lastName
+          displayName
           userProfile {
             photography
           }
@@ -590,21 +591,6 @@ query GetPrivateChatById($chatId: ID!) {
     id
     title
     unreadMessagesCount
-    messages {
-      id
-      content
-      sender {
-        id
-        username
-        firstName
-        lastName
-        userProfile {
-          photography
-        }
-      }
-      deliveredAt
-      seenAt
-    }
     users {
       id
       username
@@ -686,6 +672,30 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
           lastName
         }
       }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
+query GetMessagesPaginated($searchQuery: SearchQueryInput) {
+  getMessagesPaginated(searchQuery: $searchQuery) {
+    list {
+      id
+      content
+      sender {
+        id
+        username
+        firstName
+        lastName
+        displayName
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+      seenAt
     }
     page
     totalPages

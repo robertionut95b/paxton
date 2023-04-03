@@ -6,7 +6,7 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { ActionIcon, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import groupBy from "lodash.groupby";
+import groupBy from "lodash/groupBy";
 import { NavLink } from "react-router-dom";
 
 export default function UserResume({
@@ -18,7 +18,7 @@ export default function UserResume({
 }) {
   const studies = userProfile?.studies ?? [];
   const experiences =
-    groupBy(userProfile?.experiences, "organization.id") ?? [];
+    groupBy(userProfile?.experiences ?? [], "organization.id") ?? [];
 
   const placeholder = "No information was provided";
 

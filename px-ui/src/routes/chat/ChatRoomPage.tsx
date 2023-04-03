@@ -1,18 +1,25 @@
 import { useAuth } from "@auth/useAuth";
 import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
+import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
+  FieldType,
+  Operator,
+  SortDirection,
   useAddMessageToChatMutation,
   useGetPrivateChatByIdQuery,
   useGetPrivateChatsByUserIdQuery,
+  useInfiniteGetMessagesPaginatedQuery,
   useMarkAllMessagesAsSeenMutation,
 } from "@gql/generated";
+import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Avatar,
   Box,
+  Button,
   Center,
   Divider,
   Group,
@@ -21,18 +28,63 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import AccessDenied from "@routes/AccessDenied";
 import { useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
 import { intlFormatDistance } from "date-fns";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useDebounce } from "usehooks-ts";
+
+const PAGE_SIZE = 10;
 
 const ChatRoomPage = () => {
   const { chatId } = useParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
+  const debouncedSearch = useDebounce<string>(search, 1000);
 
-  const { data: chatData, isInitialLoading } = useGetPrivateChatByIdQuery(
+  const searchQuery = useMemo(
+    () => ({
+      filters: [
+        {
+          key: "chat.id",
+          value: chatId as string,
+          operator: Operator.Equal,
+          fieldType: FieldType.Long,
+        },
+        ...(debouncedSearch
+          ? [
+              {
+                key: "content",
+                value: debouncedSearch ?? "",
+                operator: Operator.Like,
+                fieldType: FieldType.Char,
+              },
+            ]
+          : []),
+      ],
+      sorts: [
+        {
+          direction: SortDirection.Desc,
+          key: "id",
+        },
+      ],
+      page: 0,
+      size: PAGE_SIZE,
+    }),
+    [chatId, debouncedSearch]
+  );
+
+  const {
+    data: chatData,
+    isInitialLoading,
+    error,
+    isError,
+  } = useGetPrivateChatByIdQuery(
     graphqlRequestClient,
     {
       chatId: chatId as string,
@@ -49,14 +101,42 @@ const ChatRoomPage = () => {
     }
   );
 
+  const {
+    data: messagesData,
+    isInitialLoading: isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+  } = useInfiniteGetMessagesPaginatedQuery(
+    "searchQuery",
+    graphqlRequestClient,
+    {
+      searchQuery,
+    },
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        const offset: number = (allPages.length ?? 1) * PAGE_SIZE + 1;
+        const totalItems = lastPage.getMessagesPaginated?.totalElements ?? 0;
+        const currPage = (lastPage.getMessagesPaginated?.page ?? 0) + 1;
+        if (offset < totalItems)
+          return {
+            searchQuery: {
+              ...searchQuery,
+              page: currPage,
+            },
+          };
+      },
+    }
+  );
+
   const { mutate: addMessageToChat } = useAddMessageToChatMutation(
     graphqlRequestClient,
     {
       onSuccess: (data) => {
         if (data.addMessageToChat) {
           queryClient.invalidateQueries(
-            useGetPrivateChatByIdQuery.getKey({
-              chatId: chatId as string,
+            useInfiniteGetMessagesPaginatedQuery.getKey({
+              searchQuery,
             })
           );
           queryClient.invalidateQueries(
@@ -82,8 +162,15 @@ const ChatRoomPage = () => {
     }
   );
 
-  const messages = chatData?.getPrivateChatById?.messages ?? [];
   const users = chatData?.getPrivateChatById?.users ?? [];
+  const messages =
+    messagesData?.pages
+      .flatMap((p) => p.getMessagesPaginated?.list ?? [])
+      .reverse() ?? [];
+
+  useEffect(() => {
+    setSearch(searchParams.get("m") ?? "");
+  }, [location, searchParams]);
 
   useEffect(() => {
     if ((chatData?.getPrivateChatById.unreadMessagesCount ?? 0) > 0) {
@@ -109,6 +196,15 @@ const ChatRoomPage = () => {
   };
 
   if (isInitialLoading) return <Loader size="sm" />;
+
+  if (
+    isError &&
+    (error as GraphqlApiResponse)?.response.errors?.[0].message
+      ?.toLocaleLowerCase()
+      .includes("access is denied")
+  ) {
+    return <AccessDenied />;
+  }
 
   if (!chatData)
     return (
@@ -201,7 +297,27 @@ const ChatRoomPage = () => {
           </Stack>
         </Group>
       </Group>
-      <ChatSection height={720} currentUser={user} messages={messages} />
+      <ShowIfElse
+        if={!isMessagesLoading}
+        else={
+          <Center>
+            <Loader size="sm" variant="dots" />
+          </Center>
+        }
+      >
+        <ShowIf if={hasNextPage}>
+          <Button
+            compact
+            mt="xs"
+            onClick={() => fetchNextPage()}
+            loading={isFetching}
+            variant="light"
+          >
+            Load more
+          </Button>
+        </ShowIf>
+        <ChatSection height={720} currentUser={user} messages={messages} />
+      </ShowIfElse>
       <Box>
         <Divider my={"xs"} />
         <MessageAddForm

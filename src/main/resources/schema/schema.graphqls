@@ -306,6 +306,20 @@ input MessageInput {
     chatId: ID!
 }
 
+type MessageSlice {
+    list: [Message],
+    isFirst: Boolean
+    isLast: Boolean
+    hasNext: Boolean
+}
+
+type MessagePage {
+    list: [Message],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 input MessageSeenInput {
     id: ID
     userId: ID
@@ -656,6 +670,8 @@ type Query {
     getPrivateChatById(chatId: ID!): Chat
     getPrivateChatsByUserId(userId: ID!, msgSearch: String): [Chat]
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
+    getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
+    getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
 }
 
 type Mutation {

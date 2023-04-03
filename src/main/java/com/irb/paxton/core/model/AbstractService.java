@@ -3,10 +3,12 @@ package com.irb.paxton.core.model;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
+import com.irb.paxton.core.search.SlicedResponse;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -53,5 +55,14 @@ public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Ser
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
         Page<T> results = this.repository.findAll(searchSpecification, pageable);
         return new PaginatedResponse<>(results, searchRequest.getPage(), results.getTotalPages(), results.getTotalElements());
+    }
+
+    @Override
+    public SlicedResponse<T> slicedSearch(SearchRequest searchRequest) {
+        if (searchRequest == null) searchRequest = new SearchRequest();
+        SearchSpecification<T> searchSpecification = new SearchSpecification<>(searchRequest);
+        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
+        Slice<T> results = this.repository.findAll(searchSpecification, pageable);
+        return new SlicedResponse<>(results, results.isFirst(), results.isLast(), results.hasNext());
     }
 }

@@ -648,6 +648,7 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
           username
           firstName
           lastName
+          displayName
           userProfile {
             photography
           }

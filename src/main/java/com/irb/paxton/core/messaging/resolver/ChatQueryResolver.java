@@ -25,6 +25,6 @@ public class ChatQueryResolver implements GraphQLQueryResolver {
     }
 
     public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
-        return chatService.advSearch(searchRequest);
+        return chatService.getChatAdvSearch(searchRequest);
     }
 }

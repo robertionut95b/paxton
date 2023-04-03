@@ -7,6 +7,7 @@ import com.irb.paxton.core.messaging.mapper.MessageMapper;
 import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
+import com.irb.paxton.core.search.*;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
@@ -84,5 +85,11 @@ public class ChatService extends AbstractService<Chat, Long> {
                 .orElseThrow(() -> new UserNotFoundException("User by id %s does not exist".formatted(userId)));
         chat.markAllMessagesAsSeenByUser(user);
         return this.chatRepository.save(chat);
+    }
+
+    @PostAuthorize("@chatSecurityService.isChatMember(authentication, returnObject)")
+    public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
+        searchRequest.getFilters().add(new FilterRequest("chatType", Operator.EQUAL, FieldType.INTEGER, ChatType.PRIVATE_CHAT.ordinal(), null, null));
+        return super.advSearch(searchRequest);
     }
 }

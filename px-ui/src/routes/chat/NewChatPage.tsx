@@ -59,6 +59,12 @@ const NewChatPage = () => {
             operator: Operator.Equal,
             value: s,
           })),
+          {
+            fieldType: FieldType.Long,
+            key: "users.id",
+            operator: Operator.Equal,
+            value: String(user?.userId),
+          },
         ],
       },
     },

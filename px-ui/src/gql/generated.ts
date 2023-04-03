@@ -1280,7 +1280,7 @@ export type GetChatAdvSearchQueryVariables = Exact<{
 }>;
 
 
-export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
+export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
 
 export type GetMessagesPaginatedQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -3558,6 +3558,7 @@ export const GetChatAdvSearchDocument = `
           username
           firstName
           lastName
+          displayName
           userProfile {
             photography
           }

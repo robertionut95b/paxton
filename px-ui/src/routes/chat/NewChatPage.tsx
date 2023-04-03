@@ -88,7 +88,7 @@ const NewChatPage = () => {
   );
 
   const { mutateAsync: createChat, isSuccess: isSuccessCreateChat } =
-    useCreateChatMutation(graphqlRequestClient, {});
+    useCreateChatMutation(graphqlRequestClient);
 
   const { mutate: addMessageToChat } = useAddMessageToChatMutation(
     graphqlRequestClient,
@@ -131,7 +131,7 @@ const NewChatPage = () => {
           chatType: ChatType.PrivateChat,
         },
       });
-      if (data)
+      if (data) {
         addMessageToChat({
           MessageInput: {
             chatId: data.createChat?.id as string,
@@ -139,6 +139,13 @@ const NewChatPage = () => {
             senderUserId: values.senderUserId as string,
           },
         });
+        navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
+        queryClient.invalidateQueries(
+          useGetPrivateChatsByUserIdQuery.getKey({
+            userId: user?.userId as string,
+          })
+        );
+      }
     }
   };
 

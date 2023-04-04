@@ -10,7 +10,7 @@ import {
   SortDirection,
   useAddMessageToChatMutation,
   useGetPrivateChatByIdQuery,
-  useGetPrivateChatsByUserIdQuery,
+  useInfiniteGetChatLinesAdvSearchQuery,
   useInfiniteGetMessagesPaginatedQuery,
   useMarkAllMessagesAsSeenMutation,
 } from "@gql/generated";
@@ -46,6 +46,35 @@ const ChatRoomPage = () => {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
   const debouncedSearch = useDebounce<string>(search, 1000);
+
+  const chatPageSearchQuery = {
+    filters: [
+      {
+        key: "users.id",
+        value: user?.userId as string,
+        operator: Operator.Equal,
+        fieldType: FieldType.Long,
+      },
+      ...(searchParams.get("m")
+        ? [
+            {
+              key: "messages.content",
+              value: searchParams.get("m") ?? "",
+              operator: Operator.Like,
+              fieldType: FieldType.Char,
+            },
+          ]
+        : []),
+    ],
+    sorts: [
+      {
+        direction: SortDirection.Desc,
+        key: "modifiedAt",
+      },
+    ],
+    page: 0,
+    size: PAGE_SIZE,
+  };
 
   const searchQuery = useMemo(
     () => ({
@@ -115,7 +144,7 @@ const ChatRoomPage = () => {
     },
     {
       getNextPageParam: (lastPage, allPages) => {
-        const offset: number = (allPages.length ?? 1) * PAGE_SIZE + 1;
+        const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
         const totalItems = lastPage.getMessagesPaginated?.totalElements ?? 0;
         const currPage = (lastPage.getMessagesPaginated?.page ?? 0) + 1;
         if (offset < totalItems)
@@ -140,8 +169,8 @@ const ChatRoomPage = () => {
             })
           );
           queryClient.invalidateQueries(
-            useGetPrivateChatsByUserIdQuery.getKey({
-              userId: user?.userId as string,
+            useInfiniteGetChatLinesAdvSearchQuery.getKey({
+              searchQuery: chatPageSearchQuery,
             })
           );
         }
@@ -154,8 +183,8 @@ const ChatRoomPage = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(
-          useGetPrivateChatsByUserIdQuery.getKey({
-            userId: user?.userId as string,
+          useInfiniteGetChatLinesAdvSearchQuery.getKey({
+            searchQuery: chatPageSearchQuery,
           })
         );
       },
@@ -234,10 +263,11 @@ const ChatRoomPage = () => {
             size="md"
             title={u?.username}
             radius="xl"
+            color="violet.3"
           />
         ))}
         {(users?.length ?? 1) > 2 && (
-          <Avatar size={35} radius="xl">
+          <Avatar size={35} radius="xl" color="violet.3">
             +{(users?.length ?? 1) - 2}
           </Avatar>
         )}

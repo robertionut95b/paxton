@@ -8,8 +8,6 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Collection;
-
 @Controller
 public class ChatQueryResolver implements GraphQLQueryResolver {
 
@@ -18,10 +16,6 @@ public class ChatQueryResolver implements GraphQLQueryResolver {
 
     public Chat getPrivateChatById(Long chatId) {
         return chatService.getPrivateChatById(chatId);
-    }
-
-    public Collection<Chat> getPrivateChatsByUserId(Long userId, String msgSearch) {
-        return chatService.findPrivateChatsByUserId(userId, msgSearch);
     }
 
     public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {

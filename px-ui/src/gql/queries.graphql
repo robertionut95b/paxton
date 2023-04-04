@@ -609,37 +609,12 @@ query GetPrivateChatById($chatId: ID!) {
   }
 }
 
-query GetPrivateChatsByUserId($userId: ID!, $msgSearch: String) {
-  getPrivateChatsByUserId(userId: $userId, msgSearch: $msgSearch) {
-    id
-    title
-    unreadMessagesCount
-    users {
-      id
-      username
-      firstName
-      lastName
-      userProfile {
-        photography
-      }
-    }
-    latestMessage {
-      id
-      content
-      deliveredAt
-      sender {
-        firstName
-        lastName
-      }
-    }
-  }
-}
-
 query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
     list {
       id
       unreadMessagesCount
+      title
       messages {
         id
         content
@@ -655,6 +630,37 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
         }
         deliveredAt
       }
+      users {
+        id
+        username
+        firstName
+        lastName
+        userProfile {
+          photography
+        }
+      }
+      latestMessage {
+        id
+        content
+        deliveredAt
+        sender {
+          firstName
+          lastName
+        }
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
+query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
+  getChatAdvSearch(searchQuery: $searchQuery) {
+    list {
+      id
+      unreadMessagesCount
+      title
       users {
         id
         username

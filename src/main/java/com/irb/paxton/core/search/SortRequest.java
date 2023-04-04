@@ -16,8 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class SortRequest implements Serializable {
 
     @Serial

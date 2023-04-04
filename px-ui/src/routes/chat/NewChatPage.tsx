@@ -10,11 +10,12 @@ import {
   ChatType,
   FieldType,
   Operator,
+  SortDirection,
   useAddMessageToChatMutation,
   useCreateChatMutation,
   useGetAllUsersQuery,
   useGetChatAdvSearchQuery,
-  useGetPrivateChatsByUserIdQuery,
+  useInfiniteGetChatLinesAdvSearchQuery,
 } from "@gql/generated";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -27,16 +28,46 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { PAGE_SIZE } from "@routes/ChatPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const NewChatPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [usrSearch, setUsrSearch] = useState("");
+  const [searchParams] = useSearchParams();
   const [searchUsers, setSearchUsers] = useState<string[]>([]);
+  const chatPageSearchQuery = {
+    filters: [
+      {
+        key: "users.id",
+        value: user?.userId as string,
+        operator: Operator.Equal,
+        fieldType: FieldType.Long,
+      },
+      ...(searchParams.get("m")
+        ? [
+            {
+              key: "messages.content",
+              value: searchParams.get("m") ?? "",
+              operator: Operator.Like,
+              fieldType: FieldType.Char,
+            },
+          ]
+        : []),
+    ],
+    sorts: [
+      {
+        direction: SortDirection.Desc,
+        key: "modifiedAt",
+      },
+    ],
+    page: 0,
+    size: PAGE_SIZE,
+  };
 
   const { data: userData } = useGetAllUsersQuery(
     graphqlRequestClient,
@@ -96,8 +127,8 @@ const NewChatPage = () => {
       onSuccess: (data) => {
         if (isSuccessCreateChat) {
           queryClient.invalidateQueries(
-            useGetPrivateChatsByUserIdQuery.getKey({
-              userId: user?.userId as string,
+            useInfiniteGetChatLinesAdvSearchQuery.getKey({
+              searchQuery: chatPageSearchQuery,
             })
           );
           navigate(`/app/inbox/messages/chat/${data?.addMessageToChat?.id}`);
@@ -141,8 +172,8 @@ const NewChatPage = () => {
         });
         navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
         queryClient.invalidateQueries(
-          useGetPrivateChatsByUserIdQuery.getKey({
-            userId: user?.userId as string,
+          useInfiniteGetChatLinesAdvSearchQuery.getKey({
+            searchQuery: chatPageSearchQuery,
           })
         );
       }
@@ -158,6 +189,11 @@ const NewChatPage = () => {
         chatType: ChatType.PrivateChat,
       },
     });
+    queryClient.invalidateQueries(
+      useInfiniteGetChatLinesAdvSearchQuery.getKey({
+        searchQuery: chatPageSearchQuery,
+      })
+    );
     if (data) navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
   };
 

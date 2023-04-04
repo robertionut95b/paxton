@@ -1,7 +1,7 @@
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
-import { GetPrivateChatsByUserIdQuery } from "@gql/generated";
+import { GetChatLinesAdvSearchQuery } from "@gql/generated";
 import { Avatar, Badge, Flex, Grid, Stack, Text } from "@mantine/core";
 import { truncate } from "@utils/truncateText";
 import { format } from "date-fns";
@@ -9,7 +9,9 @@ import { NavLink } from "react-router-dom";
 
 type ChatLineProps = {
   chat: NonNullable<
-    NonNullable<GetPrivateChatsByUserIdQuery>["getPrivateChatsByUserId"]
+    NonNullable<
+      NonNullable<GetChatLinesAdvSearchQuery>["getChatAdvSearch"]
+    >["list"]
   >[number];
   active?: boolean;
 };
@@ -28,13 +30,9 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
             size={35}
             title={u?.username}
             radius="xl"
+            color="violet.3"
           />
         ))}
-        {(c?.users?.length ?? 1) > 2 && (
-          <Avatar size={35} radius="xl">
-            +{(c?.users?.length ?? 1) - 2}
-          </Avatar>
-        )}
       </Avatar.Group>
     ) : (
       <Avatar
@@ -43,9 +41,10 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
           c?.users?.[0]?.userProfile.photography &&
           `${APP_IMAGES_API_PATH}/100x100/${c?.users?.[0].userProfile.photography}`
         }
-        size={35}
+        size={40}
         title={c?.users?.[0]?.username}
         radius="xl"
+        color="violet.3"
       />
     );
 
@@ -71,13 +70,17 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
         align="center"
         justify="center"
       >
-        <Grid.Col span={1} md={3}>
+        <Grid.Col span={1} md={2}>
           {avatar}
         </Grid.Col>
         <Grid.Col span={9}>
           <Flex>
             <Stack spacing={0} justify="start" className="grow">
-              <Text className="truncate" size={"sm"} weight="bold">
+              <Text
+                className="max-w-full truncate md:max-w-[80px] lg:max-w-[120px] xl:max-w-[150px]"
+                size={"sm"}
+                weight={unreadMessages > 0 ? "bold" : "normal"}
+              >
                 {c?.title ?? chatName}
               </Text>
               <ShowIfElse

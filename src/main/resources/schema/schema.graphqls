@@ -668,7 +668,6 @@ type Query {
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
     getPrivateChatById(chatId: ID!): Chat
-    getPrivateChatsByUserId(userId: ID!, msgSearch: String): [Chat]
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage

@@ -1,8 +1,14 @@
 import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
+import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { useGetPrivateChatsByUserIdQuery } from "@gql/generated";
+import {
+  FieldType,
+  Operator,
+  SortDirection,
+  useInfiniteGetChatLinesAdvSearchQuery,
+} from "@gql/generated";
 import {
   EllipsisHorizontalCircleIcon,
   MagnifyingGlassIcon,
@@ -11,6 +17,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   ActionIcon,
+  Button,
   Center,
   Divider,
   Grid,
@@ -23,9 +30,11 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
+
+export const PAGE_SIZE = 10;
 
 const ChatPage = () => {
   const { user } = useAuth();
@@ -33,28 +42,87 @@ const ChatPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
   const debouncedSearch = useDebounce<string>(search, 1000);
-  const { data: chatData, isLoading } = useGetPrivateChatsByUserIdQuery(
+
+  const searchQuery = useMemo(
+    () => ({
+      filters: [
+        {
+          key: "users.id",
+          value: user?.userId as string,
+          operator: Operator.Equal,
+          fieldType: FieldType.Long,
+        },
+        ...(debouncedSearch
+          ? [
+              {
+                key: "messages.content",
+                value: debouncedSearch ?? "",
+                operator: Operator.Like,
+                fieldType: FieldType.Char,
+              },
+            ]
+          : []),
+      ],
+      sorts: [
+        {
+          direction: SortDirection.Desc,
+          key: "modifiedAt",
+        },
+      ],
+      page: 0,
+      size: PAGE_SIZE,
+    }),
+    [user?.userId, debouncedSearch]
+  );
+
+  const {
+    data: advChatData,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+  } = useInfiniteGetChatLinesAdvSearchQuery(
+    "searchQuery",
     graphqlRequestClient,
     {
-      userId: user?.userId as string,
-      msgSearch: debouncedSearch.length > 2 ? debouncedSearch : undefined,
+      searchQuery,
     },
     {
-      select: (data) => ({
-        ...data,
-        getPrivateChatsByUserId: data.getPrivateChatsByUserId?.map((c) => ({
-          ...c,
-          id: c?.id as string,
-          unreadMessagesCount: c?.unreadMessagesCount ?? 0,
-          users: c?.users?.filter(
-            (u) => String(u?.id) !== String(user?.userId)
-          ),
-        })),
-      }),
+      getNextPageParam: (lastPage, allPages) => {
+        const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
+        const totalItems = lastPage.getChatAdvSearch?.totalElements ?? 0;
+        const currPage = (lastPage.getChatAdvSearch?.page ?? 0) + 1;
+        if (offset < totalItems)
+          return {
+            searchQuery: {
+              ...searchQuery,
+              page: currPage,
+            },
+          };
+      },
     }
   );
 
-  const chatLines = chatData?.getPrivateChatsByUserId ?? [];
+  const chatLines = useMemo(
+    () =>
+      advChatData?.pages
+        .flatMap((p) => p.getChatAdvSearch?.list ?? [])
+        .map((d) => ({
+          ...d,
+          id: d?.id as string,
+          unreadMessagesCount: d?.unreadMessagesCount as number,
+          users: d?.users?.filter(
+            (u) => String(u?.id) !== String(user?.userId)
+          ),
+        }))
+        .sort((a, b) =>
+          a.latestMessage?.deliveredAt && b.latestMessage?.deliveredAt
+            ? new Date(b.latestMessage.deliveredAt).getTime() -
+              new Date(a.latestMessage.deliveredAt).getTime()
+            : 0
+        ) ?? [],
+    [advChatData?.pages, user?.userId]
+  );
 
   useEffect(() => {
     if (search) {
@@ -114,11 +182,22 @@ const ChatPage = () => {
                       </Text>
                     }
                   >
-                    {chatLines.map((c) => (
-                      <div key={c?.id}>
+                    {chatLines.map((c, idx) => (
+                      <div key={c?.id + idx}>
                         <ChatLine chat={c} active={chatId === c.id} />
                       </div>
                     ))}
+                    <ShowIf if={hasNextPage}>
+                      <Button
+                        fullWidth
+                        mt="xs"
+                        onClick={() => fetchNextPage()}
+                        loading={isFetching}
+                        variant="light"
+                      >
+                        Load more
+                      </Button>
+                    </ShowIf>
                   </ShowIfElse>
                 </ShowIfElse>
               </ScrollArea>

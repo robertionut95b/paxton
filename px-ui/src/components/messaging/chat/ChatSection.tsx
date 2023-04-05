@@ -1,30 +1,24 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
-import {
-  GetApplicationByIdQuery,
-  GetMessagesPaginatedQuery,
-} from "@gql/generated";
+import MessageLine from "@components/messaging/chat/MessageLine";
+import { GetMessagesPaginatedQuery } from "@gql/generated";
 import { User } from "@interfaces/user.types";
-import { Avatar, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Divider, ScrollArea, Stack } from "@mantine/core";
 import { format } from "date-fns";
 import compose from "lodash/fp/compose";
 import groupBy from "lodash/fp/groupBy";
 import { useEffect, useMemo, useRef } from "react";
+import { useEffectOnce } from "usehooks-ts";
 
 type ChatSectionProps = {
-  messages:
-    | NonNullable<
-        NonNullable<
-          NonNullable<GetApplicationByIdQuery["getApplicationById"]>["chat"]
-        >["messages"]
-      >
-    | NonNullable<
-        NonNullable<
-          NonNullable<GetMessagesPaginatedQuery["getMessagesPaginated"]>["list"]
-        >
-      >;
+  messages: NonNullable<
+    NonNullable<
+      NonNullable<GetMessagesPaginatedQuery["getMessagesPaginated"]>["list"]
+    >
+  >;
   currentUser: User | null;
   height?: string | number;
   autoScroll?: boolean;
+  childrenPre?: React.ReactNode;
+  childrenPost?: React.ReactNode;
 };
 
 const ChatSection = ({
@@ -32,6 +26,8 @@ const ChatSection = ({
   currentUser,
   height = 320,
   autoScroll = true,
+  childrenPre,
+  childrenPost,
 }: ChatSectionProps) => {
   const viewport = useRef<HTMLDivElement>(null);
   const isCurrentSender = (message: (typeof messages)[number]) =>
@@ -46,12 +42,22 @@ const ChatSection = ({
       ? `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
       : fallback?.[0].toUpperCase();
 
-  useEffect(() => {
-    if (viewport.current && autoScroll) {
+  useEffectOnce(() => {
+    if (viewport.current) {
       viewport.current.scrollTo({
         top: viewport.current.scrollHeight,
-        behavior: "auto",
       });
+    }
+  });
+
+  useEffect(() => {
+    if (viewport.current && autoScroll) {
+      const { offsetHeight, scrollHeight, scrollTop } = viewport.current;
+      if (scrollHeight <= scrollTop + offsetHeight + 100) {
+        viewport.current.scrollTo({
+          top: viewport.current.scrollHeight,
+        });
+      }
     }
   }, [messages, autoScroll]);
 
@@ -80,78 +86,35 @@ const ChatSection = ({
       scrollbarSize={6}
       viewportRef={viewport}
     >
+      {childrenPre}
       {Object.entries(chronoMsgs).map(([key, value]) => (
         <Stack key={key} spacing={"sm"} mt="xs">
           <Divider
             label={key}
             labelPosition="center"
-            className="font-semibold uppercase"
+            className="font-semibold uppercase text-gray-400"
           />
-          {(value as typeof messages).map((m) => (
-            <Group
-              key={m?.id}
-              px={"sm"}
-              noWrap
-              style={{
-                flexDirection: isCurrentSender(m) ? "row-reverse" : "row",
-              }}
-              spacing={4}
-            >
-              <Avatar
-                src={
-                  m?.sender.userProfile.photography
-                    ? `${APP_IMAGES_API_PATH}/100x100/${m?.sender.userProfile.photography}`
-                    : undefined
-                }
-                radius="xl"
-                variant="filled"
-                size="md"
-                title={m?.sender.displayName}
-                className="flex self-end"
-              >
-                {displayInitials(
-                  m?.sender.username ?? "",
-                  m?.sender.firstName,
-                  m?.sender.lastName
-                )}
-              </Avatar>
-              <Stack spacing={2}>
-                <Group
-                  spacing={5}
-                  position={isCurrentSender(m) ? "right" : "left"}
-                >
-                  <Text size="xs">{m?.sender.firstName}</Text>
-                  {m?.deliveredAt && (
-                    <Text className="self-end" size="xs" color="dimmed">
-                      {format(new Date(m.deliveredAt), "kk:mm")}
-                    </Text>
-                  )}
-                </Group>
-                <Stack
-                  p="xs"
-                  px="md"
-                  spacing={2}
-                  bg={`${isCurrentSender(m) ? "violet" : "#f2f2f2"}`}
-                  style={{
-                    borderRadius: "0.5rem",
-                  }}
-                >
-                  <Text
-                    size="sm"
-                    component={"pre"}
-                    color={`${isCurrentSender(m) ? "white" : "black"}`}
-                    style={{
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {m?.content}
-                  </Text>
-                </Stack>
-              </Stack>
-            </Group>
-          ))}
+          {(value as typeof messages).map(
+            (m) =>
+              m?.content && (
+                <div key={m.id}>
+                  <MessageLine
+                    avatarInitials={displayInitials(
+                      m.sender.username,
+                      m.sender.firstName,
+                      m.sender.lastName
+                    )}
+                    name={m.sender.firstName}
+                    content={m.content}
+                    position={isCurrentSender(m) ? "right" : "left"}
+                    sentAt={m.deliveredAt}
+                  />
+                </div>
+              )
+          )}
         </Stack>
       ))}
+      {childrenPost}
     </ScrollArea>
   );
 };

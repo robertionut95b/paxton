@@ -407,21 +407,6 @@ query GetApplicationById($applicationId: ID!) {
     }
     chat {
       id
-      messages {
-        id
-        content
-        sender {
-          id
-          username
-          firstName
-          lastName
-          displayName
-          userProfile {
-            photography
-          }
-        }
-        deliveredAt
-      }
     }
   }
 }

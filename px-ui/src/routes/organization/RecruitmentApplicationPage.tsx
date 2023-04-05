@@ -22,6 +22,7 @@ import {
   ApplicationStatus,
   FieldType,
   Operator,
+  SortDirection,
   Status,
   useAddMessageToApplicationChatMutation,
   useGetAllJobListingsQuery,
@@ -30,6 +31,7 @@ import {
   useGetApplicationsForJobIdCountByStepsQuery,
   useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
+  useInfiniteGetMessagesPaginatedQuery,
   useUpdateApplicationMutation,
 } from "@gql/generated";
 import {
@@ -43,8 +45,10 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
+  Divider,
   Grid,
   Group,
+  Loader,
   Paper,
   Space,
   Stack,
@@ -55,12 +59,16 @@ import { showNotification } from "@mantine/notifications";
 import AccessDenied from "@routes/AccessDenied";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
+
+const PAGE_SIZE = 5;
 
 const RecruitmentApplicationPage = () => {
   const { user, isAuthorized, accessToken } = useAuth();
   const { applicationId, jobId, organizationSlug } = useParams();
   const queryClient = useQueryClient();
+
   const {
     data: applicationData,
     isLoading,
@@ -144,6 +152,58 @@ const RecruitmentApplicationPage = () => {
         enabled: !!organizationData && isAuthorized([RoleType.ROLE_RECRUITER]),
       }
     );
+
+  const searchQuery = useMemo(
+    () => ({
+      filters: [
+        {
+          key: "chat.id",
+          value: applicationData?.getApplicationById?.chat.id as string,
+          operator: Operator.Equal,
+          fieldType: FieldType.Long,
+        },
+      ],
+      sorts: [
+        {
+          direction: SortDirection.Desc,
+          key: "modifiedAt",
+        },
+      ],
+      page: 0,
+      size: PAGE_SIZE,
+    }),
+    [applicationData?.getApplicationById?.chat.id]
+  );
+
+  const {
+    data: messagesData,
+    isLoading: messagesIsLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+  } = useInfiniteGetMessagesPaginatedQuery(
+    "searchQuery",
+    graphqlRequestClient,
+    {
+      searchQuery,
+    },
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
+        const totalItems = lastPage.getMessagesPaginated?.totalElements ?? 0;
+        const currPage = (lastPage.getMessagesPaginated?.page ?? 0) + 1;
+        if (offset < totalItems)
+          return {
+            searchQuery: {
+              ...searchQuery,
+              page: currPage,
+            },
+          };
+      },
+      enabled: !!applicationData?.getApplicationById?.chat.id,
+    }
+  );
+
   const { mutate: updateApplication } = useUpdateApplicationMutation(
     graphqlRequestClient,
     {
@@ -193,8 +253,8 @@ const RecruitmentApplicationPage = () => {
           icon: <CheckCircleIcon width={20} />,
         });
         queryClient.invalidateQueries(
-          useGetApplicationByIdQuery.getKey({
-            applicationId: applicationId as string,
+          useInfiniteGetMessagesPaginatedQuery.getKey({
+            searchQuery,
           })
         );
       },
@@ -202,6 +262,15 @@ const RecruitmentApplicationPage = () => {
   );
 
   const [parent] = useAutoAnimate();
+
+  const messages = useMemo(
+    () =>
+      messagesData?.pages
+        .flatMap((p) => p.getMessagesPaginated?.list ?? [])
+        .reverse() ?? [],
+
+    [messagesData?.pages]
+  );
 
   if (
     isLoading ||
@@ -452,19 +521,34 @@ const RecruitmentApplicationPage = () => {
             <Title order={4} mb={"sm"}>
               Messages
             </Title>
+            <Divider />
             <ShowIfElse
-              if={
-                (applicationData.getApplicationById.chat.messages?.length ??
-                  0) > 0
-              }
-              else={<Text size="sm">There are no messages yet</Text>}
+              if={!messagesIsLoading}
+              else={<Loader size="xs" variant="dots" />}
             >
-              <ChatSection
-                currentUser={user}
-                messages={
-                  applicationData.getApplicationById.chat.messages ?? []
-                }
-              />
+              <ShowIfElse
+                if={(messages?.length ?? 0) > 0}
+                else={<Text size="sm">There are no messages yet</Text>}
+              >
+                <ChatSection
+                  currentUser={user}
+                  messages={messages}
+                  childrenPre={
+                    <ShowIf if={hasNextPage}>
+                      <Button
+                        compact
+                        mt="xs"
+                        onClick={() => fetchNextPage()}
+                        loading={isFetching}
+                        variant="light"
+                        fullWidth
+                      >
+                        Load more
+                      </Button>
+                    </ShowIf>
+                  }
+                />
+              </ShowIfElse>
             </ShowIfElse>
             <Space h="lg" />
             <MessageAddForm

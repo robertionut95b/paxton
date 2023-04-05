@@ -62,6 +62,7 @@ const MessageAddForm = ({
     ),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeMsgCb = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setContent(e.currentTarget.value);
@@ -99,6 +100,8 @@ const MessageAddForm = ({
           w={"100%"}
           label="Message"
           withAsterisk
+          autosize
+          minRows={2}
           placeholder="Type in a message..."
           {...form.getInputProps("content")}
           value={content}

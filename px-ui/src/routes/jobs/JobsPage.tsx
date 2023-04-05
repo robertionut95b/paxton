@@ -38,6 +38,7 @@ export default function JobsPage() {
   const orgParam = searchParams.get("org");
   const upJobId = searchParams.get("jobId");
   const refPage = searchParams.get("ref");
+  const jobQuery = searchParams.get("q");
   const cityId =
     searchParams.get("city") ??
     (!refPage && prevUserProfileQueryData?.getUserProfile?.city?.id);
@@ -120,6 +121,16 @@ export default function JobsPage() {
                 },
               ]
             : []),
+          ...(jobQuery
+            ? [
+                {
+                  key: "title",
+                  fieldType: FieldType.String,
+                  value: jobQuery,
+                  operator: Operator.Like,
+                },
+              ]
+            : []),
         ],
         sorts: [
           {
@@ -198,8 +209,9 @@ export default function JobsPage() {
                 <Title mb={8} order={4}>
                   No suitable jobs found
                 </Title>
-                <Text size="sm">
-                  Consider updating your profile to find better job matches
+                <Text size="sm" align="center">
+                  Consider updating your profile to find better job matches or
+                  refine the search for more results
                 </Text>
               </Box>
             }

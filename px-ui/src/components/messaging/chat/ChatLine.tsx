@@ -16,6 +16,7 @@ type ChatLineProps = {
   active?: boolean;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
   const avatar =
     (c?.users?.length ?? 0) > 1 ? (
@@ -62,13 +63,22 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
       <Grid
         my="sm"
         p="xs"
-        className={`hover:cursor-pointer hover:bg-slate-50 ${
-          active && "bg-slate-100"
-        }`}
         grow
         gutter={2}
         align="center"
         justify="center"
+        sx={(theme) => ({
+          backgroundColor:
+            theme.colorScheme === "light"
+              ? active
+                ? theme.colors.gray[1]
+                : "transparent"
+              : active
+              ? theme.colors.gray[8]
+              : "transparent",
+          cursor: "pointer",
+          borderRadius: "10px",
+        })}
       >
         <Grid.Col span={1} md={2}>
           {avatar}

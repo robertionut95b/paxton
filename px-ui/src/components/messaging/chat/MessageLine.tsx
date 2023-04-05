@@ -50,10 +50,19 @@ const MessageLine = ({
           p="xs"
           px="md"
           spacing={2}
-          bg={`${position === "right" ? "violet" : "#f2f2f2"}`}
           style={{
             borderRadius: "0.5rem",
           }}
+          sx={(theme) => ({
+            backgroundColor:
+              theme.colorScheme === "light"
+                ? position === "right"
+                  ? theme.colors.violet[6]
+                  : theme.colors.gray[1]
+                : position === "right"
+                ? theme.colors.violet[8]
+                : theme.colors.gray[8],
+          })}
         >
           <Text
             size="sm"
@@ -62,6 +71,16 @@ const MessageLine = ({
             style={{
               whiteSpace: "pre-wrap",
             }}
+            sx={(theme) => ({
+              color:
+                theme.colorScheme === "light"
+                  ? position === "right"
+                    ? theme.colors.gray[1]
+                    : theme.colors.gray[9]
+                  : position === "right"
+                  ? theme.colors.gray[3]
+                  : theme.colors.gray[4],
+            })}
           >
             {content}
           </Text>

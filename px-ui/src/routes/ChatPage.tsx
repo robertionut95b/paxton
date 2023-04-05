@@ -165,7 +165,16 @@ const ChatPage = () => {
                   icon={<MagnifyingGlassIcon width={16} />}
                 />
               </Stack>
-              <ScrollArea h={"75vh"} offsetScrollbars>
+              <ScrollArea
+                offsetScrollbars
+                sx={(theme) => ({
+                  [theme.fn.smallerThan("sm")]: {
+                    height: "40vh",
+                  },
+                  height: "75vh",
+                })}
+                scrollbarSize={6}
+              >
                 <ShowIfElse
                   if={!isLoading}
                   else={
@@ -202,7 +211,26 @@ const ChatPage = () => {
                 </ShowIfElse>
               </ScrollArea>
             </Grid.Col>
-            <Grid.Col span={12} sm={7} className="md:border-l">
+            <Grid.Col
+              span={12}
+              sm={7}
+              sx={(theme) => ({
+                [theme.fn.smallerThan("sm")]: {
+                  borderLeft: "0px",
+                  borderTop: `3px solid ${
+                    theme.colorScheme === "dark"
+                      ? theme.colors.gray[8]
+                      : theme.colors.gray[4]
+                  }`,
+                },
+                borderLeft: `1px solid ${
+                  theme.colorScheme === "dark"
+                    ? theme.colors.gray[8]
+                    : theme.colors.gray[4]
+                }`,
+                borderTop: "0px",
+              })}
+            >
               <Outlet />
             </Grid.Col>
           </Grid>

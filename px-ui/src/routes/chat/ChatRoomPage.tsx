@@ -282,6 +282,7 @@ const ChatRoomPage = () => {
         size="md"
         title={users?.[0]?.username}
         radius="xl"
+        color="violet.3"
       />
     );
 
@@ -292,7 +293,16 @@ const ChatRoomPage = () => {
 
   return (
     <Stack spacing={0} h={"100%"} justify="space-between">
-      <Group spacing={5} className="border-b">
+      <Group
+        spacing={5}
+        sx={(theme) => ({
+          borderBottom: `1px solid ${
+            theme.colorScheme === "dark"
+              ? theme.colors.gray[8]
+              : theme.colors.gray[4]
+          }`,
+        })}
+      >
         {avatar}
         <Group pb={5}>
           <Stack spacing={0}>
@@ -335,18 +345,25 @@ const ChatRoomPage = () => {
           </Center>
         }
       >
-        <ShowIf if={hasNextPage}>
-          <Button
-            compact
-            mt="xs"
-            onClick={() => fetchNextPage()}
-            loading={isFetching}
-            variant="light"
-          >
-            Load more
-          </Button>
-        </ShowIf>
-        <ChatSection height={720} currentUser={user} messages={messages} />
+        <ChatSection
+          height={720}
+          currentUser={user}
+          messages={messages}
+          childrenPre={
+            <ShowIf if={hasNextPage}>
+              <Button
+                compact
+                mt="xs"
+                onClick={() => fetchNextPage()}
+                loading={isFetching}
+                variant="light"
+                fullWidth
+              >
+                Load more
+              </Button>
+            </ShowIf>
+          }
+        />
       </ShowIfElse>
       <Box>
         <Divider my={"xs"} />

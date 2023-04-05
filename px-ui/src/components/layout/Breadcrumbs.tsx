@@ -66,7 +66,6 @@ const ApplicationPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
       enabled: !!applicationId,
     }
   );
-  console.log("ceva");
   if (isLoading) return <Loader size={"xs"} />;
   if (!applicationData?.getAllApplications) return applicationId;
   if (!applicationData.getAllApplications.list?.[0]) return applicationId;
@@ -117,6 +116,10 @@ const routes = [
   },
   {
     path: "/app/organizations/:organizationSlug/recruitment/jobs/:jobId/applications/:applicationId",
+    breadCrumb: ApplicationPageCrumb,
+  },
+  {
+    path: "/app/jobs/view/:jobId/applications/:applicationId",
     breadCrumb: ApplicationPageCrumb,
   },
 ];

@@ -41,7 +41,7 @@ public class ApplicationService {
     @Autowired
     private ChatService chatService;
 
-    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
+    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
     public Application findById(Long applicationId) {
         return applicationRepository
                 .findById(applicationId)
@@ -49,7 +49,7 @@ public class ApplicationService {
     }
 
     @PreAuthorize("!hasRole('ROLE_RECRUITER') or !hasRole('ROLE_ADMINISTRATOR')")
-    @PostAuthorize("!@paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)")
+    @PostAuthorize("!@organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)")
     @Transactional
     public Application applyToJobListing(ApplicationInput applicationInput) {
         Application application = applicationMapper.inputToApplication(applicationInput);
@@ -59,7 +59,7 @@ public class ApplicationService {
     }
 
     @PreAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR')")
-    @PostAuthorize("@paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject)")
+    @PostAuthorize("@organizationSecurityService.isOrganizationRecruiter(authentication, returnObject)")
     public PaginatedResponse<Application> getAllApplications(SearchRequest searchRequest) {
         if (searchRequest == null) searchRequest = new SearchRequest();
         SearchSpecification<Application> applicationSearchSpecification = new SearchSpecification<>(searchRequest);
@@ -78,20 +78,20 @@ public class ApplicationService {
         return applicationRepository.findByCandidate_User_Id(userId);
     }
 
-    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or returnObject.createdBy == principal.username")
+    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or returnObject.createdBy == principal.username")
     public Application findByApplicationId(Long applicationId) {
         return applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ApplicationNotFoundException(APPLICATION_NOT_FOUND_BY_ID.formatted(applicationId), "applicationId"));
     }
 
-    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or returnObject.createdBy == principal.username")
+    @PostAuthorize("(hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or returnObject.createdBy == principal.username")
     public Application findByJobListingIdAndCandidateUsername(Long jobListingId, String username) {
         return applicationRepository.findByJobListingIdAndCandidate_UserUsername(jobListingId, username)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application for job id %s and candidate name %s does not exist".formatted(jobListingId, username), "jobListingId"));
     }
 
     @PreAuthorize("hasRole('ROLE_RECRUITER')")
-    @PostAuthorize("@paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)")
+    @PostAuthorize("@organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)")
     @Transactional
     public Application updateApplication(ApplicationInput applicationInput) {
         Application application = applicationRepository.findById(applicationInput.getId())
@@ -122,7 +122,7 @@ public class ApplicationService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or returnObject.createdBy == principal.username")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or returnObject.createdBy == principal.username")
     public Application addMessageToApplicationChat(MessageInput messageInput, Long applicationId) {
         Application application = this.findByApplicationId(applicationId);
         Chat applicationChat = chatService.addMessageToChat(messageInput);

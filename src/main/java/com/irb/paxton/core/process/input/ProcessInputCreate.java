@@ -1,5 +1,6 @@
 package com.irb.paxton.core.process.input;
 
+import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -8,7 +9,9 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class ProcessInputLkp {
+public class ProcessInputCreate extends AbstractInput {
+
+    private Long id;
 
     @NotNull
     @NotEmpty
@@ -21,7 +24,7 @@ public class ProcessInputLkp {
     private String description;
 
     @NotNull
-    private List<Long> processSteps;
+    private List<ProcessStepsInputCreate> processSteps;
 
     @NotNull
     private Long organizationId;

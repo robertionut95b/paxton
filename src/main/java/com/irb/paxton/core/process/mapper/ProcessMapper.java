@@ -1,24 +1,21 @@
 package com.irb.paxton.core.process.mapper;
 
+import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.process.Process;
-import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.process.ProcessStepsRepository;
-import com.irb.paxton.core.process.exception.ProcessNotFoundException;
 import com.irb.paxton.core.process.input.ProcessInput;
-import com.irb.paxton.core.process.input.ProcessInputUpdate;
-import org.jetbrains.annotations.NotNull;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import com.irb.paxton.core.process.input.ProcessInputCreate;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ProcessStepsMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {ProcessStepsMapper.class, ReferenceMapper.class})
 public abstract class ProcessMapper {
 
     @Autowired
@@ -29,11 +26,6 @@ public abstract class ProcessMapper {
 
     @Mapping(target = "organizations", source = "processInput.organizationId")
     @Mapping(target = "processSteps", source = "processInput.processSteps")
-    @Mapping(target = "modifiedBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     public abstract Process inputToProcess(ProcessInput processInput);
 
     public Collection<Organization> mapOrganization(Long organizationId) {
@@ -44,16 +36,9 @@ public abstract class ProcessMapper {
 
     @Mapping(target = "organizations", source = "processInputUpdate.organizationId")
     @Mapping(target = "processSteps", source = "processInputUpdate.processSteps")
-    @Mapping(target = "modifiedBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    public abstract Process inputToProcessUpdate(@MappingTarget Process process, ProcessInputUpdate processInputUpdate);
+    public abstract Process inputToProcessUpdate(@MappingTarget Process process, ProcessInput processInputUpdate);
 
-    public Collection<ProcessSteps> mapProcessStepsUpdate(@NotNull List<Long> ids) {
-        return ids.stream()
-                .map(id -> processStepsRepository.findById(id)
-                        .orElseThrow(() -> new ProcessNotFoundException(String.format("Process step by id %s does not exist", id))))
-                .toList();
-    }
+    @Mapping(target = "organizations", source = "processInput.organizationId")
+    @Mapping(target = "processSteps", source = "processInput.processSteps")
+    public abstract Process inputCreateToProcess(ProcessInputCreate processInput);
 }

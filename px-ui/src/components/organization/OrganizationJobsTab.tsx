@@ -13,9 +13,9 @@ import {
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { queryClient } from "@lib/queryClient";
-import { Container, Group, Text } from "@mantine/core";
+import { Button, Center, Container, Stack, Text, Title } from "@mantine/core";
 import { MouseEventHandler, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 type OrganizationJobsTabsProps = {
   filters?: InputMaybe<InputMaybe<FiltersInput>[]>;
@@ -123,9 +123,23 @@ const OrganizationJobsTab = ({
           jobs={orgJobsData}
         />
       ) : (
-        <Group py="sm">
-          <Text size={"md"}>No results found for this request</Text>
-        </Group>
+        <Center py="sm">
+          <Stack align="center" justify="center">
+            <img src="/images/network.svg" width={160} />
+            <Title order={3}>No jobs found</Title>
+            <Text align="center" size="md">
+              Make your organization visible in the network! Start by posting a
+              job announcement
+            </Text>
+            <Button
+              component={NavLink}
+              to={`/app/organizations/${organizationSlug}/jobs/publish-job/form`}
+              size="md"
+            >
+              Publish jobs
+            </Button>
+          </Stack>
+        </Center>
       )}
 
       {totalElements > 0 && (

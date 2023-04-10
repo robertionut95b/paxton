@@ -396,6 +396,7 @@ export type Mutation = {
   createChat?: Maybe<Chat>;
   createOrUpdateOrganization?: Maybe<Organization>;
   createProcess?: Maybe<Process>;
+  createStep?: Maybe<Step>;
   healthCheckPost?: Maybe<Scalars['String']>;
   markAllMessagesAsSeen?: Maybe<Chat>;
   publishJob?: Maybe<Job>;
@@ -403,6 +404,7 @@ export type Mutation = {
   updateApplication?: Maybe<Application>;
   updateChat?: Maybe<Chat>;
   updateProcess?: Maybe<Process>;
+  updateProcessForOrganizationId?: Maybe<Process>;
   updateUserProfile?: Maybe<UserProfile>;
   updateUserProfileExperience?: Maybe<UserProfile>;
   updateUserProfileStudy?: Maybe<UserProfile>;
@@ -476,6 +478,11 @@ export type MutationCreateProcessArgs = {
 };
 
 
+export type MutationCreateStepArgs = {
+  stepInput: StepInput;
+};
+
+
 export type MutationMarkAllMessagesAsSeenArgs = {
   chatId: Scalars['ID'];
   userId: Scalars['ID'];
@@ -503,7 +510,13 @@ export type MutationUpdateChatArgs = {
 
 
 export type MutationUpdateProcessArgs = {
-  ProcessInputUpdate: ProcessInputUpdate;
+  ProcessInput: ProcessInput;
+};
+
+
+export type MutationUpdateProcessForOrganizationIdArgs = {
+  organizationId: Scalars['ID'];
+  processInput: ProcessInputCreate;
 };
 
 
@@ -605,17 +618,18 @@ export type Process = {
 
 export type ProcessInput = {
   description: Scalars['String'];
+  id?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
   organizationId: Scalars['ID'];
   processSteps?: InputMaybe<Array<InputMaybe<ProcessStepsInput>>>;
 };
 
-export type ProcessInputUpdate = {
+export type ProcessInputCreate = {
   description: Scalars['String'];
-  id: Scalars['ID'];
+  id?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
   organizationId: Scalars['ID'];
-  processSteps?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  processSteps?: InputMaybe<Array<InputMaybe<ProcessStepsInputCreate>>>;
 };
 
 export type ProcessPage = {
@@ -636,8 +650,16 @@ export type ProcessSteps = {
 };
 
 export type ProcessStepsInput = {
+  id?: InputMaybe<Scalars['ID']>;
   order: Scalars['Int'];
   processId: Scalars['ID'];
+  status: Status;
+  stepId: Scalars['ID'];
+};
+
+export type ProcessStepsInputCreate = {
+  id?: InputMaybe<Scalars['ID']>;
+  order: Scalars['Int'];
   status: Status;
   stepId: Scalars['ID'];
 };
@@ -1110,6 +1132,21 @@ export type UpdateChatMutationVariables = Exact<{
 
 export type UpdateChatMutation = { __typename?: 'Mutation', updateChat?: { __typename?: 'Chat', id: string } | null };
 
+export type UpdateProcessForOrganizationIdMutationVariables = Exact<{
+  processInput: ProcessInputCreate;
+  organizationId: Scalars['ID'];
+}>;
+
+
+export type UpdateProcessForOrganizationIdMutation = { __typename?: 'Mutation', updateProcessForOrganizationId?: { __typename?: 'Process', id: string, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: string, status: Status, order: number, step: { __typename?: 'Step', id: string, title: string, description: string } } | null> | null } | null };
+
+export type CreateStepMutationVariables = Exact<{
+  stepInput: StepInput;
+}>;
+
+
+export type CreateStepMutation = { __typename?: 'Mutation', createStep?: { __typename?: 'Step', id: string, title: string, description: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1211,7 +1248,7 @@ export type GetAllProcessesQueryVariables = Exact<{
 }>;
 
 
-export type GetAllProcessesQuery = { __typename?: 'Query', getAllProcesses?: { __typename?: 'ProcessPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Process', id: string, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: string, status: Status, order: number, step: { __typename?: 'Step', id: string, title: string } } | null> | null } | null> | null } | null };
+export type GetAllProcessesQuery = { __typename?: 'Query', getAllProcesses?: { __typename?: 'ProcessPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Process', id: string, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: string, status: Status, order: number, step: { __typename?: 'Step', id: string, title: string, description: string } } | null> | null } | null> | null } | null };
 
 export type GetAllRecruitersForOrganizationBySlugQueryVariables = Exact<{
   organizationSlug: Scalars['String'];
@@ -1280,6 +1317,11 @@ export type GetMessagesPaginatedQueryVariables = Exact<{
 
 
 export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } | null };
+
+export type GetAllStepsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllStepsQuery = { __typename?: 'Query', getAllSteps?: Array<{ __typename?: 'Step', id: string, title: string, description: string } | null> | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -1849,6 +1891,69 @@ export const useUpdateChatMutation = <
 useUpdateChatMutation.getKey = () => ['UpdateChat'];
 
 useUpdateChatMutation.fetcher = (client: GraphQLClient, variables: UpdateChatMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateChatMutation, UpdateChatMutationVariables>(client, UpdateChatDocument, variables, headers);
+export const UpdateProcessForOrganizationIdDocument = `
+    mutation UpdateProcessForOrganizationId($processInput: ProcessInputCreate!, $organizationId: ID!) {
+  updateProcessForOrganizationId(
+    processInput: $processInput
+    organizationId: $organizationId
+  ) {
+    id
+    name
+    description
+    processSteps {
+      id
+      step {
+        id
+        title
+        description
+      }
+      status
+      order
+    }
+  }
+}
+    `;
+export const useUpdateProcessForOrganizationIdMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateProcessForOrganizationIdMutation, TError, UpdateProcessForOrganizationIdMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateProcessForOrganizationIdMutation, TError, UpdateProcessForOrganizationIdMutationVariables, TContext>(
+      ['UpdateProcessForOrganizationId'],
+      (variables?: UpdateProcessForOrganizationIdMutationVariables) => fetcher<UpdateProcessForOrganizationIdMutation, UpdateProcessForOrganizationIdMutationVariables>(client, UpdateProcessForOrganizationIdDocument, variables, headers)(),
+      options
+    );
+useUpdateProcessForOrganizationIdMutation.getKey = () => ['UpdateProcessForOrganizationId'];
+
+useUpdateProcessForOrganizationIdMutation.fetcher = (client: GraphQLClient, variables: UpdateProcessForOrganizationIdMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateProcessForOrganizationIdMutation, UpdateProcessForOrganizationIdMutationVariables>(client, UpdateProcessForOrganizationIdDocument, variables, headers);
+export const CreateStepDocument = `
+    mutation createStep($stepInput: StepInput!) {
+  createStep(stepInput: $stepInput) {
+    id
+    title
+    description
+  }
+}
+    `;
+export const useCreateStepMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateStepMutation, TError, CreateStepMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateStepMutation, TError, CreateStepMutationVariables, TContext>(
+      ['createStep'],
+      (variables?: CreateStepMutationVariables) => fetcher<CreateStepMutation, CreateStepMutationVariables>(client, CreateStepDocument, variables, headers)(),
+      options
+    );
+useCreateStepMutation.getKey = () => ['createStep'];
+
+useCreateStepMutation.fetcher = (client: GraphQLClient, variables: CreateStepMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateStepMutation, CreateStepMutationVariables>(client, CreateStepDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2985,6 +3090,7 @@ export const GetAllProcessesDocument = `
         step {
           id
           title
+          description
         }
         order
       }
@@ -3680,6 +3786,56 @@ useInfiniteGetMessagesPaginatedQuery.getKey = (variables?: GetMessagesPaginatedQ
 ;
 
 useGetMessagesPaginatedQuery.fetcher = (client: GraphQLClient, variables?: GetMessagesPaginatedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMessagesPaginatedQuery, GetMessagesPaginatedQueryVariables>(client, GetMessagesPaginatedDocument, variables, headers);
+export const GetAllStepsDocument = `
+    query GetAllSteps {
+  getAllSteps {
+    id
+    title
+    description
+  }
+}
+    `;
+export const useGetAllStepsQuery = <
+      TData = GetAllStepsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllStepsQueryVariables,
+      options?: UseQueryOptions<GetAllStepsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllStepsQuery, TError, TData>(
+      variables === undefined ? ['GetAllSteps'] : ['GetAllSteps', variables],
+      fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, variables, headers),
+      options
+    );
+useGetAllStepsQuery.document = GetAllStepsDocument;
+
+
+useGetAllStepsQuery.getKey = (variables?: GetAllStepsQueryVariables) => variables === undefined ? ['GetAllSteps'] : ['GetAllSteps', variables];
+;
+
+export const useInfiniteGetAllStepsQuery = <
+      TData = GetAllStepsQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof GetAllStepsQueryVariables,
+      client: GraphQLClient,
+      variables?: GetAllStepsQueryVariables,
+      options?: UseInfiniteQueryOptions<GetAllStepsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<GetAllStepsQuery, TError, TData>(
+      variables === undefined ? ['GetAllSteps.infinite'] : ['GetAllSteps.infinite', variables],
+      (metaData) => fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteGetAllStepsQuery.getKey = (variables?: GetAllStepsQueryVariables) => variables === undefined ? ['GetAllSteps.infinite'] : ['GetAllSteps.infinite', variables];
+;
+
+useGetAllStepsQuery.fetcher = (client: GraphQLClient, variables?: GetAllStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -3848,26 +4004,37 @@ export const OrganizationSizeSchema = z.nativeEnum(OrganizationSize);
 export function ProcessInputSchema(): z.ZodObject<Properties<ProcessInput>> {
   return z.object<Properties<ProcessInput>>({
     description: z.string(),
+    id: z.string().nullish(),
     name: z.string(),
     organizationId: z.string(),
     processSteps: z.array(z.lazy(() => ProcessStepsInputSchema().nullable())).nullish()
   })
 }
 
-export function ProcessInputUpdateSchema(): z.ZodObject<Properties<ProcessInputUpdate>> {
-  return z.object<Properties<ProcessInputUpdate>>({
+export function ProcessInputCreateSchema(): z.ZodObject<Properties<ProcessInputCreate>> {
+  return z.object<Properties<ProcessInputCreate>>({
     description: z.string(),
-    id: z.string(),
+    id: z.string().nullish(),
     name: z.string(),
     organizationId: z.string(),
-    processSteps: z.array(z.string().nullable()).nullish()
+    processSteps: z.array(z.lazy(() => ProcessStepsInputCreateSchema().nullable())).nullish()
   })
 }
 
 export function ProcessStepsInputSchema(): z.ZodObject<Properties<ProcessStepsInput>> {
   return z.object<Properties<ProcessStepsInput>>({
+    id: z.string().nullish(),
     order: z.number(),
     processId: z.string(),
+    status: StatusSchema,
+    stepId: z.string()
+  })
+}
+
+export function ProcessStepsInputCreateSchema(): z.ZodObject<Properties<ProcessStepsInputCreate>> {
+  return z.object<Properties<ProcessStepsInputCreate>>({
+    id: z.string().nullish(),
+    order: z.number(),
     status: StatusSchema,
     stepId: z.string()
   })
@@ -3906,8 +4073,8 @@ export const StatusSchema = z.nativeEnum(Status);
 
 export function StepInputSchema(): z.ZodObject<Properties<StepInput>> {
   return z.object<Properties<StepInput>>({
-    description: z.string(),
-    title: z.string()
+    description: z.string().min(3).max(100, "Field must not be longer than 100 characters"),
+    title: z.string().min(2).max(15, "Field must not be longer than 15 characters")
   })
 }
 

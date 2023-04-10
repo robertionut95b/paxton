@@ -7,12 +7,9 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ProcessStepsInput extends AbstractInput {
+public class ProcessStepsInputCreate extends AbstractInput {
 
     private Long id;
-
-    @NotNull
-    private Long processId;
 
     @NotNull
     private Status status;

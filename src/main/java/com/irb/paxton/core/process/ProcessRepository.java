@@ -1,13 +1,12 @@
 package com.irb.paxton.core.process;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProcessRepository extends JpaRepository<Process, Long>, JpaSpecificationExecutor<Process> {
+public interface ProcessRepository extends AbstractRepository<Process, Long> {
 
     Optional<Process> findByName(String name);
 }

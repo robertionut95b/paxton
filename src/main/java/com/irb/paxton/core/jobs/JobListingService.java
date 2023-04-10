@@ -43,7 +43,7 @@ public class JobListingService {
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @paxtonSecurityService.isOrganizationRecruiter(authentication, returnObject.organization))")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.organization))")
     public JobListing publishJobListing(JobListingInput jobListingInput) {
         JobListing jobListing = jobListingMapper.inputToJobListing(jobListingInput);
         jobListingRepository.save(jobListing);

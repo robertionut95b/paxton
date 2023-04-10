@@ -461,6 +461,7 @@ query GetAllProcesses($searchQuery: SearchQueryInput) {
         step {
           id
           title
+          description
         }
         order
       }
@@ -692,5 +693,13 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
     page
     totalPages
     totalElements
+  }
+}
+
+query GetAllSteps {
+  getAllSteps {
+    id
+    title
+    description
   }
 }

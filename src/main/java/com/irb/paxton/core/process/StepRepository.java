@@ -1,11 +1,11 @@
 package com.irb.paxton.core.process;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface StepRepository extends JpaRepository<Step, Long> {
+public interface StepRepository extends AbstractRepository<Step, Long> {
     List<Step> findByProcessSteps_ProcessId(Long id);
 }

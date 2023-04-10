@@ -230,3 +230,35 @@ mutation UpdateChat($ChatInput: ChatInput!) {
     id
   }
 }
+
+mutation UpdateProcessForOrganizationId(
+  $processInput: ProcessInputCreate!
+  $organizationId: ID!
+) {
+  updateProcessForOrganizationId(
+    processInput: $processInput
+    organizationId: $organizationId
+  ) {
+    id
+    name
+    description
+    processSteps {
+      id
+      step {
+        id
+        title
+        description
+      }
+      status
+      order
+    }
+  }
+}
+
+mutation createStep($stepInput: StepInput!) {
+  createStep(stepInput: $stepInput) {
+    id
+    title
+    description
+  }
+}

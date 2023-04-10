@@ -386,17 +386,18 @@ type Process {
 }
 
 input ProcessInput {
+    id: ID
     name: String!
     description: String!
     processSteps: [ProcessStepsInput]
     organizationId: ID!
 }
 
-input ProcessInputUpdate {
-    id: ID!
+input ProcessInputCreate {
+    id: ID
     name: String!
     description: String!
-    processSteps: [ID]
+    processSteps: [ProcessStepsInputCreate]
     organizationId: ID!
 }
 
@@ -416,7 +417,15 @@ type ProcessSteps {
 }
 
 input ProcessStepsInput {
+    id: ID
     processId: ID!
+    status: Status!
+    stepId: ID!
+    order: Int!
+}
+
+input ProcessStepsInputCreate {
+    id: ID
     status: Status!
     stepId: ID!
     order: Int!
@@ -489,8 +498,8 @@ type Step {
 }
 
 input StepInput {
-    title: String!
-    description: String!
+    title: String! @constraint(minLength: 2, maxLength: 15)
+    description: String! @constraint(minLength: 3, maxLength: 100)
 }
 
 type Study {
@@ -688,7 +697,7 @@ type Mutation {
     addJobCategory(JobCategoryInput: JobCategoryInput!): JobCategory
     applyToJobListing(ApplicationInput: ApplicationInput!): Application
     createProcess(ProcessInput: ProcessInput!): Process
-    updateProcess(ProcessInputUpdate: ProcessInputUpdate!): Process
+    updateProcess(ProcessInput: ProcessInput!): Process
     createOrUpdateOrganization(OrganizationInput: OrganizationInput!): Organization
     alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: ID!): [Recruiter]
     updateApplication(ApplicationInput: ApplicationInput!): Application
@@ -697,4 +706,6 @@ type Mutation {
     createChat(ChatInput: ChatInput!): Chat
     updateChat(ChatInput: ChatInput!): Chat
     markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
+    updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: ID!): Process
+    createStep(stepInput: StepInput!): Step
 }

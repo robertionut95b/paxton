@@ -92,4 +92,16 @@ public class Application extends PaxtonEntity<Long> {
         applicationDocument.setDocument(null);
         return this;
     }
+
+    public Application removeAllProcessSteps() {
+        this.processSteps.clear();
+        return this;
+    }
+
+    public Application addProcessSteps(ApplicationProcessSteps aps) {
+        if (!this.processSteps.contains(aps)) {
+            this.processSteps.add(aps);
+        }
+        return this;
+    }
 }

@@ -5,6 +5,7 @@ import {
   createEmotionCache,
   MantineProvider,
 } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import AuthProvider from "@providers/AuthProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -67,7 +68,9 @@ export default function AppProviders({
       >
         <NotificationsProvider>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <ModalsProvider>{children}</ModalsProvider>
+            </AuthProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </NotificationsProvider>

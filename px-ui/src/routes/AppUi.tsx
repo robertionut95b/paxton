@@ -29,6 +29,15 @@ const OrganizationPostJobForm = lazy(
   () => import("./organization/OrganizationPostJobForm")
 );
 const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
+const OrganizationSettingsMainPage = lazy(
+  () => import("./organization/OrganizationSettingsMainPage")
+);
+const OrganizationSettingsPage = lazy(
+  () => import("./organization/OrganizationSettingsPage")
+);
+const OrganizationProcessPage = lazy(
+  () => import("./organization/OrganizationProcessPage")
+);
 const OrganizationAboutPanel = lazy(
   () => import("@components/organization/OrganizationAboutPanel")
 );
@@ -114,7 +123,7 @@ export default function AppUI() {
                 element={<ProfileStudyModal />}
               />
             </Route>
-            <Route path="network" element={<NetworkPage />}></Route>
+            <Route path="network" element={<NetworkPage />} />
             <Route path="my-organization" element={<MyOrganizationPage />} />
             <Route
               path="organizations/:organizationSlug"
@@ -170,6 +179,12 @@ export default function AppUI() {
                     </IsAllowed>
                   }
                 />
+              </Route>
+            </Route>
+            <Route path="organizations/:organizationSlug">
+              <Route path="settings" element={<OrganizationSettingsPage />}>
+                <Route element={<OrganizationSettingsMainPage />} index />
+                <Route path="process" element={<OrganizationProcessPage />} />
               </Route>
             </Route>
             <Route

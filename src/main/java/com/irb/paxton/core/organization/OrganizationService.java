@@ -1,5 +1,7 @@
 package com.irb.paxton.core.organization;
 
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.input.OrganizationInput;
 import com.irb.paxton.core.organization.mapper.OrganizationMapper;
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 @Service
-public class OrganizationService {
+public class OrganizationService extends AbstractService<Organization, Long> {
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -20,6 +22,10 @@ public class OrganizationService {
 
     @Autowired
     private ProcessService processService;
+
+    protected OrganizationService(AbstractRepository<Organization, Long> repository) {
+        super(repository);
+    }
 
     @Transactional
     public Organization createOrUpdateOrganization(OrganizationInput organizationInput) {

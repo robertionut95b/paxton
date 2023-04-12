@@ -36,7 +36,7 @@ public class Step extends PaxtonEntity<Long> {
     @NotBlank
     @NotEmpty
     @NotNull
-    @Length(min = 3, max = 100)
+    @Length(min = 3, max = 150)
     private String description;
 
     @OneToMany(mappedBy = "step")

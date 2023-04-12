@@ -499,7 +499,7 @@ type Step {
 
 input StepInput {
     title: String! @constraint(minLength: 2, maxLength: 15)
-    description: String! @constraint(minLength: 3, maxLength: 100)
+    description: String! @constraint(minLength: 3, maxLength: 150)
 }
 
 type Study {

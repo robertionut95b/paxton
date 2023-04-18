@@ -495,11 +495,21 @@ query GetRecruiterById($recruiterId: ID!) {
       lastName
       email
       username
+      birthDate
       userProfile {
         photography
+        coverPhotography
         profileTitle
+        description
+        city {
+          name
+          country {
+            name
+          }
+        }
       }
     }
+    registeredAt
     organization {
       id
       name
@@ -701,5 +711,28 @@ query GetAllSteps {
     id
     title
     description
+  }
+}
+
+query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
+  findRecruitersAdvSearch(searchQuery: $searchQuery) {
+    list {
+      id
+      user {
+        id
+        firstName
+        lastName
+        displayName
+        birthDate
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
+      registeredAt
+    }
+    page
+    totalPages
+    totalElements
   }
 }

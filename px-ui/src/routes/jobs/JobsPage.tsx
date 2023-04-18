@@ -4,6 +4,7 @@ import PageFooter from "@components/layout/PageFooter";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
+import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   FieldType,
   GetUserProfileQuery,
@@ -25,7 +26,7 @@ const todayIsoFmt = formatISO(new Date());
 
 export default function JobsPage() {
   const [p, setP] = useState<number>(1);
-  const [ps, setPs] = useState<number>(5);
+  const [ps, setPs] = useState<number>(API_PAGINATION_SIZE);
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();

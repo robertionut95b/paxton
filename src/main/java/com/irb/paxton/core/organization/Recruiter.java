@@ -12,6 +12,8 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -38,6 +40,21 @@ public class Recruiter extends PaxtonEntity<Long> {
     private boolean isActive = true;
 
     private LocalDateTime lastActive;
+
+    @Transient
+    private OffsetDateTime registeredAt;
+
+    public Recruiter(User user, Organization organization, boolean isActive, LocalDateTime lastActive) {
+        this.user = user;
+        this.organization = organization;
+        this.isActive = isActive;
+        this.lastActive = lastActive;
+    }
+
+    @PostLoad
+    private void postLoad() {
+        this.registeredAt = OffsetDateTime.of(this.getCreatedAt(), ZoneOffset.UTC);
+    }
 
     @Override
     public boolean equals(Object o) {

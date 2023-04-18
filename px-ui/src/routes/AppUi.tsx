@@ -38,6 +38,15 @@ const OrganizationSettingsPage = lazy(
 const OrganizationProcessPage = lazy(
   () => import("./organization/OrganizationProcessPage")
 );
+const OrganizationRecruiterPage = lazy(
+  () => import("./organization/OrganizationRecruiterPage")
+);
+const OrganizationRecruitersPage = lazy(
+  () => import("./organization/OrganizationRecruitersPage")
+);
+const OrganizationRecruiterJobsPage = lazy(
+  () => import("./organization/OrganizationRecruiterJobsPage")
+);
 const OrganizationAboutPanel = lazy(
   () => import("@components/organization/OrganizationAboutPanel")
 );
@@ -185,6 +194,20 @@ export default function AppUI() {
               <Route path="settings" element={<OrganizationSettingsPage />}>
                 <Route element={<OrganizationSettingsMainPage />} index />
                 <Route path="process" element={<OrganizationProcessPage />} />
+                <Route
+                  path="recruiters"
+                  element={<OrganizationRecruitersPage />}
+                >
+                  <Route
+                    path=":recruiterId"
+                    element={<OrganizationRecruiterPage />}
+                  />
+                </Route>
+                <Route
+                  path="recruiters/:recruiterId/jobs"
+                  element={<OrganizationRecruiterJobsPage />}
+                />
+                <Route path="update" element={<OrganizationModal />} />
               </Route>
             </Route>
             <Route

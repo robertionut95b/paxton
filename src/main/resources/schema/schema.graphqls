@@ -402,7 +402,7 @@ input ProcessInputCreate {
 }
 
 type ProcessPage {
-    list: [Process],
+    list: [Process]
     page: Int!
     totalPages: Int!
     totalElements: Int!
@@ -539,6 +539,7 @@ type Recruiter {
     organization: Organization!
     isActive: Boolean!
     lastActive: DateTime
+    registeredAt: DateTime!
 }
 
 input RecruiterInput {
@@ -546,6 +547,13 @@ input RecruiterInput {
     organizationId: ID
     isActive: Boolean
     lastActive: DateTime
+}
+
+type RecruiterPage {
+    list: [Recruiter]
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
 }
 
 type Role {
@@ -676,6 +684,7 @@ type Query {
     getRecruiterById(recruiterId: ID!): Recruiter
     getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
+    findRecruitersAdvSearch(searchQuery: SearchQueryInput): RecruiterPage
     getPrivateChatById(chatId: ID!): Chat
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice

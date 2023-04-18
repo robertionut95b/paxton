@@ -666,6 +666,7 @@ export type ProcessStepsInputCreate = {
 
 export type Query = {
   __typename?: 'Query';
+  findRecruitersAdvSearch?: Maybe<RecruiterPage>;
   getAllActivitySectors?: Maybe<Array<Maybe<ActivitySector>>>;
   getAllApplications?: Maybe<ApplicationPage>;
   getAllCandidates?: Maybe<CandidatePage>;
@@ -700,6 +701,11 @@ export type Query = {
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
   healthCheck?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryFindRecruitersAdvSearchArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
 };
 
 
@@ -818,6 +824,7 @@ export type Recruiter = {
   isActive: Scalars['Boolean'];
   lastActive?: Maybe<Scalars['DateTime']>;
   organization: Organization;
+  registeredAt: Scalars['DateTime'];
   user: User;
 };
 
@@ -826,6 +833,14 @@ export type RecruiterInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   lastActive?: InputMaybe<Scalars['DateTime']>;
   organizationId?: InputMaybe<Scalars['ID']>;
+};
+
+export type RecruiterPage = {
+  __typename?: 'RecruiterPage';
+  list?: Maybe<Array<Maybe<Recruiter>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
 };
 
 export type Role = {
@@ -1262,7 +1277,7 @@ export type GetRecruiterByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } } | null };
+export type GetRecruiterByIdQuery = { __typename?: 'Query', getRecruiterById?: { __typename?: 'Recruiter', id: string, registeredAt: Date, user: { __typename?: 'User', firstName: string, lastName: string, email: string, username: string, birthDate?: Date | null, userProfile: { __typename?: 'UserProfile', photography?: string | null, coverPhotography?: string | null, profileTitle: string, description?: string | null, city?: { __typename?: 'City', name: string, country: { __typename?: 'Country', name: string } } | null } }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } } } | null };
 
 export type GetAllUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1322,6 +1337,13 @@ export type GetAllStepsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllStepsQuery = { __typename?: 'Query', getAllSteps?: Array<{ __typename?: 'Step', id: string, title: string, description: string } | null> | null };
+
+export type FindRecruitersAdvSearchQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
+
+
+export type FindRecruitersAdvSearchQuery = { __typename?: 'Query', findRecruitersAdvSearch?: { __typename?: 'RecruiterPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Recruiter', id: string, registeredAt: Date, user: { __typename?: 'User', id: string, firstName: string, lastName: string, displayName: string, birthDate?: Date | null, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -3208,11 +3230,21 @@ export const GetRecruiterByIdDocument = `
       lastName
       email
       username
+      birthDate
       userProfile {
         photography
+        coverPhotography
         profileTitle
+        description
+        city {
+          name
+          country {
+            name
+          }
+        }
       }
     }
+    registeredAt
     organization {
       id
       name
@@ -3836,6 +3868,71 @@ useInfiniteGetAllStepsQuery.getKey = (variables?: GetAllStepsQueryVariables) => 
 ;
 
 useGetAllStepsQuery.fetcher = (client: GraphQLClient, variables?: GetAllStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, variables, headers);
+export const FindRecruitersAdvSearchDocument = `
+    query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
+  findRecruitersAdvSearch(searchQuery: $searchQuery) {
+    list {
+      id
+      user {
+        id
+        firstName
+        lastName
+        displayName
+        birthDate
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
+      registeredAt
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useFindRecruitersAdvSearchQuery = <
+      TData = FindRecruitersAdvSearchQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: FindRecruitersAdvSearchQueryVariables,
+      options?: UseQueryOptions<FindRecruitersAdvSearchQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<FindRecruitersAdvSearchQuery, TError, TData>(
+      variables === undefined ? ['FindRecruitersAdvSearch'] : ['FindRecruitersAdvSearch', variables],
+      fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, variables, headers),
+      options
+    );
+useFindRecruitersAdvSearchQuery.document = FindRecruitersAdvSearchDocument;
+
+
+useFindRecruitersAdvSearchQuery.getKey = (variables?: FindRecruitersAdvSearchQueryVariables) => variables === undefined ? ['FindRecruitersAdvSearch'] : ['FindRecruitersAdvSearch', variables];
+;
+
+export const useInfiniteFindRecruitersAdvSearchQuery = <
+      TData = FindRecruitersAdvSearchQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof FindRecruitersAdvSearchQueryVariables,
+      client: GraphQLClient,
+      variables?: FindRecruitersAdvSearchQueryVariables,
+      options?: UseInfiniteQueryOptions<FindRecruitersAdvSearchQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<FindRecruitersAdvSearchQuery, TError, TData>(
+      variables === undefined ? ['FindRecruitersAdvSearch.infinite'] : ['FindRecruitersAdvSearch.infinite', variables],
+      (metaData) => fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteFindRecruitersAdvSearchQuery.getKey = (variables?: FindRecruitersAdvSearchQueryVariables) => variables === undefined ? ['FindRecruitersAdvSearch.infinite'] : ['FindRecruitersAdvSearch.infinite', variables];
+;
+
+useFindRecruitersAdvSearchQuery.fetcher = (client: GraphQLClient, variables?: FindRecruitersAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -4073,7 +4170,7 @@ export const StatusSchema = z.nativeEnum(Status);
 
 export function StepInputSchema(): z.ZodObject<Properties<StepInput>> {
   return z.object<Properties<StepInput>>({
-    description: z.string().min(3).max(100, "Field must not be longer than 100 characters"),
+    description: z.string().min(3).max(150, "Field must not be longer than 150 characters"),
     title: z.string().min(2).max(15, "Field must not be longer than 15 characters")
   })
 }

@@ -12,6 +12,7 @@ import {
   useGetOrganizationBySlugNameQuery,
 } from "@gql/generated";
 import {
+  BuildingOffice2Icon,
   CalendarIcon,
   ChatBubbleBottomCenterTextIcon,
   CheckCircleIcon,
@@ -21,7 +22,6 @@ import {
   PhotoIcon,
   Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
-import { BuildingOffice2Icon } from "@heroicons/react/24/solid";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
@@ -32,8 +32,8 @@ import {
   MultiSelect,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";

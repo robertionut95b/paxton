@@ -1,18 +1,22 @@
 package com.irb.paxton.core.organization;
 
-import com.irb.paxton.core.jobs.JobListingRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.organization.exception.EmptyUsersListException;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.exception.RecruiterAlreadyAssignedException;
 import com.irb.paxton.core.organization.exception.RecruiterExistingJobsException;
 import com.irb.paxton.core.organization.input.RecruiterInput;
 import com.irb.paxton.core.organization.mapper.RecruiterMapper;
+import com.irb.paxton.core.search.PaginatedResponse;
+import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.role.RoleRepository;
 import com.irb.paxton.security.auth.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +26,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class RecruiterService {
+public class RecruiterService extends AbstractService<Recruiter, Long> {
 
     @Autowired
     private RecruiterRepository recruiterRepository;
@@ -35,11 +39,13 @@ public class RecruiterService {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private JobListingRepository jobListingRepository;
+    protected RecruiterService(AbstractRepository<Recruiter, Long> repository) {
+        super(repository);
+    }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     @Transactional
@@ -97,5 +103,21 @@ public class RecruiterService {
         organizationRepository.save(organization);
 
         return organization.getRecruiters();
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, #organizationId))")
+    public Collection<Recruiter> findByOrganizationId(Long organizationId) {
+        return this.recruiterRepository.findByOrganizationId(organizationId);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, #organizationSlug))")
+    public Collection<Recruiter> findByOrganizationSlugName(String organizationSlug) {
+        return this.recruiterRepository.findByOrganizationSlugName(organizationSlug);
+    }
+
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject))")
+    public PaginatedResponse<Recruiter> findRecruitersAdvSearch(SearchRequest searchRequest) {
+        return this.advSearch(searchRequest);
     }
 }

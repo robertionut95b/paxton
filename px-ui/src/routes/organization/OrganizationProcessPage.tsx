@@ -30,6 +30,7 @@ import {
   Alert,
   Anchor,
   Avatar,
+  Box,
   Button,
   Center,
   Divider,
@@ -448,7 +449,14 @@ const OrganizationProcessPage = () => {
         <Stack spacing="lg">
           <Flex gap={4} direction="column">
             <form onSubmit={form.onSubmit((values) => onSubmitForm(values))}>
-              <Title order={5}>Recruitment process</Title>
+              <Box>
+                <Title order={5}>Recruitment process</Title>
+                <Text size="sm" color="dimmed">
+                  The workflow of every recruitment application for this
+                  organization
+                </Text>
+                <Divider my="sm" />
+              </Box>
               <Group spacing={5}>
                 {organization.photography && (
                   <Avatar size="md" src={organization.photography} />

@@ -30,7 +30,7 @@ public class Step extends PaxtonEntity<Long> {
     @NotEmpty
     @NotNull
     @Column(unique = true)
-    @Length(min = 2, max = 15)
+    @Length(min = 2, max = 25)
     private String title;
 
     @NotBlank

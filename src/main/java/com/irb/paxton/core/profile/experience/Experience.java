@@ -33,7 +33,7 @@ public class Experience extends PaxtonEntity<Long> {
     @NotBlank
     private String title;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
     private ContractType contractType;

@@ -291,7 +291,7 @@ export default function OrganizationPostJobForm() {
             color={!form.errors.description ? "dimmed" : "red"}
             mt={4}
           >
-            {desc.length}/2.000
+            {desc.length}/8.000
           </Text>
         </Group>
         <ShowIfElse

@@ -72,7 +72,7 @@ public class JobListing extends PaxtonEntity<Long> {
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
     private ContractType contractType;
@@ -94,7 +94,7 @@ public class JobListing extends PaxtonEntity<Long> {
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @NotNull
     private WorkType workType = WorkType.HYBRID;
 

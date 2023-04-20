@@ -6,6 +6,19 @@ import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
 import { differenceInBusinessDays, intlFormatDistance } from "date-fns";
 import { NavLink } from "react-router-dom";
 
+type JobListingItemProps = {
+  data: NonNullable<
+    NonNullable<
+      NonNullable<
+        NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
+      >
+    >[number]
+  >;
+  compact?: boolean;
+  navigable?: boolean;
+  withDescription?: boolean;
+};
+
 export default function JobListingItem({
   data: {
     id,
@@ -18,17 +31,8 @@ export default function JobListingItem({
   },
   compact = false,
   navigable = true,
-}: {
-  data: NonNullable<
-    NonNullable<
-      NonNullable<
-        NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
-      >
-    >[number]
-  >;
-  compact?: boolean;
-  navigable?: boolean;
-}) {
+  withDescription = true,
+}: JobListingItemProps) {
   return (
     <Paper py="md" px="xs">
       <div className="flex gap-x-6">
@@ -70,11 +74,13 @@ export default function JobListingItem({
                 </Anchor>
               </ShowIfElse>
             </li>
-            <li>
-              <Text my={2} size={"sm"} truncate>
-                {description}
-              </Text>
-            </li>
+            {withDescription && (
+              <li>
+                <Text my={2} size={"sm"} truncate>
+                  {description}
+                </Text>
+              </li>
+            )}
             <li>
               <Group spacing={2}>
                 <MapPinIcon width={14} />

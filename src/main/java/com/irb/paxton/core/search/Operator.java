@@ -9,6 +9,7 @@ import javax.persistence.metamodel.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public enum Operator {
@@ -200,8 +201,19 @@ public enum Operator {
         return path;
     }
 
-    @SuppressWarnings("unchecked")
     private Join<?, ?> getJoin(PluralAttribute<?, ?, ?> attr, From<?, ?> from) {
+        final Set<?> joins = from.getJoins();
+        for (Object object : joins) {
+            Join<?, ?> join = (Join<?, ?>) object;
+            if (join.getAttribute().getName().equals(attr.getName())) {
+                return join;
+            }
+        }
+        return createJoin(attr, from);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Join<?, ?> createJoin(PluralAttribute<?, ?, ?> attr, From<?, ?> from) {
         return switch (attr.getCollectionType()) {
             case COLLECTION -> from.join((CollectionAttribute) attr);
             case SET -> from.join((SetAttribute) attr);

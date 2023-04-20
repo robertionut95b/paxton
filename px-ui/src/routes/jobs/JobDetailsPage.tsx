@@ -145,15 +145,17 @@ const JobDetailsPage = () => {
         <Paper shadow={"xs"} p="xs">
           <Breadcrumbs excludePaths={["/app/jobs/view"]} />
         </Paper>
-        <JobMainSection
-          job={job}
-          applied={!!myApplication?.getMyApplicationForJobListing}
-          isAllowedCandidature={
-            (job.isActive ?? false) && !isCandidatureAllowed
-          }
-          submitCandidatureFn={submitCandidature}
-          isCandidatureLoading={isApplyLoading || isMyApplicationLoading}
-        />
+        <Paper shadow={"xs"} p="lg">
+          <JobMainSection
+            job={job}
+            applied={!!myApplication?.getMyApplicationForJobListing}
+            isAllowedCandidature={
+              (job.isActive ?? false) && !isCandidatureAllowed
+            }
+            submitCandidatureFn={submitCandidature}
+            isCandidatureLoading={isApplyLoading || isMyApplicationLoading}
+          />
+        </Paper>
         <ShowIf if={myApplication?.getMyApplicationForJobListing}>
           {myApplication?.getMyApplicationForJobListing && (
             <ApplicationCandidatureTimeline
@@ -164,7 +166,9 @@ const JobDetailsPage = () => {
         <ShowIf if={recruiter}>
           {recruiter && <JobMeetRecruitersSection recruiter={recruiter} />}
         </ShowIf>
-        <JobDescriptionSection description={job.description} />
+        <Paper shadow={"xs"} p="md">
+          <JobDescriptionSection description={job.description} />
+        </Paper>
         <JobRelatedAlertSection
           job={job.job}
           location={`${job.city.name}, ${job.city.country.name}`}

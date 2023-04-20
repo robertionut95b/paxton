@@ -14,24 +14,34 @@ import {
 } from "@heroicons/react/24/outline";
 import {
   ActionIcon,
+  Anchor,
   Avatar,
+  Box,
   Button,
   Group,
   List,
   Loader,
-  Paper,
   Space,
   Text,
   Title,
 } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { intlFormatDistance, isFuture } from "date-fns";
+import { NavLink } from "react-router-dom";
 
 type OmitApplicationFieldsType = NonNullable<
   NonNullable<
     NonNullable<GetAllJobListingsQuery["getAllJobListings"]>["list"]
   >[number]
 >;
+
+type JobMainSectionProps = {
+  job: JobListing | OmitApplicationFieldsType;
+  applied?: boolean;
+  isAllowedCandidature: boolean;
+  submitCandidatureFn: () => void;
+  isCandidatureLoading: boolean;
+};
 
 const JobMainSection = ({
   job: {
@@ -48,15 +58,9 @@ const JobMainSection = ({
   isAllowedCandidature = false,
   submitCandidatureFn,
   isCandidatureLoading = true,
-}: {
-  job: JobListing | OmitApplicationFieldsType;
-  applied?: boolean;
-  isAllowedCandidature: boolean;
-  submitCandidatureFn: () => void;
-  isCandidatureLoading: boolean;
-}) => {
+}: JobMainSectionProps) => {
   return (
-    <Paper shadow={"xs"} p="lg">
+    <Box>
       <Group position="apart" align={"flex-start"}>
         <ShowIf if={organization}>
           <Avatar size={"md"} src={organization.photography} mb={"md"}>
@@ -74,7 +78,14 @@ const JobMainSection = ({
       </Group>
       <Title order={3}>{title}</Title>
       <Group spacing={6}>
-        <Text size={"sm"}>{organization.name}</Text>
+        <Anchor
+          size={"sm"}
+          variant="link"
+          component={NavLink}
+          to={`/app/organizations/${organization.slugName}`}
+        >
+          {organization.name}
+        </Anchor>
         {" - "}
         <Text size={"sm"}>
           {city.country.name}, {city.name}
@@ -152,7 +163,7 @@ const JobMainSection = ({
           </ShowIf>
         </ShowIfElse>
       </List>
-    </Paper>
+    </Box>
   );
 };
 

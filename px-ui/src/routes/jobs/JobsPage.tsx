@@ -11,15 +11,14 @@ import {
   Operator,
   SortDirection,
   useGetAllJobListingsQuery,
-  useGetOrganizationBySlugNameQuery,
   useGetUserProfileQuery,
 } from "@gql/generated";
+import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Box, Grid, Paper, Text, Title } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import graphqlRequestClient from "../../lib/graphqlRequestClient";
 import JobsLeftMenu from "./JobsLeftMenu";
 
 const todayIsoFmt = formatISO(new Date());
@@ -36,24 +35,12 @@ export default function JobsPage() {
       useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
     );
 
-  const orgParam = searchParams.get("org");
   const upJobId = searchParams.get("jobId");
   const refPage = searchParams.get("ref");
   const jobQuery = searchParams.get("q");
   const cityId =
     searchParams.get("city") ??
     (!refPage && prevUserProfileQueryData?.getUserProfile?.city?.id);
-
-  const { data: organizationData, isInitialLoading: isOrgLoading } =
-    useGetOrganizationBySlugNameQuery(
-      graphqlRequestClient,
-      {
-        slugName: orgParam ?? "",
-      },
-      {
-        enabled: !!orgParam,
-      }
-    );
 
   const { data: userProfile, isInitialLoading: isProfileLoading } =
     useGetUserProfileQuery(
@@ -92,16 +79,6 @@ export default function JobsPage() {
             value: todayIsoFmt,
             operator: Operator.LessThanEqual,
           },
-          ...(organizationData?.getOrganizationBySlugName
-            ? [
-                {
-                  key: "organization",
-                  fieldType: FieldType.Long,
-                  value: organizationData?.getOrganizationBySlugName?.id ?? "",
-                  operator: Operator.Equal,
-                },
-              ]
-            : []),
           ...(upJobId
             ? [
                 {
@@ -176,7 +153,7 @@ export default function JobsPage() {
           );
         }
       },
-      enabled: !isOrgLoading && !isProfileLoading,
+      enabled: !isProfileLoading,
     }
   );
 

@@ -230,6 +230,7 @@ export enum FieldType {
   Date = 'DATE',
   Datetime = 'DATETIME',
   Double = 'DOUBLE',
+  Enum = 'ENUM',
   Integer = 'INTEGER',
   Long = 'LONG',
   String = 'STRING'
@@ -4049,7 +4050,7 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     availableTo: z.date(),
     categoryId: z.string().min(1),
     contractType: ContractTypeSchema,
-    description: z.string().max(2000, "Field must not be longer than 2000 characters"),
+    description: z.string().max(8000, "Field must not be longer than 8000 characters"),
     id: z.string().nullish(),
     jobId: z.string().min(1),
     location: z.string().min(3),

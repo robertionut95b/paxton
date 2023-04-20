@@ -4,7 +4,8 @@ import {
   JobListing,
   Organization,
 } from "@gql/generated";
-import { Avatar, Group, Paper, Title } from "@mantine/core";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { Avatar, Button, Group, Paper, Title } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 
 export default function JobOrganizationAboutCard({
@@ -21,9 +22,14 @@ export default function JobOrganizationAboutCard({
 }) {
   return (
     <Paper shadow={"xs"} p="md">
-      <Title mb={"md"} order={4}>
-        About the company
-      </Title>
+      <Group position="apart">
+        <Title mb={"md"} order={4}>
+          About the company
+        </Title>
+        <Button variant="outline" leftIcon={<PlusIcon width={16} />}>
+          Follow
+        </Button>
+      </Group>
       <NavLink to={`/app/organizations/${organization.slugName}`}>
         <Group>
           <Avatar src={organization.photography} mb={"md"}>

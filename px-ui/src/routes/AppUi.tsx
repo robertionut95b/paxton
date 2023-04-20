@@ -85,6 +85,7 @@ const SearchPage = lazy(() => import("./user/SearchPage"));
 const UserJobsPage = lazy(() => import("./user/UserJobsPage"));
 const NewChatPage = lazy(() => import("./chat/NewChatPage"));
 const ChatRoomPage = lazy(() => import("./chat/ChatRoomPage"));
+const JobSearchPage = lazy(() => import("./jobs/JobSearchPage"));
 
 export default function AppUI() {
   return (
@@ -110,6 +111,7 @@ export default function AppUI() {
               <Route path={"view/:jobId/applications/:applicationId"}>
                 <Route index element={<RecruitmentApplicationPage />} />
               </Route>
+              <Route path="search" element={<JobSearchPage />} />
             </Route>
             <Route path="up/:profileSlug/" element={<UserProfile />}>
               <Route path="update/banner" element={<ProfileBannerModal />} />

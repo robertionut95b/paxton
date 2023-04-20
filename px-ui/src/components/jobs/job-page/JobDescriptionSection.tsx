@@ -1,9 +1,9 @@
 import ExpandableText from "@components/visibility/ExpandableText";
-import { Paper, Title } from "@mantine/core";
+import { Box, Title } from "@mantine/core";
 
 const JobDescriptionSection = ({ description }: { description: string }) => {
   return (
-    <Paper shadow={"xs"} p="md">
+    <Box>
       <Title mb={"md"} order={4}>
         About the job
       </Title>
@@ -11,7 +11,7 @@ const JobDescriptionSection = ({ description }: { description: string }) => {
         Job description
       </Title>
       <ExpandableText size={"sm"}>{description}</ExpandableText>
-    </Paper>
+    </Box>
   );
 };
 

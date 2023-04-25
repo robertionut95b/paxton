@@ -3,6 +3,7 @@ import { useGetOrganizationBySlugNameQuery } from "@gql/generated";
 import {
   BuildingOfficeIcon,
   CalendarDaysIcon,
+  CogIcon,
   DocumentTextIcon,
   GlobeAltIcon,
   MapIcon,
@@ -107,6 +108,7 @@ const OrganizationSettingsMainPage = () => {
             label="Activity sector"
             readOnly
             defaultValue={organization.activitySector.name}
+            icon={<CogIcon width={16} />}
           />
           <Textarea
             autosize

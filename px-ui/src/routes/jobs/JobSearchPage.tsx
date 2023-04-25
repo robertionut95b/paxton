@@ -427,7 +427,14 @@ const JobSearchPage = () => {
                 {`${userProfile?.getUserProfile?.city?.country.name}`}
               </ShowIfElse>
             </Title>
-            <ScrollArea h={"75vh"}>
+            <ScrollArea
+              sx={(theme) => ({
+                [theme.fn.smallerThan("sm")]: {
+                  height: "40vh",
+                },
+                height: "75vh",
+              })}
+            >
               {jobs.map(
                 (jl, idx) =>
                   jl && (

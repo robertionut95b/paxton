@@ -4,7 +4,7 @@ import {
   LoginUserMutationProps,
   LoginUserMutationResponseP,
 } from "@interfaces/login.types";
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 export default function useLoginUser(
@@ -17,7 +17,5 @@ export default function useLoginUser(
     mutationKey: ["loginUser"],
   }
 ) {
-  return useMutation(submitLogin, {
-    ...options,
-  });
+  return useMutation({ mutationFn: submitLogin, ...options });
 }

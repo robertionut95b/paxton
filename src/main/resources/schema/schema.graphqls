@@ -251,7 +251,8 @@ input JobInput {
 input JobListingInput {
     id: ID
     title: String! @constraint(minLength: 5)
-    description: String! @constraint(maxLength: 8000)
+    description: String! @constraint(minLength: 10, maxLength: 8000)
+    formattedDescription: String! @constraint(minLength: 10)
     availableFrom: Date!
     availableTo: Date!
     location: String! @constraint(minLength: 3)
@@ -268,6 +269,7 @@ type JobListing {
     id: ID!
     title: String!
     description: String!
+    formattedDescription: String!
     availableFrom: Date!
     availableTo: Date!
     isActive: Boolean

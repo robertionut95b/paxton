@@ -294,6 +294,7 @@ export type JobListing = {
   city: City;
   contractType: ContractType;
   description: Scalars['String'];
+  formattedDescription: Scalars['String'];
   id: Scalars['ID'];
   isActive?: Maybe<Scalars['Boolean']>;
   job: Job;
@@ -310,6 +311,7 @@ export type JobListingInput = {
   categoryId: Scalars['ID'];
   contractType: ContractType;
   description: Scalars['String'];
+  formattedDescription: Scalars['String'];
   id?: InputMaybe<Scalars['ID']>;
   jobId: Scalars['ID'];
   location: Scalars['String'];
@@ -1168,7 +1170,7 @@ export type GetAllJobListingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
+export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: string, title: string, description: string, formattedDescription: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: string, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: string, name: string, description: string }, organization: { __typename?: 'Organization', id: string, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: string, name: string } }, category?: { __typename?: 'JobCategory', id: string, name: string } | null, applications?: Array<{ __typename?: 'Application', id: string, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: string, user: { __typename?: 'User', id: string, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: string, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
   profileSlugUrl?: InputMaybe<Scalars['String']>;
@@ -1984,6 +1986,7 @@ export const GetAllJobListingsDocument = `
       id
       title
       description
+      formattedDescription
       availableFrom
       availableTo
       city {
@@ -4050,7 +4053,8 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     availableTo: z.date(),
     categoryId: z.string().min(1),
     contractType: ContractTypeSchema,
-    description: z.string().max(8000, "Field must not be longer than 8000 characters"),
+    description: z.string().min(10).max(8000, "Field must not be longer than 8000 characters"),
+    formattedDescription: z.string().min(10),
     id: z.string().nullish(),
     jobId: z.string().min(1),
     location: z.string().min(3),

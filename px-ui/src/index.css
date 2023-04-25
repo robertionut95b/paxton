@@ -60,3 +60,37 @@ body,
 .px-expandable-text:has(~ .px-expandable-text-expand-btn:checked) {
   max-height: none;
 }
+
+.ck.ck-content ul,
+.ck.ck-content ul li{
+  list-style-type: inherit;
+}
+
+.ck.ck-content ol,
+.ck.ck-content ol li{
+  list-style-type: decimal;
+}
+
+.ck.ck-content ul {
+  /* Default user agent stylesheet, you can change it to your needs. */
+  padding-left: 40px;
+}
+
+.ck.ck-content ol {
+  /* Default user agent stylesheet, you can change it to your needs. */
+  padding-left: 40px;
+}
+
+.ck.ck-editor{
+  font-size: 14px;
+}
+
+.ck.ck-content h1 {
+  font-size: 1.1rem;
+  line-height: 1.75rem;
+}
+
+.ck.ck-content h2 {
+  font-size: 1rem;
+  line-height: 1.75rem;
+}

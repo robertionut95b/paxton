@@ -167,7 +167,7 @@ const JobDetailsPage = () => {
           {recruiter && <JobMeetRecruitersSection recruiter={recruiter} />}
         </ShowIf>
         <Paper shadow={"xs"} p="md">
-          <JobDescriptionSection description={job.description} />
+          <JobDescriptionSection description={job.formattedDescription} />
         </Paper>
         <JobRelatedAlertSection
           job={job.job}
@@ -185,7 +185,7 @@ const JobDetailsPage = () => {
                 <Center mt={"sm"}>
                   <Button
                     component={NavLink}
-                    to={`/app/jobs?jobId=${job.job.id}`}
+                    to={`/app/jobs/search?jobId=${job.job.id}`}
                   >
                     See similar jobs
                   </Button>

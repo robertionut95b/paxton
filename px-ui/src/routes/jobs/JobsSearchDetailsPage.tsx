@@ -1,6 +1,7 @@
 import { RoleType } from "@auth/permission.types";
 import { useAuth } from "@auth/useAuth";
 import JobDescriptionSection from "@components/jobs/job-page/JobDescriptionSection";
+import JobDescriptionSkeleton from "@components/jobs/job-page/JobDescriptionSkeleton";
 import JobMainSection from "@components/jobs/job-page/JobMainSection";
 import JobOrganizationAboutCard from "@components/jobs/job-page/JobOrganizationAboutCard";
 import {
@@ -13,7 +14,7 @@ import {
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Center, Loader, Stack, Text } from "@mantine/core";
+import { Center, Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -114,12 +115,7 @@ const JobsSearchDetailsPage = () => {
     [jobData?.getAllJobListings?.list?.[0]?.id, user?.profileId, user?.userId]
   );
 
-  if (jobIsLoading || isMyApplicationLoading)
-    return (
-      <Center>
-        <Loader size="sm" />
-      </Center>
-    );
+  if (jobIsLoading || isMyApplicationLoading) return <JobDescriptionSkeleton />;
 
   if (
     !jobData?.getAllJobListings?.list &&
@@ -146,7 +142,7 @@ const JobsSearchDetailsPage = () => {
           isCandidatureLoading={isApplyLoading || isMyApplicationLoading}
         />
       )}
-      <JobDescriptionSection description={job?.description ?? ""} />
+      <JobDescriptionSection description={job?.formattedDescription ?? ""} />
       {job?.organization && (
         <JobOrganizationAboutCard organization={job?.organization} />
       )}

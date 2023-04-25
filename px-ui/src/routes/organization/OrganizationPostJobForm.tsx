@@ -1,3 +1,5 @@
+import viewToPlainText from "@ckeditor/ckeditor5-clipboard/src/utils/viewtoplaintext";
+import MantineEditor from "@components/inputs/MantineEditor";
 import { SelectItem } from "@components/select-items/SelectItem";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
@@ -86,6 +88,21 @@ export default function OrganizationPostJobForm() {
     },
     {
       enabled: !!jobListingId,
+      onSuccess: (data) => {
+        if (data.getAllJobListings?.list?.[0]) {
+          const firstItem = data.getAllJobListings?.list?.[0];
+          form.setValues({
+            ...firstItem,
+            categoryId: firstItem?.category?.id,
+            availableFrom: new Date(firstItem.availableFrom),
+            availableTo: new Date(firstItem.availableTo),
+            location: firstItem.city.id,
+            jobId: firstItem.job.id,
+            organizationId: firstItem.organization.id,
+            recruiterId: firstItem.recruiter?.id,
+          });
+        }
+      },
     }
   );
 
@@ -95,10 +112,10 @@ export default function OrganizationPostJobForm() {
 
   const [startDate, setStartDate] = useState<Date>(new Date());
 
-  const { data: countries, isLoading: isCountryListLoading } =
+  const { data: countries, isInitialLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient);
 
-  const { data: organizations, isLoading: isOrganizationsLoading } =
+  const { data: organizations, isInitialLoading: isOrganizationsLoading } =
     useGetAllOrganizationsQuery(
       graphqlRequestClient,
       {},
@@ -115,7 +132,7 @@ export default function OrganizationPostJobForm() {
       }
     );
 
-  const { data: jobCategoriesData, isLoading: isJobCategoriesLoading } =
+  const { data: jobCategoriesData, isInitialLoading: isJobCategoriesLoading } =
     useGetAllJobCategoriesQuery(graphqlRequestClient, undefined, {
       onSuccess: ({ getAllJobCategories }) => {
         setJobCategories(
@@ -125,10 +142,10 @@ export default function OrganizationPostJobForm() {
       },
     });
 
-  const { data: jobs, isLoading: isJobsLoading } =
+  const { data: jobs, isInitialLoading: isJobsLoading } =
     useGetAllJobsQuery(graphqlRequestClient);
 
-  const { data: recruitersData, isLoading: isRecruitersLoading } =
+  const { data: recruitersData, isInitialLoading: isRecruitersLoading } =
     useGetAllRecruitersForOrganizationBySlugQuery(
       graphqlRequestClient,
       {
@@ -209,6 +226,8 @@ export default function OrganizationPostJobForm() {
       id: jobListingId ?? null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
+      formattedDescription:
+        jobListingItem?.formattedDescription ?? ([] as string[]),
       availableFrom: jobListingItem?.availableFrom
         ? new Date(jobListingItem.availableFrom)
         : new Date(),
@@ -240,6 +259,7 @@ export default function OrganizationPostJobForm() {
           values.availableTo,
           "yyyy-MM-dd"
         ) as unknown as Date,
+        formattedDescription: values.formattedDescription as string,
       },
     });
   };
@@ -271,7 +291,26 @@ export default function OrganizationPostJobForm() {
           icon={<CubeIcon width={18} />}
           {...form.getInputProps("title")}
         />
+        <MantineEditor
+          label="Description"
+          description="Fill in a job description for this listing"
+          mt="md"
+          withAsterisk
+          {...form.getInputProps("formattedDescription")}
+          initialValue={jobListingItem?.formattedDescription}
+          onChange={(_v, editor) => {
+            const data = editor.getData();
+            const plainText = viewToPlainText(
+              // @ts-expect-error("ckeditor types")
+              editor.editing.view.document.getRoot()
+            );
+            form.setFieldValue("formattedDescription", data);
+            form.setFieldValue("description", plainText);
+            setDesc(plainText);
+          }}
+        />
         <Textarea
+          className="hidden"
           label="Description"
           description="Fill in a job description for this listing"
           mt="md"

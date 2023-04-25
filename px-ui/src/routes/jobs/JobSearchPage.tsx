@@ -1,5 +1,6 @@
 import { useAuth } from "@auth/useAuth";
 import JobListing from "@components/jobs/JobListing";
+import JobDescriptionSkeleton from "@components/jobs/job-page/JobDescriptionSkeleton";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
@@ -13,6 +14,7 @@ import {
   SortDirection,
   WorkType,
   useGetAllJobListingsQuery,
+  useGetAllJobsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
   useGetUserProfileQuery,
@@ -25,13 +27,13 @@ import {
 } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
-  Box,
   Button,
   Divider,
   Drawer,
   Grid,
   Group,
-  Loader,
+  Image,
+  MediaQuery,
   MultiSelect,
   Paper,
   ScrollArea,
@@ -46,6 +48,7 @@ import { prettyEnumValue } from "@utils/enumUtils";
 import { formatISO } from "date-fns";
 import { useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
+import Balancer from "react-wrap-balancer";
 import { useDebounce } from "usehooks-ts";
 import JobsSearchDetailsPage from "./JobsSearchDetailsPage";
 
@@ -101,7 +104,12 @@ const JobSearchPage = () => {
       }
     );
 
-  const { data, isInitialLoading: jobsLoading } = useGetAllJobListingsQuery(
+  const {
+    data,
+    isInitialLoading: jobsLoading,
+    refetch: reloadJobListings,
+    isRefetching: jobsIsRefetching,
+  } = useGetAllJobListingsQuery(
     graphqlRequestClient,
     {
       searchQuery: {
@@ -242,8 +250,11 @@ const JobSearchPage = () => {
     }
   );
 
-  const { data: cityData, isLoading: cityIsLoading } =
+  const { data: cityData, isInitialLoading: cityIsLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient);
+
+  const { data: jobsData, isInitialLoading: isJobsLoading } =
+    useGetAllJobsQuery(graphqlRequestClient);
 
   const locations = useMemo(
     () =>
@@ -268,6 +279,15 @@ const JobSearchPage = () => {
         label: o?.name ?? "",
       })) ?? [],
     [organizationsData]
+  );
+
+  const baseJobs = useMemo(
+    () =>
+      (jobsData?.getAllJobs ?? [])?.map((j) => ({
+        value: j?.id ?? "",
+        label: j?.name ?? "",
+      })),
+    [jobsData]
   );
 
   const onChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -306,7 +326,7 @@ const JobSearchPage = () => {
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
 
-  if (isProfileLoading || jobsLoading || cityIsLoading)
+  if (isProfileLoading || jobsLoading || cityIsLoading || isJobsLoading)
     return <ApplicationSpinner />;
 
   return (
@@ -335,30 +355,34 @@ const JobSearchPage = () => {
             transition="fade"
             transitionDuration={300}
           />
-          <Select
-            size="xs"
-            placeholder="Location"
-            icon={<MapIcon width={16} />}
-            searchable
-            nothingFound="No record found"
-            data={locations}
-            value={searchParams.get("city") ?? undefined}
-            onChange={(val) => onChangeSingleType(val, "city")}
-            transition="fade"
-            transitionDuration={300}
-          />
-          <MultiSelect
-            size="xs"
-            placeholder="Organization"
-            data={organizations}
-            searchable
-            icon={<BuildingOfficeIcon width={16} />}
-            value={orgParam ? orgParam.split(",") : undefined}
-            onChange={(val) => onChangeMultiType(val, "org")}
-            transition="fade"
-            transitionDuration={300}
-            disabled={isOrgsLoading}
-          />
+          <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+            <Group noWrap spacing={5}>
+              <Select
+                size="xs"
+                placeholder="Location"
+                icon={<MapIcon width={16} />}
+                searchable
+                nothingFound="No record found"
+                data={locations}
+                value={searchParams.get("city") ?? undefined}
+                onChange={(val) => onChangeSingleType(val, "city")}
+                transition="fade"
+                transitionDuration={300}
+              />
+              <MultiSelect
+                size="xs"
+                placeholder="Organization"
+                data={organizations}
+                searchable
+                icon={<BuildingOfficeIcon width={16} />}
+                value={orgParam ? orgParam.split(",") : undefined}
+                onChange={(val) => onChangeMultiType(val, "org")}
+                transition="fade"
+                transitionDuration={300}
+                disabled={isOrgsLoading}
+              />
+            </Group>
+          </MediaQuery>
           <Button size="xs" variant="filled" onClick={() => setOpened(true)}>
             All filters
           </Button>
@@ -369,18 +393,29 @@ const JobSearchPage = () => {
         </Group>
       </Grid.Col>
       <Grid.Col sm={5} span={12}>
-        <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
+        <Paper shadow="xs" p="md" className="px-jobs grid gap-8">
           <ShowIfElse
             if={jobs.length > 0}
             else={
-              <Box>
-                <Title mb={8} order={5}>
-                  No suitable jobs found
-                </Title>
-                <Text size="sm" align="left">
+              <Stack spacing="xs" align="center">
+                <Title order={5}>No suitable jobs found</Title>
+                <Text size="sm" align="left" component={Balancer}>
                   Unfortunately we could not find any matches
                 </Text>
-              </Box>
+                <Group spacing="xs">
+                  <Button
+                    size="xs"
+                    variant="filled"
+                    onClick={() => reloadJobListings()}
+                    loading={jobsIsRefetching}
+                  >
+                    Reload
+                  </Button>
+                  <Button size="xs" variant="light" onClick={clearAllFilters}>
+                    Reset filters
+                  </Button>
+                </Group>
+              </Stack>
             }
           >
             <Title className="capitalize" mb={"xs"} order={5}>
@@ -433,8 +468,27 @@ const JobSearchPage = () => {
       </Grid.Col>
       <Grid.Col sm={7} span={12}>
         <Paper p="md" shadow="xs">
-          <ShowIfElse if={jobsLoading} else={<JobsSearchDetailsPage />}>
-            <Loader size="sm" />
+          <ShowIfElse
+            if={(data?.getAllJobListings?.totalElements ?? 0) === 0}
+            else={
+              <ShowIfElse if={!jobsLoading} else={<JobDescriptionSkeleton />}>
+                <ScrollArea h="75vh" pr="xs">
+                  <JobsSearchDetailsPage />
+                </ScrollArea>
+              </ShowIfElse>
+            }
+          >
+            <Stack align="center" spacing="xs">
+              <Image width={82} src="/images/bow-tie.svg" alt="bowtie" />
+              <Title order={3}>No results found</Title>
+              <Text align="center" size="sm" component={Balancer}>
+                Your search might be too restrictive, or we do not have that
+                specific job. Try to reset the filters.
+              </Text>
+              <Button variant="subtle" onClick={clearAllFilters}>
+                Reset filters
+              </Button>
+            </Stack>
           </ShowIfElse>
         </Paper>
       </Grid.Col>
@@ -463,6 +517,19 @@ const JobSearchPage = () => {
             data={locations}
             value={searchParams.get("city") ?? undefined}
             onChange={(val) => onChangeSingleType(val, "city")}
+            transition="fade"
+            transitionDuration={300}
+          />
+          <Select
+            label="Job"
+            placeholder="Job"
+            description="The base qualification of the job"
+            icon={<MapIcon width={16} />}
+            searchable
+            nothingFound="No record found"
+            data={baseJobs}
+            value={searchParams.get("jobId") ?? undefined}
+            onChange={(val) => onChangeSingleType(val, "jobId")}
             transition="fade"
             transitionDuration={300}
           />

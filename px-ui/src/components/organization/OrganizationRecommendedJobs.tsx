@@ -31,7 +31,7 @@ const OrganizationRecommendedJobs = ({
           variant="subtle"
           fullWidth
           component={NavLink}
-          to={`/app/jobs?${params.toString()}`}
+          to={`/app/jobs/search?${params.toString()}`}
         >
           See all jobs
         </Button>

@@ -11,6 +11,7 @@ import AuthProvider from "@providers/AuthProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
+import { Provider } from "react-wrap-balancer";
 import { useDarkMode } from "usehooks-ts";
 
 export default function AppProviders({
@@ -69,7 +70,9 @@ export default function AppProviders({
         <NotificationsProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <ModalsProvider>{children}</ModalsProvider>
+              <ModalsProvider>
+                <Provider>{children}</Provider>
+              </ModalsProvider>
             </AuthProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>

@@ -202,7 +202,7 @@ public class RepositoryBootEventService {
         LocalDate now = LocalDate.now();
         now = now.plusMonths(1);
         now = now.plusDays(15);
-        JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", LocalDate.now(),
+        JobListing jobListingPaxtonSoftwareDev = new JobListing("Java Software Developer", "Lorem ipsum dolor sit amet porttitor aliquam.", "<h1><strong>About the job</strong></h1><p></p><h2><strong>Description</strong></h2><p>Lorem ipsum dolor sit amet porttitor aliquam</p>", LocalDate.now(),
                 LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth()), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, recruiter, WorkType.HYBRID);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));

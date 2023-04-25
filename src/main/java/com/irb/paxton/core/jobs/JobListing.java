@@ -44,6 +44,14 @@ public class JobListing extends PaxtonEntity<Long> {
     @Column(nullable = false)
     private String description;
 
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Length(min = 10, message = "Description must be longer than 10 characters")
+    @Lob
+    @Column(nullable = false)
+    private String formattedDescription;
+
     @FutureOrPresent
     @Column(nullable = false)
     @NotNull

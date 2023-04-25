@@ -48,7 +48,7 @@ export function LogoWithSearch() {
       description: "Search jobs globally",
       onTrigger: () => {
         searchQuery.length > 0
-          ? navigate(`/app/jobs?q=${searchQuery}`)
+          ? navigate(`/app/jobs/search?q=${searchQuery}`)
           : navigate(`/app/jobs`);
       },
       icon: <BriefcaseIcon width={20} />,

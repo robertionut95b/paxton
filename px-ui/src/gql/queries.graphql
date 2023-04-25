@@ -4,6 +4,7 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
       id
       title
       description
+      formattedDescription
       availableFrom
       availableTo
       city {

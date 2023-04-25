@@ -7,5 +7,5 @@ export default function useLogoutUser(
     mutationKey: ["logoutUser"],
   }
 ) {
-  return useMutation(logoutUser, options);
+  return useMutation({ mutationFn: logoutUser, ...options });
 }

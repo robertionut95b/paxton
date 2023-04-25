@@ -97,6 +97,7 @@ const ApplicationJobExtend = ({
       id: jobId ?? null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
+      formattedDescription: jobListingItem?.formattedDescription ?? "",
       availableFrom: jobListingItem?.availableFrom
         ? new Date(jobListingItem.availableFrom)
         : new Date(),

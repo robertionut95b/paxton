@@ -19,5 +19,8 @@ export default function useRefreshLogin(
     AxiosError<FullAPiResponse>,
     void,
     null
-  >(refreshLogin, options);
+  >({
+    mutationFn: refreshLogin,
+    ...options,
+  });
 }

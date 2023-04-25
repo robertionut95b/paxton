@@ -7,8 +7,8 @@ export default function useChangeProfileBanner(
     mutationKey: ["changeProfileBanner"],
   }
 ) {
-  return useMutation<void, AxiosError, FormData, null>(
-    changeProfileCover,
-    options
-  );
+  return useMutation<void, AxiosError, FormData, null>({
+    mutationFn: changeProfileCover,
+    ...options,
+  });
 }

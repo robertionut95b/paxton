@@ -59,6 +59,11 @@ public class JobListingInput extends AbstractInput implements Serializable {
     private String description;
 
     @NotNull
+    @NotEmpty
+    @NotBlank
+    private String formattedDescription;
+
+    @NotNull
     private Long recruiterId;
 
     @Enumerated

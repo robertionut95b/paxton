@@ -7,8 +7,8 @@ export default function useChangeProfileAvatar(
     mutationKey: ["changeProfileAvatar"],
   }
 ) {
-  return useMutation<void, AxiosError, FormData, null>(
-    changeProfileAvatar,
-    options
-  );
+  return useMutation<void, AxiosError, FormData, null>({
+    mutationFn: changeProfileAvatar,
+    ...options,
+  });
 }

@@ -461,7 +461,9 @@ const OrganizationProcessPage = () => {
                 {organization.photography && (
                   <Avatar size="md" src={organization.photography} />
                 )}
-                <Text size="sm">{organization.name}</Text>
+                <Text size="sm" weight="bold" ml="xs">
+                  {organization.name}
+                </Text>
               </Group>
               <TextInput
                 label="Process name"

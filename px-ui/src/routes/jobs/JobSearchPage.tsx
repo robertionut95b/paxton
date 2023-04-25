@@ -46,7 +46,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { formatISO } from "date-fns";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
 import { useDebounce } from "usehooks-ts";
@@ -203,50 +203,6 @@ const JobSearchPage = () => {
       keepPreviousData: true,
       staleTime: 1000 * 60,
       enabled: !isProfileLoading,
-      onSuccess: (data) => {
-        if (data.getAllJobListings?.list) {
-          const firstAvailableJob = data.getAllJobListings.list?.[0];
-          if (firstAvailableJob) {
-            const currentSearchParams = searchParams;
-            currentSearchParams.set(
-              "currentJobId",
-              firstAvailableJob.id.toString()
-            );
-            setSearchParams(currentSearchParams);
-          }
-          // set query data
-          data.getAllJobListings.list.forEach((jl) => {
-            queryClient.setQueryData<GetAllJobListingsQuery>(
-              useGetAllJobListingsQuery.getKey({
-                searchQuery: {
-                  filters: [
-                    {
-                      fieldType: FieldType.Long,
-                      key: "id",
-                      operator: Operator.Equal,
-                      value: jl?.id,
-                    },
-                  ],
-                },
-              }),
-              (prev) =>
-                prev
-                  ? {
-                      ...prev,
-                      getAllJobListings: {
-                        ...prev.getAllJobListings,
-                        list: [jl],
-                        page: prev.getAllJobListings?.page ?? 0,
-                        totalElements:
-                          prev.getAllJobListings?.totalElements ?? 1,
-                        totalPages: prev.getAllJobListings?.totalPages ?? 1,
-                      },
-                    }
-                  : prev
-            );
-          });
-        }
-      },
     }
   );
 
@@ -322,6 +278,51 @@ const JobSearchPage = () => {
     setSearchParams(currentSearchParams);
   };
 
+  useEffect(() => {
+    if (data?.getAllJobListings?.list) {
+      const firstAvailableJob = data.getAllJobListings.list?.[0];
+      if (firstAvailableJob) {
+        const currentSearchParams = searchParams;
+        currentSearchParams.set(
+          "currentJobId",
+          firstAvailableJob.id.toString()
+        );
+        setSearchParams(currentSearchParams);
+      }
+      // set query data
+      data.getAllJobListings.list.forEach((jl) => {
+        queryClient.setQueryData<GetAllJobListingsQuery>(
+          useGetAllJobListingsQuery.getKey({
+            searchQuery: {
+              filters: [
+                {
+                  fieldType: FieldType.Long,
+                  key: "id",
+                  operator: Operator.Equal,
+                  value: jl?.id,
+                },
+              ],
+            },
+          }),
+          (prev) =>
+            prev
+              ? {
+                  ...prev,
+                  getAllJobListings: {
+                    ...prev.getAllJobListings,
+                    list: [jl],
+                    page: prev.getAllJobListings?.page ?? 0,
+                    totalElements: prev.getAllJobListings?.totalElements ?? 1,
+                    totalPages: prev.getAllJobListings?.totalPages ?? 1,
+                  },
+                }
+              : prev
+        );
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   const totalPages = data?.getAllJobListings?.totalPages ?? 0;
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
@@ -351,7 +352,7 @@ const JobSearchPage = () => {
               { value: "posts", label: "Posts" },
             ]}
             icon={<DocumentTextIcon width={16} />}
-            defaultValue={pathname.endsWith("jobs/search") ? "jobs" : "all"}
+            defaultValue={pathname.includes("jobs/search") ? "jobs" : "all"}
             transition="fade"
             transitionDuration={300}
           />

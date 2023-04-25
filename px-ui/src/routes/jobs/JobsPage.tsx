@@ -1,7 +1,6 @@
 import { useAuth } from "@auth/useAuth";
 import JobListings from "@components/jobs/JobListings";
 import PageFooter from "@components/layout/PageFooter";
-import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
@@ -14,18 +13,25 @@ import {
   useGetUserProfileQuery,
 } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Box, Grid, Paper, Text, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Grid,
+  Paper,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { NavLink, useSearchParams } from "react-router-dom";
 import JobsLeftMenu from "./JobsLeftMenu";
 
 const todayIsoFmt = formatISO(new Date());
 
 export default function JobsPage() {
-  const [p, setP] = useState<number>(1);
-  const [ps, setPs] = useState<number>(API_PAGINATION_SIZE);
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,9 +41,7 @@ export default function JobsPage() {
       useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
     );
 
-  const upJobId = searchParams.get("jobId");
   const refPage = searchParams.get("ref");
-  const jobQuery = searchParams.get("q");
   const cityId =
     searchParams.get("city") ??
     (!refPage && prevUserProfileQueryData?.getUserProfile?.city?.id);
@@ -64,8 +68,8 @@ export default function JobsPage() {
     graphqlRequestClient,
     {
       searchQuery: {
-        page: p - 1,
-        size: ps,
+        page: 0,
+        size: API_PAGINATION_SIZE,
         filters: [
           {
             key: "availableTo",
@@ -79,16 +83,6 @@ export default function JobsPage() {
             value: todayIsoFmt,
             operator: Operator.LessThanEqual,
           },
-          ...(upJobId
-            ? [
-                {
-                  key: "job",
-                  fieldType: FieldType.Long,
-                  value: upJobId,
-                  operator: Operator.Equal,
-                },
-              ]
-            : []),
           ...(cityId
             ? [
                 {
@@ -96,16 +90,6 @@ export default function JobsPage() {
                   fieldType: FieldType.Long,
                   value: cityId,
                   operator: Operator.Equal,
-                },
-              ]
-            : []),
-          ...(jobQuery
-            ? [
-                {
-                  key: "title",
-                  fieldType: FieldType.String,
-                  value: jobQuery,
-                  operator: Operator.Like,
                 },
               ]
             : []),
@@ -119,7 +103,6 @@ export default function JobsPage() {
       },
     },
     {
-      queryKey: [`jobsListing${p}&${ps}`],
       keepPreviousData: true,
       staleTime: 1000 * 60,
       onSuccess: (data) => {
@@ -167,8 +150,6 @@ export default function JobsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.getUserProfile?.city?.id, searchParams]);
 
-  const totalPages = data?.getAllJobListings?.totalPages ?? 0;
-  const totalElements = data?.getAllJobListings?.totalElements ?? 0;
   const jobs = data?.getAllJobListings?.list || [];
 
   if (isProfileLoading || jobsLoading) return <ApplicationSpinner />;
@@ -204,16 +185,20 @@ export default function JobsPage() {
               </ShowIfElse>
             </Title>
             <JobListings jobs={jobs} />
-            <Paper className="px-jobs-pagination">
-              <PaginationToolbar
-                page={p}
-                setPage={setP}
-                pageSize={ps}
-                setPageSize={setPs}
-                totalElements={totalElements}
-                totalPages={totalPages}
-              />
-            </Paper>
+            <Divider my="xs" />
+            <Center>
+              <Button
+                variant="light"
+                component={NavLink}
+                to={
+                  cityId
+                    ? `/app/jobs/search/?city=${cityId}`
+                    : `/app/jobs/search`
+                }
+              >
+                See more jobs
+              </Button>
+            </Center>
           </ShowIfElse>
         </Paper>
       </Grid.Col>

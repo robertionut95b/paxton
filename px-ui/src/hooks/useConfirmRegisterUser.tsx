@@ -6,9 +6,9 @@ export default function useConfirmRegisterUser(
   token: string,
   options?: UseQueryOptions<void, AxiosError>
 ) {
-  return useQuery<void, AxiosError>(
-    ["confirmRegisterUser"],
-    () => confirmRegisterUser(token),
-    options
-  );
+  return useQuery<void, AxiosError>({
+    queryKey: ["confirmRegisterUser", token],
+    queryFn: () => confirmRegisterUser(token),
+    ...options,
+  });
 }

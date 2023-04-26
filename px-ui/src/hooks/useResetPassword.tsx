@@ -8,8 +8,8 @@ export default function useResetPassword(
     mutationKey: ["resetPassword"],
   }
 ) {
-  return useMutation<void, AxiosError, ResetPasswordProps, null>(
-    resetPassword,
-    options
-  );
+  return useMutation<void, AxiosError, ResetPasswordProps, null>({
+    mutationFn: resetPassword,
+    ...options,
+  });
 }

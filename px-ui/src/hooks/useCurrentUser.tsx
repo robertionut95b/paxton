@@ -13,5 +13,9 @@ export default function useCurrentUser(
   return useQuery<
     AxiosResponse<CurrentUserMutationResponse>,
     AxiosError<FullAPiResponse>
-  >(["currentUser"], getCurrentUser, options);
+  >({
+    queryKey: ["currentUser"],
+    queryFn: getCurrentUser,
+    ...options,
+  });
 }

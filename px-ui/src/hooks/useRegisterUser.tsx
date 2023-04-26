@@ -13,8 +13,8 @@ export default function useRegisterUser(
     mutationKey: ["registerUser"],
   }
 ) {
-  return useMutation<void, AxiosError, RegisterUserMutationProps, null>(
-    registerUser,
-    options
-  );
+  return useMutation<void, AxiosError, RegisterUserMutationProps, null>({
+    mutationFn: registerUser,
+    ...options,
+  });
 }

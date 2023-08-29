@@ -136,6 +136,17 @@ public enum Operator {
         }
     },
 
+    NOT_IN {
+        public <T> Predicate build(Root<T> root, CriteriaBuilder cb, FilterRequest request, Predicate predicate) {
+            List<Object> values = request.getValues();
+            CriteriaBuilder.In<Object> inClause = cb.in(this.parseProperty(request.getKey(), root));
+            for (Object value : values) {
+                inClause.value(request.getFieldType().parse(value.toString()));
+            }
+            return cb.and(inClause.not(), predicate);
+        }
+    },
+
     BETWEEN {
         @SuppressWarnings("unchecked")
         public <T> Predicate build(Root<T> root, CriteriaBuilder cb, FilterRequest request, Predicate predicate) {

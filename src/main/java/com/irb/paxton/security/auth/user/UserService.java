@@ -1,5 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
@@ -25,7 +27,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
-public class UserService {
+public class UserService extends AbstractService<User, Long> {
 
     @Autowired
     private UserRepository userRepository;
@@ -38,6 +40,10 @@ public class UserService {
 
     @Autowired
     private RecruiterRepository recruiterRepository;
+
+    protected UserService(AbstractRepository<User, Long> repository) {
+        super(repository);
+    }
 
     public List<User> getUsers() {
         return this.userRepository.findAll();

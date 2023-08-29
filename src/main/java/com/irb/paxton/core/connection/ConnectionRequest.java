@@ -13,20 +13,20 @@ import javax.persistence.*;
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_CONNECTIONS")
+@Table(name = TABLE_PREFIX + "_CONNECTION_REQUESTS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Connection extends PaxtonEntity<Long> {
+public class ConnectionRequest extends PaxtonEntity<Long> {
 
     @OneToOne
-    @JoinColumn(name = "first_user_id")
-    private User firstUser;
+    @JoinColumn(name = "requester_user_id")
+    private User requester;
 
     @OneToOne
-    @JoinColumn(name = "second_user_id")
-    private User secondUser;
+    @JoinColumn(name = "addressed_user_id")
+    private User addressed;
 
     @Enumerated(value = EnumType.STRING)
     private ConnectionStatus connectionStatus = ConnectionStatus.REQUESTED;

@@ -164,6 +164,55 @@ type Country {
     cities: [City]
 }
 
+enum ConnectionStatus {
+    REQUESTED
+    ACCEPTED
+    BLOCKED
+    DECLINED
+}
+
+type Connection {
+    id: ID!
+    firstUser: User!
+    secondUser: User!
+    connectionStatus: ConnectionStatus!
+}
+
+type ConnectionPage {
+    list: [Connection],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
+type ConnectionRequest {
+    id: ID!
+    requester: User!
+    addressed: User!
+    connectionStatus: ConnectionStatus!
+}
+
+input ConnectionRequestCreateInput {
+    id: ID
+    requesterId: ID!
+    addressedId: ID!
+    connectionStatus: ConnectionStatus!
+}
+
+input ConnectionRequestUpdateInput {
+    id: ID!
+    requesterId: ID!
+    addressedId: ID!
+    connectionStatus: ConnectionStatus!
+}
+
+type ConnectionRequestPage {
+    list: [ConnectionRequest],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 type Document {
     name: String!
 }
@@ -577,6 +626,13 @@ type User {
     userProfile: UserProfile!
 }
 
+type UserPage {
+    list: [User]
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
 type UserProfile {
     id: ID!
     user: User!
@@ -623,6 +679,7 @@ enum Operator {
     NOT_EQUAL
     LIKE
     IN
+    NOT_IN
     BETWEEN
     LESS_THAN
     LESS_THAN_EQUAL
@@ -692,6 +749,9 @@ type Query {
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
+    getConnectionInvitationsForUser(userId: ID!, page: Int, size: Int): ConnectionRequestPage
+    getConnections(searchQuery: SearchQueryInput): ConnectionPage
+    getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
 }
 
 type Mutation {
@@ -720,4 +780,6 @@ type Mutation {
     markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
     updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: ID!): Process
     createStep(stepInput: StepInput!): Step
+    createConnectionRequest(connectionRequestCreateInput: ConnectionRequestCreateInput!): ConnectionRequest
+    updateConnection(connectionRequestInput: ConnectionRequestUpdateInput!): Connection
 }

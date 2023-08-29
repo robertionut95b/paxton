@@ -216,15 +216,15 @@ const JobSearchPage = () => {
     () =>
       cityData?.getCountriesCities
         ?.map((c) => {
-          const cityId = c?.cities?.map((ci) => ci?.id) || [];
-          const cityName = c?.cities?.map((ci) => ci?.name) || [];
+          const cityId = c?.cities?.map((ci) => ci?.id) ?? [];
+          const cityName = c?.cities?.map((ci) => ci?.name) ?? [];
           const locs = cityName.map((ci, idx) => ({
             label: `${c?.name}, ${ci}`,
             value: cityId[idx] as string,
           }));
           return locs;
         })
-        .flat(1) || [],
+        .flat(1) ?? [],
     [cityData]
   );
 
@@ -325,7 +325,7 @@ const JobSearchPage = () => {
 
   const totalPages = data?.getAllJobListings?.totalPages ?? 0;
   const totalElements = data?.getAllJobListings?.totalElements ?? 0;
-  const jobs = data?.getAllJobListings?.list || [];
+  const jobs = data?.getAllJobListings?.list ?? [];
 
   if (isProfileLoading || jobsLoading || cityIsLoading || isJobsLoading)
     return <ApplicationSpinner />;

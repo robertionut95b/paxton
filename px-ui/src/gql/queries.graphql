@@ -737,3 +737,67 @@ query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
     totalElements
   }
 }
+
+query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
+  getConnectionInvitationsForUser(userId: $userId, page: $page, size: $size) {
+    list {
+      id
+      requester {
+        id
+        displayName
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
+      connectionStatus
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
+query GetConnections($searchQuery: SearchQueryInput) {
+  getConnections(searchQuery: $searchQuery) {
+    list {
+      id
+      firstUser {
+        id
+        displayName
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
+      connectionStatus
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
+query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
+  getAllUserConnectionSuggestions(page: $page, size: $size) {
+    list {
+      id
+      displayName
+      firstName
+      lastName
+      userProfile {
+        coverPhotography
+        photography
+        profileTitle
+        profileSlugUrl
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}

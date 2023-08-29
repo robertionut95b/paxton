@@ -262,3 +262,43 @@ mutation createStep($stepInput: StepInput!) {
     description
   }
 }
+
+mutation CreateConnectionRequest(
+  $connectionRequestCreateInput: ConnectionRequestCreateInput!
+) {
+  createConnectionRequest(
+    connectionRequestCreateInput: $connectionRequestCreateInput
+  ) {
+    id
+    requester {
+      id
+      displayName
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    connectionStatus
+  }
+}
+
+mutation UpdateConnection(
+  $connectionRequestInput: ConnectionRequestUpdateInput!
+) {
+  updateConnection(connectionRequestInput: $connectionRequestInput) {
+    id
+    firstUser {
+      id
+      displayName
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    connectionStatus
+  }
+}

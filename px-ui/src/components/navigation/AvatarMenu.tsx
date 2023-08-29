@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import { Avatar, Menu } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 
 const AvatarMenu = ({
@@ -51,7 +51,13 @@ const AvatarMenu = ({
         >
           Profile
         </Menu.Item>
-        <Menu.Item icon={<UsersIcon width={16} />}>Network</Menu.Item>
+        <Menu.Item
+          icon={<UsersIcon width={16} />}
+          component={NavLink}
+          to="network"
+        >
+          Network
+        </Menu.Item>
         <Menu.Item icon={<InboxIcon width={16} />}>Messages</Menu.Item>
         <Menu.Item icon={<NewspaperIcon width={16} />}>Notifications</Menu.Item>
         <Menu.Item icon={<WrenchIcon width={16} />}>Settings</Menu.Item>

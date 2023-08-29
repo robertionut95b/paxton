@@ -2,6 +2,7 @@ import MessageLine from "@components/messaging/chat/MessageLine";
 import { GetMessagesPaginatedQuery } from "@gql/generated";
 import { User } from "@interfaces/user.types";
 import { Divider, ScrollArea, Stack } from "@mantine/core";
+import { displayInitials } from "@utils/initials";
 import { format } from "date-fns";
 import compose from "lodash/fp/compose";
 import groupBy from "lodash/fp/groupBy";
@@ -32,15 +33,6 @@ const ChatSection = ({
   const viewport = useRef<HTMLDivElement>(null);
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
-
-  const displayInitials = (
-    fallback: string,
-    firstName?: string,
-    lastName?: string
-  ) =>
-    firstName && lastName
-      ? `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
-      : fallback?.[0].toUpperCase();
 
   useEffectOnce(() => {
     if (viewport.current) {

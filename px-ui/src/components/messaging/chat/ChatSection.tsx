@@ -1,4 +1,5 @@
 import MessageLine from "@components/messaging/chat/MessageLine";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetMessagesPaginatedQuery } from "@gql/generated";
 import { User } from "@interfaces/user.types";
 import { Divider, ScrollArea, Stack } from "@mantine/core";
@@ -31,6 +32,7 @@ const ChatSection = ({
   childrenPost,
 }: ChatSectionProps) => {
   const viewport = useRef<HTMLDivElement>(null);
+  const [parent] = useAutoAnimate();
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
 
@@ -80,7 +82,7 @@ const ChatSection = ({
     >
       {childrenPre}
       {Object.entries(chronoMsgs).map(([key, value]) => (
-        <Stack key={key} spacing={"sm"} mt="xs">
+        <Stack key={key} spacing={"sm"} mt="xs" ref={parent}>
           <Divider
             label={key}
             labelPosition="center"

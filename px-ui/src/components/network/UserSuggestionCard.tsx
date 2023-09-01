@@ -1,3 +1,4 @@
+import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Avatar,
@@ -11,13 +12,17 @@ import {
 } from "@mantine/core";
 import { displayInitials } from "@utils/initials";
 import { NavLink } from "react-router-dom";
-import { SuggestionItemProps } from "./SuggestionsList";
+import { SuggestionItemProps } from "./UsersSuggestionsSection";
 
 type UserSuggestionCardProps = {
   user: SuggestionItemProps;
+  onConnectClick: (user: SuggestionItemProps) => void;
 };
 
-const UserSuggestionCard = ({ user }: UserSuggestionCardProps) => {
+const UserSuggestionCard = ({
+  user,
+  onConnectClick,
+}: UserSuggestionCardProps) => {
   return (
     <Card
       shadow="sm"
@@ -32,19 +37,27 @@ const UserSuggestionCard = ({ user }: UserSuggestionCardProps) => {
         to={`/app/up/${user.userProfile.profileSlugUrl}`}
       >
         <Image
-          src={user.userProfile.coverPhotography ?? "/images/bg-profile.jpg"}
+          src={
+            user.userProfile.coverPhotography
+              ? `${APP_IMAGES_API_PATH}/200x400/${user.userProfile.coverPhotography}`
+              : "/images/bg-profile.jpg"
+          }
           height={100}
-          alt="Norway"
+          alt="OfficeCities"
         />
       </Card.Section>
 
-      <Center className="absolute left-12 top-10">
+      <Center className="absolute left-0 right-0 top-10 mx-auto">
         <Indicator label="X" size={30} inline>
           <Avatar
             size={90}
             radius={100}
             variant="filled"
-            src={user.userProfile.photography ?? undefined}
+            src={
+              user.userProfile.photography
+                ? `${APP_IMAGES_API_PATH}/200x200/${user.userProfile.photography}`
+                : undefined
+            }
           >
             {displayInitials("U", user.firstName, user.lastName)}
           </Avatar>
@@ -68,6 +81,7 @@ const UserSuggestionCard = ({ user }: UserSuggestionCardProps) => {
         mt="md"
         radius="md"
         leftIcon={<UserPlusIcon width={16} />}
+        onClick={() => onConnectClick(user)}
       >
         Connect
       </Button>

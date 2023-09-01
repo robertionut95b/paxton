@@ -1,23 +1,24 @@
 import { GetConnectionInvitationsForUserQuery } from "@gql/generated";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ClockIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Avatar, Button, Group, Stack, Text } from "@mantine/core";
 import { displayInitials } from "@utils/initials";
+import { intlFormatDistance } from "date-fns";
 
-type InvitationItemData = NonNullable<
+type UserInvitationItemData = NonNullable<
   NonNullable<
     NonNullable<
-      GetConnectionInvitationsForUserQuery["getConnectionInvitationsForUser"]
+      GetConnectionInvitationsForUserQuery["getNewConnectionForUser"]
     >["list"]
   >[number]
 >;
 
-type InvitationProps = {
-  data: InvitationItemData;
-  onAccept: (data: InvitationItemData) => void;
-  onDecline: (data: InvitationItemData) => void;
+type UserInvitationProps = {
+  data: UserInvitationItemData;
+  onAccept: (data: UserInvitationItemData) => void;
+  onDecline: (data: UserInvitationItemData) => void;
 };
 
-const Invitation = ({ data, onAccept, onDecline }: InvitationProps) => {
+const UserInvitation = ({ data, onAccept, onDecline }: UserInvitationProps) => {
   const src = data.requester.userProfile.photography ?? undefined;
   return (
     <Group position="apart">
@@ -31,7 +32,19 @@ const Invitation = ({ data, onAccept, onDecline }: InvitationProps) => {
         </Avatar>
         <Stack spacing={2}>
           <Text className="capitalize">{data.requester.displayName}</Text>
-          <Text size="sm">{data.requester.userProfile.profileTitle}</Text>
+          <Text size="sm" color="dimmed">
+            {data.requester.userProfile.profileTitle}
+          </Text>
+          <Group spacing={2}>
+            <ClockIcon width={14} />
+            <Text size={12} color="dimmed">
+              Sent{" "}
+              {intlFormatDistance(new Date(data.lastModified), new Date(), {
+                unit: "day",
+                style: "narrow",
+              })}
+            </Text>
+          </Group>
         </Stack>
       </Group>
       <Group spacing="xs">
@@ -56,4 +69,4 @@ const Invitation = ({ data, onAccept, onDecline }: InvitationProps) => {
   );
 };
 
-export default Invitation;
+export default UserInvitation;

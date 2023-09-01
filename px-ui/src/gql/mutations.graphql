@@ -264,11 +264,9 @@ mutation createStep($stepInput: StepInput!) {
 }
 
 mutation CreateConnectionRequest(
-  $connectionRequestCreateInput: ConnectionRequestCreateInput!
+  $connectionCreateInput: ConnectionCreateInput!
 ) {
-  createConnectionRequest(
-    connectionRequestCreateInput: $connectionRequestCreateInput
-  ) {
+  createConnection(connectionCreateInput: $connectionCreateInput) {
     id
     requester {
       id
@@ -280,16 +278,17 @@ mutation CreateConnectionRequest(
         profileTitle
       }
     }
+    addressed {
+      id
+    }
     connectionStatus
   }
 }
 
-mutation UpdateConnection(
-  $connectionRequestInput: ConnectionRequestUpdateInput!
-) {
+mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
   updateConnection(connectionRequestInput: $connectionRequestInput) {
     id
-    firstUser {
+    requester {
       id
       displayName
       firstName

@@ -1,7 +1,8 @@
 package com.irb.paxton.core.connection;
 
-import com.irb.paxton.core.connection.input.ConnectionRequestCreateInput;
-import com.irb.paxton.core.connection.input.ConnectionRequestUpdateInput;
+import com.irb.paxton.core.connection.input.ConnectionCreateInput;
+import com.irb.paxton.core.connection.input.ConnectionUpdateInput;
+import com.irb.paxton.core.connection.mapper.ConnectionMapper;
 import com.irb.paxton.core.connection.status.ConnectionStatus;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
@@ -11,12 +12,17 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class ConnectionService extends AbstractService<Connection, Long> {
@@ -25,28 +31,59 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     private ConnectionRepository connectionRepository;
 
     @Autowired
-    private ConnectionRequestService connectionRequestService;
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    private ConnectionMapper connectionRequestMapper;
 
     protected ConnectionService(AbstractRepository<Connection, Long> repository) {
         super(repository);
     }
 
-    public Connection createConnection(Connection connection) {
+    public Connection createConnectionRequest(ConnectionCreateInput connectionCreateInput) {
+        Connection connection = connectionRequestMapper.toEntity(connectionCreateInput);
         return this.connectionRepository.save(connection);
     }
 
-    public ConnectionRequest createConnectionRequest(ConnectionRequestCreateInput connectionRequestCreateInput) {
-        return this.connectionRequestService.createConnectionRequest(connectionRequestCreateInput);
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#connectionUpdateInput.requesterId) or @paxtonSecurityService.isCurrentUserById(#connectionUpdateInput.addressedId)")
+    @Transactional
+    public Connection updateConnectionRequest(ConnectionUpdateInput connectionUpdateInput) {
+        Connection initialConnection = this.findById(connectionUpdateInput.getId());
+        Connection connection = connectionRequestMapper.partialUpdate(connectionUpdateInput, initialConnection);
+        return connectionRepository.save(connection);
     }
 
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#returnObject.requesterId) or @paxtonSecurityService.isCurrentUserById(#returnObject.addressedId)")
     @Transactional
-    public Connection updateConnectionRequest(ConnectionRequestUpdateInput connectionRequestUpdateInput) {
-        ConnectionRequest connectionRequest = this.connectionRequestService.updateConnectionRequest(connectionRequestUpdateInput);
-        Connection connection = new Connection(connectionRequest.getRequester(), connectionRequest.getAddressed(), connectionRequestUpdateInput.getConnectionStatus());
-        return connectionRepository.save(connection);
+    public Connection deleteConnection(Long collectionId) {
+        Connection initialConnection = this.findById(collectionId);
+        connectionRepository.delete(initialConnection);
+        return initialConnection;
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
+    public PaginatedResponse<Connection> getNewConnectionForUser(Long userId, Integer page, Integer size) {
+        User user = this.userService.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User by id %s does not exist".formatted(userId));
+        }
+        FilterRequest filterRequest = new FilterRequest("connectionStatus", Operator.EQUAL, FieldType.ENUM, "ConnectionStatus;%s".formatted(ConnectionStatus.REQUESTED), null, null);
+        FilterRequest filterRequestAddressed = new FilterRequest("addressed", Operator.EQUAL, FieldType.LONG, userId, null, null);
+        SortRequest sortRequest = new SortRequest("createdAt", SortDirection.DESC);
+        return super.advSearch(
+                new SearchRequest(List.of(filterRequest, filterRequestAddressed), List.of(sortRequest), page != null ? page : 0, size != null ? size : 10)
+        );
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
+    public PaginatedResponse<Connection> getConnectionsForUser(Long userId, Integer page, Integer size) {
+        User user = this.userService.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User by id %s does not exist".formatted(userId));
+        }
+        Page<Connection> connectionPage = connectionRepository
+                .findByRequester_IdOrAddressed_IdAndConnectionStatus(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0));
+        return new PaginatedResponse<>(connectionPage, page != null ? page : 0, connectionPage.getTotalPages(), connectionPage.getTotalElements());
     }
 
     public PaginatedResponse<User> getAllUserConnectionSuggestions(Integer page, Integer size) {
@@ -55,15 +92,20 @@ public class ConnectionService extends AbstractService<Connection, Long> {
             String username = optUsername.get();
             User thisUser = this.userService.findByUsername(username)
                     .orElseThrow(() -> new UserNotFoundException("User %s does not exist".formatted(username)));
-            List<Connection> userConnectionsList = this.connectionRepository.findBySecondUser_UsernameAndConnectionStatusIn(username, List.of(ConnectionStatus.ACCEPTED));
-            List<Object> filterOutIds = new ArrayList<>(userConnectionsList.stream().map(c -> c.getFirstUser().getId()).toList());
+
+            List<Connection> userConnectionsList = this.connectionRepository
+                    .findByRequester_IdOrAddressed_Id(thisUser.getId(), thisUser.getId());
+            List<Object> filterOutIds1 = new ArrayList<>(userConnectionsList.stream().map(c -> c.getRequester().getId()).toList());
+            List<Object> filterOutIds2 = new ArrayList<>(userConnectionsList.stream().map(c -> c.getAddressed().getId()).toList());
             // add self user to filtered out ids
-            filterOutIds.add(thisUser.getId());
+            filterOutIds1.add(thisUser.getId());
             // create search filter for users not already in connections
             FilterRequest filterByRequesterUser = new FilterRequest("id", Operator.NOT_IN, FieldType.LONG, null,
-                    null, filterOutIds);
-            return userService.advSearch(new SearchRequest(
-                    List.of(filterByRequesterUser), null, page != null ? page : 0, size != null ? size : 10));
+                    null, Stream.concat(filterOutIds1.stream(), filterOutIds2.stream()).toList());
+
+            return userService.advSearch(
+                    new SearchRequest(List.of(filterByRequesterUser), null, page != null ? page : 0, size != null ? size : 10)
+            );
         }
         return null;
     }

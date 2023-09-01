@@ -173,9 +173,10 @@ enum ConnectionStatus {
 
 type Connection {
     id: ID!
-    firstUser: User!
-    secondUser: User!
+    requester: User!
+    addressed: User!
     connectionStatus: ConnectionStatus!
+    lastModified: DateTime!
 }
 
 type ConnectionPage {
@@ -185,32 +186,18 @@ type ConnectionPage {
     totalElements: Int!
 }
 
-type ConnectionRequest {
-    id: ID!
-    requester: User!
-    addressed: User!
-    connectionStatus: ConnectionStatus!
-}
-
-input ConnectionRequestCreateInput {
+input ConnectionCreateInput {
     id: ID
     requesterId: ID!
     addressedId: ID!
     connectionStatus: ConnectionStatus!
 }
 
-input ConnectionRequestUpdateInput {
+input ConnectionUpdateInput {
     id: ID!
     requesterId: ID!
     addressedId: ID!
     connectionStatus: ConnectionStatus!
-}
-
-type ConnectionRequestPage {
-    list: [ConnectionRequest],
-    page: Int!
-    totalPages: Int!
-    totalElements: Int!
 }
 
 type Document {
@@ -749,8 +736,8 @@ type Query {
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
-    getConnectionInvitationsForUser(userId: ID!, page: Int, size: Int): ConnectionRequestPage
-    getConnections(searchQuery: SearchQueryInput): ConnectionPage
+    getNewConnectionForUser(userId: ID!, page: Int, size: Int): ConnectionPage
+    getConnectionsForUser(userId: ID!, page: Int, size: Int): ConnectionPage
     getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
 }
 
@@ -780,6 +767,6 @@ type Mutation {
     markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
     updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: ID!): Process
     createStep(stepInput: StepInput!): Step
-    createConnectionRequest(connectionRequestCreateInput: ConnectionRequestCreateInput!): ConnectionRequest
-    updateConnection(connectionRequestInput: ConnectionRequestUpdateInput!): Connection
+    createConnection(connectionCreateInput: ConnectionCreateInput!): Connection
+    updateConnection(connectionRequestInput: ConnectionUpdateInput!): Connection
 }

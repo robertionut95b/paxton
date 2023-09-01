@@ -1,22 +1,22 @@
 import { useAuth } from "@auth/useAuth";
 import InvitationListSkeleton from "@components/network/InvitationListSkeleton";
-import InvitationsList from "@components/network/InvitationsList";
-import SuggestionsList from "@components/network/SuggestionsList";
+import InvitationsListSection from "@components/network/InvitationsListSection";
 import SuggestionsListSkeleton from "@components/network/SuggestionsListSkeleton";
+import UsersSuggestionsSection from "@components/network/UsersSuggestionsSection";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   ConnectionStatus,
-  FieldType,
-  Operator,
+  useCreateConnectionRequestMutation,
   useGetAllUserConnectionSuggestionsQuery,
   useGetConnectionInvitationsForUserQuery,
-  useGetConnectionsQuery,
+  useGetConnectionsForUserQuery,
   useUpdateConnectionMutation,
 } from "@gql/generated";
 import {
   BookmarkIcon,
   CheckCircleIcon,
+  ExclamationCircleIcon,
   ShieldExclamationIcon,
   UserCircleIcon,
   UsersIcon,
@@ -48,25 +48,10 @@ export default function NetworkPage() {
     });
 
   const { data: connectionsData, isLoading: isLoadingConnections } =
-    useGetConnectionsQuery(graphqlRequestClient, {
-      searchQuery: {
-        page: 0,
-        size: API_PAGINATION_SIZE,
-        filters: [
-          {
-            fieldType: FieldType.Long,
-            key: "secondUser.id",
-            operator: Operator.Equal,
-            value: user?.userId ?? "",
-          },
-          {
-            fieldType: FieldType.Enum,
-            key: "connectionStatus",
-            operator: Operator.Equal,
-            value: `ConnectionStatus;${ConnectionStatus.Accepted}`,
-          },
-        ],
-      },
+    useGetConnectionsForUserQuery(graphqlRequestClient, {
+      page: 0,
+      size: API_PAGINATION_SIZE,
+      userId: user?.userId ?? "",
     });
 
   const {
@@ -78,8 +63,8 @@ export default function NetworkPage() {
   });
 
   const { mutate } = useUpdateConnectionMutation(graphqlRequestClient, {
-    onSuccess: async (data) => {
-      if (data) {
+    onSuccess: (updateData) => {
+      if (updateData) {
         showNotification({
           title: "Connection update",
           message: "Successfully updated connection request",
@@ -87,8 +72,25 @@ export default function NetworkPage() {
           icon: <CheckCircleIcon width={20} />,
         });
 
-        await queryClient.invalidateQueries(
+        // refresh invitations list
+        queryClient.setQueryData(
           useGetConnectionInvitationsForUserQuery.getKey({
+            userId: user?.userId ?? "",
+            page: 0,
+            size: API_PAGINATION_SIZE,
+          }),
+          {
+            ...data,
+            getNewConnectionForUser: {
+              ...data?.getNewConnectionForUser,
+              list: data?.getNewConnectionForUser?.list?.filter(
+                (c) => c?.id !== updateData.updateConnection?.id
+              ),
+            },
+          }
+        );
+        queryClient.invalidateQueries(
+          useGetConnectionsForUserQuery.getKey({
             userId: user?.userId ?? "",
             page: 0,
             size: API_PAGINATION_SIZE,
@@ -110,9 +112,55 @@ export default function NetworkPage() {
     },
   });
 
-  const connectionRequests = data?.getConnectionInvitationsForUser?.list ?? [];
+  const { mutate: sendConnectionRequest } = useCreateConnectionRequestMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: (data) => {
+        if (data) {
+          showNotification({
+            title: "Connection update",
+            message: "Successfully sent connection request",
+            autoClose: 5000,
+            icon: <CheckCircleIcon width={20} />,
+          });
 
-  const contactsCount = connectionsData?.getConnections?.totalElements ?? 0;
+          // refresh suggestions query
+          queryClient.setQueryData(
+            useGetAllUserConnectionSuggestionsQuery.getKey({
+              page: 0,
+              size: API_PAGINATION_SIZE,
+            }),
+            {
+              ...allUserSuggestionsData,
+              getAllUserConnectionSuggestions: {
+                ...allUserSuggestionsData?.getAllUserConnectionSuggestions,
+                list: allUserSuggestionsData?.getAllUserConnectionSuggestions?.list?.filter(
+                  (s) => s?.id !== data.createConnection?.addressed.id
+                ),
+              },
+            }
+          );
+        }
+      },
+      onError: (err: GraphqlApiResponse) => {
+        if (err.response.errors) {
+          showNotification({
+            title: "Connection failed",
+            message:
+              err.response.errors?.[0].message.split(":")?.[1] ??
+              "Unknown error occurred",
+            autoClose: 5000,
+            icon: <ExclamationCircleIcon width={20} />,
+          });
+        }
+      },
+    }
+  );
+
+  const connectionRequests = data?.getNewConnectionForUser?.list ?? [];
+
+  const contactsCount =
+    connectionsData?.getConnectionsForUser?.totalElements ?? 0;
 
   const userSuggestions =
     allUserSuggestionsData?.getAllUserConnectionSuggestions?.list ?? [];
@@ -157,31 +205,37 @@ export default function NetworkPage() {
             <ShowIfElse
               if={isLoadingInvRequests}
               else={
-                <InvitationsList
-                  invitations={connectionRequests}
-                  onAcceptInvitation={(i) =>
-                    mutate({
-                      connectionRequestInput: {
-                        id: i.id,
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        addressedId: user!.userId,
-                        connectionStatus: ConnectionStatus.Accepted,
-                        requesterId: i.requester.id,
-                      },
-                    })
-                  }
-                  onDeclineInvitation={(i) =>
-                    mutate({
-                      connectionRequestInput: {
-                        id: i.id,
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        addressedId: user!.userId,
-                        connectionStatus: ConnectionStatus.Declined,
-                        requesterId: i.requester.id,
-                      },
-                    })
-                  }
-                />
+                <InvitationsListSection length={connectionRequests.length}>
+                  {connectionRequests.map(
+                    (c) =>
+                      c && (
+                        <InvitationsListSection.Item
+                          key={c?.id}
+                          data={c}
+                          onAccept={(c) =>
+                            mutate({
+                              connectionRequestInput: {
+                                id: c.id,
+                                addressedId: user?.userId ?? "",
+                                connectionStatus: ConnectionStatus.Accepted,
+                                requesterId: c.requester.id,
+                              },
+                            })
+                          }
+                          onDecline={(c) =>
+                            mutate({
+                              connectionRequestInput: {
+                                id: c.id,
+                                addressedId: user?.userId ?? "",
+                                connectionStatus: ConnectionStatus.Accepted,
+                                requesterId: c.requester.id,
+                              },
+                            })
+                          }
+                        />
+                      )
+                  )}
+                </InvitationsListSection>
               }
             >
               <div>
@@ -194,7 +248,7 @@ export default function NetworkPage() {
                   </Grid.Col>
                 </Grid>
                 <Grid.Col>
-                  <InvitationListSkeleton />
+                  <InvitationListSkeleton rowsNo={3} />
                 </Grid.Col>
               </div>
             </ShowIfElse>
@@ -203,12 +257,30 @@ export default function NetworkPage() {
             <ShowIfElse
               if={isAllUserSuggestionsDataLoading}
               else={
-                <SuggestionsList
+                <UsersSuggestionsSection
                   title="Suggestions based on your workplace"
                   link={`by-workplace`}
-                  // @ts-expect-error("type-error")
-                  data={userSuggestions}
-                />
+                  length={0}
+                >
+                  {userSuggestions.map(
+                    (usrs) =>
+                      usrs && (
+                        <UsersSuggestionsSection.Item
+                          key={usrs?.id}
+                          user={usrs}
+                          onConnectClick={(us) =>
+                            sendConnectionRequest({
+                              connectionCreateInput: {
+                                requesterId: user?.userId ?? "",
+                                addressedId: us.id,
+                                connectionStatus: ConnectionStatus.Requested,
+                              },
+                            })
+                          }
+                        />
+                      )
+                  )}
+                </UsersSuggestionsSection>
               }
             >
               <Grid align="center">
@@ -219,7 +291,7 @@ export default function NetworkPage() {
                   </Group>
                 </Grid.Col>
                 <Grid.Col>
-                  <SuggestionsListSkeleton />
+                  <SuggestionsListSkeleton cardsNo={4} />
                 </Grid.Col>
               </Grid>
             </ShowIfElse>

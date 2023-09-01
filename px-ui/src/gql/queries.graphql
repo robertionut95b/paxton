@@ -739,7 +739,7 @@ query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
 }
 
 query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
-  getConnectionInvitationsForUser(userId: $userId, page: $page, size: $size) {
+  getNewConnectionForUser(userId: $userId, page: $page, size: $size) {
     list {
       id
       requester {
@@ -753,6 +753,7 @@ query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
         }
       }
       connectionStatus
+      lastModified
     }
     page
     totalPages
@@ -760,11 +761,11 @@ query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
   }
 }
 
-query GetConnections($searchQuery: SearchQueryInput) {
-  getConnections(searchQuery: $searchQuery) {
+query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int) {
+  getConnectionsForUser(userId: $userId, page: $page, size: $size) {
     list {
       id
-      firstUser {
+      requester {
         id
         displayName
         firstName

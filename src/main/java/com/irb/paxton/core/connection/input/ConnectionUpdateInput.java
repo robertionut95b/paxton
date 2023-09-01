@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ConnectionRequestUpdateInput extends AbstractInput {
+public class ConnectionUpdateInput extends AbstractInput {
 
     @NotNull
     private Long id;

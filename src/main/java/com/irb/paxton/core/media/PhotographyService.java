@@ -5,7 +5,7 @@ import com.irb.paxton.core.media.input.PhotographyInput;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
 import com.irb.paxton.storage.FileResponse;
-import com.irb.paxton.storage.FileStorageService;
+import com.irb.paxton.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class PhotographyService {
     private UserProfileMapper userProfileMapper;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private StorageService fileStorageService;
 
     public Photography findByName(String imageName) {
         return this.photographyRepository

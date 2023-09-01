@@ -9,11 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_CONNECTIONS")
+@Table(name = "PX_CONNECTIONS", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_connection_requester_addressed_id", columnNames = {"requester_id", "addressed_id"})
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,13 +24,28 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 public class Connection extends PaxtonEntity<Long> {
 
     @OneToOne
-    @JoinColumn(name = "first_user_id")
-    private User firstUser;
+    @JoinColumn(name = "requester_id")
+    private User requester;
 
     @OneToOne
-    @JoinColumn(name = "second_user_id")
-    private User secondUser;
+    @JoinColumn(name = "addressed_id")
+    private User addressed;
 
     @Enumerated(value = EnumType.STRING)
     private ConnectionStatus connectionStatus = ConnectionStatus.REQUESTED;
+
+    @NotNull
+    @PastOrPresent
+    private OffsetDateTime lastModified = OffsetDateTime.now();
+
+
+    @PostUpdate
+    public void postUpdate() {
+        this.lastModified = OffsetDateTime.now();
+    }
+
+    @PostPersist
+    public void postPersist() {
+        this.lastModified = OffsetDateTime.now();
+    }
 }

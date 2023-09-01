@@ -166,10 +166,18 @@ export type City = {
 
 export type Connection = {
   __typename?: 'Connection';
+  addressed: User;
   connectionStatus: ConnectionStatus;
-  firstUser: User;
   id: Scalars['ID'];
-  secondUser: User;
+  lastModified: Scalars['DateTime'];
+  requester: User;
+};
+
+export type ConnectionCreateInput = {
+  addressedId: Scalars['ID'];
+  connectionStatus: ConnectionStatus;
+  id?: InputMaybe<Scalars['ID']>;
+  requesterId: Scalars['ID'];
 };
 
 export type ConnectionPage = {
@@ -180,42 +188,19 @@ export type ConnectionPage = {
   totalPages: Scalars['Int'];
 };
 
-export type ConnectionRequest = {
-  __typename?: 'ConnectionRequest';
-  addressed: User;
-  connectionStatus: ConnectionStatus;
-  id: Scalars['ID'];
-  requester: User;
-};
-
-export type ConnectionRequestCreateInput = {
-  addressedId: Scalars['ID'];
-  connectionStatus: ConnectionStatus;
-  id?: InputMaybe<Scalars['ID']>;
-  requesterId: Scalars['ID'];
-};
-
-export type ConnectionRequestPage = {
-  __typename?: 'ConnectionRequestPage';
-  list?: Maybe<Array<Maybe<ConnectionRequest>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
-};
-
-export type ConnectionRequestUpdateInput = {
-  addressedId: Scalars['ID'];
-  connectionStatus: ConnectionStatus;
-  id: Scalars['ID'];
-  requesterId: Scalars['ID'];
-};
-
 export enum ConnectionStatus {
   Accepted = 'ACCEPTED',
   Blocked = 'BLOCKED',
   Declined = 'DECLINED',
   Requested = 'REQUESTED'
 }
+
+export type ConnectionUpdateInput = {
+  addressedId: Scalars['ID'];
+  connectionStatus: ConnectionStatus;
+  id: Scalars['ID'];
+  requesterId: Scalars['ID'];
+};
 
 export enum ContractType {
   FreeProfessional = 'FREE_PROFESSIONAL',
@@ -450,7 +435,7 @@ export type Mutation = {
   alterRecruitersInOrganization?: Maybe<Array<Maybe<Recruiter>>>;
   applyToJobListing?: Maybe<Application>;
   createChat?: Maybe<Chat>;
-  createConnectionRequest?: Maybe<ConnectionRequest>;
+  createConnection?: Maybe<Connection>;
   createOrUpdateOrganization?: Maybe<Organization>;
   createProcess?: Maybe<Process>;
   createStep?: Maybe<Step>;
@@ -526,8 +511,8 @@ export type MutationCreateChatArgs = {
 };
 
 
-export type MutationCreateConnectionRequestArgs = {
-  connectionRequestCreateInput: ConnectionRequestCreateInput;
+export type MutationCreateConnectionArgs = {
+  connectionCreateInput: ConnectionCreateInput;
 };
 
 
@@ -573,7 +558,7 @@ export type MutationUpdateChatArgs = {
 
 
 export type MutationUpdateConnectionArgs = {
-  connectionRequestInput: ConnectionRequestUpdateInput;
+  connectionRequestInput: ConnectionUpdateInput;
 };
 
 
@@ -757,14 +742,14 @@ export type Query = {
   getApplicationById?: Maybe<Application>;
   getApplicationsForJobIdCountBySteps?: Maybe<Array<Maybe<ApplicationsCountByStep>>>;
   getChatAdvSearch?: Maybe<ChatPage>;
-  getConnectionInvitationsForUser?: Maybe<ConnectionRequestPage>;
-  getConnections?: Maybe<ConnectionPage>;
+  getConnectionsForUser?: Maybe<ConnectionPage>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMessagesPaginated?: Maybe<MessagePage>;
   getMessagesSliced?: Maybe<MessageSlice>;
   getMyApplicationForJobListing?: Maybe<Application>;
   getMyApplications?: Maybe<Array<Maybe<Application>>>;
+  getNewConnectionForUser?: Maybe<ConnectionPage>;
   getOrganizationById?: Maybe<Organization>;
   getOrganizationBySlugName?: Maybe<Organization>;
   getPrivateChatById?: Maybe<Chat>;
@@ -842,15 +827,10 @@ export type QueryGetChatAdvSearchArgs = {
 };
 
 
-export type QueryGetConnectionInvitationsForUserArgs = {
+export type QueryGetConnectionsForUserArgs = {
   page?: InputMaybe<Scalars['Int']>;
   size?: InputMaybe<Scalars['Int']>;
   userId: Scalars['ID'];
-};
-
-
-export type QueryGetConnectionsArgs = {
-  searchQuery?: InputMaybe<SearchQueryInput>;
 };
 
 
@@ -870,6 +850,13 @@ export type QueryGetMyApplicationForJobListingArgs = {
 
 
 export type QueryGetMyApplicationsArgs = {
+  userId: Scalars['ID'];
+};
+
+
+export type QueryGetNewConnectionForUserArgs = {
+  page?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
   userId: Scalars['ID'];
 };
 
@@ -1261,18 +1248,18 @@ export type CreateStepMutationVariables = Exact<{
 export type CreateStepMutation = { __typename?: 'Mutation', createStep?: { __typename?: 'Step', id: string, title: string, description: string } | null };
 
 export type CreateConnectionRequestMutationVariables = Exact<{
-  connectionRequestCreateInput: ConnectionRequestCreateInput;
+  connectionCreateInput: ConnectionCreateInput;
 }>;
 
 
-export type CreateConnectionRequestMutation = { __typename?: 'Mutation', createConnectionRequest?: { __typename?: 'ConnectionRequest', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null };
+export type CreateConnectionRequestMutation = { __typename?: 'Mutation', createConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, addressed: { __typename?: 'User', id: string } } | null };
 
 export type UpdateConnectionMutationVariables = Exact<{
-  connectionRequestInput: ConnectionRequestUpdateInput;
+  connectionRequestInput: ConnectionUpdateInput;
 }>;
 
 
-export type UpdateConnectionMutation = { __typename?: 'Mutation', updateConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, firstUser: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null };
+export type UpdateConnectionMutation = { __typename?: 'Mutation', updateConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1464,14 +1451,16 @@ export type GetConnectionInvitationsForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetConnectionInvitationsForUserQuery = { __typename?: 'Query', getConnectionInvitationsForUser?: { __typename?: 'ConnectionRequestPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ConnectionRequest', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
+export type GetConnectionInvitationsForUserQuery = { __typename?: 'Query', getNewConnectionForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
-export type GetConnectionsQueryVariables = Exact<{
-  searchQuery?: InputMaybe<SearchQueryInput>;
+export type GetConnectionsForUserQueryVariables = Exact<{
+  userId: Scalars['ID'];
+  page?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type GetConnectionsQuery = { __typename?: 'Query', getConnections?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, firstUser: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
+export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -2113,10 +2102,8 @@ useCreateStepMutation.getKey = () => ['createStep'];
 
 useCreateStepMutation.fetcher = (client: GraphQLClient, variables: CreateStepMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateStepMutation, CreateStepMutationVariables>(client, CreateStepDocument, variables, headers);
 export const CreateConnectionRequestDocument = `
-    mutation CreateConnectionRequest($connectionRequestCreateInput: ConnectionRequestCreateInput!) {
-  createConnectionRequest(
-    connectionRequestCreateInput: $connectionRequestCreateInput
-  ) {
+    mutation CreateConnectionRequest($connectionCreateInput: ConnectionCreateInput!) {
+  createConnection(connectionCreateInput: $connectionCreateInput) {
     id
     requester {
       id
@@ -2127,6 +2114,9 @@ export const CreateConnectionRequestDocument = `
         photography
         profileTitle
       }
+    }
+    addressed {
+      id
     }
     connectionStatus
   }
@@ -2149,10 +2139,10 @@ useCreateConnectionRequestMutation.getKey = () => ['CreateConnectionRequest'];
 
 useCreateConnectionRequestMutation.fetcher = (client: GraphQLClient, variables: CreateConnectionRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateConnectionRequestMutation, CreateConnectionRequestMutationVariables>(client, CreateConnectionRequestDocument, variables, headers);
 export const UpdateConnectionDocument = `
-    mutation UpdateConnection($connectionRequestInput: ConnectionRequestUpdateInput!) {
+    mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
   updateConnection(connectionRequestInput: $connectionRequestInput) {
     id
-    firstUser {
+    requester {
       id
       displayName
       firstName
@@ -4142,7 +4132,7 @@ useInfiniteFindRecruitersAdvSearchQuery.getKey = (variables?: FindRecruitersAdvS
 useFindRecruitersAdvSearchQuery.fetcher = (client: GraphQLClient, variables?: FindRecruitersAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, variables, headers);
 export const GetConnectionInvitationsForUserDocument = `
     query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
-  getConnectionInvitationsForUser(userId: $userId, page: $page, size: $size) {
+  getNewConnectionForUser(userId: $userId, page: $page, size: $size) {
     list {
       id
       requester {
@@ -4156,6 +4146,7 @@ export const GetConnectionInvitationsForUserDocument = `
         }
       }
       connectionStatus
+      lastModified
     }
     page
     totalPages
@@ -4204,12 +4195,12 @@ useInfiniteGetConnectionInvitationsForUserQuery.getKey = (variables: GetConnecti
 ;
 
 useGetConnectionInvitationsForUserQuery.fetcher = (client: GraphQLClient, variables: GetConnectionInvitationsForUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionInvitationsForUserQuery, GetConnectionInvitationsForUserQueryVariables>(client, GetConnectionInvitationsForUserDocument, variables, headers);
-export const GetConnectionsDocument = `
-    query GetConnections($searchQuery: SearchQueryInput) {
-  getConnections(searchQuery: $searchQuery) {
+export const GetConnectionsForUserDocument = `
+    query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int) {
+  getConnectionsForUser(userId: $userId, page: $page, size: $size) {
     list {
       id
-      firstUser {
+      requester {
         id
         displayName
         firstName
@@ -4227,47 +4218,47 @@ export const GetConnectionsDocument = `
   }
 }
     `;
-export const useGetConnectionsQuery = <
-      TData = GetConnectionsQuery,
+export const useGetConnectionsForUserQuery = <
+      TData = GetConnectionsForUserQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: GetConnectionsQueryVariables,
-      options?: UseQueryOptions<GetConnectionsQuery, TError, TData>,
+      variables: GetConnectionsForUserQueryVariables,
+      options?: UseQueryOptions<GetConnectionsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetConnectionsQuery, TError, TData>(
-      variables === undefined ? ['GetConnections'] : ['GetConnections', variables],
-      fetcher<GetConnectionsQuery, GetConnectionsQueryVariables>(client, GetConnectionsDocument, variables, headers),
+    useQuery<GetConnectionsForUserQuery, TError, TData>(
+      ['GetConnectionsForUser', variables],
+      fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, variables, headers),
       options
     );
-useGetConnectionsQuery.document = GetConnectionsDocument;
+useGetConnectionsForUserQuery.document = GetConnectionsForUserDocument;
 
 
-useGetConnectionsQuery.getKey = (variables?: GetConnectionsQueryVariables) => variables === undefined ? ['GetConnections'] : ['GetConnections', variables];
+useGetConnectionsForUserQuery.getKey = (variables: GetConnectionsForUserQueryVariables) => ['GetConnectionsForUser', variables];
 ;
 
-export const useInfiniteGetConnectionsQuery = <
-      TData = GetConnectionsQuery,
+export const useInfiniteGetConnectionsForUserQuery = <
+      TData = GetConnectionsForUserQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetConnectionsQueryVariables,
+      pageParamKey: keyof GetConnectionsForUserQueryVariables,
       client: GraphQLClient,
-      variables?: GetConnectionsQueryVariables,
-      options?: UseInfiniteQueryOptions<GetConnectionsQuery, TError, TData>,
+      variables: GetConnectionsForUserQueryVariables,
+      options?: UseInfiniteQueryOptions<GetConnectionsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useInfiniteQuery<GetConnectionsQuery, TError, TData>(
-      variables === undefined ? ['GetConnections.infinite'] : ['GetConnections.infinite', variables],
-      (metaData) => fetcher<GetConnectionsQuery, GetConnectionsQueryVariables>(client, GetConnectionsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+    useInfiniteQuery<GetConnectionsForUserQuery, TError, TData>(
+      ['GetConnectionsForUser.infinite', variables],
+      (metaData) => fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
     );
 
 
-useInfiniteGetConnectionsQuery.getKey = (variables?: GetConnectionsQueryVariables) => variables === undefined ? ['GetConnections.infinite'] : ['GetConnections.infinite', variables];
+useInfiniteGetConnectionsForUserQuery.getKey = (variables: GetConnectionsForUserQueryVariables) => ['GetConnectionsForUser.infinite', variables];
 ;
 
-useGetConnectionsQuery.fetcher = (client: GraphQLClient, variables?: GetConnectionsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionsQuery, GetConnectionsQueryVariables>(client, GetConnectionsDocument, variables, headers);
+useGetConnectionsForUserQuery.fetcher = (client: GraphQLClient, variables: GetConnectionsForUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, variables, headers);
 export const GetAllUserConnectionSuggestionsDocument = `
     query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
   getAllUserConnectionSuggestions(page: $page, size: $size) {
@@ -4381,8 +4372,8 @@ export function ChatInputSchema(): z.ZodObject<Properties<ChatInput>> {
 
 export const ChatTypeSchema = z.nativeEnum(ChatType);
 
-export function ConnectionRequestCreateInputSchema(): z.ZodObject<Properties<ConnectionRequestCreateInput>> {
-  return z.object<Properties<ConnectionRequestCreateInput>>({
+export function ConnectionCreateInputSchema(): z.ZodObject<Properties<ConnectionCreateInput>> {
+  return z.object<Properties<ConnectionCreateInput>>({
     addressedId: z.string(),
     connectionStatus: ConnectionStatusSchema,
     id: z.string().nullish(),
@@ -4390,16 +4381,16 @@ export function ConnectionRequestCreateInputSchema(): z.ZodObject<Properties<Con
   })
 }
 
-export function ConnectionRequestUpdateInputSchema(): z.ZodObject<Properties<ConnectionRequestUpdateInput>> {
-  return z.object<Properties<ConnectionRequestUpdateInput>>({
+export const ConnectionStatusSchema = z.nativeEnum(ConnectionStatus);
+
+export function ConnectionUpdateInputSchema(): z.ZodObject<Properties<ConnectionUpdateInput>> {
+  return z.object<Properties<ConnectionUpdateInput>>({
     addressedId: z.string(),
     connectionStatus: ConnectionStatusSchema,
     id: z.string(),
     requesterId: z.string()
   })
 }
-
-export const ConnectionStatusSchema = z.nativeEnum(ConnectionStatus);
 
 export const ContractTypeSchema = z.nativeEnum(ContractType);
 

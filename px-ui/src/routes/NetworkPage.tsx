@@ -260,7 +260,7 @@ export default function NetworkPage() {
                 <UsersSuggestionsSection
                   title="Suggestions based on your workplace"
                   link={`by-workplace`}
-                  length={0}
+                  length={userSuggestions.length}
                 >
                   {userSuggestions.map(
                     (usrs) =>

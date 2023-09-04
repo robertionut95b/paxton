@@ -22,6 +22,7 @@ const Index = lazy(() => import("./IndexPage"));
 const JobsPage = lazy(() => import("./jobs/JobsPage"));
 const Login = lazy(() => import("./Login"));
 const NetworkPage = lazy(() => import("./NetworkPage"));
+const NetworkMyContactsPage = lazy(() => import("./NetworkMyContactsPage"));
 const SignUp = lazy(() => import("./SignUp"));
 const RecruitmentPage = lazy(() => import("./organization/RecruitmentPage"));
 const UserProfile = lazy(() => import("./user/UserProfile"));
@@ -135,6 +136,10 @@ export default function AppUI() {
               />
             </Route>
             <Route path="network" element={<NetworkPage />} />
+            <Route
+              path="network/my-contacts"
+              element={<NetworkMyContactsPage />}
+            />
             <Route path="my-organization" element={<MyOrganizationPage />} />
             <Route
               path="organizations/:organizationSlug"

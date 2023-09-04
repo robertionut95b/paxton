@@ -179,7 +179,7 @@ export default function NetworkPage() {
                 <List.Item icon={<UsersIcon width={20} />}>
                   <Group position="apart">
                     <NavLink to="my-contacts">Contacts</NavLink>
-                    <Text>{contactsCount > 0 ? contactsCount : null}</Text>
+                    {contactsCount > 0 ? <Text>{contactsCount}</Text> : null}
                   </Group>
                 </List.Item>
                 <List.Item icon={<BookmarkIcon width={20} />}>

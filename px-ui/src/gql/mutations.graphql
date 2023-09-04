@@ -301,3 +301,10 @@ mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
     connectionStatus
   }
 }
+
+mutation RemoveConnection($connectionId: ID!) {
+  removeConnection(connectionId: $connectionId) {
+    id
+    connectionStatus
+  }
+}

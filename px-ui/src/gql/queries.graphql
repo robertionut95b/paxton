@@ -775,7 +775,18 @@ query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int) {
           profileTitle
         }
       }
+      addressed {
+        id
+        displayName
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
       connectionStatus
+      lastModified
     }
     page
     totalPages

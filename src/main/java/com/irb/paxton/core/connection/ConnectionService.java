@@ -1,5 +1,6 @@
 package com.irb.paxton.core.connection;
 
+import com.irb.paxton.core.connection.exceptions.InvalidConnectionStateException;
 import com.irb.paxton.core.connection.input.ConnectionCreateInput;
 import com.irb.paxton.core.connection.input.ConnectionUpdateInput;
 import com.irb.paxton.core.connection.mapper.ConnectionMapper;
@@ -40,7 +41,16 @@ public class ConnectionService extends AbstractService<Connection, Long> {
         super(repository);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#connectionCreateInput.requesterId) or @paxtonSecurityService.isCurrentUserById(#connectionCreateInput.addressedId)")
+    @Transactional
     public Connection createConnectionRequest(ConnectionCreateInput connectionCreateInput) {
+        // check if no reverse entity already exists in the database
+        Optional<Connection> existingConnection = connectionRepository
+                .findFirstByRequester_IdOrAddressed_Id(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId());
+        if (existingConnection.isPresent()) {
+            throw new InvalidConnectionStateException("A connection request already exists between users [%s - %s]"
+                    .formatted(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId()));
+        }
         Connection connection = connectionRequestMapper.toEntity(connectionCreateInput);
         return this.connectionRepository.save(connection);
     }
@@ -53,10 +63,10 @@ public class ConnectionService extends AbstractService<Connection, Long> {
         return connectionRepository.save(connection);
     }
 
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#returnObject.requesterId) or @paxtonSecurityService.isCurrentUserById(#returnObject.addressedId)")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(returnObject.requester.id) or @paxtonSecurityService.isCurrentUserById(returnObject.addressed.id)")
     @Transactional
-    public Connection deleteConnection(Long collectionId) {
-        Connection initialConnection = this.findById(collectionId);
+    public Connection deleteConnection(Long connectionId) {
+        Connection initialConnection = this.findById(connectionId);
         connectionRepository.delete(initialConnection);
         return initialConnection;
     }

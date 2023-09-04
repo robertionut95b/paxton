@@ -769,4 +769,5 @@ type Mutation {
     createStep(stepInput: StepInput!): Step
     createConnection(connectionCreateInput: ConnectionCreateInput!): Connection
     updateConnection(connectionRequestInput: ConnectionUpdateInput!): Connection
+    removeConnection(connectionId: ID!): Connection
 }

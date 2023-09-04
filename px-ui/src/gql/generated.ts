@@ -443,6 +443,7 @@ export type Mutation = {
   markAllMessagesAsSeen?: Maybe<Chat>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
+  removeConnection?: Maybe<Connection>;
   updateApplication?: Maybe<Application>;
   updateChat?: Maybe<Chat>;
   updateConnection?: Maybe<Connection>;
@@ -544,6 +545,11 @@ export type MutationPublishJobArgs = {
 
 export type MutationPublishJobListingArgs = {
   JobListingInput: JobListingInput;
+};
+
+
+export type MutationRemoveConnectionArgs = {
+  connectionId: Scalars['ID'];
 };
 
 
@@ -1261,6 +1267,13 @@ export type UpdateConnectionMutationVariables = Exact<{
 
 export type UpdateConnectionMutation = { __typename?: 'Mutation', updateConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null };
 
+export type RemoveConnectionMutationVariables = Exact<{
+  connectionId: Scalars['ID'];
+}>;
+
+
+export type RemoveConnectionMutation = { __typename?: 'Mutation', removeConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1460,7 +1473,7 @@ export type GetConnectionsForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
+export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, addressed: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -2172,6 +2185,30 @@ export const useUpdateConnectionMutation = <
 useUpdateConnectionMutation.getKey = () => ['UpdateConnection'];
 
 useUpdateConnectionMutation.fetcher = (client: GraphQLClient, variables: UpdateConnectionMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateConnectionMutation, UpdateConnectionMutationVariables>(client, UpdateConnectionDocument, variables, headers);
+export const RemoveConnectionDocument = `
+    mutation RemoveConnection($connectionId: ID!) {
+  removeConnection(connectionId: $connectionId) {
+    id
+    connectionStatus
+  }
+}
+    `;
+export const useRemoveConnectionMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<RemoveConnectionMutation, TError, RemoveConnectionMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<RemoveConnectionMutation, TError, RemoveConnectionMutationVariables, TContext>(
+      ['RemoveConnection'],
+      (variables?: RemoveConnectionMutationVariables) => fetcher<RemoveConnectionMutation, RemoveConnectionMutationVariables>(client, RemoveConnectionDocument, variables, headers)(),
+      options
+    );
+useRemoveConnectionMutation.getKey = () => ['RemoveConnection'];
+
+useRemoveConnectionMutation.fetcher = (client: GraphQLClient, variables: RemoveConnectionMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveConnectionMutation, RemoveConnectionMutationVariables>(client, RemoveConnectionDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -4210,7 +4247,18 @@ export const GetConnectionsForUserDocument = `
           profileTitle
         }
       }
+      addressed {
+        id
+        displayName
+        firstName
+        lastName
+        userProfile {
+          photography
+          profileTitle
+        }
+      }
       connectionStatus
+      lastModified
     }
     page
     totalPages

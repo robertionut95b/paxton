@@ -21,4 +21,8 @@ public class ConnectionMutationResolver implements GraphQLMutationResolver {
     public Connection updateConnection(ConnectionUpdateInput connectionUpdateInput) {
         return this.connectionService.updateConnectionRequest(connectionUpdateInput);
     }
+
+    public Connection removeConnection(Long connectionId) {
+        return this.connectionService.deleteConnection(connectionId);
+    }
 }

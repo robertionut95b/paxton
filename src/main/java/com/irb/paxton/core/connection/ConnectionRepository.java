@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ConnectionRepository extends AbstractRepository<Connection, Long> {
@@ -20,5 +21,5 @@ public interface ConnectionRepository extends AbstractRepository<Connection, Lon
             where (c.requester.id = :id or c.addressed.id = :id1) and c.connectionStatus = :connectionStatus""")
     Page<Connection> findByRequester_IdOrAddressed_IdAndConnectionStatus(@Param("id") Long id, @Param("id1") Long id1, @Param("connectionStatus") ConnectionStatus connectionStatus, Pageable pageable);
 
-
+    Optional<Connection> findFirstByRequester_IdOrAddressed_Id(Long id, Long id1);
 }

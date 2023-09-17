@@ -5,6 +5,7 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
+  useGetChatWithUserIdQuery,
   useGetConnectionsForUserQuery,
   useRemoveConnectionMutation,
 } from "@gql/generated";
@@ -12,6 +13,7 @@ import {
   CheckCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Anchor,
@@ -28,7 +30,7 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 type SortByOptions = "recent" | "lname" | "firstname";
@@ -37,6 +39,10 @@ const NetworkMyContactsPage = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [selectedUser, setSelectedUser] = useState<
+    React.ComponentProps<typeof ContactRecord>["userConnection"] | null
+  >(null);
+
   const { data: connectionsData, isLoading: isLoadingConnections } =
     useGetConnectionsForUserQuery(graphqlRequestClient, {
       page: 0,
@@ -79,6 +85,30 @@ const NetworkMyContactsPage = () => {
       },
     }
   );
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: foundChatData } = useGetChatWithUserIdQuery(
+    graphqlRequestClient,
+    {
+      userId: selectedUser?.id ?? "",
+    },
+    {
+      enabled: !!selectedUser?.id,
+      onSuccess: (data) => {
+        if (data) {
+          const firstFoundChat = data.getChatWithUserId;
+          navigate(`/app/inbox/messages/chat/${firstFoundChat?.id}`);
+        }
+      },
+      onError: (err: GraphqlApiResponse) => {
+        const error = err.response.errors?.[0];
+        if (error.message.includes("Chat does not exist between users")) {
+          navigate(`/app/inbox/messages/chat/new?chatUser=${selectedUser?.id}`);
+        }
+      },
+    }
+  );
+
   const [parent] = useAutoAnimate();
 
   const [sortBy, setSortBy] = useState<SortByOptions>("recent");
@@ -159,11 +189,7 @@ const NetworkMyContactsPage = () => {
                                 : c.addressed
                             }
                             createdAt={c.lastModified}
-                            onClickMessage={(c) =>
-                              navigate(
-                                `/app/inbox/messages/chat/new?chatUser=${c.id}`
-                              )
-                            }
+                            onClickMessage={(c) => setSelectedUser(c)}
                             onClickRemove={() =>
                               removeConnectionMutation({
                                 connectionId: c.id,

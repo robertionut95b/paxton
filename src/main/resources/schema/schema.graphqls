@@ -704,6 +704,7 @@ type Query {
     healthCheck: String
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
+    getAllUsersPaged(searchQuery: SearchQueryInput): UserPage
     getAllJobs: [Job]
     getAllJobsPaginated(searchQuery: SearchQueryInput): JobPage
     getAllOrganizations: [Organization]
@@ -734,6 +735,8 @@ type Query {
     findRecruitersAdvSearch(searchQuery: SearchQueryInput): RecruiterPage
     getPrivateChatById(chatId: ID!): Chat
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
+    getChatWithUserId(userId: ID!): Chat
+    getChatsWithUsersIds(userIds: [ID]!): [Chat]
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
     getNewConnectionForUser(userId: ID!, page: Int, size: Int): ConnectionPage
@@ -764,6 +767,7 @@ type Mutation {
     addMessageToChat(MessageInput: MessageInput!): Chat
     createChat(ChatInput: ChatInput!): Chat
     updateChat(ChatInput: ChatInput!): Chat
+    removeChat(chatId: ID!): Chat
     markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
     updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: ID!): Process
     createStep(stepInput: StepInput!): Step

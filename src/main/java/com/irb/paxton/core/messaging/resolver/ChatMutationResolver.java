@@ -26,6 +26,10 @@ public class ChatMutationResolver implements GraphQLMutationResolver {
         return chatService.updateChat(chatInput);
     }
 
+    public Chat removeChat(Long chatId) {
+        return chatService.removeChatById(chatId);
+    }
+
     public Chat markAllMessagesAsSeen(Long chatId, Long userId) {
         return chatService.markAllMessagesAsSeen(chatId, userId);
     }

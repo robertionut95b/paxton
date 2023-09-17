@@ -5,7 +5,10 @@ import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import { SelectItem } from "@components/select-items/SelectItem";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import {
+  API_PAGINATION_SIZE,
+  APP_IMAGES_API_PATH,
+} from "@constants/Properties";
 import {
   ChatType,
   FieldType,
@@ -13,9 +16,11 @@ import {
   SortDirection,
   useAddMessageToChatMutation,
   useCreateChatMutation,
-  useGetAllUsersQuery,
-  useGetChatAdvSearchQuery,
+  useGetAllUsersPagedQuery,
+  useGetChatsWithUsersIdsQuery,
+  useGetPrivateChatByIdQuery,
   useInfiniteGetChatLinesAdvSearchQuery,
+  useInfiniteGetMessagesPaginatedQuery,
 } from "@gql/generated";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -23,6 +28,7 @@ import {
   Box,
   Button,
   Divider,
+  SelectItem as ISelectItem,
   MultiSelect,
   Stack,
   Text,
@@ -30,15 +36,19 @@ import {
 } from "@mantine/core";
 import { PAGE_SIZE } from "@routes/ChatPage";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { uniqBy } from "lodash/fp";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDebounce } from "usehooks-ts";
 
 const NewChatPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [usrSearch, setUsrSearch] = useState("");
   const [searchParams] = useSearchParams();
+  const pChatUser = searchParams.get("chatUser") ?? null;
+  const [usrSearch, setUsrSearch] = useState("");
+  const usrSearchDebounced = useDebounce<string>(usrSearch, 1000);
   const [searchUsers, setSearchUsers] = useState<string[]>([]);
   const chatPageSearchQuery = {
     filters: [
@@ -68,53 +78,65 @@ const NewChatPage = () => {
     page: 0,
     size: PAGE_SIZE,
   };
+  const [usersSelectItems, setUsersSelectItem] = useState<ISelectItem[]>([]);
 
-  const { data: userData } = useGetAllUsersQuery(
-    graphqlRequestClient,
-    {},
-    {
-      enabled: usrSearch.length > 1,
-      select: (data) =>
-        data.getAllUsers?.filter((u) => String(u?.id) !== String(user?.userId)),
-    }
-  );
-
-  const { data: chatSearchByMembersData } = useGetChatAdvSearchQuery(
+  const { data: userData } = useGetAllUsersPagedQuery(
     graphqlRequestClient,
     {
       searchQuery: {
+        page: 0,
+        size: API_PAGINATION_SIZE,
         filters: [
-          ...searchUsers.map((s) => ({
-            fieldType: FieldType.Long,
-            key: "users.id",
-            operator: Operator.Equal,
-            value: s,
-          })),
-          {
-            fieldType: FieldType.Long,
-            key: "users.id",
-            operator: Operator.Equal,
-            value: String(user?.userId),
-          },
+          ...(pChatUser
+            ? [
+                {
+                  fieldType: FieldType.Long,
+                  key: "id",
+                  operator: Operator.Equal,
+                  value: pChatUser,
+                },
+              ]
+            : usrSearchDebounced.length > 1
+            ? [
+                {
+                  fieldType: FieldType.String,
+                  key: "firstName",
+                  operator: Operator.Like,
+                  value: usrSearchDebounced,
+                },
+              ]
+            : []),
         ],
       },
     },
     {
+      enabled: usrSearchDebounced.length > 1 || !!pChatUser,
+      select: (data) =>
+        data.getAllUsersPaged?.list?.filter(
+          (u) => String(u?.id) !== String(user?.userId)
+        ),
+      onSuccess: (data) => {
+        if (data && pChatUser) {
+          setSearchUsers([pChatUser]);
+        }
+      },
+    }
+  );
+
+  const { data: chatSearchByMembersData } = useGetChatsWithUsersIdsQuery(
+    graphqlRequestClient,
+    {
+      userIds: [...searchUsers, String(user?.userId)],
+    },
+    {
       enabled: searchUsers.length > 0,
-      select: (data) => ({
-        ...data,
-        getChatAdvSearch: {
-          ...data.getChatAdvSearch,
-          list: data.getChatAdvSearch?.list?.map((e) => ({
-            ...e,
-            id: e?.id as string,
-            unreadMessagesCount: e?.unreadMessagesCount as number,
-            users: e?.users?.filter(
-              (u) => String(u?.id) !== String(user?.userId)
-            ),
-          })),
-        },
-      }),
+      select: (data) =>
+        data.getChatsWithUsersIds?.map((c) => ({
+          ...c,
+          users: c?.users?.filter(
+            (u) => String(u?.id) !== String(user?.userId)
+          ),
+        })),
     }
   );
 
@@ -137,8 +159,7 @@ const NewChatPage = () => {
     }
   );
 
-  const individualChatsCount =
-    chatSearchByMembersData?.getChatAdvSearch?.totalElements ?? 0;
+  const individualChatsCount = chatSearchByMembersData?.length ?? 0;
 
   const submitMessage = async (values: {
     content: string;
@@ -147,12 +168,41 @@ const NewChatPage = () => {
     if (individualChatsCount > 0 && individualChatsCount <= 1) {
       addMessageToChat({
         MessageInput: {
-          chatId: chatSearchByMembersData?.getChatAdvSearch?.list?.[0]
-            ?.id as string,
+          chatId: chatSearchByMembersData?.[0]?.id as string,
           content: values.content,
           senderUserId: values.senderUserId as string,
         },
       });
+      await queryClient.invalidateQueries(
+        useGetPrivateChatByIdQuery.getKey({
+          chatId: chatSearchByMembersData?.[0]?.id ?? "",
+        })
+      );
+      await queryClient.invalidateQueries(
+        useInfiniteGetMessagesPaginatedQuery.getKey({
+          searchQuery: {
+            filters: [
+              {
+                key: "chat.id",
+                value: chatSearchByMembersData?.[0]?.id ?? "",
+                operator: Operator.Equal,
+                fieldType: FieldType.Long,
+              },
+            ],
+            sorts: [
+              {
+                direction: SortDirection.Desc,
+                key: "id",
+              },
+            ],
+            page: 0,
+            size: API_PAGINATION_SIZE,
+          },
+        })
+      );
+      return navigate(
+        `/app/inbox/messages/chat/${chatSearchByMembersData?.[0]?.id}`
+      );
     } else {
       if (!user?.userId) return;
       const data = await createChat({
@@ -197,19 +247,26 @@ const NewChatPage = () => {
     if (data) navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
   };
 
-  const users = (userData ?? []).map((u) => ({
-    value: u?.id ?? "",
-    label: `${u?.firstName} ${u?.lastName}`,
-    image:
-      u?.userProfile.photography &&
-      `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`,
-    description: u?.userProfile.profileTitle,
-  }));
+  const chatLines = chatSearchByMembersData ?? [];
 
-  const chatLines = chatSearchByMembersData?.getChatAdvSearch?.list ?? [];
+  const chatMessages = chatSearchByMembersData?.[0]?.messages ?? [];
 
-  const chatMessages =
-    chatSearchByMembersData?.getChatAdvSearch?.list?.[0]?.messages ?? [];
+  useEffect(() => {
+    const usersData = userData ?? [];
+    if (usersData.length > 0) {
+      const users = usersData.map((u) => ({
+        value: u?.id ?? "",
+        label: `${u?.firstName} ${u?.lastName}`,
+        image:
+          u?.userProfile.photography &&
+          `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`,
+        description: u?.userProfile.profileTitle,
+      }));
+      setUsersSelectItem((prevUsers) =>
+        uniqBy("value", [...prevUsers, ...users])
+      );
+    }
+  }, [userData]);
 
   return (
     <Stack spacing={6} justify="space-between" h={"100%"}>
@@ -219,7 +276,7 @@ const NewChatPage = () => {
         </Title>
         <Divider mt={20} mb={12} />
         <MultiSelect
-          data={users}
+          data={usersSelectItems}
           placeholder="Choose one or more names"
           clearable
           searchable
@@ -238,7 +295,7 @@ const NewChatPage = () => {
           <div className="h-full grow">
             <ChatSection currentUser={user} messages={chatMessages} />
             <ShowIf if={searchUsers.length > 0}>
-              <Divider />
+              <Divider mt="md" />
               <Stack justify="center" align="center" spacing="xs">
                 <Text size="sm" my="xs" align="center" weight="bold">
                   Or create a new one
@@ -257,11 +314,9 @@ const NewChatPage = () => {
           </Text>
           <Divider />
           {chatLines.map((c) => (
-            <div key={c?.id}>
-              <ChatLine chat={c} />
-            </div>
+            // @ts-expect-error("type-check")
+            <div key={c?.id}>{c.id && <ChatLine chat={c} />}</div>
           ))}
-          <Divider />
           <Stack justify="center" align="center" spacing="xs">
             <Text size="sm" my="xs" align="center" weight="bold">
               Or create a new one

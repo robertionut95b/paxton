@@ -5,6 +5,8 @@ import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SlicedResponse;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface ChatSecurityService extends PaginationSecurityService {
 
     @Override
@@ -20,6 +22,8 @@ public interface ChatSecurityService extends PaginationSecurityService {
     boolean isChatMember(Authentication authentication, PaginatedResponse<Object> response);
 
     boolean isChatMember(Authentication authentication, SlicedResponse<Object> response);
+
+    boolean isChatMember(Authentication authentication, List<Object> response);
 
     boolean isCurrentUserChatMember(Long chatId);
 

@@ -8,6 +8,8 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 public class ChatQueryResolver implements GraphQLQueryResolver {
 
@@ -20,5 +22,13 @@ public class ChatQueryResolver implements GraphQLQueryResolver {
 
     public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
         return chatService.getChatAdvSearch(searchRequest);
+    }
+
+    public Chat getChatWithUserId(Long userId) {
+        return chatService.getChatWithUserId(userId);
+    }
+
+    public List<Chat> getChatsWithUsersIds(List<Long> userIds) {
+        return chatService.getChatsWithUsersIds(userIds);
     }
 }

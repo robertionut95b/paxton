@@ -308,3 +308,9 @@ mutation RemoveConnection($connectionId: ID!) {
     connectionStatus
   }
 }
+
+mutation RemoveChat($chatId: ID!) {
+  removeChat(chatId: $chatId) {
+    id
+  }
+}

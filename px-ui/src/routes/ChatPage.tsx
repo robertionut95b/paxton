@@ -1,6 +1,7 @@
 import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
+import ChatLinesSkeleton from "@components/messaging/chat/ChatLinesSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
@@ -22,7 +23,6 @@ import {
   Divider,
   Grid,
   Group,
-  Loader,
   Paper,
   ScrollArea,
   Stack,
@@ -179,7 +179,7 @@ const ChatPage = () => {
                   if={!isLoading}
                   else={
                     <Center mt="xs">
-                      <Loader mt="sm" size="sm" />
+                      <ChatLinesSkeleton />
                     </Center>
                   }
                 >

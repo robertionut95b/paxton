@@ -2,7 +2,7 @@ import { Avatar, Group, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
 
 type MessageLineProps = {
-  avatar?: string;
+  avatar?: string | null;
   name: string;
   content: string;
   avatarInitials: string;

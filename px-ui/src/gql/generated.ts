@@ -443,6 +443,7 @@ export type Mutation = {
   markAllMessagesAsSeen?: Maybe<Chat>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
+  removeChat?: Maybe<Chat>;
   removeConnection?: Maybe<Connection>;
   updateApplication?: Maybe<Application>;
   updateChat?: Maybe<Chat>;
@@ -545,6 +546,11 @@ export type MutationPublishJobArgs = {
 
 export type MutationPublishJobListingArgs = {
   JobListingInput: JobListingInput;
+};
+
+
+export type MutationRemoveChatArgs = {
+  chatId: Scalars['ID'];
 };
 
 
@@ -745,9 +751,12 @@ export type Query = {
   getAllSteps?: Maybe<Array<Maybe<Step>>>;
   getAllUserConnectionSuggestions?: Maybe<UserPage>;
   getAllUsers?: Maybe<Array<Maybe<User>>>;
+  getAllUsersPaged?: Maybe<UserPage>;
   getApplicationById?: Maybe<Application>;
   getApplicationsForJobIdCountBySteps?: Maybe<Array<Maybe<ApplicationsCountByStep>>>;
   getChatAdvSearch?: Maybe<ChatPage>;
+  getChatWithUserId?: Maybe<Chat>;
+  getChatsWithUsersIds?: Maybe<Array<Maybe<Chat>>>;
   getConnectionsForUser?: Maybe<ConnectionPage>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
@@ -818,6 +827,11 @@ export type QueryGetAllUserConnectionSuggestionsArgs = {
 };
 
 
+export type QueryGetAllUsersPagedArgs = {
+  searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
 export type QueryGetApplicationByIdArgs = {
   applicationId: Scalars['ID'];
 };
@@ -830,6 +844,16 @@ export type QueryGetApplicationsForJobIdCountByStepsArgs = {
 
 export type QueryGetChatAdvSearchArgs = {
   searchQuery?: InputMaybe<SearchQueryInput>;
+};
+
+
+export type QueryGetChatWithUserIdArgs = {
+  userId: Scalars['ID'];
+};
+
+
+export type QueryGetChatsWithUsersIdsArgs = {
+  userIds: Array<InputMaybe<Scalars['ID']>>;
 };
 
 
@@ -1274,6 +1298,13 @@ export type RemoveConnectionMutationVariables = Exact<{
 
 export type RemoveConnectionMutation = { __typename?: 'Mutation', removeConnection?: { __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus } | null };
 
+export type RemoveChatMutationVariables = Exact<{
+  chatId: Scalars['ID'];
+}>;
+
+
+export type RemoveChatMutation = { __typename?: 'Mutation', removeChat?: { __typename?: 'Chat', id: string } | null };
+
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1396,6 +1427,13 @@ export type GetAllUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null };
 
+export type GetAllUsersPagedQueryVariables = Exact<{
+  searchQuery?: InputMaybe<SearchQueryInput>;
+}>;
+
+
+export type GetAllUsersPagedQuery = { __typename?: 'Query', getAllUsersPaged?: { __typename?: 'UserPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null } | null };
+
 export type GetAllJobsPaginatedQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
@@ -1430,6 +1468,13 @@ export type GetChatAdvSearchQueryVariables = Exact<{
 
 
 export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, title?: string | null, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
+
+export type GetChatsWithUsersIdsQueryVariables = Exact<{
+  userIds: Array<InputMaybe<Scalars['ID']>> | InputMaybe<Scalars['ID']>;
+}>;
+
+
+export type GetChatsWithUsersIdsQuery = { __typename?: 'Query', getChatsWithUsersIds?: Array<{ __typename?: 'Chat', id: string, unreadMessagesCount: number, title?: string | null, messages?: Array<{ __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: string, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: string, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: string, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null };
 
 export type GetChatLinesAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
@@ -1482,6 +1527,13 @@ export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
 
 
 export type GetAllUserConnectionSuggestionsQuery = { __typename?: 'Query', getAllUserConnectionSuggestions?: { __typename?: 'UserPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', coverPhotography?: string | null, photography?: string | null, profileTitle: string, profileSlugUrl: string } } | null> | null } | null };
+
+export type GetChatWithUserIdQueryVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type GetChatWithUserIdQuery = { __typename?: 'Query', getChatWithUserId?: { __typename?: 'Chat', id: string, title?: string | null, unreadMessagesCount: number, latestMessage?: { __typename?: 'Message', content: string } | null } | null };
 
 
 export const UpdateUserProfileDocument = `
@@ -2209,6 +2261,29 @@ export const useRemoveConnectionMutation = <
 useRemoveConnectionMutation.getKey = () => ['RemoveConnection'];
 
 useRemoveConnectionMutation.fetcher = (client: GraphQLClient, variables: RemoveConnectionMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveConnectionMutation, RemoveConnectionMutationVariables>(client, RemoveConnectionDocument, variables, headers);
+export const RemoveChatDocument = `
+    mutation RemoveChat($chatId: ID!) {
+  removeChat(chatId: $chatId) {
+    id
+  }
+}
+    `;
+export const useRemoveChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<RemoveChatMutation, TError, RemoveChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<RemoveChatMutation, TError, RemoveChatMutationVariables, TContext>(
+      ['RemoveChat'],
+      (variables?: RemoveChatMutationVariables) => fetcher<RemoveChatMutation, RemoveChatMutationVariables>(client, RemoveChatDocument, variables, headers)(),
+      options
+    );
+useRemoveChatMutation.getKey = () => ['RemoveChat'];
+
+useRemoveChatMutation.fetcher = (client: GraphQLClient, variables: RemoveChatMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveChatMutation, RemoveChatMutationVariables>(client, RemoveChatDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -3588,6 +3663,65 @@ useInfiniteGetAllUsersQuery.getKey = (variables?: GetAllUsersQueryVariables) => 
 ;
 
 useGetAllUsersQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers);
+export const GetAllUsersPagedDocument = `
+    query GetAllUsersPaged($searchQuery: SearchQueryInput) {
+  getAllUsersPaged(searchQuery: $searchQuery) {
+    list {
+      id
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+    `;
+export const useGetAllUsersPagedQuery = <
+      TData = GetAllUsersPagedQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAllUsersPagedQueryVariables,
+      options?: UseQueryOptions<GetAllUsersPagedQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAllUsersPagedQuery, TError, TData>(
+      variables === undefined ? ['GetAllUsersPaged'] : ['GetAllUsersPaged', variables],
+      fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, variables, headers),
+      options
+    );
+useGetAllUsersPagedQuery.document = GetAllUsersPagedDocument;
+
+
+useGetAllUsersPagedQuery.getKey = (variables?: GetAllUsersPagedQueryVariables) => variables === undefined ? ['GetAllUsersPaged'] : ['GetAllUsersPaged', variables];
+;
+
+export const useInfiniteGetAllUsersPagedQuery = <
+      TData = GetAllUsersPagedQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof GetAllUsersPagedQueryVariables,
+      client: GraphQLClient,
+      variables?: GetAllUsersPagedQueryVariables,
+      options?: UseInfiniteQueryOptions<GetAllUsersPagedQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<GetAllUsersPagedQuery, TError, TData>(
+      variables === undefined ? ['GetAllUsersPaged.infinite'] : ['GetAllUsersPaged.infinite', variables],
+      (metaData) => fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteGetAllUsersPagedQuery.getKey = (variables?: GetAllUsersPagedQueryVariables) => variables === undefined ? ['GetAllUsersPaged.infinite'] : ['GetAllUsersPaged.infinite', variables];
+;
+
+useGetAllUsersPagedQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersPagedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, variables, headers);
 export const GetAllJobsPaginatedDocument = `
     query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
   getAllJobsPaginated(searchQuery: $searchQuery) {
@@ -3913,6 +4047,89 @@ useInfiniteGetChatAdvSearchQuery.getKey = (variables: GetChatAdvSearchQueryVaria
 ;
 
 useGetChatAdvSearchQuery.fetcher = (client: GraphQLClient, variables: GetChatAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers);
+export const GetChatsWithUsersIdsDocument = `
+    query GetChatsWithUsersIds($userIds: [ID]!) {
+  getChatsWithUsersIds(userIds: $userIds) {
+    id
+    unreadMessagesCount
+    title
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        firstName
+        lastName
+        displayName
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
+  }
+}
+    `;
+export const useGetChatsWithUsersIdsQuery = <
+      TData = GetChatsWithUsersIdsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetChatsWithUsersIdsQueryVariables,
+      options?: UseQueryOptions<GetChatsWithUsersIdsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetChatsWithUsersIdsQuery, TError, TData>(
+      ['GetChatsWithUsersIds', variables],
+      fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, variables, headers),
+      options
+    );
+useGetChatsWithUsersIdsQuery.document = GetChatsWithUsersIdsDocument;
+
+
+useGetChatsWithUsersIdsQuery.getKey = (variables: GetChatsWithUsersIdsQueryVariables) => ['GetChatsWithUsersIds', variables];
+;
+
+export const useInfiniteGetChatsWithUsersIdsQuery = <
+      TData = GetChatsWithUsersIdsQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof GetChatsWithUsersIdsQueryVariables,
+      client: GraphQLClient,
+      variables: GetChatsWithUsersIdsQueryVariables,
+      options?: UseInfiniteQueryOptions<GetChatsWithUsersIdsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<GetChatsWithUsersIdsQuery, TError, TData>(
+      ['GetChatsWithUsersIds.infinite', variables],
+      (metaData) => fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteGetChatsWithUsersIdsQuery.getKey = (variables: GetChatsWithUsersIdsQueryVariables) => ['GetChatsWithUsersIds.infinite', variables];
+;
+
+useGetChatsWithUsersIdsQuery.fetcher = (client: GraphQLClient, variables: GetChatsWithUsersIdsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, variables, headers);
 export const GetChatLinesAdvSearchDocument = `
     query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
@@ -4369,6 +4586,59 @@ useInfiniteGetAllUserConnectionSuggestionsQuery.getKey = (variables?: GetAllUser
 ;
 
 useGetAllUserConnectionSuggestionsQuery.fetcher = (client: GraphQLClient, variables?: GetAllUserConnectionSuggestionsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUserConnectionSuggestionsQuery, GetAllUserConnectionSuggestionsQueryVariables>(client, GetAllUserConnectionSuggestionsDocument, variables, headers);
+export const GetChatWithUserIdDocument = `
+    query GetChatWithUserId($userId: ID!) {
+  getChatWithUserId(userId: $userId) {
+    id
+    title
+    unreadMessagesCount
+    latestMessage {
+      content
+    }
+  }
+}
+    `;
+export const useGetChatWithUserIdQuery = <
+      TData = GetChatWithUserIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetChatWithUserIdQueryVariables,
+      options?: UseQueryOptions<GetChatWithUserIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetChatWithUserIdQuery, TError, TData>(
+      ['GetChatWithUserId', variables],
+      fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, variables, headers),
+      options
+    );
+useGetChatWithUserIdQuery.document = GetChatWithUserIdDocument;
+
+
+useGetChatWithUserIdQuery.getKey = (variables: GetChatWithUserIdQueryVariables) => ['GetChatWithUserId', variables];
+;
+
+export const useInfiniteGetChatWithUserIdQuery = <
+      TData = GetChatWithUserIdQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof GetChatWithUserIdQueryVariables,
+      client: GraphQLClient,
+      variables: GetChatWithUserIdQueryVariables,
+      options?: UseInfiniteQueryOptions<GetChatWithUserIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<GetChatWithUserIdQuery, TError, TData>(
+      ['GetChatWithUserId.infinite', variables],
+      (metaData) => fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteGetChatWithUserIdQuery.getKey = (variables: GetChatWithUserIdQueryVariables) => ['GetChatWithUserId.infinite', variables];
+;
+
+useGetChatWithUserIdQuery.fetcher = (client: GraphQLClient, variables: GetChatWithUserIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, variables, headers);
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;

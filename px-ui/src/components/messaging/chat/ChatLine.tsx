@@ -1,7 +1,7 @@
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
-import { GetChatLinesAdvSearchQuery } from "@gql/generated";
+import { GetChatsWithUsersIdsQuery } from "@gql/generated";
 import { Avatar, Badge, Flex, Grid, Stack, Text } from "@mantine/core";
 import { truncate } from "@utils/truncateText";
 import { format } from "date-fns";
@@ -9,9 +9,7 @@ import { NavLink } from "react-router-dom";
 
 type ChatLineProps = {
   chat: NonNullable<
-    NonNullable<
-      NonNullable<GetChatLinesAdvSearchQuery>["getChatAdvSearch"]
-    >["list"]
+    NonNullable<NonNullable<GetChatsWithUsersIdsQuery>["getChatsWithUsersIds"]>
   >[number];
   active?: boolean;
 };

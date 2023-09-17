@@ -537,6 +537,23 @@ query GetAllUsers {
   }
 }
 
+query GetAllUsersPaged($searchQuery: SearchQueryInput) {
+  getAllUsersPaged(searchQuery: $searchQuery) {
+    list {
+      id
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    page
+    totalPages
+    totalElements
+  }
+}
+
 query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
   getAllJobsPaginated(searchQuery: $searchQuery) {
     list {
@@ -649,6 +666,47 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
     page
     totalPages
     totalElements
+  }
+}
+
+query GetChatsWithUsersIds($userIds: [ID]!) {
+  getChatsWithUsersIds(userIds: $userIds) {
+    id
+    unreadMessagesCount
+    title
+    messages {
+      id
+      content
+      sender {
+        id
+        username
+        firstName
+        lastName
+        displayName
+        userProfile {
+          photography
+        }
+      }
+      deliveredAt
+    }
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
   }
 }
 
@@ -811,5 +869,16 @@ query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
     page
     totalPages
     totalElements
+  }
+}
+
+query GetChatWithUserId($userId: ID!) {
+  getChatWithUserId(userId: $userId) {
+    id
+    title
+    unreadMessagesCount
+    latestMessage {
+      content
+    }
   }
 }

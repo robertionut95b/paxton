@@ -15,6 +15,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service(value = "chatSecurityService")
@@ -43,6 +44,18 @@ public class ChatSecurityServiceImpl implements ChatSecurityService {
     public boolean isChatMember(Authentication authentication, SlicedResponse<Object> response) {
         Slice<Object> list = response.getList();
         return list.stream().allMatch(o -> {
+            if (o instanceof Chat chat) {
+                return chat
+                        .getUsers()
+                        .stream()
+                        .anyMatch(user -> user.getUsername().equals(authentication.getName()));
+            } else return false;
+        });
+    }
+
+    @Override
+    public boolean isChatMember(Authentication authentication, List<Object> response) {
+        return response.stream().allMatch(o -> {
             if (o instanceof Chat chat) {
                 return chat
                         .getUsers()

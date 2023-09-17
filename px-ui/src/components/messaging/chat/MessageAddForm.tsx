@@ -37,7 +37,6 @@ type FormValues = {
 const MessageAddForm = ({
   currentUser,
   currentUserAvatar,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSubmit,
   maxLength = 250,
   disabled = false,
@@ -71,7 +70,7 @@ const MessageAddForm = ({
     [form]
   );
 
-  const handleSubmit = async (values: (typeof form)["values"]) => {
+  const handleSubmit = (values: (typeof form)["values"]) => {
     onSubmit(values);
     if (form.isValid()) {
       form.reset();
@@ -90,8 +89,9 @@ const MessageAddForm = ({
           radius="xl"
           variant="filled"
           src={
-            currentUserAvatar &&
-            `${APP_IMAGES_API_PATH}/100x100/${currentUserAvatar}`
+            currentUserAvatar
+              ? `${APP_IMAGES_API_PATH}/100x100/${currentUserAvatar}`
+              : undefined
           }
         >
           {displayInitials}

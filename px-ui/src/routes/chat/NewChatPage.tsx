@@ -45,7 +45,7 @@ const NewChatPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const pChatUser = searchParams.get("chatUser") ?? null;
   const [usrSearch, setUsrSearch] = useState("");
   const usrSearchDebounced = useDebounce<string>(usrSearch, 1000);
@@ -115,11 +115,6 @@ const NewChatPage = () => {
         data.getAllUsersPaged?.list?.filter(
           (u) => String(u?.id) !== String(user?.userId)
         ),
-      onSuccess: (data) => {
-        if (data && pChatUser) {
-          setSearchUsers([pChatUser]);
-        }
-      },
     }
   );
 
@@ -267,6 +262,19 @@ const NewChatPage = () => {
       );
     }
   }, [userData]);
+
+  useEffect(() => {
+    if (userData && pChatUser) {
+      setSearchUsers([pChatUser]);
+    }
+  }, [userData, pChatUser]);
+
+  useEffect(() => {
+    if (usrSearch && usrSearch.length > 0) {
+      searchParams.delete("chatUser");
+      setSearchParams(searchParams);
+    }
+  }, [usrSearch, searchParams]);
 
   return (
     <Stack spacing={6} justify="space-between" h={"100%"}>

@@ -46,7 +46,7 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     public Connection createConnectionRequest(ConnectionCreateInput connectionCreateInput) {
         // check if no reverse entity already exists in the database
         Optional<Connection> existingConnection = connectionRepository
-                .findFirstByRequester_IdOrAddressed_Id(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId());
+                .findFirstByRequester_IdAndAddressed_Id(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId());
         if (existingConnection.isPresent()) {
             throw new InvalidConnectionStateException("A connection request already exists between users [%s - %s]"
                     .formatted(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId()));
@@ -86,13 +86,20 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
-    public PaginatedResponse<Connection> getConnectionsForUser(Long userId, Integer page, Integer size) {
+    public PaginatedResponse<Connection> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortRequest) {
         User user = this.userService.findById(userId);
         if (user == null) {
             throw new UserNotFoundException("User by id %s does not exist".formatted(userId));
         }
-        Page<Connection> connectionPage = connectionRepository
-                .findByRequester_IdOrAddressed_IdAndConnectionStatus(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0));
+        SortRequest sr = sortRequest != null ? sortRequest : new SortRequest("lastModified", SortDirection.DESC);
+        Page<Connection> connectionPage = switch (sr.getKey()) {
+            case "firstName" -> connectionRepository
+                    .findByRequester_IdOrAddressed_IdAndConnectionStatusFirstNameDescending(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
+            case "lastName" -> connectionRepository
+                    .findByRequester_IdOrAddressed_IdAndConnectionStatusLastNameDescending(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
+            default -> connectionRepository
+                    .findByRequester_IdOrAddressed_IdAndConnectionStatus(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
+        };
         return new PaginatedResponse<>(connectionPage, page != null ? page : 0, connectionPage.getTotalPages(), connectionPage.getTotalElements());
     }
 

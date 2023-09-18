@@ -819,8 +819,20 @@ query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
   }
 }
 
-query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int) {
-  getConnectionsForUser(userId: $userId, page: $page, size: $size) {
+query GetConnectionsForUser(
+  $userId: ID!
+  $page: Int
+  $size: Int
+  $searchQuery: String
+  $sortBy: SortsInput
+) {
+  getConnectionsForUser(
+    userId: $userId
+    page: $page
+    size: $size
+    searchQuery: $searchQuery
+    sortBy: $sortBy
+  ) {
     list {
       id
       requester {

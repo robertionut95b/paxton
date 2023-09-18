@@ -41,11 +41,17 @@ export default function NetworkPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data, isLoading: isLoadingInvRequests } =
-    useGetConnectionInvitationsForUserQuery(graphqlRequestClient, {
-      userId: user?.userId ?? "",
-      page: 0,
-      size: API_PAGINATION_SIZE,
-    });
+    useGetConnectionInvitationsForUserQuery(
+      graphqlRequestClient,
+      {
+        userId: user?.userId ?? "",
+        page: 0,
+        size: API_PAGINATION_SIZE,
+      },
+      {
+        keepPreviousData: true,
+      }
+    );
 
   const { data: connectionsData, isLoading: isLoadingConnections } =
     useGetConnectionsForUserQuery(graphqlRequestClient, {
@@ -57,10 +63,16 @@ export default function NetworkPage() {
   const {
     data: allUserSuggestionsData,
     isLoading: isAllUserSuggestionsDataLoading,
-  } = useGetAllUserConnectionSuggestionsQuery(graphqlRequestClient, {
-    page: 0,
-    size: API_PAGINATION_SIZE,
-  });
+  } = useGetAllUserConnectionSuggestionsQuery(
+    graphqlRequestClient,
+    {
+      page: 0,
+      size: API_PAGINATION_SIZE,
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const { mutate } = useUpdateConnectionMutation(graphqlRequestClient, {
     onSuccess: (updateData) => {
@@ -177,7 +189,7 @@ export default function NetworkPage() {
             else={
               <List spacing={"md"} size="sm" center>
                 <List.Item icon={<UsersIcon width={20} />}>
-                  <Group position="apart">
+                  <Group position="apart" w="100%">
                     <NavLink to="my-contacts">Contacts</NavLink>
                     {contactsCount > 0 ? <Text>{contactsCount}</Text> : null}
                   </Group>

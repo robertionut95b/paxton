@@ -740,7 +740,7 @@ type Query {
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
     getNewConnectionForUser(userId: ID!, page: Int, size: Int): ConnectionPage
-    getConnectionsForUser(userId: ID!, page: Int, size: Int): ConnectionPage
+    getConnectionsForUser(userId: ID!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): ConnectionPage
     getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
 }
 

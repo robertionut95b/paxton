@@ -859,7 +859,9 @@ export type QueryGetChatsWithUsersIdsArgs = {
 
 export type QueryGetConnectionsForUserArgs = {
   page?: InputMaybe<Scalars['Int']>;
+  searchQuery?: InputMaybe<Scalars['String']>;
   size?: InputMaybe<Scalars['Int']>;
+  sortBy?: InputMaybe<SortsInput>;
   userId: Scalars['ID'];
 };
 
@@ -1515,6 +1517,8 @@ export type GetConnectionsForUserQueryVariables = Exact<{
   userId: Scalars['ID'];
   page?: InputMaybe<Scalars['Int']>;
   size?: InputMaybe<Scalars['Int']>;
+  searchQuery?: InputMaybe<Scalars['String']>;
+  sortBy?: InputMaybe<SortsInput>;
 }>;
 
 
@@ -4450,8 +4454,14 @@ useInfiniteGetConnectionInvitationsForUserQuery.getKey = (variables: GetConnecti
 
 useGetConnectionInvitationsForUserQuery.fetcher = (client: GraphQLClient, variables: GetConnectionInvitationsForUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionInvitationsForUserQuery, GetConnectionInvitationsForUserQueryVariables>(client, GetConnectionInvitationsForUserDocument, variables, headers);
 export const GetConnectionsForUserDocument = `
-    query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int) {
-  getConnectionsForUser(userId: $userId, page: $page, size: $size) {
+    query GetConnectionsForUser($userId: ID!, $page: Int, $size: Int, $searchQuery: String, $sortBy: SortsInput) {
+  getConnectionsForUser(
+    userId: $userId
+    page: $page
+    size: $size
+    searchQuery: $searchQuery
+    sortBy: $sortBy
+  ) {
     list {
       id
       requester {

@@ -1434,7 +1434,7 @@ export type GetAllUsersPagedQueryVariables = Exact<{
 }>;
 
 
-export type GetAllUsersPagedQuery = { __typename?: 'Query', getAllUsersPaged?: { __typename?: 'UserPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null } | null };
+export type GetAllUsersPagedQuery = { __typename?: 'Query', getAllUsersPaged?: { __typename?: 'UserPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } } | null> | null } | null };
 
 export type GetAllJobsPaginatedQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1522,7 +1522,7 @@ export type GetConnectionsForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } }, addressed: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
+export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } }, addressed: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } } } | null> | null } | null };
 
 export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -3674,9 +3674,11 @@ export const GetAllUsersPagedDocument = `
       id
       firstName
       lastName
+      displayName
       userProfile {
         photography
         profileTitle
+        profileSlugUrl
       }
     }
     page
@@ -4472,6 +4474,7 @@ export const GetConnectionsForUserDocument = `
         userProfile {
           photography
           profileTitle
+          profileSlugUrl
         }
       }
       addressed {
@@ -4482,6 +4485,7 @@ export const GetConnectionsForUserDocument = `
         userProfile {
           photography
           profileTitle
+          profileSlugUrl
         }
       }
       connectionStatus

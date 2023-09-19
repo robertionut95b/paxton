@@ -1,10 +1,12 @@
+import ShowIf from "@components/visibility/ShowIf";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { GetConnectionsForUserQuery } from "@gql/generated";
 import { ClockIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { Avatar, Button, Group, Stack, Text } from "@mantine/core";
+import { Anchor, Avatar, Button, Group, Stack, Text } from "@mantine/core";
 import { displayInitials } from "@utils/initials";
 import { intlFormatDistance } from "date-fns";
+import { NavLink } from "react-router-dom";
 
 type ContactItemData = NonNullable<
   NonNullable<
@@ -14,9 +16,9 @@ type ContactItemData = NonNullable<
 
 type ContactRecordProps = {
   userConnection: ContactItemData;
-  createdAt: Date;
-  onClickMessage: (c: ContactItemData) => void;
-  onClickRemove: (c: ContactItemData) => void;
+  createdAt?: Date;
+  onClickMessage?: (c: ContactItemData) => void;
+  onClickRemove?: (c: ContactItemData) => void;
 };
 
 const ContactRecord = ({
@@ -39,43 +41,57 @@ const ContactRecord = ({
           )}
         </Avatar>
         <Stack spacing={2}>
-          <Text className="font-semibold capitalize">
-            {userConnection.displayName}
-          </Text>
-          <Text size="sm" color="dimmed">
-            {userConnection.userProfile.profileTitle}
-          </Text>
-          <Group spacing={2}>
-            <ClockIcon width={14} />
-            <Text size={12} color="dimmed">
-              Connected{" "}
-              {intlFormatDistance(new Date(createdAt), new Date(), {
-                unit: "day",
-                style: "narrow",
-              })}
+          <Anchor
+            component={NavLink}
+            to={`/app/up/${userConnection.userProfile.profileSlugUrl}`}
+            variant="text"
+          >
+            <Text className="font-semibold capitalize">
+              {userConnection.displayName}
             </Text>
-          </Group>
+            <Text size="sm" color="dimmed">
+              {userConnection.userProfile.profileTitle}
+            </Text>
+            {createdAt && (
+              <Group spacing={2}>
+                <ClockIcon width={14} />
+                <Text size={12} color="dimmed">
+                  Connected{" "}
+                  {intlFormatDistance(new Date(createdAt), new Date(), {
+                    unit: "day",
+                    style: "narrow",
+                  })}
+                </Text>
+              </Group>
+            )}
+          </Anchor>
         </Stack>
       </Group>
-      <Group spacing="xs">
-        <Button
-          size="sm"
-          variant="filled"
-          leftIcon={<PaperAirplaneIcon width={16} />}
-          onClick={() => onClickMessage(userConnection)}
-        >
-          Message
-        </Button>
-        <Button
-          size="sm"
-          variant="light"
-          color="red"
-          leftIcon={<TrashIcon width={16} />}
-          onClick={() => onClickRemove(userConnection)}
-        >
-          Remove
-        </Button>
-      </Group>
+      <ShowIf if={onClickMessage || onClickRemove}>
+        <Group spacing="xs">
+          <ShowIf if={onClickMessage}>
+            <Button
+              size="sm"
+              variant="filled"
+              leftIcon={<PaperAirplaneIcon width={16} />}
+              onClick={() => onClickMessage?.(userConnection)}
+            >
+              Message
+            </Button>
+          </ShowIf>
+          <ShowIf if={onClickRemove}>
+            <Button
+              size="sm"
+              variant="light"
+              color="red"
+              leftIcon={<TrashIcon width={16} />}
+              onClick={() => onClickRemove?.(userConnection)}
+            >
+              Remove
+            </Button>
+          </ShowIf>
+        </Group>
+      </ShowIf>
     </Group>
   );
 };

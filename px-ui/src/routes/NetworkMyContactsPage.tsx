@@ -6,6 +6,7 @@ import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
+  ConnectionStatus,
   SortDirection,
   useGetChatWithUserIdQuery,
   useGetConnectionsForUserQuery,
@@ -217,7 +218,7 @@ const NetworkMyContactsPage = () => {
                           <Anchor
                             size="sm"
                             component={Link}
-                            to="/app/people/search"
+                            to={`/app/people/search?cn=${ConnectionStatus.Accepted}`}
                           >
                             Search by filters
                           </Anchor>

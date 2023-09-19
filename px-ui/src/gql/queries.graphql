@@ -543,9 +543,11 @@ query GetAllUsersPaged($searchQuery: SearchQueryInput) {
       id
       firstName
       lastName
+      displayName
       userProfile {
         photography
         profileTitle
+        profileSlugUrl
       }
     }
     page
@@ -843,6 +845,7 @@ query GetConnectionsForUser(
         userProfile {
           photography
           profileTitle
+          profileSlugUrl
         }
       }
       addressed {
@@ -853,6 +856,7 @@ query GetConnectionsForUser(
         userProfile {
           photography
           profileTitle
+          profileSlugUrl
         }
       }
       connectionStatus

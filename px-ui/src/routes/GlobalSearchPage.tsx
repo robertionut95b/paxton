@@ -1,7 +1,7 @@
 import PageFooter from "@components/layout/PageFooter";
 import { Grid, Paper, Stack, Text, Title } from "@mantine/core";
 
-const SearchPage = () => {
+const GlobalSearchPage = () => {
   return (
     <Grid>
       <Grid.Col span={3}>
@@ -54,4 +54,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage;
+export default GlobalSearchPage;

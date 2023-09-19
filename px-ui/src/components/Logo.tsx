@@ -63,7 +63,11 @@ export function LogoWithSearch() {
     {
       title: "People",
       description: "Search a user",
-      onTrigger: () => console.log("Documentation"),
+      onTrigger: () => {
+        searchQuery.length > 0
+          ? navigate(`/app/people/search?q=${searchQuery}`)
+          : navigate(`/app/people/search`);
+      },
       icon: <UsersIcon width={20} />,
     },
     {

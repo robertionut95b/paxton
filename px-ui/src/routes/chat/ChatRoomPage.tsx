@@ -333,7 +333,7 @@ const ChatRoomPage = () => {
       : `${users?.[0]?.firstName} ${users?.[0]?.lastName}`;
 
   return (
-    <Stack spacing={0} h={"100%"} justify="space-between">
+    <Stack className="h-full" spacing={0}>
       <Group
         position="apart"
         align="center"
@@ -458,7 +458,7 @@ const ChatRoomPage = () => {
           }
         />
       </ShowIfElse>
-      <Box>
+      <Box className="flex-1">
         <Divider my={"xs"} />
         <MessageAddForm
           currentUser={user}

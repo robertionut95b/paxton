@@ -82,11 +82,12 @@ const AdminOrganizations = lazy(
 );
 const NotificationsPage = lazy(() => import("./NotificationsPage"));
 const ChatPage = lazy(() => import("./ChatPage"));
-const SearchPage = lazy(() => import("./user/SearchPage"));
+const GlobalSearchPage = lazy(() => import("./GlobalSearchPage"));
 const UserJobsPage = lazy(() => import("./user/UserJobsPage"));
 const NewChatPage = lazy(() => import("./chat/NewChatPage"));
 const ChatRoomPage = lazy(() => import("./chat/ChatRoomPage"));
 const JobSearchPage = lazy(() => import("./jobs/JobSearchPage"));
+const UserSearchPage = lazy(() => import("./user/UserSearchPage"));
 
 export default function AppUI() {
   return (
@@ -250,7 +251,7 @@ export default function AppUI() {
                 </Route>
               </Route>
             </Route>
-            <Route path="search" element={<SearchPage />}>
+            <Route path="search" element={<GlobalSearchPage />}>
               <Route path="results" element={<></>}>
                 <Route path="all" element={<></>} />
               </Route>
@@ -262,6 +263,10 @@ export default function AppUI() {
             <Route path="inbox/messages" element={<ChatPage />}>
               <Route path="chat/new" element={<NewChatPage />} />
               <Route path="chat/:chatId" element={<ChatRoomPage />} />
+            </Route>
+            <Route path={"people"}>
+              <Route index element={<UserSearchPage />} />
+              <Route path="search" element={<UserSearchPage />} />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route path="*" element={<NotFoundPage />} />

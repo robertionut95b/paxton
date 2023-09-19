@@ -1,5 +1,6 @@
 package com.irb.paxton.core.connection;
 
+import com.irb.paxton.core.connection.projections.ConnectionUserDto;
 import com.irb.paxton.core.connection.status.ConnectionStatus;
 import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.data.domain.Page;
@@ -41,4 +42,13 @@ public interface ConnectionRepository extends AbstractRepository<Connection, Lon
     Page<Connection> findByRequester_IdOrAddressed_IdAndConnectionStatusLastNameDescending(@Param("id") Long id, @Param("id1") Long id1, @Param("connectionStatus") ConnectionStatus connectionStatus, Pageable pageable, @Param("searchQuery") String searchQuery);
 
     Optional<Connection> findFirstByRequester_IdAndAddressed_Id(Long id, Long id1);
+
+    @Query("""
+            select id AS id,
+            CASE WHEN c.addressed.id = :id THEN c.requester ELSE c.addressed END AS user,
+            c.createdAt AS connectedAt
+            from Connection c
+            where (c.requester.id = :id or c.addressed.id = :id) and c.connectionStatus = :connectionStatus
+            order by c.lastModified DESC""")
+    Page<ConnectionUserDto> findCurrentUserConnectionsByUserId(@Param("id") Long userId, @Param("connectionStatus") ConnectionStatus connectionStatus, Pageable pageable);
 }

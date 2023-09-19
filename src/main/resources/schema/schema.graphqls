@@ -179,8 +179,21 @@ type Connection {
     lastModified: DateTime!
 }
 
+type UserConnection {
+    id: ID!
+    user: User!
+    connectedAt: DateTime!
+}
+
 type ConnectionPage {
     list: [Connection],
+    page: Int!
+    totalPages: Int!
+    totalElements: Int!
+}
+
+type UserConnectionPage {
+    list: [UserConnection],
     page: Int!
     totalPages: Int!
     totalElements: Int!
@@ -741,6 +754,7 @@ type Query {
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
     getNewConnectionForUser(userId: ID!, page: Int, size: Int): ConnectionPage
     getConnectionsForUser(userId: ID!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): ConnectionPage
+    getAllUserConnectionsByUserId(userId: ID!, connectionStatus: ConnectionStatus!, page: Int, size: Int): UserConnectionPage
     getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
 }
 

@@ -4,6 +4,7 @@ import com.irb.paxton.core.connection.exceptions.InvalidConnectionStateException
 import com.irb.paxton.core.connection.input.ConnectionCreateInput;
 import com.irb.paxton.core.connection.input.ConnectionUpdateInput;
 import com.irb.paxton.core.connection.mapper.ConnectionMapper;
+import com.irb.paxton.core.connection.projections.ConnectionUserDto;
 import com.irb.paxton.core.connection.status.ConnectionStatus;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
@@ -125,5 +126,11 @@ public class ConnectionService extends AbstractService<Connection, Long> {
             );
         }
         return null;
+    }
+
+    public PaginatedResponse<ConnectionUserDto> getAllUserConnectionsByUserId(Long userId, ConnectionStatus connectionStatus, Integer page, Integer size) {
+        Page<ConnectionUserDto> connectionPage = this.connectionRepository
+                .findCurrentUserConnectionsByUserId(userId, connectionStatus, PageRequest.of(page, size));
+        return new PaginatedResponse<>(connectionPage, connectionPage.getNumber(), connectionPage.getTotalPages(), connectionPage.getTotalElements());
     }
 }

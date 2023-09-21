@@ -2,7 +2,7 @@ import { useAuth } from "@auth/useAuth";
 import ContactRecord from "@components/network/ContactRecord";
 import InvitationListSkeleton from "@components/network/InvitationListSkeleton";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
-import ShowIfElse from "@components/visibility/ShowIfElse";
+import ShowIf from "@components/visibility/ShowIf";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
@@ -151,130 +151,114 @@ const NetworkMyContactsPage = () => {
     <Grid>
       <Grid.Col span={12} sm={9}>
         <Paper p="md" shadow="xs">
-          <ShowIfElse
-            if={isLoadingConnections}
-            else={
-              <ShowIfElse
-                if={isError}
-                else={
-                  <ShowIfElse
-                    if={contactsCount > 0}
-                    else={
-                      <Stack>
-                        <Text size="md">No contacts</Text>
-                        <Stack align="center" my="md">
-                          <Image
-                            src="/images/contacts.svg"
-                            width={86}
-                            height={86}
-                          />
-                          <Text size="sm">
-                            Seek possible connections using our suggestions
-                          </Text>
-                          <Button
-                            size="xs"
-                            leftIcon={<ArrowUturnLeftIcon width={16} />}
-                            onClick={resetSearch}
-                          >
-                            Reset search
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    }
-                  >
-                    <Stack>
-                      <Text size="md" weight="bold">
-                        {contactsCount} contacts
-                      </Text>
-                      <Group position="apart">
-                        <Group>
-                          <Text size="sm">Sort by</Text>
-                          <Select
-                            size="sm"
-                            defaultValue={sortBy}
-                            value={sortBy}
-                            variant="unstyled"
-                            data={[
-                              {
-                                value: "lastModified",
-                                label: "Recently added",
-                              },
-                              { value: "lastName", label: "Last name" },
-                              { value: "firstName", label: "First name" },
-                            ]}
-                            onChange={(v) => setSortBy(v as SortByOptions)}
-                          />
-                        </Group>
-                        <Group>
-                          <Input
-                            icon={<MagnifyingGlassIcon width={16} />}
-                            placeholder="Search by name"
-                            size="xs"
-                            value={searchByName}
-                            onChange={(e) =>
-                              setSearchByName(e.currentTarget.value)
-                            }
-                          />
-                          <Anchor
-                            size="sm"
-                            component={Link}
-                            to={`/app/people/search?cn=${ConnectionStatus.Accepted}`}
-                          >
-                            Search by filters
-                          </Anchor>
-                        </Group>
-                      </Group>
-                      <Divider />
-                      <Stack ref={parent}>
-                        {contacts.map(
-                          (c) =>
-                            c && (
-                              <ContactRecord
-                                key={c.id}
-                                userConnection={
-                                  c.addressed.id === String(user?.userId)
-                                    ? c.requester
-                                    : c.addressed
-                                }
-                                createdAt={c.lastModified}
-                                onClickMessage={(c) => setSelectedUser(c)}
-                                onClickRemove={() =>
-                                  removeConnectionMutation({
-                                    connectionId: c.id,
-                                  })
-                                }
-                              />
-                            )
-                        )}
-                      </Stack>
-                    </Stack>
-                  </ShowIfElse>
-                }
-              >
-                <Stack align="center" spacing="xs">
-                  <Image
-                    src="/images/error-broken.svg"
-                    width="260px"
-                    height="260px"
-                  />
-                  <Text size="sm">
-                    Unfortunately we could not load the connections
-                  </Text>
-                  <Button
-                    size="xs"
-                    my="xs"
-                    leftIcon={<ArrowUturnLeftIcon width={16} />}
-                    onClick={() => refetch()}
-                  >
-                    Retry
-                  </Button>
-                </Stack>
-              </ShowIfElse>
-            }
-          >
+          <ShowIf if={isLoadingConnections}>
             <InvitationListSkeleton rowsNo={5} />
-          </ShowIfElse>
-          {contactsCount > 0 && (
+          </ShowIf>
+
+          <ShowIf if={!isLoadingConnections && isError}>
+            <Stack align="center" spacing="xs">
+              <Image
+                src="/images/error-broken.svg"
+                width="260px"
+                height="260px"
+              />
+              <Text size="sm">
+                Unfortunately we could not load the connections
+              </Text>
+              <Button
+                size="xs"
+                my="xs"
+                leftIcon={<ArrowUturnLeftIcon width={16} />}
+                onClick={() => refetch()}
+              >
+                Retry
+              </Button>
+            </Stack>
+          </ShowIf>
+
+          <ShowIf if={!isLoadingConnections && !isError && contactsCount === 0}>
+            <Stack>
+              <Text size="md">No contacts</Text>
+              <Stack align="center" my="md">
+                <Image src="/images/contacts.svg" width={86} height={86} />
+                <Text size="sm">
+                  Seek possible connections using our suggestions
+                </Text>
+                <Button
+                  size="xs"
+                  leftIcon={<ArrowUturnLeftIcon width={16} />}
+                  onClick={resetSearch}
+                >
+                  Reset search
+                </Button>
+              </Stack>
+            </Stack>
+          </ShowIf>
+
+          <ShowIf if={!isLoadingConnections && !isError && contactsCount > 0}>
+            <Stack>
+              <Text size="md" weight="bold">
+                {contactsCount} contacts
+              </Text>
+              <Group position="apart">
+                <Group>
+                  <Text size="sm">Sort by</Text>
+                  <Select
+                    size="sm"
+                    defaultValue={sortBy}
+                    value={sortBy}
+                    variant="unstyled"
+                    data={[
+                      {
+                        value: "lastModified",
+                        label: "Recently added",
+                      },
+                      { value: "lastName", label: "Last name" },
+                      { value: "firstName", label: "First name" },
+                    ]}
+                    onChange={(v) => setSortBy(v as SortByOptions)}
+                  />
+                </Group>
+                <Group>
+                  <Input
+                    icon={<MagnifyingGlassIcon width={16} />}
+                    placeholder="Search by name"
+                    size="xs"
+                    value={searchByName}
+                    onChange={(e) => setSearchByName(e.currentTarget.value)}
+                  />
+                  <Anchor
+                    size="sm"
+                    component={Link}
+                    to={`/app/people/search?cn=${ConnectionStatus.Accepted}`}
+                  >
+                    Search by filters
+                  </Anchor>
+                </Group>
+              </Group>
+              <Divider />
+              <Stack ref={parent}>
+                {contacts.map(
+                  (c) =>
+                    c && (
+                      <ContactRecord
+                        key={c.id}
+                        userConnection={c.user}
+                        createdAt={c.connectedAt}
+                        onClickMessage={(c) => setSelectedUser(c)}
+                        onClickRemove={() =>
+                          removeConnectionMutation({
+                            connectionId: c.id,
+                          })
+                        }
+                      />
+                    )
+                )}
+              </Stack>
+            </Stack>
+          </ShowIf>
+
+          <ShowIf if={!isError && contactsCount > 0}>
             <div className="px-connections-pagination mt-8">
               <PaginationToolbar
                 page={p}
@@ -285,7 +269,7 @@ const NetworkMyContactsPage = () => {
                 totalPages={totalPages}
               />
             </div>
-          )}
+          </ShowIf>
         </Paper>
       </Grid.Col>
       <Grid.Col span={12} sm={3}>

@@ -49,8 +49,7 @@ public class ConnectionService extends AbstractService<Connection, Long> {
         Optional<Connection> existingConnection = connectionRepository
                 .findFirstByRequester_IdAndAddressed_Id(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId());
         if (existingConnection.isPresent()) {
-            throw new InvalidConnectionStateException("A connection request already exists between users [%s - %s]"
-                    .formatted(connectionCreateInput.getRequesterId(), connectionCreateInput.getAddressedId()));
+            throw new InvalidConnectionStateException("Connection request already exists between users");
         }
         Connection connection = connectionRequestMapper.toEntity(connectionCreateInput);
         return this.connectionRepository.save(connection);
@@ -74,10 +73,6 @@ public class ConnectionService extends AbstractService<Connection, Long> {
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
     public PaginatedResponse<Connection> getNewConnectionForUser(Long userId, Integer page, Integer size) {
-        User user = this.userService.findById(userId);
-        if (user == null) {
-            throw new UserNotFoundException("User by id %s does not exist".formatted(userId));
-        }
         FilterRequest filterRequest = new FilterRequest("connectionStatus", Operator.EQUAL, FieldType.ENUM, "ConnectionStatus;%s".formatted(ConnectionStatus.REQUESTED), null, null);
         FilterRequest filterRequestAddressed = new FilterRequest("addressed", Operator.EQUAL, FieldType.LONG, userId, null, null);
         SortRequest sortRequest = new SortRequest("createdAt", SortDirection.DESC);
@@ -87,21 +82,12 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
-    public PaginatedResponse<Connection> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortRequest) {
-        User user = this.userService.findById(userId);
-        if (user == null) {
-            throw new UserNotFoundException("User by id %s does not exist".formatted(userId));
-        }
-        SortRequest sr = sortRequest != null ? sortRequest : new SortRequest("lastModified", SortDirection.DESC);
-        Page<Connection> connectionPage = switch (sr.getKey()) {
-            case "firstName" -> connectionRepository
-                    .findByRequester_IdOrAddressed_IdAndConnectionStatusFirstNameDescending(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
-            case "lastName" -> connectionRepository
-                    .findByRequester_IdOrAddressed_IdAndConnectionStatusLastNameDescending(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
-            default -> connectionRepository
-                    .findByRequester_IdOrAddressed_IdAndConnectionStatus(userId, userId, ConnectionStatus.ACCEPTED, PageRequest.of(page != null ? page : 0, size != null ? size : 0), searchQuery != null ? searchQuery : "");
-        };
-        return new PaginatedResponse<>(connectionPage, page != null ? page : 0, connectionPage.getTotalPages(), connectionPage.getTotalElements());
+    public PaginatedResponse<ConnectionUserDto> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortRequest) {
+        // TODO: find a method to implement sorting at runtime
+        //SortRequest sr = sortRequest != null ? sortRequest : new SortRequest("lastModified", SortDirection.DESC);
+        Page<ConnectionUserDto> connectionPage = this.connectionRepository
+                .findCurrentUserConnectionsByUserId(userId, ConnectionStatus.ACCEPTED, PageRequest.of(page, size), searchQuery != null ? searchQuery : "");
+        return new PaginatedResponse<>(connectionPage, connectionPage.getNumber(), connectionPage.getTotalPages(), connectionPage.getTotalElements());
     }
 
     public PaginatedResponse<User> getAllUserConnectionSuggestions(Integer page, Integer size) {
@@ -126,11 +112,5 @@ public class ConnectionService extends AbstractService<Connection, Long> {
             );
         }
         return null;
-    }
-
-    public PaginatedResponse<ConnectionUserDto> getAllUserConnectionsByUserId(Long userId, ConnectionStatus connectionStatus, Integer page, Integer size) {
-        Page<ConnectionUserDto> connectionPage = this.connectionRepository
-                .findCurrentUserConnectionsByUserId(userId, connectionStatus, PageRequest.of(page, size));
-        return new PaginatedResponse<>(connectionPage, connectionPage.getNumber(), connectionPage.getTotalPages(), connectionPage.getTotalElements());
     }
 }

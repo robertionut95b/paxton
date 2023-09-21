@@ -757,7 +757,7 @@ export type Query = {
   getChatAdvSearch?: Maybe<ChatPage>;
   getChatWithUserId?: Maybe<Chat>;
   getChatsWithUsersIds?: Maybe<Array<Maybe<Chat>>>;
-  getConnectionsForUser?: Maybe<ConnectionPage>;
+  getConnectionsForUser?: Maybe<UserConnectionPage>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMessagesPaginated?: Maybe<MessagePage>;
@@ -1081,6 +1081,21 @@ export type User = {
   roles?: Maybe<Array<Maybe<Role>>>;
   userProfile: UserProfile;
   username: Scalars['String'];
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  connectedAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  user: User;
+};
+
+export type UserConnectionPage = {
+  __typename?: 'UserConnectionPage';
+  list?: Maybe<Array<Maybe<UserConnection>>>;
+  page: Scalars['Int'];
+  totalElements: Scalars['Int'];
+  totalPages: Scalars['Int'];
 };
 
 export type UserPage = {
@@ -1522,7 +1537,7 @@ export type GetConnectionsForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: string, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } }, addressed: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } } } | null> | null } | null };
+export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'UserConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'UserConnection', id: string, connectedAt: Date, user: { __typename?: 'User', id: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } } } | null> | null } | null };
 
 export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
@@ -4466,7 +4481,7 @@ export const GetConnectionsForUserDocument = `
   ) {
     list {
       id
-      requester {
+      user {
         id
         displayName
         firstName
@@ -4477,19 +4492,7 @@ export const GetConnectionsForUserDocument = `
           profileSlugUrl
         }
       }
-      addressed {
-        id
-        displayName
-        firstName
-        lastName
-        userProfile {
-          photography
-          profileTitle
-          profileSlugUrl
-        }
-      }
-      connectionStatus
-      lastModified
+      connectedAt
     }
     page
     totalPages

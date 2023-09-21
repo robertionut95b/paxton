@@ -3,7 +3,6 @@ package com.irb.paxton.core.connection.resolvers;
 import com.irb.paxton.core.connection.Connection;
 import com.irb.paxton.core.connection.ConnectionService;
 import com.irb.paxton.core.connection.projections.ConnectionUserDto;
-import com.irb.paxton.core.connection.status.ConnectionStatus;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SortRequest;
 import com.irb.paxton.security.auth.user.User;
@@ -21,15 +20,11 @@ public class ConnectionQueryResolver implements GraphQLQueryResolver {
         return this.connectionService.getNewConnectionForUser(userId, page, size);
     }
 
-    public PaginatedResponse<Connection> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortBy) {
+    public PaginatedResponse<ConnectionUserDto> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortBy) {
         return this.connectionService.getConnectionsForUser(userId, page, size, searchQuery, sortBy);
     }
 
     public PaginatedResponse<User> getAllUserConnectionSuggestions(Integer page, Integer size) {
         return this.connectionService.getAllUserConnectionSuggestions(page, size);
-    }
-
-    public PaginatedResponse<ConnectionUserDto> getAllUserConnectionsByUserId(Long userId, ConnectionStatus connectionStatus, Integer page, Integer size) {
-        return this.connectionService.getAllUserConnectionsByUserId(userId, connectionStatus, page, size);
     }
 }

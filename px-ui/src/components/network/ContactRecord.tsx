@@ -12,7 +12,7 @@ type ContactItemData = NonNullable<
   NonNullable<
     NonNullable<GetConnectionsForUserQuery["getConnectionsForUser"]>["list"]
   >[number]
->["requester"];
+>["user"];
 
 type ContactRecordProps = {
   userConnection: ContactItemData;
@@ -71,7 +71,7 @@ const ContactRecord = ({
         <Group spacing="xs">
           <ShowIf if={onClickMessage}>
             <Button
-              size="sm"
+              size="xs"
               variant="filled"
               leftIcon={<PaperAirplaneIcon width={16} />}
               onClick={() => onClickMessage?.(userConnection)}
@@ -81,7 +81,7 @@ const ContactRecord = ({
           </ShowIf>
           <ShowIf if={onClickRemove}>
             <Button
-              size="sm"
+              size="xs"
               variant="light"
               color="red"
               leftIcon={<TrashIcon width={16} />}

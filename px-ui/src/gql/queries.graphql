@@ -837,7 +837,7 @@ query GetConnectionsForUser(
   ) {
     list {
       id
-      requester {
+      user {
         id
         displayName
         firstName
@@ -848,19 +848,7 @@ query GetConnectionsForUser(
           profileSlugUrl
         }
       }
-      addressed {
-        id
-        displayName
-        firstName
-        lastName
-        userProfile {
-          photography
-          profileTitle
-          profileSlugUrl
-        }
-      }
-      connectionStatus
-      lastModified
+      connectedAt
     }
     page
     totalPages

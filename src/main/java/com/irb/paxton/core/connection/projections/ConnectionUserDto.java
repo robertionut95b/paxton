@@ -7,9 +7,9 @@ import java.time.OffsetDateTime;
 
 public interface ConnectionUserDto extends Identifiable<Long> {
 
+    Long getId();
+
     User getUser();
 
     OffsetDateTime getConnectedAt();
-
-    Long getId();
 }

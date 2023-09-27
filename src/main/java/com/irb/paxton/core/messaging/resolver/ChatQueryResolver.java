@@ -4,31 +4,36 @@ import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller
-public class ChatQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class ChatQueryResolver {
 
     @Autowired
     private ChatService chatService;
 
-    public Chat getPrivateChatById(Long chatId) {
+    @DgsQuery
+    public Chat getPrivateChatById(@InputArgument Long chatId) {
         return chatService.getPrivateChatById(chatId);
     }
 
-    public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
-        return chatService.getChatAdvSearch(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<Chat> getChatAdvSearch(@InputArgument SearchRequest searchQuery) {
+        return chatService.getChatAdvSearch(searchQuery);
     }
 
-    public Chat getChatWithUserId(Long userId) {
+    @DgsQuery
+    public Chat getChatWithUserId(@InputArgument Long userId) {
         return chatService.getChatWithUserId(userId);
     }
 
-    public List<Chat> getChatsWithUsersIds(List<Long> userIds) {
+    @DgsQuery
+    public List<Chat> getChatsWithUsersIds(@InputArgument List<Long> userIds) {
         return chatService.getChatsWithUsersIds(userIds);
     }
 }

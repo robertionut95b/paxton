@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class PhotographyUploadController {
     private ImageFileValidatorService imageFileValidatorService;
 
     @PostMapping(path = "{userId}/upload/banner")
-    public Photography changeProfileBanner(@PathVariable(value = "userId") Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
+    public Photography changeProfileBanner(@PathVariable Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
         photographyInput.setUserId(userId);
         if (!imageFileValidatorService.checkIsImage(photographyInput.getPhotography())) {
             throw new IllegalArgumentException("Input is not image");
@@ -42,7 +42,7 @@ public class PhotographyUploadController {
     }
 
     @PostMapping(path = "{userId}/upload/avatar")
-    public Photography changeProfileAvatar(@PathVariable(value = "userId") Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
+    public Photography changeProfileAvatar(@PathVariable Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
         photographyInput.setUserId(userId);
         if (!imageFileValidatorService.checkIsImage(photographyInput.getPhotography())) {
             throw new IllegalArgumentException("Input is not image");

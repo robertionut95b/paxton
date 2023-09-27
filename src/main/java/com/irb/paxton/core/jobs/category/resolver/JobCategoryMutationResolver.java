@@ -3,17 +3,19 @@ package com.irb.paxton.core.jobs.category.resolver;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryService;
 import com.irb.paxton.core.jobs.category.input.JobCategoryInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class JobCategoryMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class JobCategoryMutationResolver {
 
     @Autowired
     private JobCategoryService jobCategoryService;
 
-    public JobCategory addJobCategory(JobCategoryInput jobCategoryInput) {
-        return this.jobCategoryService.addJobCategory(jobCategoryInput);
+    @DgsMutation
+    public JobCategory addJobCategory(@InputArgument JobCategoryInput JobCategoryInput) {
+        return this.jobCategoryService.addJobCategory(JobCategoryInput);
     }
 }

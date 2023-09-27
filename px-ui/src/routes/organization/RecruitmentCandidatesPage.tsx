@@ -51,7 +51,7 @@ const RecruitmentCandidatesPage = () => {
         filters: [
           {
             fieldType: FieldType.Long,
-            key: "jobListing",
+            key: "jobListing.id",
             operator: Operator.Equal,
             value: jobId as string,
           },
@@ -93,7 +93,7 @@ const RecruitmentCandidatesPage = () => {
     data: applicationsByStepCountData,
     isInitialLoading: isApplicationsByStepCountLoading,
   } = useGetApplicationsForJobIdCountByStepsQuery(graphqlRequestClient, {
-    jobId: jobId as string,
+    jobId: Number(jobId),
   });
   const {
     data: applicationByStepTitleData,
@@ -105,7 +105,7 @@ const RecruitmentCandidatesPage = () => {
         filters: [
           {
             fieldType: FieldType.Long,
-            key: "jobListing",
+            key: "jobListing.id",
             operator: Operator.Equal,
             value: jobId as string,
           },

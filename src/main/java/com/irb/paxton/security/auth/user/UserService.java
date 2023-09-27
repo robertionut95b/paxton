@@ -15,12 +15,12 @@ import com.irb.paxton.security.auth.user.dto.UserSignupDto;
 import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.irb.paxton.security.auth.user.response.CurrentUserDetails;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 

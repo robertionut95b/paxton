@@ -8,7 +8,7 @@ import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

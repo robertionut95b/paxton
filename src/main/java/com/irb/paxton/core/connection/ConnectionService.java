@@ -13,16 +13,19 @@ import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -74,7 +77,7 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
     public PaginatedResponse<Connection> getNewConnectionForUser(Long userId, Integer page, Integer size) {
         FilterRequest filterRequest = new FilterRequest("connectionStatus", Operator.EQUAL, FieldType.ENUM, "ConnectionStatus;%s".formatted(ConnectionStatus.REQUESTED), null, null);
-        FilterRequest filterRequestAddressed = new FilterRequest("addressed", Operator.EQUAL, FieldType.LONG, userId, null, null);
+        FilterRequest filterRequestAddressed = new FilterRequest("addressed.id", Operator.EQUAL, FieldType.LONG, userId, null, null);
         SortRequest sortRequest = new SortRequest("createdAt", SortDirection.DESC);
         return super.advSearch(
                 new SearchRequest(List.of(filterRequest, filterRequestAddressed), List.of(sortRequest), page != null ? page : 0, size != null ? size : 10)
@@ -83,11 +86,16 @@ public class ConnectionService extends AbstractService<Connection, Long> {
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#userId)")
     public PaginatedResponse<ConnectionUserDto> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortRequest) {
-        // TODO: find a method to implement sorting at runtime
-        //SortRequest sr = sortRequest != null ? sortRequest : new SortRequest("lastModified", SortDirection.DESC);
-        Page<ConnectionUserDto> connectionPage = this.connectionRepository
-                .findCurrentUserConnectionsByUserId(userId, ConnectionStatus.ACCEPTED, PageRequest.of(page, size), searchQuery != null ? searchQuery : "");
-        return new PaginatedResponse<>(connectionPage, connectionPage.getNumber(), connectionPage.getTotalPages(), connectionPage.getTotalElements());
+        // TODO: check on like functionality and add dynamic sorting feature based on connected user
+        Pageable pageable = PageRequest.of(page, size);
+        String q = searchQuery != null ? searchQuery.toLowerCase() : "";
+        Page<Connection> connectionPage = this.connectionRepository.queryByRequester_IdOrAddressed_IdAndConnectionStatusOrderByLastModifiedDesc(userId, ConnectionStatus.ACCEPTED, q, pageable);
+        List<ConnectionUserDto> listResponse = connectionPage
+                .stream()
+                .map(c -> new ConnectionUserDto(c.getId(), Objects.equals(c.getAddressed().getId(), userId) ? c.getRequester() : c.getAddressed(), c.getLastModified()))
+                .toList();
+        Page<ConnectionUserDto> connectionUserDtoPage = new PageImpl<>(listResponse, pageable, connectionPage.getTotalElements());
+        return new PaginatedResponse<>(connectionUserDtoPage, connectionUserDtoPage.getNumber(), connectionUserDtoPage.getTotalPages(), connectionUserDtoPage.getTotalElements());
     }
 
     public PaginatedResponse<User> getAllUserConnectionSuggestions(Integer page, Integer size) {

@@ -2,14 +2,18 @@ package com.irb.paxton.core.connection.projections;
 
 import com.irb.paxton.core.model.Identifiable;
 import com.irb.paxton.security.auth.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
-public interface ConnectionUserDto extends Identifiable<Long> {
+@Data
+@AllArgsConstructor
+public class ConnectionUserDto implements Identifiable<Long> {
 
-    Long getId();
+    private Long id;
 
-    User getUser();
+    private User user;
 
-    OffsetDateTime getConnectedAt();
+    private OffsetDateTime connectedAt;
 }

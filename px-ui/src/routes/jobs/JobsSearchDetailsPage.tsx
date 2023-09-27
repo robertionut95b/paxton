@@ -52,7 +52,7 @@ const JobsSearchDetailsPage = () => {
     useGetMyApplicationForJobListingQuery(
       graphqlRequestClient,
       {
-        JobListingId: jobId ?? "",
+        JobListingId: Number(jobId) ?? 0,
       },
       {
         enabled:
@@ -105,9 +105,9 @@ const JobsSearchDetailsPage = () => {
     () =>
       mutate({
         ApplicationInput: {
-          applicantProfileId: user?.profileId.toString() ?? "",
-          jobListingId: jobData?.getAllJobListings?.list?.[0]?.id ?? "",
-          userId: user?.userId ?? "",
+          applicantProfileId: user?.profileId ?? 0,
+          jobListingId: jobData?.getAllJobListings?.list?.[0]?.id ?? 0,
+          userId: user?.userId ?? 0,
           dateOfApplication: new Date(),
         },
       }),

@@ -71,7 +71,7 @@ const JobDetailsPage = () => {
     useGetMyApplicationForJobListingQuery(
       graphqlRequestClient,
       {
-        JobListingId: jobId ?? "",
+        JobListingId: Number(jobId) ?? 0,
       },
       {
         enabled: !isCandidatureAllowed && !!job?.id,
@@ -123,9 +123,9 @@ const JobDetailsPage = () => {
     () =>
       mutate({
         ApplicationInput: {
-          applicantProfileId: user?.profileId.toString() ?? "",
-          jobListingId: job?.id ?? "",
-          userId: user?.userId ?? "",
+          applicantProfileId: user?.profileId ?? 0,
+          jobListingId: job?.id ?? 0,
+          userId: user?.userId ?? 0,
           dateOfApplication: new Date(),
         },
       }),

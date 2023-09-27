@@ -1,9 +1,9 @@
 package com.irb.paxton.security.auth.user.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.passay.*;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {

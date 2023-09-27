@@ -4,10 +4,10 @@ import com.irb.paxton.core.jobs.contract.ContractType;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data

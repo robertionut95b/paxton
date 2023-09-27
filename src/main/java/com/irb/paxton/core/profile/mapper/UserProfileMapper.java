@@ -71,12 +71,12 @@ public abstract class UserProfileMapper {
 
     public City mapCity(String cityValue) {
         return this.cityRepository.findByName(cityValue)
-                .orElseThrow(() -> new CityNotFoundException(String.format("%s does not exist", cityValue), "city"));
+                .orElseThrow(() -> new CityNotFoundException("%s does not exist".formatted(cityValue), "city"));
     }
 
     public User mapUser(String username) {
         return this.userService.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User %s not found", username)));
+                .orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(username)));
     }
 
     @Mapping(target = "user", ignore = true)
@@ -122,17 +122,17 @@ public abstract class UserProfileMapper {
 
     public UserProfile mapUserProfileBySlugUrl(String userProfileSlugUrl) {
         return this.userProfileRepository.findByProfileSlugUrl(userProfileSlugUrl)
-                .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userProfileSlugUrl), "userProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userProfileSlugUrl), "userProfileId"));
     }
 
     public Organization mapOrganization(Long organizationId) {
         return this.organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(String.format("%s does not exist", organizationId), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException("%s does not exist".formatted(organizationId), "organizationId"));
     }
 
     public ActivitySector mapActivitySector(Long activitySectorId) {
         return this.activitySectorRepository.findById(activitySectorId)
-                .orElseThrow(() -> new ActivitySectorNotFoundException(String.format("%s does not exist", activitySectorId), "activitySectorId"));
+                .orElseThrow(() -> new ActivitySectorNotFoundException("%s does not exist".formatted(activitySectorId), "activitySectorId"));
     }
 
     @Mapping(target = "userProfile", source = "experienceInput.userProfileSlugUrl")
@@ -195,6 +195,6 @@ public abstract class UserProfileMapper {
 
     public UserProfile mapUserProfile(Long userId) {
         return this.userProfileRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException(String.format("%s does not exist", userId), "userProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userId), "userProfileId"));
     }
 }

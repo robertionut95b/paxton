@@ -49,9 +49,9 @@ const AlterStepModal = ({
   onSubmitCreateModal,
   initialValues = {
     order: order,
-    processId: "",
+    processId: 0,
     status: Status.Active,
-    stepId: "",
+    stepId: 0,
   },
 }: AlterStepModalProps) => {
   const form = useForm({
@@ -59,7 +59,15 @@ const AlterStepModal = ({
       ...initialValues,
       order: order,
     },
-    validate: zodResolver(ProcessStepsInputSchema()),
+    validate: zodResolver(
+      ProcessStepsInputSchema().extend({
+        stepId: z.coerce.number(),
+      })
+    ),
+    transformValues: (values) => ({
+      ...values,
+      stepId: Number(values.stepId),
+    }),
   });
 
   const formCreate = useForm({
@@ -102,7 +110,7 @@ const AlterStepModal = ({
           itemComponent={SelectItem}
           withAsterisk
           mt="sm"
-          defaultValue={initialValues.stepId}
+          defaultValue={String(initialValues.stepId)}
           {...form.getInputProps("stepId")}
         />
         <NumberInput

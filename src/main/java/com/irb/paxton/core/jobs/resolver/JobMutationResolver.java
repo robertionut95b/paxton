@@ -4,18 +4,13 @@ import com.irb.paxton.core.jobs.Job;
 import com.irb.paxton.core.jobs.JobService;
 import com.irb.paxton.core.jobs.input.JobInput;
 import com.irb.paxton.core.organization.OrganizationRepository;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import lombok.RequiredArgsConstructor;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-
-@Controller
-@Validated
-@RequiredArgsConstructor
-public class JobMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class JobMutationResolver {
 
     @Autowired
     private JobService jobService;
@@ -23,7 +18,8 @@ public class JobMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public Job publishJob(@Valid JobInput jobInput) {
-        return jobService.publishJob(jobInput);
+    @DgsMutation
+    public Job publishJob(@InputArgument JobInput JobInput) {
+        return jobService.publishJob(JobInput);
     }
 }

@@ -3,24 +3,21 @@ package com.irb.paxton.core.study.certification.resolver;
 import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.certification.CertificationRepository;
 import com.irb.paxton.core.study.certification.input.CertificationInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-@Controller
-@Validated
-public class CertificationMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class CertificationMutationResolver {
 
     @Autowired
     private CertificationRepository certificationRepository;
 
-    public Certification addCertification(@Valid @NotNull CertificationInput certificationInput) {
+    @DgsMutation
+    public Certification addCertification(@InputArgument CertificationInput CertificationInput) {
         return this.certificationRepository.save(
-                new Certification(certificationInput.getName(), null)
+                new Certification(CertificationInput.getName(), null)
         );
     }
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const FormUpdateProfileSchema = z.object({
-  id: z.string().min(1),
+  id: z.number().min(1),
   firstName: z
     .string()
     .min(5, "First name must contain more than 5 characters")

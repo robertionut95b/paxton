@@ -1,11 +1,12 @@
 package com.irb.paxton.internals.healthcheck;
 
-import graphql.kickstart.tools.GraphQLQueryResolver;
-import org.springframework.stereotype.Component;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
 
-@Component
-public class HealthQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class HealthQueryResolver {
 
+    @DgsQuery
     public String healthCheck() {
         return "OK";
     }

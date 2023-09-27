@@ -44,7 +44,7 @@ export default function NetworkPage() {
     useGetConnectionInvitationsForUserQuery(
       graphqlRequestClient,
       {
-        userId: user?.userId ?? "",
+        userId: Number(user?.userId) ?? 0,
         page: 0,
         size: API_PAGINATION_SIZE,
       },
@@ -57,7 +57,7 @@ export default function NetworkPage() {
     useGetConnectionsForUserQuery(graphqlRequestClient, {
       page: 0,
       size: API_PAGINATION_SIZE,
-      userId: user?.userId ?? "",
+      userId: user?.userId ?? 0,
     });
 
   const {
@@ -87,7 +87,7 @@ export default function NetworkPage() {
         // refresh invitations list
         queryClient.setQueryData(
           useGetConnectionInvitationsForUserQuery.getKey({
-            userId: user?.userId ?? "",
+            userId: user?.userId ?? 0,
             page: 0,
             size: API_PAGINATION_SIZE,
           }),
@@ -103,7 +103,7 @@ export default function NetworkPage() {
         );
         queryClient.invalidateQueries(
           useGetConnectionsForUserQuery.getKey({
-            userId: user?.userId ?? "",
+            userId: user?.userId ?? 0,
             page: 0,
             size: API_PAGINATION_SIZE,
           })
@@ -228,7 +228,7 @@ export default function NetworkPage() {
                             mutate({
                               connectionRequestInput: {
                                 id: c.id,
-                                addressedId: user?.userId ?? "",
+                                addressedId: user?.userId ?? 0,
                                 connectionStatus: ConnectionStatus.Accepted,
                                 requesterId: c.requester.id,
                               },
@@ -238,7 +238,7 @@ export default function NetworkPage() {
                             mutate({
                               connectionRequestInput: {
                                 id: c.id,
-                                addressedId: user?.userId ?? "",
+                                addressedId: user?.userId ?? 0,
                                 connectionStatus: ConnectionStatus.Accepted,
                                 requesterId: c.requester.id,
                               },
@@ -283,7 +283,7 @@ export default function NetworkPage() {
                           onConnectClick={(us) =>
                             sendConnectionRequest({
                               connectionCreateInput: {
-                                requesterId: user?.userId ?? "",
+                                requesterId: user?.userId ?? 0,
                                 addressedId: us.id,
                                 connectionStatus: ConnectionStatus.Requested,
                               },

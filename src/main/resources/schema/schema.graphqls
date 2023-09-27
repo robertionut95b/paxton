@@ -3,6 +3,7 @@
 scalar Date
 scalar DateTime
 scalar Url
+scalar Long
 
 directive @constraint(
     # String constraints
@@ -24,7 +25,7 @@ directive @constraint(
 ) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
 type ActivitySector {
-    id: ID!
+    id: Long!
     name: String!
 }
 
@@ -35,7 +36,7 @@ enum ApplicationStatus {
 }
 
 type Application {
-    id: ID!
+    id: Long!
     dateOfApplication: DateTime!
     applicantProfile: UserProfile!
     candidate: Candidate!
@@ -53,15 +54,15 @@ type ApplicationsCountByStep {
 }
 
 type ApplicationDocument {
-    id: ID!
+    id: Long!
     document: Document!
 }
 
 input ApplicationInput {
-    id: ID
-    userId: ID!
-    applicantProfileId: ID!
-    jobListingId: ID!
+    id: Long
+    userId: Long!
+    applicantProfileId: Long!
+    jobListingId: Long!
     status: ApplicationStatus
     processSteps: [ApplicationProcessStepsInput]
     dateOfApplication: DateTime
@@ -75,21 +76,21 @@ type ApplicationPage {
 }
 
 input ApplicationProcessStepsInput {
-    id: ID
-    processStepId: ID!
-    applicationId: ID!
+    id: Long
+    processStepId: Long!
+    applicationId: Long!
     registeredAt: DateTime
 }
 
 type ApplicationProcessSteps {
-    id: ID!
+    id: Long!
     processStep: ProcessSteps!
     application: Application!
     registeredAt: DateTime!
 }
 
 type Candidate {
-    id: ID!
+    id: Long!
     user: User!
     applications: [Application]
 }
@@ -102,14 +103,14 @@ type CandidatePage {
 }
 
 input ChatInput {
-    id: ID
-    users: [ID]!
+    id: Long
+    users: [Long]!
     messages: [MessageInput]
     chatType: ChatType
 }
 
 type Chat {
-    id: ID!
+    id: Long!
     title: String
     chatType: ChatType
     unreadMessagesCount: Int!
@@ -142,7 +143,7 @@ enum ContractType {
 }
 
 type City {
-    id: ID!
+    id: Long!
     name: String!
     country: Country!
     longitude: Float
@@ -150,7 +151,7 @@ type City {
 }
 
 type Certification {
-    id: ID!
+    id: Long!
     name: String!
 }
 
@@ -172,7 +173,7 @@ enum ConnectionStatus {
 }
 
 type Connection {
-    id: ID!
+    id: Long!
     requester: User!
     addressed: User!
     connectionStatus: ConnectionStatus!
@@ -180,7 +181,7 @@ type Connection {
 }
 
 type UserConnection {
-    id: ID!
+    id: Long!
     user: User!
     connectedAt: DateTime!
 }
@@ -200,16 +201,16 @@ type UserConnectionPage {
 }
 
 input ConnectionCreateInput {
-    id: ID
-    requesterId: ID!
-    addressedId: ID!
+    id: Long
+    requesterId: Long!
+    addressedId: Long!
     connectionStatus: ConnectionStatus!
 }
 
 input ConnectionUpdateInput {
-    id: ID!
-    requesterId: ID!
-    addressedId: ID!
+    id: Long!
+    requesterId: Long!
+    addressedId: Long!
     connectionStatus: ConnectionStatus!
 }
 
@@ -218,7 +219,7 @@ type Document {
 }
 
 type Domain {
-    id: ID!
+    id: Long!
     name: String!
     studies: [Study]
 }
@@ -228,7 +229,7 @@ input DomainInput {
 }
 
 type Institution {
-    id: ID!
+    id: Long!
     name: String!
     description: String
     photography: String
@@ -242,7 +243,7 @@ input InstitutionInput {
 }
 
 type Experience {
-    id: ID!
+    id: Long!
     title: String!
     contractType: ContractType!
     organization: Organization
@@ -255,30 +256,30 @@ type Experience {
 }
 
 input ExperienceInput {
-    id: ID
+    id: Long
     title: String!
     contractType: ContractType!
-    organizationId: ID!
+    organizationId: Long!
     city: String
     startDate: Date!
     endDate: Date
-    activitySectorId: ID!
+    activitySectorId: Long!
     description: String!
     userProfileSlugUrl: String!
 }
 
 type JobCategory {
-    id: ID!
+    id: Long!
     name: String!
 }
 
 input JobCategoryInput {
-    id: ID
+    id: Long
     name: String!
 }
 
 type Job {
-    id: ID!
+    id: Long!
     name: String!
     description: String!
     jobListings: [JobListing]
@@ -292,30 +293,30 @@ type JobPage {
 }
 
 input JobInput {
-    id: ID
+    id: Long
     name: String! @constraint(minLength: 5)
     description: String! @constraint(minLength: 5, maxLength: 250)
 }
 
 input JobListingInput {
-    id: ID
+    id: Long
     title: String! @constraint(minLength: 5)
     description: String! @constraint(minLength: 10, maxLength: 8000)
     formattedDescription: String! @constraint(minLength: 10)
     availableFrom: Date!
     availableTo: Date!
     location: String! @constraint(minLength: 3)
-    jobId: ID! @constraint(minLength: 1)
+    jobId: Long! @constraint(minLength: 1)
     numberOfVacancies: Int! @constraint(minLength: 1)
     contractType: ContractType!
-    organizationId: ID! @constraint(minLength: 1)
-    categoryId: ID! @constraint(minLength: 1)
-    recruiterId: ID! @constraint(minLength: 1)
+    organizationId: Long! @constraint(minLength: 1)
+    categoryId: Long! @constraint(minLength: 1)
+    recruiterId: Long! @constraint(minLength: 1)
     workType: WorkType!
 }
 
 type JobListing {
-    id: ID!
+    id: Long!
     title: String!
     description: String!
     formattedDescription: String!
@@ -341,7 +342,7 @@ type JobListingPage {
 }
 
 type Message {
-    id: ID!
+    id: Long!
     content: String!
     sender: User!
     deliveredAt: DateTime!
@@ -351,10 +352,10 @@ type Message {
 }
 
 input MessageInput {
-    id: ID
+    id: Long
     content: String!
-    senderUserId: ID!
-    chatId: ID!
+    senderUserId: Long!
+    chatId: Long!
 }
 
 type MessageSlice {
@@ -372,8 +373,8 @@ type MessagePage {
 }
 
 input MessageSeenInput {
-    id: ID
-    userId: ID
+    id: Long
+    userId: Long
 }
 
 type MessageSeenBy {
@@ -394,7 +395,7 @@ enum OrganizationSize {
 }
 
 type Organization {
-    id: ID!
+    id: Long!
     name: String!
     slugName: String!
     slogan: String!
@@ -414,22 +415,22 @@ type Organization {
 }
 
 input OrganizationInput {
-    id: ID
+    id: Long
     name: String! @constraint(minLength: 3)
     slogan: String! @constraint(minLength: 5, maxLength: 100)
     description: String! @constraint(minLength: 5)
-    activitySectorId: ID! @constraint(minLength: 1)
-    headQuartersId: ID! @constraint(minLength: 1)
+    activitySectorId: Long! @constraint(minLength: 1)
+    headQuartersId: Long! @constraint(minLength: 1)
     photography: String
     webSite: Url
     foundedAt: Date!
     companySize: OrganizationSize
-    locations: [ID]
+    locations: [Long]
     specializations: [Specialization]
 }
 
 type Process {
-    id: ID!
+    id: Long!
     name: String!
     description: String!
     processSteps: [ProcessSteps]
@@ -437,19 +438,19 @@ type Process {
 }
 
 input ProcessInput {
-    id: ID
+    id: Long
     name: String!
     description: String!
     processSteps: [ProcessStepsInput]
-    organizationId: ID!
+    organizationId: Long!
 }
 
 input ProcessInputCreate {
-    id: ID
+    id: Long
     name: String!
     description: String!
     processSteps: [ProcessStepsInputCreate]
-    organizationId: ID!
+    organizationId: Long!
 }
 
 type ProcessPage {
@@ -460,7 +461,7 @@ type ProcessPage {
 }
 
 type ProcessSteps {
-    id: ID!
+    id: Long!
     process: Process!
     status: Status!
     step: Step!
@@ -468,22 +469,22 @@ type ProcessSteps {
 }
 
 input ProcessStepsInput {
-    id: ID
-    processId: ID!
+    id: Long
+    processId: Long!
     status: Status!
-    stepId: ID!
+    stepId: Long!
     order: Int!
 }
 
 input ProcessStepsInputCreate {
-    id: ID
+    id: Long
     status: Status!
-    stepId: ID!
+    stepId: Long!
     order: Int!
 }
 
 type Privilege {
-    id: ID!
+    id: Long!
     name: String
 }
 
@@ -542,7 +543,7 @@ enum Specialization {
 }
 
 type Step {
-    id: ID!
+    id: Long!
     title: String!
     description: String!
     processSteps: [ProcessSteps]
@@ -554,7 +555,7 @@ input StepInput {
 }
 
 type Study {
-    id: ID!
+    id: Long!
     institution: Institution!
     domainStudy: Domain
     degree: String
@@ -566,11 +567,11 @@ type Study {
 }
 
 input StudyInput {
-    id: ID
-    institution: ID!
-    domainStudy: ID
+    id: Long
+    institution: Long!
+    domainStudy: Long
     degree: String
-    certification: ID
+    certification: Long
     description: String
     startDate: Date!
     endDate: Date
@@ -578,14 +579,14 @@ input StudyInput {
 }
 
 type Photography {
-    id: ID!
+    id: Long!
     name: String!
     path: String!
     userProfile: UserProfile
 }
 
 type Recruiter {
-    id: ID!
+    id: Long!
     user: User!
     organization: Organization!
     isActive: Boolean!
@@ -594,8 +595,8 @@ type Recruiter {
 }
 
 input RecruiterInput {
-    id: ID!
-    organizationId: ID
+    id: Long!
+    organizationId: Long
     isActive: Boolean
     lastActive: DateTime
 }
@@ -608,13 +609,13 @@ type RecruiterPage {
 }
 
 type Role {
-    id: ID!
+    id: Long!
     name: String!
     privileges: [Privilege]
 }
 
 type User {
-    id: ID!
+    id: Long!
     firstName: String!
     lastName: String!
     displayName: String!
@@ -634,7 +635,7 @@ type UserPage {
 }
 
 type UserProfile {
-    id: ID!
+    id: Long!
     user: User!
     photography: String
     coverPhotography: String
@@ -647,7 +648,7 @@ type UserProfile {
 }
 
 input UserProfileInput {
-    id: ID!
+    id: Long!
     firstName: String!
     lastName: String!
     description: String!
@@ -721,7 +722,7 @@ type Query {
     getAllJobs: [Job]
     getAllJobsPaginated(searchQuery: SearchQueryInput): JobPage
     getAllOrganizations: [Organization]
-    getOrganizationById(organizationId: ID!): Organization
+    getOrganizationById(organizationId: Long!): Organization
     getOrganizationBySlugName(slugName: String!): Organization
     getAllJobListings(searchQuery: SearchQueryInput): JobListingPage
     getRelatedJobListings(jobName: String!): [JobListing]
@@ -735,25 +736,25 @@ type Query {
     getAllInstitutions: [Institution]
     getAllDomains: [Domain]
     getAllCertifications: [Certification]
-    getApplicationById(applicationId: ID!): Application
-    getApplicationsForJobIdCountBySteps(jobId: ID!): [ApplicationsCountByStep]
-    getMyApplicationForJobListing(JobListingId: ID!): Application
+    getApplicationById(applicationId: Long!): Application
+    getApplicationsForJobIdCountBySteps(jobId: Long!): [ApplicationsCountByStep]
+    getMyApplicationForJobListing(JobListingId: Long!): Application
     getAllCandidates(searchQuery: SearchQueryInput): CandidatePage
-    getAllCandidatesByJobListingId(JobListingId: ID!): CandidatePage
+    getAllCandidatesByJobListingId(JobListingId: Long!): CandidatePage
     getAllApplications(searchQuery: SearchQueryInput): ApplicationPage
-    getMyApplications(userId: ID!): [Application]
-    getRecruiterById(recruiterId: ID!): Recruiter
-    getAllRecruitersForOrganization(organizationId: ID!): [Recruiter]
+    getMyApplications(userId: Long!): [Application]
+    getRecruiterById(recruiterId: Long!): Recruiter
+    getAllRecruitersForOrganization(organizationId: Long!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
     findRecruitersAdvSearch(searchQuery: SearchQueryInput): RecruiterPage
-    getPrivateChatById(chatId: ID!): Chat
+    getPrivateChatById(chatId: Long!): Chat
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
-    getChatWithUserId(userId: ID!): Chat
-    getChatsWithUsersIds(userIds: [ID]!): [Chat]
+    getChatWithUserId(userId: Long!): Chat
+    getChatsWithUsersIds(userIds: [Long]!): [Chat]
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
-    getNewConnectionForUser(userId: ID!, page: Int, size: Int): ConnectionPage
-    getConnectionsForUser(userId: ID!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): UserConnectionPage
+    getNewConnectionForUser(userId: Long!, page: Int, size: Int): ConnectionPage
+    getConnectionsForUser(userId: Long!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): UserConnectionPage
     getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
 }
 
@@ -766,6 +767,8 @@ type Mutation {
     updateUserProfileExperience(ExperienceInput: ExperienceInput!): UserProfile
     addUserProfileStudy(StudyInput: StudyInput!): UserProfile
     updateUserProfileStudy(StudyInput: StudyInput!): UserProfile
+    removeUserProfileStudy(studyId: Long!): UserProfile
+    removeUserProfileExperience(experienceId: Long!): UserProfile
     addInstitution(InstitutionInput: InstitutionInput!): Institution
     addDomain(DomainInput: DomainInput!): Domain
     addCertification(CertificationInput: CertificationInput!): Certification
@@ -774,17 +777,17 @@ type Mutation {
     createProcess(ProcessInput: ProcessInput!): Process
     updateProcess(ProcessInput: ProcessInput!): Process
     createOrUpdateOrganization(OrganizationInput: OrganizationInput!): Organization
-    alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: ID!): [Recruiter]
+    alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: Long!): [Recruiter]
     updateApplication(ApplicationInput: ApplicationInput!): Application
-    addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: ID!): Application
+    addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: Long!): Application
     addMessageToChat(MessageInput: MessageInput!): Chat
     createChat(ChatInput: ChatInput!): Chat
     updateChat(ChatInput: ChatInput!): Chat
-    removeChat(chatId: ID!): Chat
-    markAllMessagesAsSeen(chatId: ID!, userId: ID!): Chat
-    updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: ID!): Process
+    removeChat(chatId: Long!): Chat
+    markAllMessagesAsSeen(chatId: Long!, userId: Long!): Chat
+    updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: Long!): Process
     createStep(stepInput: StepInput!): Step
     createConnection(connectionCreateInput: ConnectionCreateInput!): Connection
     updateConnection(connectionRequestInput: ConnectionUpdateInput!): Connection
-    removeConnection(connectionId: ID!): Connection
+    removeConnection(connectionId: Long!): Connection
 }

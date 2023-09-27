@@ -3,27 +3,24 @@ package com.irb.paxton.core.study.institution.resolver;
 import com.irb.paxton.core.study.institution.Institution;
 import com.irb.paxton.core.study.institution.InstitutionRepository;
 import com.irb.paxton.core.study.institution.input.InstitutionInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-@Controller
-@Validated
-public class InstitutionMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class InstitutionMutationResolver {
 
     @Autowired
     private InstitutionRepository institutionRepository;
 
-    public Institution addInstitution(@Valid @NotNull InstitutionInput institutionInput) {
+    @DgsMutation
+    public Institution addInstitution(@InputArgument InstitutionInput InstitutionInput) {
         return this.institutionRepository.save(
                 new Institution(
-                        institutionInput.getName(),
-                        institutionInput.getDescription(),
-                        institutionInput.getPhotography(), null)
+                        InstitutionInput.getName(),
+                        InstitutionInput.getDescription(),
+                        InstitutionInput.getPhotography(), null)
         );
     }
 }

@@ -67,7 +67,7 @@ const ChatRoomPage = () => {
     filters: [
       {
         key: "users.id",
-        value: user?.userId as string,
+        value: String(user?.userId),
         operator: Operator.Equal,
         fieldType: FieldType.Long,
       },
@@ -140,7 +140,7 @@ const ChatRoomPage = () => {
   } = useGetPrivateChatByIdQuery(
     graphqlRequestClient,
     {
-      chatId: chatId as string,
+      chatId: Number(chatId),
     },
     {
       select: (data) => ({
@@ -243,8 +243,8 @@ const ChatRoomPage = () => {
   useEffect(() => {
     if ((chatData?.getPrivateChatById.unreadMessagesCount ?? 0) > 0) {
       markAllMessagesAsSeen({
-        chatId: chatId as string,
-        userId: user?.userId as string,
+        chatId: Number(chatId),
+        userId: Number(user?.userId),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -252,13 +252,13 @@ const ChatRoomPage = () => {
 
   const submitMessage = (values: {
     content: string;
-    senderUserId: string | undefined;
+    senderUserId: number | undefined;
   }) => {
     addMessageToChat({
       MessageInput: {
-        chatId: chatId as string,
+        chatId: Number(chatId),
         content: values.content,
-        senderUserId: values.senderUserId as string,
+        senderUserId: Number(values.senderUserId),
       },
     });
   };
@@ -269,7 +269,7 @@ const ChatRoomPage = () => {
     isError &&
     (error as GraphqlApiResponse)?.response.errors?.[0].message
       ?.toLocaleLowerCase()
-      .includes("access is denied")
+      .includes("access denied")
   ) {
     return <AccessDenied />;
   }
@@ -419,7 +419,7 @@ const ChatRoomPage = () => {
                   onCancel: () => null,
                   onConfirm: () =>
                     removeChat({
-                      chatId: chatId as string,
+                      chatId: Number(chatId),
                     }),
                 })
               }

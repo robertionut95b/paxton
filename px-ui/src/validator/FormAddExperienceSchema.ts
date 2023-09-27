@@ -1,8 +1,9 @@
+import { ExperienceInputSchema } from "@gql/generated";
 import { z } from "zod";
 
-const FormAddExperienceSchema = z
-  .object({
-    id: z.string().nullable(),
+const FormAddExperienceSchema = ExperienceInputSchema()
+  .extend({
+    id: z.coerce.number().nullable(),
     title: z
       .string()
       .min(3, { message: "Title must have at least 3 characters" })
@@ -14,14 +15,14 @@ const FormAddExperienceSchema = z
     contractType: z
       .string()
       .min(1, { message: "Contract type must be filled" }),
-    organizationId: z
-      .string()
+    organizationId: z.coerce
+      .number()
       .min(1, { message: "Organization must be filled" }),
     city: z.string().min(1, { message: "Location must be filled" }),
     startDate: z.date().min(new Date(1900, 1, 1)),
     endDate: z.date().nullable(),
-    activitySectorId: z
-      .string()
+    activitySectorId: z.coerce
+      .number()
       .min(1, { message: "Activity sector must be filled" }),
     userProfileSlugUrl: z
       .string()

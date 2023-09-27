@@ -4,14 +4,15 @@ import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.OrganizationService;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller
-public class OrganizationQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class OrganizationQueryResolver {
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -19,16 +20,19 @@ public class OrganizationQueryResolver implements GraphQLQueryResolver {
     @Autowired
     private OrganizationService organizationService;
 
+    @DgsQuery
     public List<Organization> getAllOrganizations() {
         return organizationRepository.findAll();
     }
 
-    public Organization getOrganizationById(Long organizationId) {
+    @DgsQuery
+    public Organization getOrganizationById(@InputArgument Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(String.format("Organization %s does not exist", organizationId), "id"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization %s does not exist".formatted(organizationId), "id"));
     }
 
-    public Organization getOrganizationBySlugName(String slugName) {
+    @DgsQuery
+    public Organization getOrganizationBySlugName(@InputArgument String slugName) {
         return this.organizationService.findBySlugName(slugName);
     }
 }

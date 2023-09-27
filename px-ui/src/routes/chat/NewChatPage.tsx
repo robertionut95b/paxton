@@ -54,7 +54,7 @@ const NewChatPage = () => {
     filters: [
       {
         key: "users.id",
-        value: user?.userId as string,
+        value: String(user?.userId),
         operator: Operator.Equal,
         fieldType: FieldType.Long,
       },
@@ -121,7 +121,7 @@ const NewChatPage = () => {
   const { data: chatSearchByMembersData } = useGetChatsWithUsersIdsQuery(
     graphqlRequestClient,
     {
-      userIds: [...searchUsers, String(user?.userId)],
+      userIds: [...searchUsers.map((u) => Number(u)), user?.userId ?? 0],
     },
     {
       enabled: searchUsers.length > 0,
@@ -158,19 +158,19 @@ const NewChatPage = () => {
 
   const submitMessage = async (values: {
     content: string;
-    senderUserId: string | undefined;
+    senderUserId: number | undefined;
   }) => {
     if (individualChatsCount > 0 && individualChatsCount <= 1) {
       addMessageToChat({
         MessageInput: {
-          chatId: chatSearchByMembersData?.[0]?.id as string,
+          chatId: chatSearchByMembersData?.[0]?.id ?? 0,
           content: values.content,
-          senderUserId: values.senderUserId as string,
+          senderUserId: Number(values.senderUserId) ?? 0,
         },
       });
       await queryClient.invalidateQueries(
         useGetPrivateChatByIdQuery.getKey({
-          chatId: chatSearchByMembersData?.[0]?.id ?? "",
+          chatId: chatSearchByMembersData?.[0]?.id ?? 0,
         })
       );
       await queryClient.invalidateQueries(
@@ -179,7 +179,7 @@ const NewChatPage = () => {
             filters: [
               {
                 key: "chat.id",
-                value: chatSearchByMembersData?.[0]?.id ?? "",
+                value: String(chatSearchByMembersData?.[0]?.id) ?? "",
                 operator: Operator.Equal,
                 fieldType: FieldType.Long,
               },
@@ -202,7 +202,7 @@ const NewChatPage = () => {
       if (!user?.userId) return;
       const data = await createChat({
         ChatInput: {
-          users: [user.userId, ...searchUsers],
+          users: [user.userId, ...searchUsers.map((u) => Number(u))],
           messages: [],
           chatType: ChatType.PrivateChat,
         },
@@ -210,9 +210,9 @@ const NewChatPage = () => {
       if (data) {
         addMessageToChat({
           MessageInput: {
-            chatId: data.createChat?.id as string,
+            chatId: data.createChat?.id ?? 0,
             content: values.content,
-            senderUserId: values.senderUserId as string,
+            senderUserId: values.senderUserId ?? 0,
           },
         });
         navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
@@ -229,7 +229,7 @@ const NewChatPage = () => {
     if (!user?.userId) return;
     const data = await createChat({
       ChatInput: {
-        users: [user.userId, ...searchUsers],
+        users: [user.userId, ...searchUsers.map((u) => Number(u))],
         messages: [],
         chatType: ChatType.PrivateChat,
       },
@@ -250,7 +250,7 @@ const NewChatPage = () => {
     const usersData = userData ?? [];
     if (usersData.length > 0) {
       const users = usersData.map((u) => ({
-        value: u?.id ?? "",
+        value: String(u?.id) ?? "",
         label: `${u?.firstName} ${u?.lastName}`,
         image:
           u?.userProfile.photography &&
@@ -274,7 +274,7 @@ const NewChatPage = () => {
       searchParams.delete("chatUser");
       setSearchParams(searchParams);
     }
-  }, [usrSearch, searchParams]);
+  }, [usrSearch, searchParams, setSearchParams]);
 
   return (
     <Stack spacing={6} justify="space-between" h={"100%"}>
@@ -321,7 +321,7 @@ const NewChatPage = () => {
             Select a chat ...
           </Text>
           <Divider />
-          {chatLines.map((c) => (
+          {chatLines?.map((c) => (
             // @ts-expect-error("type-check")
             <div key={c?.id}>{c.id && <ChatLine chat={c} />}</div>
           ))}

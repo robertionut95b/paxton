@@ -4,31 +4,36 @@ import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.Collection;
 
-@Controller
-public class RecruiterQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class RecruiterQueryResolver {
 
     @Autowired
     private RecruiterService recruiterService;
 
-    public Collection<Recruiter> getAllRecruitersForOrganization(Long organizationId) {
+    @DgsQuery
+    public Collection<Recruiter> getAllRecruitersForOrganization(@InputArgument Long organizationId) {
         return this.recruiterService.findByOrganizationId(organizationId);
     }
 
-    public Collection<Recruiter> getAllRecruitersForOrganizationBySlug(String organizationSlug) {
+    @DgsQuery
+    public Collection<Recruiter> getAllRecruitersForOrganizationBySlug(@InputArgument String organizationSlug) {
         return this.recruiterService.findByOrganizationSlugName(organizationSlug);
     }
 
-    public Recruiter getRecruiterById(Long recruiterId) {
+    @DgsQuery
+    public Recruiter getRecruiterById(@InputArgument Long recruiterId) {
         return this.recruiterService.findById(recruiterId);
     }
 
-    public PaginatedResponse<Recruiter> findRecruitersAdvSearch(SearchRequest searchRequest) {
-        return this.recruiterService.findRecruitersAdvSearch(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<Recruiter> findRecruitersAdvSearch(@InputArgument SearchRequest searchQuery) {
+        return this.recruiterService.findRecruitersAdvSearch(searchQuery);
     }
 }

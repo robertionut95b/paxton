@@ -4,21 +4,23 @@ import com.irb.paxton.core.candidate.Candidate;
 import com.irb.paxton.core.candidate.CandidateService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class CandidateQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class CandidateQueryResolver {
 
     @Autowired
     private CandidateService candidateService;
 
-    PaginatedResponse<Candidate> getAllCandidates(SearchRequest searchRequest) {
+    @DgsQuery
+    public PaginatedResponse<Candidate> getAllCandidates(SearchRequest searchRequest) {
         return this.candidateService.getAllCandidates(searchRequest);
     }
 
-    PaginatedResponse<Candidate> getAllCandidatesByJobListingId(Long JobListingId) {
+    @DgsQuery
+    public PaginatedResponse<Candidate> getAllCandidatesByJobListingId(Long JobListingId) {
         return this.candidateService.getAllCandidatesByJobListingId(JobListingId);
     }
 }

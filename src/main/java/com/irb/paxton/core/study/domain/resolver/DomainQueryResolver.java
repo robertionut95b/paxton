@@ -2,18 +2,19 @@ package com.irb.paxton.core.study.domain.resolver;
 
 import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.domain.DomainRepository;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller
-public class DomainQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class DomainQueryResolver {
 
     @Autowired
     private DomainRepository domainRepository;
 
+    @DgsQuery
     public List<Domain> getAllDomains() {
         return this.domainRepository.findAll();
     }

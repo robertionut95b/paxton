@@ -1,5 +1,9 @@
 import { useAuth } from "@auth/useAuth";
-import { CheckCircleIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  PhotoIcon,
+} from "@heroicons/react/24/outline";
 import useChangeProfileAvatar from "@hooks/useChangeProfileAvatar";
 import { Button, FileInput, Modal } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -43,16 +47,32 @@ export default function ProfileAvatarModal() {
         icon: <CheckCircleIcon width={20} />,
       });
     },
+    onError: (error) => {
+      if (error) {
+        let message = "";
+        if (error.response?.data.errors?.[0] === "This file already exists.") {
+          message = "Could not update as this file already exists";
+        } else {
+          message = "Unknown error occurred";
+        }
+        showNotification({
+          title: "Avatar update",
+          message,
+          autoClose: 5000,
+          icon: <ExclamationTriangleIcon width={20} />,
+        });
+      }
+    },
   });
 
   const handleSubmit = (values: typeof form.values) => {
     const photography = values.photography;
-    const userId = user?.userId as string;
+    const userId = user?.userId;
 
     if (photography && userId) {
       const formData = new FormData();
       formData.append("photography", photography);
-      formData.append("userId", userId);
+      formData.append("userId", String(userId));
       mutate(formData);
     }
   };

@@ -3,7 +3,7 @@ package com.irb.paxton.core.media.input;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class PhotographyInput {

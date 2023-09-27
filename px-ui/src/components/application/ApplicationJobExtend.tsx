@@ -94,7 +94,7 @@ const ApplicationJobExtend = ({
 
   const form = useForm({
     initialValues: {
-      id: jobId ?? null,
+      id: Number(jobId) ?? null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
       formattedDescription: jobListingItem?.formattedDescription ?? "",
@@ -105,12 +105,12 @@ const ApplicationJobExtend = ({
         ? new Date(jobListingItem.availableTo)
         : addDays(new Date(), 1),
       location: jobListingItem?.city.name ?? "",
-      jobId: jobListingItem?.job.id ?? "",
+      jobId: jobListingItem?.job.id ?? 0,
       numberOfVacancies: jobListingItem?.numberOfVacancies ?? 1,
       contractType: jobListingItem?.contractType ?? ContractType["FullTime"],
-      organizationId: jobListingItem?.organization.id ?? "",
-      categoryId: jobListingItem?.category?.id ?? "",
-      recruiterId: jobListingItem?.recruiter?.id ?? "",
+      organizationId: jobListingItem?.organization.id ?? 0,
+      categoryId: jobListingItem?.category?.id ?? 0,
+      recruiterId: jobListingItem?.recruiter?.id ?? 0,
       workType: jobListingItem?.workType ?? WorkType.Hybrid,
     },
     validate: zodResolver(FormJobListingSchema),
@@ -120,7 +120,7 @@ const ApplicationJobExtend = ({
     publishJob({
       JobListingInput: {
         ...values,
-        organizationId: jobListingItem?.organization.id as string,
+        organizationId: jobListingItem?.organization.id ?? 0,
         availableFrom: format(
           values.availableFrom,
           "yyyy-MM-dd"

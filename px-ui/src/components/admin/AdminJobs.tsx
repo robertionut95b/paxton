@@ -64,7 +64,7 @@ const AdminJobs = () => {
                     fieldType: FieldType.Long,
                     key: "id",
                     operator: Operator.Equal,
-                    value: e?.id ?? "",
+                    value: String(e?.id) ?? "",
                   },
                 ],
               },

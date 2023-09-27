@@ -232,7 +232,7 @@ query getAllJobs {
   }
 }
 
-query GetOrganizationById($organizationId: ID!) {
+query GetOrganizationById($organizationId: Long!) {
   getOrganizationById(organizationId: $organizationId) {
     id
     name
@@ -339,7 +339,7 @@ query GetRelatedJobListings($jobName: String!) {
   }
 }
 
-query GetMyApplicationForJobListing($JobListingId: ID!) {
+query GetMyApplicationForJobListing($JobListingId: Long!) {
   getMyApplicationForJobListing(JobListingId: $JobListingId) {
     id
     dateOfApplication
@@ -360,7 +360,7 @@ query GetMyApplicationForJobListing($JobListingId: ID!) {
   }
 }
 
-query GetApplicationById($applicationId: ID!) {
+query GetApplicationById($applicationId: Long!) {
   getApplicationById(applicationId: $applicationId) {
     id
     status
@@ -488,7 +488,7 @@ query GetAllRecruitersForOrganizationBySlug($organizationSlug: String!) {
   }
 }
 
-query GetRecruiterById($recruiterId: ID!) {
+query GetRecruiterById($recruiterId: Long!) {
   getRecruiterById(recruiterId: $recruiterId) {
     id
     user {
@@ -569,7 +569,7 @@ query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
   }
 }
 
-query GetMyApplications($userId: ID!) {
+query GetMyApplications($userId: Long!) {
   getMyApplications(userId: $userId) {
     id
     dateOfApplication
@@ -595,14 +595,14 @@ query GetMyApplications($userId: ID!) {
   }
 }
 
-query GetApplicationsForJobIdCountBySteps($jobId: ID!) {
+query GetApplicationsForJobIdCountBySteps($jobId: Long!) {
   getApplicationsForJobIdCountBySteps(jobId: $jobId) {
     applicationsCount
     stepTitle
   }
 }
 
-query GetPrivateChatById($chatId: ID!) {
+query GetPrivateChatById($chatId: Long!) {
   getPrivateChatById(chatId: $chatId) {
     id
     title
@@ -671,7 +671,7 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   }
 }
 
-query GetChatsWithUsersIds($userIds: [ID]!) {
+query GetChatsWithUsersIds($userIds: [Long]!) {
   getChatsWithUsersIds(userIds: $userIds) {
     id
     unreadMessagesCount
@@ -798,7 +798,7 @@ query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
   }
 }
 
-query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
+query GetConnectionInvitationsForUser($userId: Long!, $page: Int, $size: Int) {
   getNewConnectionForUser(userId: $userId, page: $page, size: $size) {
     list {
       id
@@ -822,7 +822,7 @@ query GetConnectionInvitationsForUser($userId: ID!, $page: Int, $size: Int) {
 }
 
 query GetConnectionsForUser(
-  $userId: ID!
+  $userId: Long!
   $page: Int
   $size: Int
   $searchQuery: String
@@ -876,7 +876,7 @@ query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
   }
 }
 
-query GetChatWithUserId($userId: ID!) {
+query GetChatWithUserId($userId: Long!) {
   getChatWithUserId(userId: $userId) {
     id
     title

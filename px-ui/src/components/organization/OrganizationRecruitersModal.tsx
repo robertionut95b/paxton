@@ -39,7 +39,7 @@ const recrToTrsfItem = (
     return [];
   }
   return recruiters.map((r) => ({
-    value: r?.id ?? "",
+    value: String(r?.id),
     label: `${r?.user.lastName} ${r?.user.firstName}`,
     key: r?.id,
     description: r?.user.userProfile.profileTitle,
@@ -54,7 +54,7 @@ const usrToTrsfItem = (
 ): TransferListItem[] => {
   if (!users) return [];
   return users.map((u) => ({
-    value: u?.id ?? "",
+    value: String(u?.id),
     label: `${u?.lastName} ${u?.firstName}`,
     key: u?.id,
     description: u?.userProfile.profileTitle,
@@ -173,15 +173,15 @@ const OrganizationRecruitersModal = () => {
     const newValues = data[0];
     const input = {
       RecruiterInput: newValues.map((u) => ({
-        id: u.value,
+        id: Number(u.value),
       })),
-      OrganizationId: organizationData?.getOrganizationBySlugName?.id ?? "",
+      OrganizationId: organizationData?.getOrganizationBySlugName?.id ?? 0,
     };
     const result = FormAlterRecruitersOrgSchema.safeParse(input);
     if (!result.success) {
       const flatErrors = result.error.flatten().fieldErrors;
       setErr(
-        flatErrors.OrganizationId?.toString() ||
+        flatErrors.OrganizationId?.toString() ??
           flatErrors.RecruiterInput?.toString()
       );
     } else mutate(input);

@@ -6,7 +6,7 @@ import com.irb.paxton.core.candidate.validator.ValidOrganizationProcessSteps;
 import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 

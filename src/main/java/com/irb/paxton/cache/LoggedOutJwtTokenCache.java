@@ -4,7 +4,6 @@ import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
 import com.irb.paxton.security.auth.logout.event.OnUserLogoutSuccess;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class LoggedOutJwtTokenCache {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
     public LoggedOutJwtTokenCache(@Value("${px.app.cache.logoutToken.maxSize:100}") int maxSize, JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.tokenEventMap = ExpiringMap.builder()
@@ -59,7 +57,7 @@ public class LoggedOutJwtTokenCache {
         if (previouslyLoggedOutEvent != null) {
             String userName = previouslyLoggedOutEvent.getUser();
             LocalDate logoutEventDate = previouslyLoggedOutEvent.getEventTime();
-            String errorMessage = String.format("Token corresponds to an already logged out user [%s] at [%s]. Please login again", userName, logoutEventDate);
+            String errorMessage = "Token corresponds to an already logged out user [%s] at [%s]. Please login again".formatted(userName, logoutEventDate);
             throw new AccessDeniedException(errorMessage);
         }
     }

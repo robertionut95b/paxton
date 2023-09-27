@@ -48,7 +48,7 @@ const ChatPage = () => {
       filters: [
         {
           key: "users.id",
-          value: user?.userId as string,
+          value: String(user?.userId),
           operator: Operator.Equal,
           fieldType: FieldType.Long,
         },
@@ -109,7 +109,7 @@ const ChatPage = () => {
         .flatMap((p) => p.getChatAdvSearch?.list ?? [])
         .map((d) => ({
           ...d,
-          id: d?.id as string,
+          id: d?.id ?? 0,
           unreadMessagesCount: d?.unreadMessagesCount as number,
           users: d?.users?.filter(
             (u) => String(u?.id) !== String(user?.userId)
@@ -191,11 +191,17 @@ const ChatPage = () => {
                       </Text>
                     }
                   >
-                    {chatLines.map((c, idx) => (
-                      <div key={c?.id + idx}>
-                        <ChatLine chat={c} active={chatId === c.id} />
-                      </div>
-                    ))}
+                    {chatLines.map(
+                      (c, idx) =>
+                        c && (
+                          <div key={c?.id ?? 0 + idx}>
+                            <ChatLine
+                              chat={c}
+                              active={chatId === String(c.id)}
+                            />
+                          </div>
+                        )
+                    )}
                     <ShowIf if={hasNextPage}>
                       <Button
                         fullWidth

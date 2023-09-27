@@ -4,22 +4,26 @@ import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller
-public class UserQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class UserQueryResolver {
+
     @Autowired
     private UserService userService;
 
+    @DgsQuery
     public List<User> getAllUsers() {
         return this.userService.getUsers();
     }
 
-    public PaginatedResponse<User> getAllUsersPaged(SearchRequest searchRequest) {
-        return this.userService.advSearch(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<User> getAllUsersPaged(@InputArgument SearchRequest searchQuery) {
+        return this.userService.advSearch(searchQuery);
     }
 }

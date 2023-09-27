@@ -10,8 +10,7 @@ public class ConnectionEventListener implements PostDeleteEventListener, PostUpd
     @Override
     public void onPostDelete(PostDeleteEvent postDeleteEvent) {
         Object entity = postDeleteEvent.getEntity();
-        if (entity instanceof Connection) {
-            Connection connection = (Connection) entity;
+        if (entity instanceof Connection connection) {
             //TODO handle logic...
         }
 
@@ -20,8 +19,7 @@ public class ConnectionEventListener implements PostDeleteEventListener, PostUpd
     @Override
     public void onPostInsert(PostInsertEvent postInsertEvent) {
         Object entity = postInsertEvent.getEntity();
-        if (entity instanceof Connection) {
-            Connection connection = (Connection) entity;
+        if (entity instanceof Connection connection) {
             //TODO handle logic...
         }
 
@@ -30,15 +28,14 @@ public class ConnectionEventListener implements PostDeleteEventListener, PostUpd
     @Override
     public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
         Object entity = postUpdateEvent.getEntity();
-        if (entity instanceof Connection) {
-            Connection connection = (Connection) entity;
+        if (entity instanceof Connection connection) {
             //TODO handle logic...
         }
 
     }
 
     @Override
-    public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
+    public boolean requiresPostCommitHandling(EntityPersister entityPersister) {
         return false;
     }
 }

@@ -2,7 +2,6 @@ import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   GetOrganizationBySlugNameQuery,
-  OrganizationInputSchema,
   OrganizationSize,
   Specialization,
   useCreateOrUpdateOrganizationMutation,
@@ -40,6 +39,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue, prettyEnumValueCompanySize } from "@utils/enumUtils";
+import { FormAlterOrganizationSchema } from "@validator/FormAlterOrganizationSchema";
 import { format } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -80,8 +80,8 @@ const OrganizationModal = () => {
             activitySector,
             ...rest
           } = data.getOrganizationBySlugName ?? {};
-          const trsfLocs = data.getOrganizationBySlugName?.locations?.map(
-            (l) => l?.id
+          const trsfLocs = data.getOrganizationBySlugName?.locations?.map((l) =>
+            l?.id.toString()
           );
           form.setValues({
             ...rest,
@@ -89,9 +89,10 @@ const OrganizationModal = () => {
             photography: data.getOrganizationBySlugName?.photography ?? "",
             webSite: data.getOrganizationBySlugName?.webSite ?? "",
             activitySectorId:
-              data.getOrganizationBySlugName?.activitySector.id ?? "",
+              data.getOrganizationBySlugName?.activitySector.id.toString() ??
+              "",
             headQuartersId:
-              data.getOrganizationBySlugName?.headQuarters.id ?? "",
+              data.getOrganizationBySlugName?.headQuarters.id.toString() ?? "",
             foundedAt: data.getOrganizationBySlugName?.foundedAt
               ? new Date(data.getOrganizationBySlugName.foundedAt)
               : new Date(),
@@ -139,9 +140,11 @@ const OrganizationModal = () => {
         organizationData?.getOrganizationBySlugName?.description ?? "",
       slogan: organizationData?.getOrganizationBySlugName?.slogan ?? "",
       activitySectorId:
-        organizationData?.getOrganizationBySlugName?.activitySector.id ?? "",
+        organizationData?.getOrganizationBySlugName?.activitySector.id.toString() ??
+        "",
       headQuartersId:
-        organizationData?.getOrganizationBySlugName?.headQuarters.id ?? "",
+        organizationData?.getOrganizationBySlugName?.headQuarters.id.toString() ??
+        "",
       companySize:
         organizationData?.getOrganizationBySlugName?.companySize ??
         OrganizationSize["Between_1_5"],
@@ -152,13 +155,13 @@ const OrganizationModal = () => {
       specializations:
         organizationData?.getOrganizationBySlugName?.specializations ?? [],
       locations:
-        organizationData?.getOrganizationBySlugName?.locations?.map(
-          (l) => l?.id
+        organizationData?.getOrganizationBySlugName?.locations?.map((l) =>
+          l?.id.toString()
         ) ?? [],
       photography:
         organizationData?.getOrganizationBySlugName?.photography ?? "",
     },
-    validate: zodResolver(OrganizationInputSchema()),
+    validate: zodResolver(FormAlterOrganizationSchema),
   });
 
   const locations = useMemo(
@@ -166,22 +169,26 @@ const OrganizationModal = () => {
       countries?.getCountriesCities
         ?.map((c) => {
           const city =
-            c?.cities?.map((ci) => ({ name: ci?.name, id: ci?.id })) || [];
+            c?.cities?.map((ci) => ({ name: ci?.name, id: ci?.id })) ?? [];
           const locs = city.map((ci) => ({
-            value: ci.id as string,
+            value: ci?.id?.toString() ?? "",
             label: `${c?.name}, ${ci.name}`,
           }));
           return locs;
         })
-        .flat(1) || [],
+        .flat(1) ?? [],
     [countries]
   );
 
-  const handleSubmit = async (values: (typeof form)["values"]) => {
+  const handleSubmit = async (values: typeof form.values) => {
     mutate({
       OrganizationInput: {
         ...values,
-        locations: values.locations.map((l) => l) as unknown as string[],
+        activitySectorId: Number(values.activitySectorId),
+        headQuartersId: Number(values.headQuartersId),
+        locations: values.locations.map((l) =>
+          Number(l)
+        ) as unknown as number[],
         specializations: values.specializations ?? [],
         foundedAt: format(values.foundedAt, "yyyy-MM-dd") as unknown as Date,
       },
@@ -264,7 +271,7 @@ const OrganizationModal = () => {
             icon={<CogIcon width={18} />}
             data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
               label: a?.name,
-              value: a?.id as string,
+              value: String(a?.id),
             }))}
             {...form.getInputProps("activitySectorId")}
           />

@@ -6,13 +6,12 @@ import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
 import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.transaction.Transactional;
 
 @Slf4j
 @Service

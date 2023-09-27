@@ -13,11 +13,11 @@ import com.irb.paxton.security.auth.user.credentials.Credentials;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;

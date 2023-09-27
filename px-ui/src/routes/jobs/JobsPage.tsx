@@ -57,7 +57,10 @@ export default function JobsPage() {
           if (refPage) return;
           if (data.getUserProfile?.city) {
             const currentSearchParams = searchParams;
-            currentSearchParams.set("city", data.getUserProfile.city.id);
+            currentSearchParams.set(
+              "city",
+              data.getUserProfile.city.id.toString()
+            );
             setSearchParams(currentSearchParams);
           }
         },
@@ -86,9 +89,9 @@ export default function JobsPage() {
           ...(cityId
             ? [
                 {
-                  key: "city",
+                  key: "city.id",
                   fieldType: FieldType.Long,
-                  value: cityId,
+                  value: cityId as string,
                   operator: Operator.Equal,
                 },
               ]
@@ -144,13 +147,16 @@ export default function JobsPage() {
     if (refPage) return;
     if (userProfile?.getUserProfile?.city?.id) {
       const currentSearchParams = searchParams;
-      currentSearchParams.set("city", userProfile.getUserProfile.city.id);
+      currentSearchParams.set(
+        "city",
+        userProfile.getUserProfile.city.id.toString()
+      );
       setSearchParams(currentSearchParams);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.getUserProfile?.city?.id, searchParams]);
 
-  const jobs = data?.getAllJobListings?.list || [];
+  const jobs = data?.getAllJobListings?.list ?? [];
 
   if (isProfileLoading || jobsLoading) return <ApplicationSpinner />;
 

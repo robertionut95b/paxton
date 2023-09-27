@@ -22,8 +22,8 @@ import {
   Modal,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -55,14 +55,14 @@ export default function BasicUpdateProfileModal() {
   const locations =
     countries?.getCountriesCities
       ?.map((c) => {
-        const city = c?.cities?.map((ci) => ci?.name) || [];
+        const city = c?.cities?.map((ci) => ci?.name) ?? [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
           value: ci as string,
         }));
         return locs;
       })
-      .flat(1) || [];
+      .flat(1) ?? [];
 
   const prevData = queryClient.getQueryData<GetUserProfileQuery>([
     "GetUserProfile",
@@ -86,7 +86,7 @@ export default function BasicUpdateProfileModal() {
 
   const form = useForm({
     initialValues: {
-      id: prevProfileData?.id ?? "0",
+      id: prevProfileData?.id ?? 0,
       description: prevProfileData?.description ?? "",
       city: prevProfileData?.city?.name ?? "",
       profileTitle: prevProfileData?.profileTitle ?? "",

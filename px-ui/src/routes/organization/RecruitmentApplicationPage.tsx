@@ -77,7 +77,7 @@ const RecruitmentApplicationPage = () => {
   } = useGetApplicationByIdQuery(
     graphqlRequestClient,
     {
-      applicationId: applicationId as string,
+      applicationId: Number(applicationId),
     },
     {
       enabled: !!jobId,
@@ -142,8 +142,8 @@ const RecruitmentApplicationPage = () => {
               key: "id",
               operator: Operator.Equal,
               value:
-                organizationData?.getOrganizationBySlugName?.recruitmentProcess
-                  .id ?? "",
+                organizationData?.getOrganizationBySlugName?.recruitmentProcess.id.toString() ??
+                "",
             },
           ],
         },
@@ -158,7 +158,7 @@ const RecruitmentApplicationPage = () => {
       filters: [
         {
           key: "chat.id",
-          value: applicationData?.getApplicationById?.chat.id as string,
+          value: applicationData?.getApplicationById?.chat.id.toString(),
           operator: Operator.Equal,
           fieldType: FieldType.Long,
         },
@@ -216,12 +216,12 @@ const RecruitmentApplicationPage = () => {
         });
         queryClient.invalidateQueries(
           useGetApplicationByIdQuery.getKey({
-            applicationId: applicationId as string,
+            applicationId: Number(applicationId) ?? 0,
           })
         );
         queryClient.invalidateQueries(
           useGetApplicationsForJobIdCountByStepsQuery.getKey({
-            jobId: jobId as string,
+            jobId: Number(jobId) ?? 0,
           })
         );
       },
@@ -322,19 +322,19 @@ const RecruitmentApplicationPage = () => {
     updateApplication({
       ApplicationInput: {
         applicantProfileId: userProfile.id,
-        jobListingId: jobId ?? "",
-        userId: applicationData.getApplicationById?.candidate.user.id ?? "",
+        jobListingId: Number(jobId) ?? 0,
+        userId: applicationData.getApplicationById?.candidate.user.id ?? 0,
         id: applicationData?.getApplicationById?.id,
         processSteps: [
           ...(currentStepProcesses?.map((cp) => ({
-            applicationId: applicationData?.getApplicationById?.id ?? "",
+            applicationId: applicationData?.getApplicationById?.id ?? 0,
             id: cp?.id,
-            processStepId: cp?.processStep.id ?? "",
+            processStepId: cp?.processStep.id ?? 0,
             registeredAt: cp?.registeredAt,
           })) ?? []),
           {
-            applicationId: applicationData?.getApplicationById?.id ?? "",
-            processStepId: nextStep?.step.id ?? "",
+            applicationId: applicationData?.getApplicationById?.id ?? 0,
+            processStepId: nextStep?.step.id ?? 0,
             registeredAt: new Date(),
           },
         ],
@@ -349,8 +349,8 @@ const RecruitmentApplicationPage = () => {
       ApplicationInput: {
         id: applicationData.getApplicationById?.id,
         applicantProfileId: userProfile.id,
-        jobListingId: jobId ?? "",
-        userId: applicationData.getApplicationById?.candidate.user.id ?? "",
+        jobListingId: Number(jobId) ?? 0,
+        userId: applicationData.getApplicationById?.candidate.user.id ?? 0,
         status: ApplicationStatus.Canceled,
       },
     });
@@ -483,13 +483,13 @@ const RecruitmentApplicationPage = () => {
                   onprocessfiles: () =>
                     queryClient.invalidateQueries(
                       useGetApplicationByIdQuery.getKey({
-                        applicationId: applicationId as string,
+                        applicationId: Number(applicationId) ?? 0,
                       })
                     ),
                   onremovefile: () =>
                     queryClient.invalidateQueries(
                       useGetApplicationByIdQuery.getKey({
-                        applicationId: applicationId as string,
+                        applicationId: Number(applicationId) ?? 0,
                       })
                     ),
                   server: {
@@ -558,13 +558,11 @@ const RecruitmentApplicationPage = () => {
               }
               onSubmit={(values) =>
                 addMessage({
-                  applicationId: applicationData.getApplicationById
-                    ?.id as string,
+                  applicationId: applicationData.getApplicationById?.id ?? 0,
                   MessageInput: {
-                    chatId: applicationData.getApplicationById?.chat
-                      .id as string,
+                    chatId: applicationData.getApplicationById?.chat.id ?? 0,
                     content: values.content,
-                    senderUserId: values.senderUserId as string,
+                    senderUserId: values.senderUserId ?? 0,
                   },
                 })
               }

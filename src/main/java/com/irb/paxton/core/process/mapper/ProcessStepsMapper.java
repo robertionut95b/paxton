@@ -30,13 +30,13 @@ public abstract class ProcessStepsMapper {
     public Step mapStep(Long stepId) {
         return this.stepRepository
                 .findById(stepId)
-                .orElseThrow(() -> new GenericEntityNotFoundException(String.format("Step by id %s does not exist", stepId)));
+                .orElseThrow(() -> new GenericEntityNotFoundException("Step by id %s does not exist".formatted(stepId)));
     }
 
     public Process mapProcess(Long processId) {
         return this.processRepository
                 .findById(processId)
-                .orElseThrow(() -> new ProcessNotFoundException(String.format("Process by id %s does not exist", processId)));
+                .orElseThrow(() -> new ProcessNotFoundException("Process by id %s does not exist".formatted(processId)));
     }
 
     @Mapping(target = "step", source = "processStepsInputCreate.stepId")

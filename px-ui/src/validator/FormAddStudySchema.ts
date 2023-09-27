@@ -1,12 +1,15 @@
+import { StudyInputSchema } from "@gql/generated";
 import { z } from "zod";
 
-const FormAddStudySchema = z
-  .object({
-    id: z.string().nullable(),
-    institution: z.string().min(1, { message: "Institution must be filled" }),
-    domainStudy: z.string().nullable(),
+const FormAddStudySchema = StudyInputSchema()
+  .extend({
+    id: z.number().nullable(),
+    institution: z.coerce
+      .number()
+      .min(1, { message: "Institution must be filled" }),
+    domainStudy: z.coerce.number().nullable(),
     degree: z.string().optional(),
-    certification: z.string().nullable(),
+    certification: z.coerce.number().nullable(),
     description: z
       .string()
       .max(1000, {

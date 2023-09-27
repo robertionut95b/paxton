@@ -4,7 +4,7 @@ export interface ApiResponse {
 }
 
 export interface FullAPiResponse extends ApiResponse {
-  error: string;
+  errors: string[];
   path: string;
   status: number;
   timestamp: Date;

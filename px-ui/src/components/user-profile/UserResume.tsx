@@ -3,6 +3,7 @@ import StudyCard from "@components/cards/StudyCard";
 import ExpandableText from "@components/visibility/ExpandableText";
 import ShowIf from "@components/visibility/ShowIf";
 import ShowIfElse from "@components/visibility/ShowIfElse";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { ActionIcon, Group, Paper, Stack, Text, Title } from "@mantine/core";
@@ -21,6 +22,7 @@ export default function UserResume({
     groupBy(userProfile?.experiences ?? [], "organization.id") ?? [];
 
   const placeholder = "No information was provided";
+  const [parent] = useAutoAnimate();
 
   return (
     <Stack className="px-user-resume">
@@ -61,7 +63,7 @@ export default function UserResume({
             </NavLink>
           </ShowIf>
         </Group>
-        <Paper className="px-user-studies">
+        <Paper className="px-user-studies" ref={parent}>
           <ShowIf if={studies.length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
           </ShowIf>

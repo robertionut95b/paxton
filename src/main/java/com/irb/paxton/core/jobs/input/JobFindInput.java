@@ -3,7 +3,7 @@ package com.irb.paxton.core.jobs.input;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data

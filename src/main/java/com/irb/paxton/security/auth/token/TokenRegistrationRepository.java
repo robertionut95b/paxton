@@ -1,6 +1,6 @@
 package com.irb.paxton.security.auth.token;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

@@ -3,17 +3,17 @@ package com.irb.paxton.core.candidate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.ProcessSteps;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -45,7 +45,7 @@ public class ApplicationProcessSteps extends PaxtonEntity<Long> implements Compa
     }
 
     @Override
-    public int compareTo(@org.jetbrains.annotations.NotNull ApplicationProcessSteps o) {
+    public int compareTo(@NotNull ApplicationProcessSteps o) {
         return this.getProcessStep().compareTo(o.getProcessStep());
     }
 

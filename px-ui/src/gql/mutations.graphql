@@ -118,7 +118,7 @@ mutation CreateOrUpdateOrganization($OrganizationInput: OrganizationInput!) {
 
 mutation AlterRecruitersInOrganization(
   $RecruiterInput: [RecruiterInput]!
-  $OrganizationId: ID!
+  $OrganizationId: Long!
 ) {
   alterRecruitersInOrganization(
     RecruiterInput: $RecruiterInput
@@ -163,7 +163,7 @@ mutation updateApplication($ApplicationInput: ApplicationInput!) {
 
 mutation AddMessageToApplicationChat(
   $MessageInput: MessageInput!
-  $applicationId: ID!
+  $applicationId: Long!
 ) {
   addMessageToApplicationChat(
     MessageInput: $MessageInput
@@ -209,7 +209,7 @@ mutation AddMessageToChat($MessageInput: MessageInput!) {
   }
 }
 
-mutation MarkAllMessagesAsSeen($chatId: ID!, $userId: ID!) {
+mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
   markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
     id
     messages {
@@ -233,7 +233,7 @@ mutation UpdateChat($ChatInput: ChatInput!) {
 
 mutation UpdateProcessForOrganizationId(
   $processInput: ProcessInputCreate!
-  $organizationId: ID!
+  $organizationId: Long!
 ) {
   updateProcessForOrganizationId(
     processInput: $processInput
@@ -302,15 +302,27 @@ mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
   }
 }
 
-mutation RemoveConnection($connectionId: ID!) {
+mutation RemoveConnection($connectionId: Long!) {
   removeConnection(connectionId: $connectionId) {
     id
     connectionStatus
   }
 }
 
-mutation RemoveChat($chatId: ID!) {
+mutation RemoveChat($chatId: Long!) {
   removeChat(chatId: $chatId) {
+    id
+  }
+}
+
+mutation RemoveUserProfileStudy($studyId: Long!) {
+  removeUserProfileStudy(studyId: $studyId) {
+    id
+  }
+}
+
+mutation RemoveUserProfileExperience($experienceId: Long!) {
+  removeUserProfileExperience(experienceId: $experienceId) {
     id
   }
 }

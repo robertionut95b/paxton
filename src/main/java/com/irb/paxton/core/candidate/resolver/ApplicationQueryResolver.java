@@ -7,37 +7,43 @@ import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.Collection;
 
-@Controller
-public class ApplicationQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class ApplicationQueryResolver {
 
     @Autowired
     private ApplicationService applicationService;
 
-    public Application getMyApplicationForJobListing(Long JobListingId) {
+    @DgsQuery
+    public Application getMyApplicationForJobListing(@InputArgument Long JobListingId) {
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new UserNotFoundException("User does not exist"));
         return applicationService.findByJobListingIdAndCandidateUsername(JobListingId, username);
     }
 
-    public Application getApplicationById(Long applicationId) {
+    @DgsQuery
+    public Application getApplicationById(@InputArgument Long applicationId) {
         return this.applicationService.findByApplicationId(applicationId);
     }
 
-    public Collection<ApplicationsCountByStep> getApplicationsForJobIdCountBySteps(Long jobId) {
+    @DgsQuery
+    public Collection<ApplicationsCountByStep> getApplicationsForJobIdCountBySteps(@InputArgument Long jobId) {
         return this.applicationService.getApplicationsForJobIdCountBySteps(jobId);
     }
 
-    public PaginatedResponse<Application> getAllApplications(SearchRequest searchRequest) {
-        return this.applicationService.getAllApplications(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<Application> getAllApplications(@InputArgument SearchRequest searchQuery) {
+        return this.applicationService.getAllApplications(searchQuery);
     }
 
-    public Collection<Application> getMyApplications(Long userId) {
+    @DgsQuery
+    public Collection<Application> getMyApplications(@InputArgument Long userId) {
         return this.applicationService.getApplicationsForUserId(userId);
     }
 }

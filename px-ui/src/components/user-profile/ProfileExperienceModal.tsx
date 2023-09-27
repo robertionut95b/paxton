@@ -9,6 +9,8 @@ import {
   useGetAllActivitySectorsQuery,
   useGetAllOrganizationsQuery,
   useGetCountriesCitiesQuery,
+  useGetUserProfileQuery,
+  useRemoveUserProfileExperienceMutation,
   useUpdateUserProfileExperienceMutation,
 } from "@gql/generated";
 import {
@@ -29,12 +31,14 @@ import {
   Loader,
   Modal,
   Select,
+  Stack,
   Text,
   TextInput,
   Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
+import { closeAllModals, openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue } from "@utils/enumUtils";
@@ -58,11 +62,11 @@ export default function ProfileExperienceModal() {
   ]);
 
   const initialExperienceSelected = prevData?.getUserProfile?.experiences?.find(
-    (e) => e?.id === params.experienceId
+    (e) => e?.id.toString() === params.experienceId
   );
 
   const [activeJob, setActiveJob] = useState(
-    initialExperienceSelected?.endDate ? false : true
+    !initialExperienceSelected?.endDate
   );
 
   const [desc, setDesc] = useState<string>(
@@ -123,19 +127,46 @@ export default function ProfileExperienceModal() {
   const locations =
     countries?.getCountriesCities
       ?.map((c) => {
-        const city = c?.cities?.map((ci) => ci?.name) || [];
+        const city = c?.cities?.map((ci) => ci?.name) ?? [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
           value: ci as string,
         }));
         return locs;
       })
-      .flat(1) || [];
+      .flat(1) ?? [];
 
   const closeModal = () => {
     navigate(-1);
     setOpened(false);
   };
+
+  const { mutate: removeExperience } = useRemoveUserProfileExperienceMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: (data) => {
+        if (data) {
+          queryClient.setQueryData<GetUserProfileQuery>(
+            useGetUserProfileQuery.getKey({
+              profileSlugUrl: params.profileSlug,
+            }),
+            {
+              ...prevData,
+              // @ts-expect-error("types-error")
+              getUserProfile: {
+                ...prevData?.getUserProfile,
+                experiences: prevData?.getUserProfile?.experiences?.filter(
+                  (s) => s?.id.toString() !== params.experienceId
+                ),
+              },
+            }
+          );
+        }
+        closeAllModals();
+        closeModal();
+      },
+    }
+  );
 
   const form = useForm({
     initialValues: {
@@ -143,7 +174,8 @@ export default function ProfileExperienceModal() {
       title: initialExperienceSelected?.title ?? "",
       description: initialExperienceSelected?.description ?? "",
       contractType: initialExperienceSelected?.contractType ?? "",
-      organizationId: initialExperienceSelected?.organization?.id ?? "",
+      organizationId:
+        initialExperienceSelected?.organization?.id.toString() ?? "",
       city: initialExperienceSelected?.city?.name ?? "",
       startDate: initialExperienceSelected?.startDate
         ? new Date(initialExperienceSelected?.startDate)
@@ -151,7 +183,8 @@ export default function ProfileExperienceModal() {
       endDate: initialExperienceSelected?.endDate
         ? new Date(initialExperienceSelected?.endDate)
         : null,
-      activitySectorId: initialExperienceSelected?.activitySector.id ?? "",
+      activitySectorId:
+        initialExperienceSelected?.activitySector.id.toString() ?? "",
       userProfileSlugUrl: params.profileSlug ?? "",
     },
     validate: zodResolver(FormAddExperienceSchema),
@@ -169,6 +202,8 @@ export default function ProfileExperienceModal() {
           ...values,
           id,
           contractType,
+          activitySectorId: Number(values.activitySectorId),
+          organizationId: Number(values.organizationId),
           startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
           endDate:
             endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
@@ -179,6 +214,8 @@ export default function ProfileExperienceModal() {
         ExperienceInput: {
           ...values,
           contractType,
+          activitySectorId: Number(values.activitySectorId),
+          organizationId: Number(values.organizationId),
           startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
           endDate:
             endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
@@ -245,7 +282,7 @@ export default function ProfileExperienceModal() {
             itemComponent={SelectItem}
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
-              value: o?.id as string,
+              value: String(o?.id),
               image: o?.photography,
               description: o?.activitySector.name,
             }))}
@@ -293,7 +330,7 @@ export default function ProfileExperienceModal() {
             icon={<CogIcon width={18} />}
             data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
               label: a?.name,
-              value: a?.id as string,
+              value: String(a?.id),
             }))}
             {...form.getInputProps("activitySectorId")}
           />
@@ -312,7 +349,7 @@ export default function ProfileExperienceModal() {
             if (d) {
               setStartDate(d);
               form.setFieldValue("startDate", d);
-            } else new Date();
+            }
           }}
         />
         <Checkbox
@@ -336,14 +373,44 @@ export default function ProfileExperienceModal() {
             {...form.getInputProps("endDate")}
           />
         </ShowIf>
-        <Button
-          type="submit"
-          fullWidth
-          mt="xl"
-          loading={isLoading || updateLoading}
-        >
-          Submit
-        </Button>
+        <Group grow>
+          <Button
+            type="button"
+            mt="xl"
+            color="red.7"
+            loading={isLoading || updateLoading}
+            onClick={() =>
+              openConfirmModal({
+                title: "Delete study",
+                children: (
+                  <Stack>
+                    <Text size="sm">Are you sure you want to delete this?</Text>
+                    <Text size="sm" weight="bold">
+                      This action is irreversible!
+                    </Text>
+                  </Stack>
+                ),
+                labels: { cancel: "Cancel", confirm: "Confirm" },
+                confirmProps: { color: "red.7" },
+                onCancel: () => null,
+                onConfirm: () =>
+                  removeExperience({
+                    experienceId: Number(params.experienceId),
+                  }),
+              })
+            }
+          >
+            Remove experience
+          </Button>
+          <Button
+            type="submit"
+            fullWidth
+            mt="xl"
+            loading={isLoading || updateLoading}
+          >
+            Submit
+          </Button>
+        </Group>
       </form>
     </Modal>
   );

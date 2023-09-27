@@ -4,33 +4,39 @@ import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatService;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ChatMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class ChatMutationResolver {
 
     @Autowired
     private ChatService chatService;
 
-    public Chat addMessageToChat(MessageInput messageInput) {
-        return chatService.addMessageToChat(messageInput);
+    @DgsMutation
+    public Chat addMessageToChat(@InputArgument MessageInput MessageInput) {
+        return chatService.addMessageToChat(MessageInput);
     }
 
-    public Chat createChat(ChatInput chatInput) {
-        return chatService.createChat(chatInput);
+    @DgsMutation
+    public Chat createChat(@InputArgument ChatInput ChatInput) {
+        return chatService.createChat(ChatInput);
     }
 
-    public Chat updateChat(ChatInput chatInput) {
-        return chatService.updateChat(chatInput);
+    @DgsMutation
+    public Chat updateChat(@InputArgument ChatInput ChatInput) {
+        return chatService.updateChat(ChatInput);
     }
 
-    public Chat removeChat(Long chatId) {
+    @DgsMutation
+    public Chat removeChat(@InputArgument Long chatId) {
         return chatService.removeChatById(chatId);
     }
 
-    public Chat markAllMessagesAsSeen(Long chatId, Long userId) {
+    @DgsMutation
+    public Chat markAllMessagesAsSeen(@InputArgument Long chatId, @InputArgument Long userId) {
         return chatService.markAllMessagesAsSeen(chatId, userId);
     }
 }

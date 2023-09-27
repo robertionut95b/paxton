@@ -88,7 +88,7 @@ const OrganizationProcessPage = () => {
         onSuccess: (data) => {
           form.setFieldValue(
             "organizationId",
-            data?.getOrganizationBySlugName?.id as string
+            data?.getOrganizationBySlugName?.id ?? 0
           );
         },
       }
@@ -104,8 +104,8 @@ const OrganizationProcessPage = () => {
               fieldType: FieldType.Long,
               operator: Operator.Equal,
               value:
-                organizationData?.getOrganizationBySlugName?.recruitmentProcess
-                  .id,
+                organizationData?.getOrganizationBySlugName?.recruitmentProcess.id.toString() ??
+                "",
             },
           ],
         },
@@ -120,9 +120,9 @@ const OrganizationProcessPage = () => {
             setUpdPs(
               processSteps.map((ps) => ({
                 ...ps,
-                id: ps?.id as string,
-                stepId: ps?.step.id as string,
-                order: ps?.order as number,
+                id: ps?.id ?? 0,
+                stepId: ps?.step.id ?? 0,
+                order: ps?.order ?? 1,
                 status: ps?.status as Status,
                 step: ps?.step as Step,
               }))
@@ -162,8 +162,8 @@ const OrganizationProcessPage = () => {
             fieldType: FieldType.Long,
             operator: Operator.Equal,
             value:
-              organizationData?.getOrganizationBySlugName?.recruitmentProcess
-                .id,
+              organizationData?.getOrganizationBySlugName?.recruitmentProcess.id.toString() ??
+              "",
           },
         ],
       },
@@ -178,7 +178,7 @@ const OrganizationProcessPage = () => {
   const stepsSelectionData = useMemo(
     () =>
       stepsData?.getAllSteps?.map((ps) => ({
-        value: ps?.id ?? "",
+        value: ps?.id.toString() ?? "",
         label: ps?.title ?? "unknown",
         description: ps?.description ?? "unknown",
       })) ?? [],
@@ -206,8 +206,7 @@ const OrganizationProcessPage = () => {
                     fieldType: FieldType.Long,
                     operator: Operator.Equal,
                     value:
-                      organizationData?.getOrganizationBySlugName
-                        ?.recruitmentProcess.id,
+                      organizationData?.getOrganizationBySlugName?.recruitmentProcess.id.toString(),
                   },
                 ],
               },
@@ -267,10 +266,10 @@ const OrganizationProcessPage = () => {
 
   const form = useForm({
     initialValues: {
-      id: processData?.getAllProcesses?.list?.[0]?.id ?? "",
+      id: processData?.getAllProcesses?.list?.[0]?.id ?? 0,
       name: processData?.getAllProcesses?.list?.[0]?.name ?? "",
       description: processData?.getAllProcesses?.list?.[0]?.description ?? "",
-      organizationId: organizationData?.getOrganizationBySlugName?.id ?? "",
+      organizationId: organizationData?.getOrganizationBySlugName?.id ?? 0,
       processSteps:
         (updPs as z.infer<
           ReturnType<typeof ProcessStepsInputCreateSchema>
@@ -289,7 +288,7 @@ const OrganizationProcessPage = () => {
 
     setUpdPs((prev) =>
       addAfter(prev, order, {
-        id: crypto.randomUUID(),
+        id: Math.random(),
         status: values.status,
         order: values.order,
         stepId: values.stepId,
@@ -357,7 +356,7 @@ const OrganizationProcessPage = () => {
     const { id, ...restInput } = input;
 
     updateProcess({
-      organizationId: organizationData?.getOrganizationBySlugName?.id as string,
+      organizationId: organizationData?.getOrganizationBySlugName?.id ?? 0,
       processInput: restInput,
     });
   };
@@ -375,10 +374,10 @@ const OrganizationProcessPage = () => {
     if (step.createStep) {
       setUpdPs((prev) =>
         addAfter(prev, order, {
-          id: crypto.randomUUID(),
+          id: Math.random(),
           status: Status.Active,
           order: values.order,
-          stepId: step.createStep?.id as string,
+          stepId: step.createStep?.id ?? 0,
           newVal: true,
           step: {
             ...(step.createStep as NonNullable<(typeof step)["createStep"]>),
@@ -588,10 +587,10 @@ const OrganizationProcessPage = () => {
         onSubmitModal={onSubmitModal}
         onSubmitCreateModal={onSubmitModalCreate}
         initialValues={{
-          processId: process?.id as string,
+          processId: process?.id ?? 0,
           status: Status.Active,
           order: order,
-          stepId: "",
+          stepId: 0,
         }}
       />
     </React.Fragment>

@@ -81,7 +81,7 @@ const UserSearchPage = () => {
             fieldType: FieldType.Long,
             key: "id",
             operator: Operator.NotEqual,
-            value: user?.userId ?? "",
+            value: String(user?.userId) ?? "",
           },
           ...(debouncedQuery
             ? [
@@ -98,7 +98,7 @@ const UserSearchPage = () => {
                 {
                   key: "userProfile.city.id",
                   fieldType: FieldType.Long,
-                  value: cityId,
+                  value: String(cityId),
                   operator: Operator.Equal,
                 },
               ]
@@ -123,7 +123,7 @@ const UserSearchPage = () => {
   const { data: foundChatData } = useGetChatWithUserIdQuery(
     graphqlRequestClient,
     {
-      userId: selectedUser?.id ?? "",
+      userId: selectedUser?.id ?? 0,
     },
     {
       enabled: !!selectedUser?.id,
@@ -161,11 +161,11 @@ const UserSearchPage = () => {
     () =>
       cityData?.getCountriesCities
         ?.map((c) => {
-          const cityId = c?.cities?.map((ci) => ci?.id) ?? [];
+          const cityId = c?.cities?.map((ci) => String(ci?.id) ?? "") ?? [];
           const cityName = c?.cities?.map((ci) => ci?.name) ?? [];
           const locs = cityName.map((ci, idx) => ({
             label: `${c?.name}, ${ci}`,
-            value: cityId[idx] as string,
+            value: cityId[idx],
           }));
           return locs;
         })
@@ -178,7 +178,7 @@ const UserSearchPage = () => {
       const currentSearchParams = searchParams;
       currentSearchParams.set(
         "city",
-        userProfileData?.getUserProfile?.city.id ?? ""
+        userProfileData?.getUserProfile?.city.id.toString()
       );
       setSearchParams(currentSearchParams);
     }

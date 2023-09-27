@@ -4,26 +4,26 @@ import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
-@Controller
-@Validated
-public class JobListingQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class JobListingQueryResolver {
 
     @Autowired
     private JobListingService jobListingService;
 
-    public PaginatedResponse<JobListing> getAllJobListings(@Valid SearchRequest searchRequest) {
-        return jobListingService.getAllJobListingsPaginatedFiltered(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<JobListing> getAllJobListings(@InputArgument SearchRequest searchQuery) {
+        return jobListingService.getAllJobListingsPaginatedFiltered(searchQuery);
     }
 
-    public Collection<JobListing> getRelatedJobListings(@Valid String jobName) {
+    @DgsQuery
+    public Collection<JobListing> getRelatedJobListings(@InputArgument String jobName) {
         return jobListingService.findRelatedJobListings(jobName).stream().limit(10).toList();
     }
 }

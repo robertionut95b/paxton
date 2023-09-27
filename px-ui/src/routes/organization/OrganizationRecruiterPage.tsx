@@ -37,7 +37,7 @@ const OrganizationRecruiterPage = () => {
   const { data: recruiterData } = useGetRecruiterByIdQuery(
     graphqlRequestClient,
     {
-      recruiterId: recruiterId as string,
+      recruiterId: Number(recruiterId) ?? 0,
     }
   );
 

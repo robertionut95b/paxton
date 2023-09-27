@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.3</version>
+        <version>3.1.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.irb</groupId>
@@ -15,39 +15,26 @@
     <description>Jobs listing &amp; recruitment platform</description>
     <properties>
         <java.version>18</java.version>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
-        <org.lombok.version>1.18.24</org.lombok.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <org.lombok.version>1.18.30</org.lombok.version>
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.netflix.graphql.dgs</groupId>
+                <artifactId>graphql-dgs-platform-dependencies</artifactId>
+                <!-- The DGS BOM/platform dependency. This is the only place you set version of DGS -->
+                <version>7.5.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-spring-boot-starter</artifactId>
-            <version>14.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-spring-boot-starter-test</artifactId>
-            <version>14.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-java-tools</artifactId>
-            <version>13.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java-extended-scalars</artifactId>
-            <version>19.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -56,6 +43,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.graphql.dgs</groupId>
+            <artifactId>graphql-dgs-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.graphql.dgs</groupId>
+            <artifactId>graphql-dgs-extended-scalars</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -102,11 +102,12 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
+            <artifactId>spring-boot-starter-artemis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
+            <artifactId>artemis-jakarta-server</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -170,6 +171,10 @@
             <groupId>io.spring.javaformat</groupId>
             <artifactId>spring-javaformat-intellij-idea-plugin</artifactId>
             <version>0.0.35</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -247,8 +252,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -266,6 +269,7 @@
                             <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
         </plugins>

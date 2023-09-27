@@ -45,7 +45,7 @@ public class PhotographyController {
     }
 
     @GetMapping(value = {"/images/{size}/{imageName}", "/images/{imageName}"}, produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getImage(@PathVariable(value = "size", required = false) Optional<String> size, @PathVariable(value = "imageName") String imageName) throws IOException {
+    public ResponseEntity<byte[]> getImage(@PathVariable(required = false) Optional<String> size, @PathVariable String imageName) throws IOException {
         Photography photography = photographyService.findByName(imageName);
         Resource image = fileStorageService.loadAsResourceFromFullPath(photography.getPath());
         CacheControl cacheControl = CacheControl.maxAge(60, TimeUnit.SECONDS).noTransform().mustRevalidate();

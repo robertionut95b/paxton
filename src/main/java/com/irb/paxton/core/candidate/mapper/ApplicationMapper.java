@@ -97,20 +97,20 @@ public abstract class ApplicationMapper {
 
     public JobListing mapJobListing(Long jobListingId) {
         return jobListingRepository.findById(jobListingId)
-                .orElseThrow(() -> new JobNotFoundException(String.format("Job listing by id %d does not exist", jobListingId), "jobListingId"));
+                .orElseThrow(() -> new JobNotFoundException("Job listing by id %d does not exist".formatted(jobListingId), "jobListingId"));
     }
 
     public Candidate mapCandidate(Long userId) {
         return candidateRepository.findById(userId)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new UserNotFoundException(String.format("User by id %d does not exist", userId)));
+                            .orElseThrow(() -> new UserNotFoundException("User by id %d does not exist".formatted(userId)));
                     return new Candidate(user, null);
                 });
     }
 
     public UserProfile mapUserProfile(Long userProfileId) {
         return userProfileRepository.findById(userProfileId)
-                .orElseThrow(() -> new UserProfileNotFoundException(String.format("User profile by id %d does not exist", userProfileId), "applicantProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile by id %d does not exist".formatted(userProfileId), "applicantProfileId"));
     }
 }

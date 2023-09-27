@@ -3,23 +3,19 @@ package com.irb.paxton.core.jobs.resolver;
 import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.jobs.JobListingService;
 import com.irb.paxton.core.jobs.input.JobListingInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import lombok.RequiredArgsConstructor;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-
-@Controller
-@Validated
-@RequiredArgsConstructor
-public class JobListingMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class JobListingMutationResolver {
 
     @Autowired
     private JobListingService jobListingService;
 
-    public JobListing publishJobListing(@Valid JobListingInput JobListingInput) {
+    @DgsMutation
+    public JobListing publishJobListing(@InputArgument JobListingInput JobListingInput) {
         return this.jobListingService.publishJobListing(JobListingInput);
     }
 }

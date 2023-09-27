@@ -3,7 +3,7 @@ import RoleType from "@auth/RoleType";
 export interface User {
   roles: RoleType[];
   permissions: string[];
-  userId: string;
+  userId: number;
   username: string;
   sessionTime: number;
   firstName: string;

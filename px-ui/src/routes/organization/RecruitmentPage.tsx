@@ -45,7 +45,7 @@ export default function RecruitmentPage() {
         <OrganizationJobsTab
           filters={[
             {
-              key: "organization",
+              key: "organization.id",
               fieldType: FieldType.Long,
               value: organization.id.toString() ?? "",
               operator: Operator.Equal,

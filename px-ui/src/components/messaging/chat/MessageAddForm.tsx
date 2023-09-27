@@ -31,7 +31,7 @@ type MessageAddFormProps = {
 
 type FormValues = {
   content: string;
-  senderUserId: string | undefined;
+  senderUserId: number | undefined;
 };
 
 const MessageAddForm = ({
@@ -51,12 +51,12 @@ const MessageAddForm = ({
   const form = useForm({
     initialValues: {
       content: "",
-      senderUserId: String(currentUser?.userId),
+      senderUserId: Number(currentUser?.userId),
     },
     validate: zodResolver(
       z.object({
         content: z.string().min(5).max(maxLength),
-        senderUserId: z.string().min(1),
+        senderUserId: z.number().min(1),
       })
     ),
   });

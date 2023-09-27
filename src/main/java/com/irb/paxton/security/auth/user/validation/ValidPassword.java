@@ -2,7 +2,7 @@ package com.irb.paxton.security.auth.user.validation;
 
 import org.springframework.messaging.handler.annotation.Payload;
 
-import javax.validation.Constraint;
+import jakarta.validation.Constraint;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

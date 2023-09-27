@@ -9,36 +9,45 @@ import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.response.PxAccessDeniedHandler;
 import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement(order = 0)
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true, order = 1)
+@Order(value = 1)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -61,7 +70,7 @@ public class SecurityConfiguration {
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String hierarchy = String.format("%s > %s > %s", PaxtonRole.ROLE_ADMINISTRATOR.name(), PaxtonRole.ROLE_RECRUITER.name(), PaxtonRole.ROLE_EVERYONE.name());
+        String hierarchy = "%s > %s > %s".formatted(PaxtonRole.ROLE_ADMINISTRATOR.name(), PaxtonRole.ROLE_RECRUITER.name(), PaxtonRole.ROLE_EVERYONE.name());
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
     }
@@ -92,44 +101,46 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
+    }
+
+    @Bean
+    public DefaultSecurityFilterChain devSpringWebFilterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
                 .cors(withDefaults())
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
-                .and()
-                .httpBasic(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
+                .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(authProvider())
-                .exceptionHandling((exceptions) -> exceptions
+                .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new PxAuthenticationEntryPoint())
                         .accessDeniedHandler(new PxAccessDeniedHandler()))
-                .authorizeRequests()
-                .antMatchers("/resources/**").permitAll()
-                .antMatchers("/assets/**").permitAll()
-                .antMatchers("/api/v*/auth/**").permitAll()
-                .antMatchers("/api/v*/images/**").permitAll()
-                // front-end paths
-                .antMatchers("/app/**").permitAll()
-                .antMatchers("/",
-                        "/favicon.ico",
-                        "/**/*.png",
-                        "/**/*.gif",
-                        "/**/*.svg",
-                        "/**/*.jpg",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js")
-                .permitAll()
-                // h2 console, dev only
-                .antMatchers("/h2-console/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().disable();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(antMatcher("/resources/**")).permitAll()
+                        .requestMatchers(antMatcher("/assets/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v*/auth/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v*/images/**")).permitAll()
+                        // front-end paths
+                        .requestMatchers(mvc.pattern("/app/**")).permitAll()
+                        // h2 console, dev only
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers(antMatcher("/graphiql")).permitAll()
+                        .requestMatchers(antMatcher("/")).permitAll()
+                        .requestMatchers(antMatcher("/favicon.ico")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.png")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.gif")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.svg")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.jpg")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.html")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.css")).permitAll()
+                        .requestMatchers(antMatcher("/**/*.js")).permitAll()
+                        .anyRequest()
+                        .authenticated()
+                );
         // disable for production
-        http.headers().frameOptions().disable();
+        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
         http.addFilterBefore(tokenAuthenticationFilter(), BasicAuthenticationFilter.class);
         return http.build();
     }
@@ -138,8 +149,8 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         List<String> allowedOrigins = Stream.concat(
-                Stream.of("http://localhost:" + applicationProperties.getServerPort(),
-                        "https://localhost:" + applicationProperties.getServerPort(),
+                Stream.of("http://localhost:%s".formatted(applicationProperties.getServerPort()),
+                        "https://localhost:%s".formatted(applicationProperties.getServerPort()),
                         frontendProperties.getFrontendUrl())
                 , corsProperties.getAllowedOrigins().stream()).toList();
         configuration.setAllowCredentials(true);

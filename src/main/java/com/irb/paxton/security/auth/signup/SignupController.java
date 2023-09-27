@@ -17,10 +17,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
@@ -53,7 +53,7 @@ public class SignupController {
     @GetMapping(path = "/auth/signup/confirmation")
     @ResponseStatus(HttpStatus.OK)
     @Transactional
-    void confirmRegistration(@RequestParam("token") @NotNull UUID token) {
+    void confirmRegistration(@RequestParam @NotNull UUID token) {
         RegistrationToken registrationToken = registrationTokenService.getRegistrationToken(token).orElseThrow(
                 () -> new TokenNotFoundException("Could not find valid token")
         );

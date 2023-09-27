@@ -14,7 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
-import { Button, Group, Modal, Text, Textarea, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
@@ -114,7 +114,7 @@ const JobFormModal = () => {
   const handleSubmit = async (values: (typeof form)["values"]) => {
     publishJob({
       JobInput: {
-        id: jobId ?? null,
+        id: Number(jobId) ?? null,
         description: values.description,
         name: values.name,
       },

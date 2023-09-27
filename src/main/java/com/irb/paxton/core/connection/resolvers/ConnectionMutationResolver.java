@@ -4,25 +4,29 @@ import com.irb.paxton.core.connection.Connection;
 import com.irb.paxton.core.connection.ConnectionService;
 import com.irb.paxton.core.connection.input.ConnectionCreateInput;
 import com.irb.paxton.core.connection.input.ConnectionUpdateInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ConnectionMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class ConnectionMutationResolver {
 
     @Autowired
     private ConnectionService connectionService;
 
-    public Connection createConnection(ConnectionCreateInput connectionCreateInput) {
+    @DgsMutation
+    public Connection createConnection(@InputArgument ConnectionCreateInput connectionCreateInput) {
         return this.connectionService.createConnectionRequest(connectionCreateInput);
     }
 
-    public Connection updateConnection(ConnectionUpdateInput connectionUpdateInput) {
-        return this.connectionService.updateConnectionRequest(connectionUpdateInput);
+    @DgsMutation
+    public Connection updateConnection(@InputArgument ConnectionUpdateInput connectionRequestInput) {
+        return this.connectionService.updateConnectionRequest(connectionRequestInput);
     }
 
-    public Connection removeConnection(Long connectionId) {
+    @DgsMutation
+    public Connection removeConnection(@InputArgument Long connectionId) {
         return this.connectionService.deleteConnection(connectionId);
     }
 }

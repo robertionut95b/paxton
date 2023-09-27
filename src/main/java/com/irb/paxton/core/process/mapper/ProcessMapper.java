@@ -31,7 +31,7 @@ public abstract class ProcessMapper {
     public Collection<Organization> mapOrganization(Long organizationId) {
         return List.of(this.organizationRepository
                 .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(String.format("Organization %s does not exist", organizationId))));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization %s does not exist".formatted(organizationId))));
     }
 
     @Mapping(target = "organizations", source = "processInputUpdate.organizationId")

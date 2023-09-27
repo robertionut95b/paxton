@@ -2,7 +2,7 @@ package com.irb.paxton.utils;
 
 import lombok.NoArgsConstructor;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @NoArgsConstructor
 public final class HttpUtils {

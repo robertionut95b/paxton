@@ -5,8 +5,8 @@ import com.irb.paxton.core.candidate.ApplicationProcessSteps;
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.ProcessSteps;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Collection;
 import java.util.Optional;
 

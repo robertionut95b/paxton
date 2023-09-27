@@ -18,14 +18,14 @@ export default function MyOrganizationPage() {
 
   const prevQuery = queryClient.getQueryData<GetRecruiterByIdQuery>(
     useGetRecruiterByIdQuery.getKey({
-      recruiterId: user?.userId as string,
+      recruiterId: user?.userId ?? 0,
     })
   );
 
   const { isInitialLoading } = useGetRecruiterByIdQuery(
     graphqlRequestClient,
     {
-      recruiterId: user?.userId as string,
+      recruiterId: user?.userId ?? 0,
     },
     {
       onSuccess: async (data) => {

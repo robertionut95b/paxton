@@ -1,11 +1,12 @@
 package com.irb.paxton.internals.healthcheck;
 
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.springframework.stereotype.Controller;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
 
-@Controller
-public class HealthMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class HealthMutationResolver {
 
+    @DgsMutation
     public String healthCheckPost() {
         return "OK";
     }

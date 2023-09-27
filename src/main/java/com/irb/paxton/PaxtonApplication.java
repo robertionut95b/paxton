@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 @SpringBootApplication
 @ImportAutoConfiguration(JacksonAutoConfiguration.class)

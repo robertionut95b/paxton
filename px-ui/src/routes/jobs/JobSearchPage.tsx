@@ -97,7 +97,10 @@ const JobSearchPage = () => {
           if (refPage) return;
           if (data.getUserProfile?.city) {
             const currentSearchParams = searchParams;
-            currentSearchParams.set("city", data.getUserProfile.city.id);
+            currentSearchParams.set(
+              "city",
+              data.getUserProfile.city.id.toString()
+            );
             setSearchParams(currentSearchParams);
           }
         },
@@ -141,7 +144,7 @@ const JobSearchPage = () => {
           ...(upJobId
             ? [
                 {
-                  key: "job",
+                  key: "job.id",
                   fieldType: FieldType.Long,
                   value: upJobId,
                   operator: Operator.Equal,
@@ -151,9 +154,9 @@ const JobSearchPage = () => {
           ...(cityId
             ? [
                 {
-                  key: "city",
+                  key: "city.id",
                   fieldType: FieldType.Long,
-                  value: cityId,
+                  value: String(cityId),
                   operator: Operator.Equal,
                 },
               ]
@@ -216,11 +219,11 @@ const JobSearchPage = () => {
     () =>
       cityData?.getCountriesCities
         ?.map((c) => {
-          const cityId = c?.cities?.map((ci) => ci?.id) ?? [];
+          const cityId = c?.cities?.map((ci) => String(ci?.id)) ?? [];
           const cityName = c?.cities?.map((ci) => ci?.name) ?? [];
           const locs = cityName.map((ci, idx) => ({
             label: `${c?.name}, ${ci}`,
-            value: cityId[idx] as string,
+            value: cityId[idx],
           }));
           return locs;
         })
@@ -240,7 +243,7 @@ const JobSearchPage = () => {
   const baseJobs = useMemo(
     () =>
       (jobsData?.getAllJobs ?? [])?.map((j) => ({
-        value: j?.id ?? "",
+        value: String(j?.id) ?? "",
         label: j?.name ?? "",
       })),
     [jobsData]
@@ -299,7 +302,7 @@ const JobSearchPage = () => {
                   fieldType: FieldType.Long,
                   key: "id",
                   operator: Operator.Equal,
-                  value: jl?.id,
+                  value: String(jl?.id),
                 },
               ],
             },

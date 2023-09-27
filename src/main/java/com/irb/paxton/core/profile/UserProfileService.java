@@ -1,6 +1,8 @@
 package com.irb.paxton.core.profile;
 
 import com.irb.paxton.core.location.CityRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.profile.experience.ExperienceRepository;
@@ -14,16 +16,16 @@ import com.irb.paxton.core.study.exception.StudyNotFoundException;
 import com.irb.paxton.core.study.input.StudyInput;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 
 @Service
-public class UserProfileService {
+public class UserProfileService extends AbstractService<UserProfile, Long> {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -42,6 +44,10 @@ public class UserProfileService {
 
     @Autowired
     private StudyRepository studyRepository;
+
+    protected UserProfileService(AbstractRepository<UserProfile, Long> repository) {
+        super(repository);
+    }
 
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
         return this.userProfileRepository.findByUserUsername(username);
@@ -108,7 +114,24 @@ public class UserProfileService {
                 .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString()), "id"));
         Study updatedStudy = this.userProfileMapper.updateUserProfileStudy(actualStudy, studyInput);
         this.studyRepository.save(updatedStudy);
-
         return updatedStudy.getUserProfile();
+    }
+
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
+    public UserProfile deleteStudy(Long studyId) {
+        Study actualStudy = this.studyRepository.findById(studyId)
+                .orElseThrow(() -> new StudyNotFoundException(String.format("Study %s does not exist", studyId), "id"));
+        this.studyRepository.deleteById(actualStudy.getId());
+        return actualStudy.getUserProfile();
+    }
+
+    @Transactional
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
+    public UserProfile deleteExperience(Long experienceId) {
+        Experience currentExperience = this.experienceRepository.findById(experienceId)
+                .orElseThrow(() -> new ExperienceNotFoundException(String.format("Experience %s does not exist", experienceId), "id"));
+        this.experienceRepository.deleteById(currentExperience.getId());
+        return currentExperience.getUserProfile();
     }
 }

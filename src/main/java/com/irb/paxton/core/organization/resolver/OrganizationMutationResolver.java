@@ -3,17 +3,20 @@ package com.irb.paxton.core.organization.resolver;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationService;
 import com.irb.paxton.core.organization.input.OrganizationInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class OrganizationMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class OrganizationMutationResolver {
 
     @Autowired
     private OrganizationService organizationService;
 
-    public Organization createOrUpdateOrganization(OrganizationInput organizationInput) {
-        return this.organizationService.createOrUpdateOrganization(organizationInput);
+    @DgsMutation
+    public Organization createOrUpdateOrganization(@InputArgument OrganizationInput OrganizationInput) {
+        // TODO: Find a fix for the localization/specialization errors (DGS cannot parse the input fields)
+        return this.organizationService.createOrUpdateOrganization(OrganizationInput);
     }
 }

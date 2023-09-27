@@ -4,25 +4,29 @@ import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ApplicationMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class ApplicationMutationResolver {
 
     @Autowired
     ApplicationService applicationService;
 
-    Application applyToJobListing(ApplicationInput applicationInput) {
-        return applicationService.applyToJobListing(applicationInput);
+    @DgsMutation
+    public Application applyToJobListing(@InputArgument ApplicationInput ApplicationInput) {
+        return applicationService.applyToJobListing(ApplicationInput);
     }
 
-    Application updateApplication(ApplicationInput applicationInput) {
-        return applicationService.updateApplication(applicationInput);
+    @DgsMutation
+    public Application updateApplication(@InputArgument ApplicationInput ApplicationInput) {
+        return applicationService.updateApplication(ApplicationInput);
     }
 
-    Application addMessageToApplicationChat(MessageInput messageInput, Long applicationId) {
-        return applicationService.addMessageToApplicationChat(messageInput, applicationId);
+    @DgsMutation
+    public Application addMessageToApplicationChat(@InputArgument MessageInput MessageInput, @InputArgument Long applicationId) {
+        return applicationService.addMessageToApplicationChat(MessageInput, applicationId);
     }
 }

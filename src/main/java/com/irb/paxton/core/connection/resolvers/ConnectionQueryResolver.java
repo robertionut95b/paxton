@@ -6,25 +6,29 @@ import com.irb.paxton.core.connection.projections.ConnectionUserDto;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SortRequest;
 import com.irb.paxton.security.auth.user.User;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ConnectionQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class ConnectionQueryResolver {
 
     @Autowired
     private ConnectionService connectionService;
 
-    public PaginatedResponse<Connection> getNewConnectionForUser(Long userId, Integer page, Integer size) {
+    @DgsQuery
+    public PaginatedResponse<Connection> getNewConnectionForUser(@InputArgument Long userId, @InputArgument Integer page, @InputArgument Integer size) {
         return this.connectionService.getNewConnectionForUser(userId, page, size);
     }
 
-    public PaginatedResponse<ConnectionUserDto> getConnectionsForUser(Long userId, Integer page, Integer size, String searchQuery, SortRequest sortBy) {
+    @DgsQuery
+    public PaginatedResponse<ConnectionUserDto> getConnectionsForUser(@InputArgument Long userId, @InputArgument Integer page, @InputArgument Integer size, @InputArgument String searchQuery, @InputArgument SortRequest sortBy) {
         return this.connectionService.getConnectionsForUser(userId, page, size, searchQuery, sortBy);
     }
 
-    public PaginatedResponse<User> getAllUserConnectionSuggestions(Integer page, Integer size) {
+    @DgsQuery
+    public PaginatedResponse<User> getAllUserConnectionSuggestions(@InputArgument Integer page, @InputArgument Integer size) {
         return this.connectionService.getAllUserConnectionSuggestions(page, size);
     }
 }

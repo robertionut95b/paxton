@@ -4,7 +4,7 @@ import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.dto.UserLoginResponseDto;
 import com.irb.paxton.security.auth.utils.AuthoritiesUtils;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

@@ -4,16 +4,19 @@ import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.ProcessService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ProcessQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class ProcessQueryResolver {
+
     @Autowired
     private ProcessService processService;
 
-    public PaginatedResponse<Process> getAllProcesses(SearchRequest searchRequest) {
-        return this.processService.getAllProcesses(searchRequest);
+    @DgsQuery
+    public PaginatedResponse<Process> getAllProcesses(@InputArgument SearchRequest searchQuery) {
+        return this.processService.getAllProcesses(searchQuery);
     }
 }

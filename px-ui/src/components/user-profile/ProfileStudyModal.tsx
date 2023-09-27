@@ -10,6 +10,8 @@ import {
   useGetAllCertificationsQuery,
   useGetAllDomainsQuery,
   useGetAllInstitutionsQuery,
+  useGetUserProfileQuery,
+  useRemoveUserProfileStudyMutation,
   useUpdateUserProfileStudyMutation,
 } from "@gql/generated";
 import {
@@ -29,12 +31,14 @@ import {
   Loader,
   Modal,
   Select,
+  Stack,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
+import { closeAllModals, openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import FormAddStudySchema from "@validator/FormAddStudySchema";
@@ -45,7 +49,7 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function ProfileStudyModal() {
   const [opened, setOpened] = useState(true);
   const navigate = useNavigate();
-  const params = useParams();
+  const { studyId, profileSlug } = useParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -57,11 +61,11 @@ export default function ProfileStudyModal() {
   ]);
 
   const initialStudySelected = prevData?.getUserProfile?.studies?.find(
-    (e) => e?.id === params.studyId
+    (e) => e?.id.toString() === studyId
   );
 
   const [activeStudy, setActiveStudy] = useState(
-    initialStudySelected?.endDate ? false : true
+    !initialStudySelected?.endDate
   );
 
   const [desc, setDesc] = useState<string>(
@@ -81,14 +85,14 @@ export default function ProfileStudyModal() {
 
   const [selectedCertification, setSelectedCertification] = useState<
     string | null
-  >(initialStudySelected?.certification?.id || null);
+  >(String(initialStudySelected?.certification?.id) || null);
 
   const [selectedInstitution, setSelectedInstitution] = useState<string | null>(
-    initialStudySelected?.institution?.id || null
+    String(initialStudySelected?.institution?.id) || null
   );
 
   const [selectedDomain, setSelectedDomain] = useState<string | null>(
-    initialStudySelected?.domainStudy?.id || null
+    String(initialStudySelected?.domainStudy?.id) || null
   );
 
   const { data: institutionsData, isLoading: isInstitutionsLoading } =
@@ -97,7 +101,7 @@ export default function ProfileStudyModal() {
         setInstitutions(
           data.getAllInstitutions?.map((i) => ({
             label: i?.name,
-            value: i?.id,
+            value: i?.id.toString(),
           })) ?? []
         );
       },
@@ -108,7 +112,7 @@ export default function ProfileStudyModal() {
   >(
     institutionsData?.getAllInstitutions?.map((i) => ({
       label: i?.name,
-      value: i?.id,
+      value: i?.id.toString(),
     })) ?? []
   );
 
@@ -118,7 +122,7 @@ export default function ProfileStudyModal() {
         setDomains(
           data.getAllDomains?.map((d) => ({
             label: d?.name,
-            value: d?.id,
+            value: d?.id.toString(),
           })) ?? []
         );
       },
@@ -127,7 +131,7 @@ export default function ProfileStudyModal() {
   const [domains, setDomains] = useState<{ label?: string; value?: string }[]>(
     domainsData?.getAllDomains?.map((d) => ({
       label: d?.name,
-      value: d?.id,
+      value: d?.id.toString(),
     })) ?? []
   );
 
@@ -137,7 +141,7 @@ export default function ProfileStudyModal() {
         setCertifications(
           data.getAllCertifications?.map((c) => ({
             label: c?.name,
-            value: c?.id,
+            value: c?.id.toString(),
           })) ?? []
         );
       },
@@ -147,18 +151,45 @@ export default function ProfileStudyModal() {
     { label?: string; value?: string }[]
   >(
     certificationsData?.getAllCertifications?.map((c) => ({
-      label: c?.name as string,
-      value: c?.id as string,
+      label: c?.name,
+      value: c?.id.toString(),
     })) ?? []
+  );
+
+  const { mutate: removeStudy } = useRemoveUserProfileStudyMutation(
+    graphqlRequestClient,
+    {
+      onSuccess: (data) => {
+        if (data) {
+          queryClient.setQueryData<GetUserProfileQuery>(
+            useGetUserProfileQuery.getKey({
+              profileSlugUrl: profileSlug,
+            }),
+            {
+              ...prevData,
+              // @ts-expect-error("types-error")
+              getUserProfile: {
+                ...prevData?.getUserProfile,
+                studies: prevData?.getUserProfile?.studies?.filter(
+                  (s) => s?.id.toString() !== studyId
+                ),
+              },
+            }
+          );
+        }
+        closeAllModals();
+        closeModal();
+      },
+    }
   );
 
   const form = useForm({
     initialValues: {
       id: initialStudySelected?.id ?? null,
-      institution: initialStudySelected?.institution?.id ?? null,
-      domainStudy: initialStudySelected?.domainStudy?.id ?? null,
+      institution: initialStudySelected?.institution?.id.toString() ?? "",
+      domainStudy: initialStudySelected?.domainStudy?.id.toString() ?? "",
       degree: initialStudySelected?.degree ?? "",
-      certification: initialStudySelected?.certification?.id ?? null,
+      certification: initialStudySelected?.certification?.id.toString() ?? "",
       description: initialStudySelected?.description ?? "",
       startDate: initialStudySelected?.startDate
         ? new Date(initialStudySelected?.startDate)
@@ -166,7 +197,7 @@ export default function ProfileStudyModal() {
       endDate: initialStudySelected?.endDate
         ? new Date(initialStudySelected?.endDate)
         : null,
-      userProfileSlugUrl: params.profileSlug ?? "",
+      userProfileSlugUrl: profileSlug ?? "",
     },
     validate: zodResolver(FormAddStudySchema),
   });
@@ -176,7 +207,7 @@ export default function ProfileStudyModal() {
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
-          { profileSlugUrl: params.profileSlug },
+          { profileSlugUrl: profileSlug },
         ]);
         closeModal();
         showNotification({
@@ -193,7 +224,7 @@ export default function ProfileStudyModal() {
       onSuccess: () => {
         queryClient.invalidateQueries([
           "GetUserProfile",
-          { profileSlugUrl: params.profileSlug },
+          { profileSlugUrl: profileSlug },
         ]);
         closeModal();
         showNotification({
@@ -207,9 +238,6 @@ export default function ProfileStudyModal() {
 
   const handleSubmit = async (values: (typeof form)["values"]) => {
     const id = values.id;
-    const institution = values.institution as string;
-    const domainStudy = values.domainStudy as string;
-    const certification = values.certification as string;
     const startDate = values.startDate;
     const endDate = values.endDate;
 
@@ -218,9 +246,9 @@ export default function ProfileStudyModal() {
         StudyInput: {
           ...values,
           id,
-          institution,
-          domainStudy,
-          certification,
+          institution: Number(values.institution),
+          certification: Number(values.certification),
+          domainStudy: Number(values.domainStudy),
           startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
           endDate:
             endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
@@ -230,9 +258,9 @@ export default function ProfileStudyModal() {
       addStudy({
         StudyInput: {
           ...values,
-          institution,
-          domainStudy,
-          certification,
+          institution: Number(values.institution),
+          certification: Number(values.certification),
+          domainStudy: Number(values.domainStudy),
           startDate: format(startDate, "yyyy-MM-dd") as unknown as Date,
           endDate:
             endDate && (format(endDate, "yyyy-MM-dd") as unknown as Date),
@@ -258,12 +286,12 @@ export default function ProfileStudyModal() {
       },
     });
     const item = {
-      value: institution.addInstitution?.id,
+      value: institution.addInstitution?.id.toString(),
       label: institution.addInstitution?.name,
     };
     setInstitutions((prev) => [...prev, item]);
-    setSelectedInstitution(item.value as string);
-    form.setFieldValue("institution", item.value as string);
+    setSelectedInstitution(String(item.value));
+    form.setFieldValue("institution", item.value?.toString() ?? "");
     return item;
   };
 
@@ -274,12 +302,12 @@ export default function ProfileStudyModal() {
       },
     });
     const item = {
-      value: domain.addDomain?.id,
+      value: domain.addDomain?.id.toString(),
       label: domain.addDomain?.name,
     };
     setDomains((prev) => [...prev, item]);
-    setSelectedDomain(item.value as string);
-    form.setFieldValue("domainStudy", item.value as string);
+    setSelectedDomain(String(item.value));
+    form.setFieldValue("domainStudy", item.value?.toString() ?? "");
     return item;
   };
 
@@ -290,12 +318,12 @@ export default function ProfileStudyModal() {
       },
     });
     const item = {
-      value: certification.addCertification?.id,
+      value: certification.addCertification?.id.toString(),
       label: certification.addCertification?.name,
     };
     setCertifications((prev) => [...prev, item]);
-    setSelectedCertification(item.value as string);
-    form.setFieldValue("certification", item.value as string);
+    setSelectedCertification(String(item.value));
+    form.setFieldValue("certification", item.value?.toString() ?? "");
     return item;
   };
 
@@ -337,7 +365,7 @@ export default function ProfileStudyModal() {
             value={selectedInstitution}
             onChange={(val) => {
               setSelectedInstitution(val);
-              form.setFieldValue("institution", val);
+              form.setFieldValue("institution", val?.toString() ?? "");
             }}
           />
         </ShowIfElse>
@@ -361,7 +389,7 @@ export default function ProfileStudyModal() {
             value={selectedDomain}
             onChange={(val) => {
               setSelectedDomain(val);
-              form.setFieldValue("domainStudy", val);
+              form.setFieldValue("domainStudy", val?.toString() ?? "");
             }}
           />
         </ShowIfElse>
@@ -392,7 +420,7 @@ export default function ProfileStudyModal() {
             value={selectedCertification}
             onChange={(val) => {
               setSelectedCertification(val);
-              form.setFieldValue("certification", val);
+              form.setFieldValue("certification", val?.toString() ?? "");
             }}
           />
         </ShowIfElse>
@@ -455,14 +483,43 @@ export default function ProfileStudyModal() {
             {...form.getInputProps("endDate")}
           />
         </ShowIf>
-        <Button
-          type="submit"
-          fullWidth
-          mt="xl"
-          loading={isAddStudyLoading || isUpdateStudyLoading}
-        >
-          Submit
-        </Button>
+        <Group grow>
+          <Button
+            type="button"
+            mt="xl"
+            color="red.7"
+            loading={isAddStudyLoading || isUpdateStudyLoading}
+            onClick={() =>
+              openConfirmModal({
+                title: "Delete study",
+                children: (
+                  <Stack>
+                    <Text size="sm">Are you sure you want to delete this?</Text>
+                    <Text size="sm" weight="bold">
+                      This action is irreversible!
+                    </Text>
+                  </Stack>
+                ),
+                labels: { cancel: "Cancel", confirm: "Confirm" },
+                confirmProps: { color: "red.7" },
+                onCancel: () => null,
+                onConfirm: () =>
+                  removeStudy({
+                    studyId: Number(studyId),
+                  }),
+              })
+            }
+          >
+            Remove study
+          </Button>
+          <Button
+            type="submit"
+            mt="xl"
+            loading={isAddStudyLoading || isUpdateStudyLoading}
+          >
+            Submit
+          </Button>
+        </Group>
       </form>
     </Modal>
   );

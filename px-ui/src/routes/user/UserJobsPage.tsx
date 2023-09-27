@@ -26,7 +26,7 @@ const UserJobsPage = () => {
     useGetMyApplicationsQuery(
       graphqlRequestClient,
       {
-        userId: user?.userId ?? "",
+        userId: user?.userId ?? 0,
       },
       {
         enabled: !!user && segValue === "applied",

@@ -5,13 +5,12 @@ import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
 import com.irb.paxton.core.search.SlicedResponse;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.Serializable;
 
 @Service
@@ -20,7 +19,6 @@ public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Ser
 
     private final AbstractRepository<T, ID> repository;
 
-    @Autowired
     protected AbstractService(AbstractRepository<T, ID> repository) {
         this.repository = repository;
     }

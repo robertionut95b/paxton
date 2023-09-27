@@ -4,25 +4,29 @@ import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.ProcessService;
 import com.irb.paxton.core.process.input.ProcessInput;
 import com.irb.paxton.core.process.input.ProcessInputCreate;
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class ProcessMutationResolver implements GraphQLMutationResolver {
+@DgsComponent
+public class ProcessMutationResolver {
 
     @Autowired
     private ProcessService processService;
 
-    public Process createProcess(ProcessInput processInput) {
-        return this.processService.createProcess(processInput);
+    @DgsMutation
+    public Process createProcess(@InputArgument ProcessInput ProcessInput) {
+        return this.processService.createProcess(ProcessInput);
     }
 
-    public Process updateProcess(ProcessInput processInput) {
-        return this.processService.updateProcess(processInput);
+    @DgsMutation
+    public Process updateProcess(@InputArgument ProcessInput ProcessInput) {
+        return this.processService.updateProcess(ProcessInput);
     }
 
-    public Process updateProcessForOrganizationId(ProcessInputCreate processInput, Long organizationId) {
+    @DgsMutation
+    public Process updateProcessForOrganizationId(@InputArgument ProcessInputCreate processInput, @InputArgument Long organizationId) {
         return this.processService.updateProcessForOrganizationId(processInput, organizationId);
     }
 }

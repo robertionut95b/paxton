@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public abstract class AbstractNotFoundException extends RuntimeException {
+public abstract class AbstractNotFoundException extends PaxtonRuntimeException {
 
     protected AbstractNotFoundException() {
     }

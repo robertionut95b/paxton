@@ -20,10 +20,12 @@ generates:
         Date: Date
         DateTime: Date
         Url: String
+        Long: number
       scalarSchemas:
         Date: z.date()
         Email: z.string().email()
         Url: z.string().url()
+        Long: z.number()
       schema: zod
       # notAllowEmptyString: true
       directives:

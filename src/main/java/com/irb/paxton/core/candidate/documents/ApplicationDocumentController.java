@@ -33,7 +33,7 @@ public class ApplicationDocumentController {
     ApplicationService applicationService;
 
     @PostMapping(value = "/{applicationId}/documents/upload", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String uploadApplicationDocument(@PathVariable(value = "applicationId") Long applicationId, ApplicationDocumentInput applicationDocumentInput) {
+    public String uploadApplicationDocument(@PathVariable Long applicationId, ApplicationDocumentInput applicationDocumentInput) {
         if (!fileValidatorService.checkFileMimeType(applicationDocumentInput.getFiles(), "pdf")) {
             throw new IllegalArgumentException("Files must be of type %s".formatted("pdf/doc(x)"));
         }
@@ -44,13 +44,13 @@ public class ApplicationDocumentController {
 
     @DeleteMapping(value = "/{applicationId}/documents/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteApplicationDocument(@PathVariable(value = "applicationId") Long applicationId, @RequestBody String documentInput) {
+    public void deleteApplicationDocument(@PathVariable Long applicationId, @RequestBody String documentInput) {
         Application application = applicationService.findById(applicationId);
         applicationDocumentService.deleteDocumentByApplicationAndDocumentId(application, documentInput);
     }
 
     @GetMapping(value = "/{applicationId}/documents/{fileName}", produces = {MediaType.APPLICATION_PDF_VALUE})
-    public ResponseEntity<byte[]> getApplicationDocument(@PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "fileName") String fileName) throws IOException {
+    public ResponseEntity<byte[]> getApplicationDocument(@PathVariable Long applicationId, @PathVariable String fileName) throws IOException {
         Application application = applicationService.findById(applicationId);
         Resource resource = applicationDocumentService.loadApplicationDocumentByApplicationAndName(application, fileName);
         try (InputStream in = resource.getInputStream()) {

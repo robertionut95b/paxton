@@ -1,7 +1,7 @@
 package com.irb.paxton.exceptions.handler;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ErrorHandler;
 
 @Slf4j

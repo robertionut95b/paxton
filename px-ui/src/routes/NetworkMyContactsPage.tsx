@@ -64,7 +64,7 @@ const NetworkMyContactsPage = () => {
     {
       page: p - 1,
       size: ps,
-      userId: user?.userId ?? "",
+      userId: Number(user?.userId) ?? 0,
       searchQuery: searchByNameDebounced ?? "",
       sortBy: {
         direction: SortDirection.Desc,
@@ -85,7 +85,7 @@ const NetworkMyContactsPage = () => {
             useGetConnectionsForUserQuery.getKey({
               page: p - 1,
               size: ps,
-              userId: user?.userId ?? "",
+              userId: Number(user?.userId) ?? 0,
             }),
             {
               ...connectionsData,
@@ -116,7 +116,7 @@ const NetworkMyContactsPage = () => {
   const { data: foundChatData } = useGetChatWithUserIdQuery(
     graphqlRequestClient,
     {
-      userId: selectedUser?.id ?? "",
+      userId: selectedUser?.id ?? 0,
     },
     {
       enabled: !!selectedUser?.id,

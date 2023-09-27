@@ -4,7 +4,7 @@ import com.irb.paxton.core.model.input.AbstractInput;
 import com.irb.paxton.core.process.Status;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class ProcessStepsInputCreate extends AbstractInput {

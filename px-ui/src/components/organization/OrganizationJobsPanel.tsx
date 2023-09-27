@@ -40,9 +40,9 @@ const OrganizationJobsPanel = () => {
         filters: [
           {
             fieldType: FieldType.Long,
-            key: "organization",
+            key: "organization.id",
             operator: Operator.Equal,
-            value: organization?.getOrganizationBySlugName?.id ?? "",
+            value: String(organization?.getOrganizationBySlugName?.id),
           },
           {
             key: "availableTo",
@@ -79,17 +79,17 @@ const OrganizationJobsPanel = () => {
         filters: [
           {
             fieldType: FieldType.Long,
-            key: "organization",
+            key: "organization.id",
             operator: Operator.Equal,
-            value: organization?.getOrganizationBySlugName?.id ?? "",
+            value: String(organization?.getOrganizationBySlugName?.id),
           },
           ...(userProfileData?.getUserProfile?.city?.id
             ? [
                 {
                   fieldType: FieldType.Long,
-                  key: "city",
+                  key: "city.id",
                   operator: Operator.Equal,
-                  value: userProfileData.getUserProfile.city.id,
+                  value: String(userProfileData.getUserProfile.city.id),
                 },
               ]
             : []),

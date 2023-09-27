@@ -69,7 +69,7 @@ export default function OrganizationPostJobForm() {
   );
 
   const [orgId, setOrgId] = useState<string | null>(
-    prevOrgQuery?.getOrganizationBySlugName?.id ?? null
+    prevOrgQuery?.getOrganizationBySlugName?.id.toString() ?? null
   );
 
   const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
@@ -93,14 +93,15 @@ export default function OrganizationPostJobForm() {
           const firstItem = data.getAllJobListings?.list?.[0];
           form.setValues({
             ...firstItem,
-            categoryId: firstItem?.category?.id,
+            categoryId: firstItem?.category?.id.toString(),
             availableFrom: new Date(firstItem.availableFrom),
             availableTo: new Date(firstItem.availableTo),
-            location: firstItem.city.id,
-            jobId: firstItem.job.id,
-            organizationId: firstItem.organization.id,
-            recruiterId: firstItem.recruiter?.id,
+            location: firstItem.city.name,
+            jobId: firstItem.job.id.toString(),
+            organizationId: firstItem.organization.id.toString(),
+            recruiterId: firstItem.recruiter?.id.toString(),
           });
+          setSelectedJobCategory(firstItem?.category?.id.toString() ?? null);
         }
       },
     }
@@ -125,8 +126,8 @@ export default function OrganizationPostJobForm() {
             (o) => o?.slugName === organizationSlug
           );
           if (org) {
-            setOrgId(org.id);
-            form.setFieldValue("organizationId", org.id);
+            setOrgId(org.id.toString());
+            form.setFieldValue("organizationId", org.id.toString());
           }
         },
       }
@@ -136,8 +137,10 @@ export default function OrganizationPostJobForm() {
     useGetAllJobCategoriesQuery(graphqlRequestClient, undefined, {
       onSuccess: ({ getAllJobCategories }) => {
         setJobCategories(
-          getAllJobCategories?.map((j) => ({ label: j?.name, value: j?.id })) ??
-            []
+          getAllJobCategories?.map((j) => ({
+            label: j?.name,
+            value: j?.id.toString(),
+          })) ?? []
         );
       },
     });
@@ -161,12 +164,12 @@ export default function OrganizationPostJobForm() {
   >(
     jobCategoriesData?.getAllJobCategories?.map((j) => ({
       label: j?.name as string,
-      value: j?.id as string,
+      value: j?.id.toString(),
     })) ?? []
   );
 
   const [selectedJobCategory, setSelectedJobCategory] = useState<string | null>(
-    jobListingItem?.category?.id ?? null
+    jobListingItem?.category?.id.toString() ?? null
   );
 
   const { mutateAsync: addJobCategory, isLoading: isAddJobCategoryLoading } =
@@ -179,7 +182,7 @@ export default function OrganizationPostJobForm() {
       },
     });
     const item = {
-      value: jobCategory.addJobCategory?.id as string,
+      value: jobCategory.addJobCategory?.id.toString() ?? "",
       label: jobCategory.addJobCategory?.name as string,
     };
     setJobCategories((prev) => [...prev, item]);
@@ -206,14 +209,14 @@ export default function OrganizationPostJobForm() {
   const locations =
     countries?.getCountriesCities
       ?.map((c) => {
-        const city = c?.cities?.map((ci) => ci?.name) || [];
+        const city = c?.cities?.map((ci) => ci?.name) ?? [];
         const locs = city.map((ci) => ({
           label: `${c?.name}, ${ci}`,
           value: ci as string,
         }));
         return locs;
       })
-      .flat(1) || [];
+      .flat(1) ?? [];
 
   const closeModal = useCallback(() => {
     navigate(-1);
@@ -223,7 +226,7 @@ export default function OrganizationPostJobForm() {
 
   const form = useForm({
     initialValues: {
-      id: jobListingId ?? null,
+      id: jobListingId ? Number(jobListingId) : null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
       formattedDescription:
@@ -235,12 +238,12 @@ export default function OrganizationPostJobForm() {
         ? new Date(jobListingItem.availableTo)
         : addDays(new Date(), 1),
       location: jobListingItem?.city.name ?? "",
-      jobId: jobListingItem?.job.id ?? "",
+      jobId: jobListingItem?.job.id.toString() ?? "",
       numberOfVacancies: jobListingItem?.numberOfVacancies ?? 1,
       contractType: jobListingItem?.contractType ?? ContractType["FullTime"],
       organizationId: orgId,
-      categoryId: jobListingItem?.category?.id ?? "",
-      recruiterId: jobListingItem?.recruiter?.id ?? "",
+      categoryId: jobListingItem?.category?.id.toString() ?? "",
+      recruiterId: jobListingItem?.recruiter?.id.toString() ?? "",
       workType: jobListingItem?.workType ?? WorkType.Hybrid,
     },
     validate: zodResolver(FormJobListingSchema),
@@ -250,7 +253,9 @@ export default function OrganizationPostJobForm() {
     publishJob({
       JobListingInput: {
         ...values,
-        organizationId: orgId as string,
+        categoryId: Number(values.categoryId),
+        organizationId: Number(orgId),
+        jobId: Number(values.jobId),
         availableFrom: format(
           values.availableFrom,
           "yyyy-MM-dd"
@@ -260,6 +265,7 @@ export default function OrganizationPostJobForm() {
           "yyyy-MM-dd"
         ) as unknown as Date,
         formattedDescription: values.formattedDescription as string,
+        recruiterId: Number(values.recruiterId),
       },
     });
   };
@@ -354,7 +360,7 @@ export default function OrganizationPostJobForm() {
             value={selectedJobCategory}
             onChange={(val) => {
               setSelectedJobCategory(val);
-              form.setFieldValue("categoryId", val as string);
+              form.setFieldValue("categoryId", val ?? "");
             }}
           />
         </ShowIfElse>
@@ -417,7 +423,7 @@ export default function OrganizationPostJobForm() {
             itemComponent={SelectItem}
             data={(jobs?.getAllJobs ?? [])?.map((j) => ({
               label: j?.name,
-              value: j?.id as string,
+              value: j?.id.toString() ?? "",
               description: j?.description,
             }))}
             icon={<WrenchIcon width={18} />}
@@ -471,7 +477,7 @@ export default function OrganizationPostJobForm() {
             // readOnly
             data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
               label: o?.name,
-              value: o?.id as string,
+              value: o?.id.toString() ?? "",
               image: o?.photography,
               description: o?.activitySector.name,
             }))}
@@ -501,7 +507,7 @@ export default function OrganizationPostJobForm() {
                 r?.user.firstName && r.user.lastName
                   ? `${r.user.firstName} ${r.user.lastName}`
                   : r?.user.username,
-              value: r?.id as string,
+              value: r?.id.toString() ?? "",
               description: r?.user.userProfile.profileTitle,
               image:
                 r?.user.userProfile.photography &&

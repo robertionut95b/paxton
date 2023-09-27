@@ -1,6 +1,6 @@
 package com.irb.paxton.exceptions.handler.common;
 
-public class DuplicateClassNameException extends RuntimeException {
+public class DuplicateClassNameException extends PaxtonRuntimeException {
 
     public DuplicateClassNameException() {
         super();

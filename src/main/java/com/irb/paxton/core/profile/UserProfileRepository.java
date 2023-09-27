@@ -1,10 +1,13 @@
 package com.irb.paxton.core.profile;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
+@Repository
+public interface UserProfileRepository extends AbstractRepository<UserProfile, Long> {
+
     Optional<UserProfile> findByUser_Id(Long id);
 
     Optional<UserProfile> findByUserUsername(String username);

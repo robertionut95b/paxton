@@ -3,7 +3,6 @@ package com.irb.paxton.storage;
 import com.irb.paxton.config.properties.FileStorageProperties;
 import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
 import com.irb.paxton.storage.exception.FileStorageException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ public class FileStorageService implements StorageService {
 
     private final Path rootLocation;
 
-    @Autowired
     public FileStorageService(FileStorageProperties properties) {
         this.rootLocation = Paths.get(
                 "%s/%s/".formatted(properties.getStorageRootPath(), properties.getStorageUserPath())

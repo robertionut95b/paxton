@@ -33,9 +33,9 @@ const OrganizationHomePanel = () => {
         filters: [
           {
             fieldType: FieldType.Long,
-            key: "organization",
+            key: "organization.id",
             operator: Operator.Equal,
-            value: organizationData?.getOrganizationBySlugName?.id ?? "",
+            value: String(organizationData?.getOrganizationBySlugName?.id),
           },
           {
             key: "availableTo",

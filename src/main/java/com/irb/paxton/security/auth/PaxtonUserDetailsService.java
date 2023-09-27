@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Service("userDetailsService")
 @Transactional
@@ -21,7 +21,7 @@ public class PaxtonUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String lookup) throws UsernameNotFoundException {
         User user = this.userService.findByUsername(lookup)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s does not exist", lookup)));
+                .orElseThrow(() -> new UsernameNotFoundException("User %s does not exist".formatted(lookup)));
         return new PaxtonUserDetails(user);
     }
 }

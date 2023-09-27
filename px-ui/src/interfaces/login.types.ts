@@ -20,7 +20,7 @@ export interface AccessTokenDecode {
   jti: string;
   authorities: string;
   roles: string;
-  userId: string;
+  userId: number;
   firstName: string;
   lastName: string;
   profileId: number;

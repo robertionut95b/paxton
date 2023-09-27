@@ -3,7 +3,7 @@ package com.irb.paxton.core.model;
 import com.irb.paxton.auditable.AuditableEntity;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @MappedSuperclass
 @NoArgsConstructor

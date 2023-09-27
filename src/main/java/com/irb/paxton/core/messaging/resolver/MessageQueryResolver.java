@@ -5,21 +5,24 @@ import com.irb.paxton.core.messaging.MessageService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SlicedResponse;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsQuery;
+import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
-@Controller
-public class MessageQueryResolver implements GraphQLQueryResolver {
+@DgsComponent
+public class MessageQueryResolver {
 
     @Autowired
     private MessageService messageService;
 
-    SlicedResponse<Message> getMessagesSliced(SearchRequest searchQuery) {
+    @DgsQuery
+    public SlicedResponse<Message> getMessagesSliced(@InputArgument SearchRequest searchQuery) {
         return this.messageService.getMessagesSliced(searchQuery);
     }
 
-    PaginatedResponse<Message> getMessagesPaginated(SearchRequest searchQuery) {
+    @DgsQuery
+    public PaginatedResponse<Message> getMessagesPaginated(@InputArgument SearchRequest searchQuery) {
         return this.messageService.getMessagesPaginated(searchQuery);
     }
 }

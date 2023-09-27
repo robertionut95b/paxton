@@ -2,6 +2,7 @@ package com.irb.paxton.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irb.paxton.exceptions.handler.GlobalJmsErrorHandler;
+import jakarta.jms.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +16,6 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.jms.ConnectionFactory;
 
 @EnableJms
 @Configuration

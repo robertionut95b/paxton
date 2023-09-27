@@ -22,10 +22,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
@@ -47,7 +47,7 @@ public class ForgotController {
     @Transactional
     public void sendForgotPasswordRequest(@RequestBody @Valid FindEmailDto findEmailDto, HttpServletRequest request) {
         String email = findEmailDto.getEmail();
-        User user = userService.findByEmail(email).orElseThrow(() -> new UserNotFoundException(String.format("Email %s not found", email)));
+        User user = userService.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Email %s not found".formatted(email)));
 
         if (!user.isEmailConfirmed()) {
             throw new InactiveUserException("User is not active");
@@ -61,7 +61,7 @@ public class ForgotController {
 
     @PostMapping(path = "/auth/forgot-password")
     @Transactional
-    public void changePasswordByRequest(@RequestParam("token") @NotNull UUID token, @Valid @RequestBody PasswordChangeDto passwordChangeDto) {
+    public void changePasswordByRequest(@RequestParam @NotNull UUID token, @Valid @RequestBody PasswordChangeDto passwordChangeDto) {
         ForgotPasswordToken forgotPasswordToken = forgotTokenService.getForgotRequestToken(token).orElseThrow(
                 () -> new TokenNotFoundException("Could not find valid token")
         );

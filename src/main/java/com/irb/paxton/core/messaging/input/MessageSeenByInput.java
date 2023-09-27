@@ -3,7 +3,7 @@ package com.irb.paxton.core.messaging.input;
 import com.irb.paxton.core.model.input.AbstractInput;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 @Data

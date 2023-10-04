@@ -239,6 +239,7 @@
                     <execution>
                         <phase>generate-resources</phase>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <target>
                                 <copy todir="${project.build.directory}/classes/public">
                                     <fileset dir="${project.basedir}/px-ui/dist"/>

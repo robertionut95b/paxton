@@ -82,7 +82,6 @@ const ChatPage = () => {
     fetchNextPage,
     isFetching,
   } = useInfiniteGetChatLinesAdvSearchQuery(
-    "searchQuery",
     graphqlRequestClient,
     {
       searchQuery,

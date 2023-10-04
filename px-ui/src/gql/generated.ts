@@ -7,6 +7,8 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 
 function fetcher<TData, TVariables extends { [key: string]: any }>(client: GraphQLClient, query: string, variables?: TVariables, requestHeaders?: RequestInit['headers']) {
   return async (): Promise<TData> => client.request({
@@ -17,21 +19,21 @@ function fetcher<TData, TVariables extends { [key: string]: any }>(client: Graph
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: Date;
-  DateTime: Date;
-  Long: number;
-  Url: String;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Date: { input: Date; output: Date; }
+  DateTime: { input: Date; output: Date; }
+  Long: { input: number; output: number; }
+  Url: { input: String; output: String; }
 };
 
 export type ActivitySector = {
   __typename?: 'ActivitySector';
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Application = {
@@ -41,8 +43,8 @@ export type Application = {
   candidate: Candidate;
   chat: Chat;
   currentStep: ProcessSteps;
-  dateOfApplication: Scalars['DateTime'];
-  id: Scalars['Long'];
+  dateOfApplication: Scalars['DateTime']['output'];
+  id: Scalars['Long']['output'];
   jobListing: JobListing;
   processSteps?: Maybe<Array<Maybe<ApplicationProcessSteps>>>;
   status: ApplicationStatus;
@@ -51,40 +53,40 @@ export type Application = {
 export type ApplicationDocument = {
   __typename?: 'ApplicationDocument';
   document: Document;
-  id: Scalars['Long'];
+  id: Scalars['Long']['output'];
 };
 
 export type ApplicationInput = {
-  applicantProfileId: Scalars['Long'];
-  dateOfApplication?: InputMaybe<Scalars['DateTime']>;
-  id?: InputMaybe<Scalars['Long']>;
-  jobListingId: Scalars['Long'];
+  applicantProfileId: Scalars['Long']['input'];
+  dateOfApplication?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  jobListingId: Scalars['Long']['input'];
   processSteps?: InputMaybe<Array<InputMaybe<ApplicationProcessStepsInput>>>;
   status?: InputMaybe<ApplicationStatus>;
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 };
 
 export type ApplicationPage = {
   __typename?: 'ApplicationPage';
   list?: Maybe<Array<Maybe<Application>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type ApplicationProcessSteps = {
   __typename?: 'ApplicationProcessSteps';
   application: Application;
-  id: Scalars['Long'];
+  id: Scalars['Long']['output'];
   processStep: ProcessSteps;
-  registeredAt: Scalars['DateTime'];
+  registeredAt: Scalars['DateTime']['output'];
 };
 
 export type ApplicationProcessStepsInput = {
-  applicationId: Scalars['Long'];
-  id?: InputMaybe<Scalars['Long']>;
-  processStepId: Scalars['Long'];
-  registeredAt?: InputMaybe<Scalars['DateTime']>;
+  applicationId: Scalars['Long']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  processStepId: Scalars['Long']['input'];
+  registeredAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export enum ApplicationStatus {
@@ -95,59 +97,59 @@ export enum ApplicationStatus {
 
 export type ApplicationsCountByStep = {
   __typename?: 'ApplicationsCountByStep';
-  applicationsCount: Scalars['Int'];
-  stepTitle: Scalars['String'];
+  applicationsCount: Scalars['Int']['output'];
+  stepTitle: Scalars['String']['output'];
 };
 
 export type Candidate = {
   __typename?: 'Candidate';
   applications?: Maybe<Array<Maybe<Application>>>;
-  id: Scalars['Long'];
+  id: Scalars['Long']['output'];
   user: User;
 };
 
 export type CandidatePage = {
   __typename?: 'CandidatePage';
   list?: Maybe<Array<Maybe<Candidate>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type Certification = {
   __typename?: 'Certification';
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type CertificationInput = {
-  name: Scalars['String'];
+  name: Scalars['String']['input'];
 };
 
 export type Chat = {
   __typename?: 'Chat';
   chatType?: Maybe<ChatType>;
-  id: Scalars['Long'];
+  id: Scalars['Long']['output'];
   latestMessage?: Maybe<Message>;
   messages?: Maybe<Array<Maybe<Message>>>;
-  title?: Maybe<Scalars['String']>;
-  unreadMessagesCount: Scalars['Int'];
+  title?: Maybe<Scalars['String']['output']>;
+  unreadMessagesCount: Scalars['Int']['output'];
   users?: Maybe<Array<Maybe<User>>>;
 };
 
 export type ChatInput = {
   chatType?: InputMaybe<ChatType>;
-  id?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
   messages?: InputMaybe<Array<InputMaybe<MessageInput>>>;
-  users: Array<InputMaybe<Scalars['Long']>>;
+  users: Array<InputMaybe<Scalars['Long']['input']>>;
 };
 
 export type ChatPage = {
   __typename?: 'ChatPage';
   list?: Maybe<Array<Maybe<Chat>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export enum ChatType {
@@ -159,34 +161,34 @@ export enum ChatType {
 export type City = {
   __typename?: 'City';
   country: Country;
-  id: Scalars['Long'];
-  latitude?: Maybe<Scalars['Float']>;
-  longitude?: Maybe<Scalars['Float']>;
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  latitude?: Maybe<Scalars['Float']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type Connection = {
   __typename?: 'Connection';
   addressed: User;
   connectionStatus: ConnectionStatus;
-  id: Scalars['Long'];
-  lastModified: Scalars['DateTime'];
+  id: Scalars['Long']['output'];
+  lastModified: Scalars['DateTime']['output'];
   requester: User;
 };
 
 export type ConnectionCreateInput = {
-  addressedId: Scalars['Long'];
+  addressedId: Scalars['Long']['input'];
   connectionStatus: ConnectionStatus;
-  id?: InputMaybe<Scalars['Long']>;
-  requesterId: Scalars['Long'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  requesterId: Scalars['Long']['input'];
 };
 
 export type ConnectionPage = {
   __typename?: 'ConnectionPage';
   list?: Maybe<Array<Maybe<Connection>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export enum ConnectionStatus {
@@ -197,10 +199,10 @@ export enum ConnectionStatus {
 }
 
 export type ConnectionUpdateInput = {
-  addressedId: Scalars['Long'];
+  addressedId: Scalars['Long']['input'];
   connectionStatus: ConnectionStatus;
-  id: Scalars['Long'];
-  requesterId: Scalars['Long'];
+  id: Scalars['Long']['input'];
+  requesterId: Scalars['Long']['input'];
 };
 
 export enum ContractType {
@@ -216,24 +218,24 @@ export enum ContractType {
 export type Country = {
   __typename?: 'Country';
   cities?: Maybe<Array<Maybe<City>>>;
-  code: Scalars['String'];
-  name: Scalars['String'];
+  code: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Document = {
   __typename?: 'Document';
-  name: Scalars['String'];
+  name: Scalars['String']['output'];
 };
 
 export type Domain = {
   __typename?: 'Domain';
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
   studies?: Maybe<Array<Maybe<Study>>>;
 };
 
 export type DomainInput = {
-  name: Scalars['String'];
+  name: Scalars['String']['input'];
 };
 
 export type Experience = {
@@ -241,26 +243,26 @@ export type Experience = {
   activitySector: ActivitySector;
   city?: Maybe<City>;
   contractType: ContractType;
-  description: Scalars['String'];
-  endDate?: Maybe<Scalars['Date']>;
-  id: Scalars['Long'];
+  description: Scalars['String']['output'];
+  endDate?: Maybe<Scalars['Date']['output']>;
+  id: Scalars['Long']['output'];
   organization?: Maybe<Organization>;
-  startDate: Scalars['Date'];
-  title: Scalars['String'];
+  startDate: Scalars['Date']['output'];
+  title: Scalars['String']['output'];
   userProfile: UserProfile;
 };
 
 export type ExperienceInput = {
-  activitySectorId: Scalars['Long'];
-  city?: InputMaybe<Scalars['String']>;
+  activitySectorId: Scalars['Long']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
   contractType: ContractType;
-  description: Scalars['String'];
-  endDate?: InputMaybe<Scalars['Date']>;
-  id?: InputMaybe<Scalars['Long']>;
-  organizationId: Scalars['Long'];
-  startDate: Scalars['Date'];
-  title: Scalars['String'];
-  userProfileSlugUrl: Scalars['String'];
+  description: Scalars['String']['input'];
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  organizationId: Scalars['Long']['input'];
+  startDate: Scalars['Date']['input'];
+  title: Scalars['String']['input'];
+  userProfileSlugUrl: Scalars['String']['input'];
 };
 
 export enum FieldType {
@@ -277,149 +279,149 @@ export enum FieldType {
 
 export type FiltersInput = {
   fieldType: FieldType;
-  key: Scalars['String'];
+  key: Scalars['String']['input'];
   operator: Operator;
-  value?: InputMaybe<Scalars['String']>;
-  valueTo?: InputMaybe<Scalars['String']>;
-  values?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  value?: InputMaybe<Scalars['String']['input']>;
+  valueTo?: InputMaybe<Scalars['String']['input']>;
+  values?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type Institution = {
   __typename?: 'Institution';
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['Long'];
-  name: Scalars['String'];
-  photography?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
+  photography?: Maybe<Scalars['String']['output']>;
   studies?: Maybe<Array<Maybe<Study>>>;
 };
 
 export type InstitutionInput = {
-  description?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
-  photography?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  photography?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Job = {
   __typename?: 'Job';
-  description: Scalars['String'];
-  id: Scalars['Long'];
+  description: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
   jobListings?: Maybe<Array<Maybe<JobListing>>>;
-  name: Scalars['String'];
+  name: Scalars['String']['output'];
 };
 
 export type JobCategory = {
   __typename?: 'JobCategory';
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type JobCategoryInput = {
-  id?: InputMaybe<Scalars['Long']>;
-  name: Scalars['String'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type JobInput = {
-  description: Scalars['String'];
-  id?: InputMaybe<Scalars['Long']>;
-  name: Scalars['String'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type JobListing = {
   __typename?: 'JobListing';
   applications?: Maybe<Array<Maybe<Application>>>;
-  availableFrom: Scalars['Date'];
-  availableTo: Scalars['Date'];
+  availableFrom: Scalars['Date']['output'];
+  availableTo: Scalars['Date']['output'];
   category?: Maybe<JobCategory>;
   city: City;
   contractType: ContractType;
-  description: Scalars['String'];
-  formattedDescription: Scalars['String'];
-  id: Scalars['Long'];
-  isActive?: Maybe<Scalars['Boolean']>;
+  description: Scalars['String']['output'];
+  formattedDescription: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
   job: Job;
-  numberOfVacancies: Scalars['Int'];
+  numberOfVacancies: Scalars['Int']['output'];
   organization: Organization;
   recruiter?: Maybe<Recruiter>;
-  title: Scalars['String'];
+  title: Scalars['String']['output'];
   workType: WorkType;
 };
 
 export type JobListingInput = {
-  availableFrom: Scalars['Date'];
-  availableTo: Scalars['Date'];
-  categoryId: Scalars['Long'];
+  availableFrom: Scalars['Date']['input'];
+  availableTo: Scalars['Date']['input'];
+  categoryId: Scalars['Long']['input'];
   contractType: ContractType;
-  description: Scalars['String'];
-  formattedDescription: Scalars['String'];
-  id?: InputMaybe<Scalars['Long']>;
-  jobId: Scalars['Long'];
-  location: Scalars['String'];
-  numberOfVacancies: Scalars['Int'];
-  organizationId: Scalars['Long'];
-  recruiterId: Scalars['Long'];
-  title: Scalars['String'];
+  description: Scalars['String']['input'];
+  formattedDescription: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  jobId: Scalars['Long']['input'];
+  location: Scalars['String']['input'];
+  numberOfVacancies: Scalars['Int']['input'];
+  organizationId: Scalars['Long']['input'];
+  recruiterId: Scalars['Long']['input'];
+  title: Scalars['String']['input'];
   workType: WorkType;
 };
 
 export type JobListingPage = {
   __typename?: 'JobListingPage';
   list?: Maybe<Array<Maybe<JobListing>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type JobPage = {
   __typename?: 'JobPage';
   list?: Maybe<Array<Maybe<Job>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type Message = {
   __typename?: 'Message';
   chat?: Maybe<Chat>;
-  content: Scalars['String'];
-  deliveredAt: Scalars['DateTime'];
-  id: Scalars['Long'];
-  seenAt?: Maybe<Scalars['DateTime']>;
+  content: Scalars['String']['output'];
+  deliveredAt: Scalars['DateTime']['output'];
+  id: Scalars['Long']['output'];
+  seenAt?: Maybe<Scalars['DateTime']['output']>;
   seenBy?: Maybe<Array<Maybe<MessageSeenBy>>>;
   sender: User;
 };
 
 export type MessageInput = {
-  chatId: Scalars['Long'];
-  content: Scalars['String'];
-  id?: InputMaybe<Scalars['Long']>;
-  senderUserId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
+  content: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  senderUserId: Scalars['Long']['input'];
 };
 
 export type MessagePage = {
   __typename?: 'MessagePage';
   list?: Maybe<Array<Maybe<Message>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type MessageSeenBy = {
   __typename?: 'MessageSeenBy';
   message: Message;
-  seenAt: Scalars['DateTime'];
+  seenAt: Scalars['DateTime']['output'];
   user: User;
 };
 
 export type MessageSeenInput = {
-  id?: InputMaybe<Scalars['Long']>;
-  userId?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  userId?: InputMaybe<Scalars['Long']['input']>;
 };
 
 export type MessageSlice = {
   __typename?: 'MessageSlice';
-  hasNext?: Maybe<Scalars['Boolean']>;
-  isFirst?: Maybe<Scalars['Boolean']>;
-  isLast?: Maybe<Scalars['Boolean']>;
+  hasNext?: Maybe<Scalars['Boolean']['output']>;
+  isFirst?: Maybe<Scalars['Boolean']['output']>;
+  isLast?: Maybe<Scalars['Boolean']['output']>;
   list?: Maybe<Array<Maybe<Message>>>;
 };
 
@@ -440,7 +442,7 @@ export type Mutation = {
   createOrUpdateOrganization?: Maybe<Organization>;
   createProcess?: Maybe<Process>;
   createStep?: Maybe<Step>;
-  healthCheckPost?: Maybe<Scalars['String']>;
+  healthCheckPost?: Maybe<Scalars['String']['output']>;
   markAllMessagesAsSeen?: Maybe<Chat>;
   publishJob?: Maybe<Job>;
   publishJobListing?: Maybe<JobListing>;
@@ -481,7 +483,7 @@ export type MutationAddJobCategoryArgs = {
 
 export type MutationAddMessageToApplicationChatArgs = {
   MessageInput: MessageInput;
-  applicationId: Scalars['Long'];
+  applicationId: Scalars['Long']['input'];
 };
 
 
@@ -501,7 +503,7 @@ export type MutationAddUserProfileStudyArgs = {
 
 
 export type MutationAlterRecruitersInOrganizationArgs = {
-  OrganizationId: Scalars['Long'];
+  OrganizationId: Scalars['Long']['input'];
   RecruiterInput: Array<InputMaybe<RecruiterInput>>;
 };
 
@@ -537,8 +539,8 @@ export type MutationCreateStepArgs = {
 
 
 export type MutationMarkAllMessagesAsSeenArgs = {
-  chatId: Scalars['Long'];
-  userId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
+  userId: Scalars['Long']['input'];
 };
 
 
@@ -553,22 +555,22 @@ export type MutationPublishJobListingArgs = {
 
 
 export type MutationRemoveChatArgs = {
-  chatId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
 };
 
 
 export type MutationRemoveConnectionArgs = {
-  connectionId: Scalars['Long'];
+  connectionId: Scalars['Long']['input'];
 };
 
 
 export type MutationRemoveUserProfileExperienceArgs = {
-  experienceId: Scalars['Long'];
+  experienceId: Scalars['Long']['input'];
 };
 
 
 export type MutationRemoveUserProfileStudyArgs = {
-  studyId: Scalars['Long'];
+  studyId: Scalars['Long']['input'];
 };
 
 
@@ -593,7 +595,7 @@ export type MutationUpdateProcessArgs = {
 
 
 export type MutationUpdateProcessForOrganizationIdArgs = {
-  organizationId: Scalars['Long'];
+  organizationId: Scalars['Long']['input'];
   processInput: ProcessInputCreate;
 };
 
@@ -630,35 +632,35 @@ export type Organization = {
   activitySector: ActivitySector;
   affiliates?: Maybe<Array<Maybe<Organization>>>;
   companySize: OrganizationSize;
-  description: Scalars['String'];
-  foundedAt: Scalars['Date'];
+  description: Scalars['String']['output'];
+  foundedAt: Scalars['Date']['output'];
   headQuarters: City;
-  id: Scalars['Long'];
+  id: Scalars['Long']['output'];
   jobs?: Maybe<Array<Maybe<JobListing>>>;
   locations?: Maybe<Array<Maybe<City>>>;
-  name: Scalars['String'];
-  photography?: Maybe<Scalars['String']>;
+  name: Scalars['String']['output'];
+  photography?: Maybe<Scalars['String']['output']>;
   recruiters?: Maybe<Array<Maybe<Recruiter>>>;
   recruitmentProcess: Process;
-  slogan: Scalars['String'];
-  slugName: Scalars['String'];
+  slogan: Scalars['String']['output'];
+  slugName: Scalars['String']['output'];
   specializations?: Maybe<Array<Maybe<Specialization>>>;
-  webSite?: Maybe<Scalars['Url']>;
+  webSite?: Maybe<Scalars['Url']['output']>;
 };
 
 export type OrganizationInput = {
-  activitySectorId: Scalars['Long'];
+  activitySectorId: Scalars['Long']['input'];
   companySize?: InputMaybe<OrganizationSize>;
-  description: Scalars['String'];
-  foundedAt: Scalars['Date'];
-  headQuartersId: Scalars['Long'];
-  id?: InputMaybe<Scalars['Long']>;
-  locations?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  name: Scalars['String'];
-  photography?: InputMaybe<Scalars['String']>;
-  slogan: Scalars['String'];
+  description: Scalars['String']['input'];
+  foundedAt: Scalars['Date']['input'];
+  headQuartersId: Scalars['Long']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  locations?: InputMaybe<Array<InputMaybe<Scalars['Long']['input']>>>;
+  name: Scalars['String']['input'];
+  photography?: InputMaybe<Scalars['String']['input']>;
+  slogan: Scalars['String']['input'];
   specializations?: InputMaybe<Array<InputMaybe<Specialization>>>;
-  webSite?: InputMaybe<Scalars['Url']>;
+  webSite?: InputMaybe<Scalars['Url']['input']>;
 };
 
 export enum OrganizationSize {
@@ -674,73 +676,73 @@ export enum OrganizationSize {
 
 export type Photography = {
   __typename?: 'Photography';
-  id: Scalars['Long'];
-  name: Scalars['String'];
-  path: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
   userProfile?: Maybe<UserProfile>;
 };
 
 export type Privilege = {
   __typename?: 'Privilege';
-  id: Scalars['Long'];
-  name?: Maybe<Scalars['String']>;
+  id: Scalars['Long']['output'];
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type Process = {
   __typename?: 'Process';
-  description: Scalars['String'];
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  description: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
   organizations?: Maybe<Array<Maybe<Organization>>>;
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
 };
 
 export type ProcessInput = {
-  description: Scalars['String'];
-  id?: InputMaybe<Scalars['Long']>;
-  name: Scalars['String'];
-  organizationId: Scalars['Long'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['Long']['input'];
   processSteps?: InputMaybe<Array<InputMaybe<ProcessStepsInput>>>;
 };
 
 export type ProcessInputCreate = {
-  description: Scalars['String'];
-  id?: InputMaybe<Scalars['Long']>;
-  name: Scalars['String'];
-  organizationId: Scalars['Long'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['Long']['input'];
   processSteps?: InputMaybe<Array<InputMaybe<ProcessStepsInputCreate>>>;
 };
 
 export type ProcessPage = {
   __typename?: 'ProcessPage';
   list?: Maybe<Array<Maybe<Process>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type ProcessSteps = {
   __typename?: 'ProcessSteps';
-  id: Scalars['Long'];
-  order: Scalars['Int'];
+  id: Scalars['Long']['output'];
+  order: Scalars['Int']['output'];
   process: Process;
   status: Status;
   step: Step;
 };
 
 export type ProcessStepsInput = {
-  id?: InputMaybe<Scalars['Long']>;
-  order: Scalars['Int'];
-  processId: Scalars['Long'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  order: Scalars['Int']['input'];
+  processId: Scalars['Long']['input'];
   status: Status;
-  stepId: Scalars['Long'];
+  stepId: Scalars['Long']['input'];
 };
 
 export type ProcessStepsInputCreate = {
-  id?: InputMaybe<Scalars['Long']>;
-  order: Scalars['Int'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  order: Scalars['Int']['input'];
   status: Status;
-  stepId: Scalars['Long'];
+  stepId: Scalars['Long']['input'];
 };
 
 export type Query = {
@@ -786,7 +788,7 @@ export type Query = {
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
   getUserProfile?: Maybe<UserProfile>;
-  healthCheck?: Maybe<Scalars['String']>;
+  healthCheck?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -806,7 +808,7 @@ export type QueryGetAllCandidatesArgs = {
 
 
 export type QueryGetAllCandidatesByJobListingIdArgs = {
-  JobListingId: Scalars['Long'];
+  JobListingId: Scalars['Long']['input'];
 };
 
 
@@ -826,18 +828,18 @@ export type QueryGetAllProcessesArgs = {
 
 
 export type QueryGetAllRecruitersForOrganizationArgs = {
-  organizationId: Scalars['Long'];
+  organizationId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetAllRecruitersForOrganizationBySlugArgs = {
-  organizationSlug: Scalars['String'];
+  organizationSlug: Scalars['String']['input'];
 };
 
 
 export type QueryGetAllUserConnectionSuggestionsArgs = {
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -847,12 +849,12 @@ export type QueryGetAllUsersPagedArgs = {
 
 
 export type QueryGetApplicationByIdArgs = {
-  applicationId: Scalars['Long'];
+  applicationId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetApplicationsForJobIdCountByStepsArgs = {
-  jobId: Scalars['Long'];
+  jobId: Scalars['Long']['input'];
 };
 
 
@@ -862,21 +864,21 @@ export type QueryGetChatAdvSearchArgs = {
 
 
 export type QueryGetChatWithUserIdArgs = {
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetChatsWithUsersIdsArgs = {
-  userIds: Array<InputMaybe<Scalars['Long']>>;
+  userIds: Array<InputMaybe<Scalars['Long']['input']>>;
 };
 
 
 export type QueryGetConnectionsForUserArgs = {
-  page?: InputMaybe<Scalars['Int']>;
-  searchQuery?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  searchQuery?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<SortsInput>;
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 };
 
 
@@ -891,92 +893,92 @@ export type QueryGetMessagesSlicedArgs = {
 
 
 export type QueryGetMyApplicationForJobListingArgs = {
-  JobListingId: Scalars['Long'];
+  JobListingId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetMyApplicationsArgs = {
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetNewConnectionForUserArgs = {
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  userId: Scalars['Long'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  userId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetOrganizationByIdArgs = {
-  organizationId: Scalars['Long'];
+  organizationId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetOrganizationBySlugNameArgs = {
-  slugName: Scalars['String'];
+  slugName: Scalars['String']['input'];
 };
 
 
 export type QueryGetPrivateChatByIdArgs = {
-  chatId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetRecruiterByIdArgs = {
-  recruiterId: Scalars['Long'];
+  recruiterId: Scalars['Long']['input'];
 };
 
 
 export type QueryGetRelatedJobListingsArgs = {
-  jobName: Scalars['String'];
+  jobName: Scalars['String']['input'];
 };
 
 
 export type QueryGetStepsByProcessArgs = {
-  processId: Scalars['Int'];
+  processId: Scalars['Int']['input'];
 };
 
 
 export type QueryGetUserProfileArgs = {
-  profileSlugUrl?: InputMaybe<Scalars['String']>;
+  profileSlugUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Recruiter = {
   __typename?: 'Recruiter';
-  id: Scalars['Long'];
-  isActive: Scalars['Boolean'];
-  lastActive?: Maybe<Scalars['DateTime']>;
+  id: Scalars['Long']['output'];
+  isActive: Scalars['Boolean']['output'];
+  lastActive?: Maybe<Scalars['DateTime']['output']>;
   organization: Organization;
-  registeredAt: Scalars['DateTime'];
+  registeredAt: Scalars['DateTime']['output'];
   user: User;
 };
 
 export type RecruiterInput = {
-  id: Scalars['Long'];
-  isActive?: InputMaybe<Scalars['Boolean']>;
-  lastActive?: InputMaybe<Scalars['DateTime']>;
-  organizationId?: InputMaybe<Scalars['Long']>;
+  id: Scalars['Long']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastActive?: InputMaybe<Scalars['DateTime']['input']>;
+  organizationId?: InputMaybe<Scalars['Long']['input']>;
 };
 
 export type RecruiterPage = {
   __typename?: 'RecruiterPage';
   list?: Maybe<Array<Maybe<Recruiter>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type Role = {
   __typename?: 'Role';
-  id: Scalars['Long'];
-  name: Scalars['String'];
+  id: Scalars['Long']['output'];
+  name: Scalars['String']['output'];
   privileges?: Maybe<Array<Maybe<Privilege>>>;
 };
 
 export type SearchQueryInput = {
   filters?: InputMaybe<Array<InputMaybe<FiltersInput>>>;
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
   sorts?: InputMaybe<Array<InputMaybe<SortsInput>>>;
 };
 
@@ -987,7 +989,7 @@ export enum SortDirection {
 
 export type SortsInput = {
   direction: SortDirection;
-  key: Scalars['String'];
+  key: Scalars['String']['input'];
 };
 
 export enum Specialization {
@@ -1047,101 +1049,101 @@ export enum Status {
 
 export type Step = {
   __typename?: 'Step';
-  description: Scalars['String'];
-  id: Scalars['Long'];
+  description: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
-  title: Scalars['String'];
+  title: Scalars['String']['output'];
 };
 
 export type StepInput = {
-  description: Scalars['String'];
-  title: Scalars['String'];
+  description: Scalars['String']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type Study = {
   __typename?: 'Study';
   certification?: Maybe<Certification>;
-  degree?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  degree?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   domainStudy?: Maybe<Domain>;
-  endDate?: Maybe<Scalars['Date']>;
-  id: Scalars['Long'];
+  endDate?: Maybe<Scalars['Date']['output']>;
+  id: Scalars['Long']['output'];
   institution: Institution;
-  startDate: Scalars['Date'];
+  startDate: Scalars['Date']['output'];
   userProfile: UserProfile;
 };
 
 export type StudyInput = {
-  certification?: InputMaybe<Scalars['Long']>;
-  degree?: InputMaybe<Scalars['String']>;
-  description?: InputMaybe<Scalars['String']>;
-  domainStudy?: InputMaybe<Scalars['Long']>;
-  endDate?: InputMaybe<Scalars['Date']>;
-  id?: InputMaybe<Scalars['Long']>;
-  institution: Scalars['Long'];
-  startDate: Scalars['Date'];
-  userProfileSlugUrl: Scalars['String'];
+  certification?: InputMaybe<Scalars['Long']['input']>;
+  degree?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  domainStudy?: InputMaybe<Scalars['Long']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  id?: InputMaybe<Scalars['Long']['input']>;
+  institution: Scalars['Long']['input'];
+  startDate: Scalars['Date']['input'];
+  userProfileSlugUrl: Scalars['String']['input'];
 };
 
 export type User = {
   __typename?: 'User';
-  birthDate?: Maybe<Scalars['Date']>;
-  displayName: Scalars['String'];
-  email: Scalars['String'];
-  firstName: Scalars['String'];
-  id: Scalars['Long'];
-  isEmailConfirmed: Scalars['Boolean'];
-  lastName: Scalars['String'];
+  birthDate?: Maybe<Scalars['Date']['output']>;
+  displayName: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  isEmailConfirmed: Scalars['Boolean']['output'];
+  lastName: Scalars['String']['output'];
   roles?: Maybe<Array<Maybe<Role>>>;
   userProfile: UserProfile;
-  username: Scalars['String'];
+  username: Scalars['String']['output'];
 };
 
 export type UserConnection = {
   __typename?: 'UserConnection';
-  connectedAt: Scalars['DateTime'];
-  id: Scalars['Long'];
+  connectedAt: Scalars['DateTime']['output'];
+  id: Scalars['Long']['output'];
   user: User;
 };
 
 export type UserConnectionPage = {
   __typename?: 'UserConnectionPage';
   list?: Maybe<Array<Maybe<UserConnection>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type UserPage = {
   __typename?: 'UserPage';
   list?: Maybe<Array<Maybe<User>>>;
-  page: Scalars['Int'];
-  totalElements: Scalars['Int'];
-  totalPages: Scalars['Int'];
+  page: Scalars['Int']['output'];
+  totalElements: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type UserProfile = {
   __typename?: 'UserProfile';
   city?: Maybe<City>;
-  coverPhotography?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  coverPhotography?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   experiences?: Maybe<Array<Maybe<Experience>>>;
-  id: Scalars['Long'];
-  photography?: Maybe<Scalars['String']>;
-  profileSlugUrl: Scalars['String'];
-  profileTitle: Scalars['String'];
+  id: Scalars['Long']['output'];
+  photography?: Maybe<Scalars['String']['output']>;
+  profileSlugUrl: Scalars['String']['output'];
+  profileTitle: Scalars['String']['output'];
   studies?: Maybe<Array<Maybe<Study>>>;
   user: User;
 };
 
 export type UserProfileInput = {
-  city: Scalars['String'];
-  description: Scalars['String'];
-  firstName: Scalars['String'];
-  id: Scalars['Long'];
-  lastName: Scalars['String'];
-  profileSlugUrl: Scalars['String'];
-  profileTitle: Scalars['String'];
+  city: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  id: Scalars['Long']['input'];
+  lastName: Scalars['String']['input'];
+  profileSlugUrl: Scalars['String']['input'];
+  profileTitle: Scalars['String']['input'];
 };
 
 export enum WorkType {
@@ -1236,7 +1238,7 @@ export type CreateOrUpdateOrganizationMutation = { __typename?: 'Mutation', crea
 
 export type AlterRecruitersInOrganizationMutationVariables = Exact<{
   RecruiterInput: Array<InputMaybe<RecruiterInput>> | InputMaybe<RecruiterInput>;
-  OrganizationId: Scalars['Long'];
+  OrganizationId: Scalars['Long']['input'];
 }>;
 
 
@@ -1258,7 +1260,7 @@ export type UpdateApplicationMutation = { __typename?: 'Mutation', updateApplica
 
 export type AddMessageToApplicationChatMutationVariables = Exact<{
   MessageInput: MessageInput;
-  applicationId: Scalars['Long'];
+  applicationId: Scalars['Long']['input'];
 }>;
 
 
@@ -1279,8 +1281,8 @@ export type AddMessageToChatMutationVariables = Exact<{
 export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'Chat', id: number, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
 
 export type MarkAllMessagesAsSeenMutationVariables = Exact<{
-  chatId: Scalars['Long'];
-  userId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
+  userId: Scalars['Long']['input'];
 }>;
 
 
@@ -1295,7 +1297,7 @@ export type UpdateChatMutation = { __typename?: 'Mutation', updateChat?: { __typ
 
 export type UpdateProcessForOrganizationIdMutationVariables = Exact<{
   processInput: ProcessInputCreate;
-  organizationId: Scalars['Long'];
+  organizationId: Scalars['Long']['input'];
 }>;
 
 
@@ -1323,28 +1325,28 @@ export type UpdateConnectionMutationVariables = Exact<{
 export type UpdateConnectionMutation = { __typename?: 'Mutation', updateConnection?: { __typename?: 'Connection', id: number, connectionStatus: ConnectionStatus, requester: { __typename?: 'User', id: number, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null };
 
 export type RemoveConnectionMutationVariables = Exact<{
-  connectionId: Scalars['Long'];
+  connectionId: Scalars['Long']['input'];
 }>;
 
 
 export type RemoveConnectionMutation = { __typename?: 'Mutation', removeConnection?: { __typename?: 'Connection', id: number, connectionStatus: ConnectionStatus } | null };
 
 export type RemoveChatMutationVariables = Exact<{
-  chatId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
 }>;
 
 
 export type RemoveChatMutation = { __typename?: 'Mutation', removeChat?: { __typename?: 'Chat', id: number } | null };
 
 export type RemoveUserProfileStudyMutationVariables = Exact<{
-  studyId: Scalars['Long'];
+  studyId: Scalars['Long']['input'];
 }>;
 
 
 export type RemoveUserProfileStudyMutation = { __typename?: 'Mutation', removeUserProfileStudy?: { __typename?: 'UserProfile', id: number } | null };
 
 export type RemoveUserProfileExperienceMutationVariables = Exact<{
-  experienceId: Scalars['Long'];
+  experienceId: Scalars['Long']['input'];
 }>;
 
 
@@ -1363,7 +1365,7 @@ export type GetAllJobListingsQueryVariables = Exact<{
 export type GetAllJobListingsQuery = { __typename?: 'Query', getAllJobListings?: { __typename?: 'JobListingPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'JobListing', id: number, title: string, description: string, formattedDescription: string, availableFrom: Date, availableTo: Date, isActive?: boolean | null, numberOfVacancies: number, contractType: ContractType, workType: WorkType, city: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } }, job: { __typename?: 'Job', id: number, name: string, description: string }, organization: { __typename?: 'Organization', id: number, name: string, slugName: string, photography?: string | null, description: string, activitySector: { __typename?: 'ActivitySector', id: number, name: string } }, category?: { __typename?: 'JobCategory', id: number, name: string } | null, applications?: Array<{ __typename?: 'Application', id: number, dateOfApplication: Date } | null> | null, recruiter?: { __typename?: 'Recruiter', id: number, user: { __typename?: 'User', id: number, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', id: number, profileSlugUrl: string, photography?: string | null, profileTitle: string } } } | null } | null> | null } | null };
 
 export type GetUserProfileQueryVariables = Exact<{
-  profileSlugUrl?: InputMaybe<Scalars['String']>;
+  profileSlugUrl?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -1410,35 +1412,35 @@ export type GetAllJobsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetAllJobsQuery = { __typename?: 'Query', getAllJobs?: Array<{ __typename?: 'Job', id: number, name: string, description: string } | null> | null };
 
 export type GetOrganizationByIdQueryVariables = Exact<{
-  organizationId: Scalars['Long'];
+  organizationId: Scalars['Long']['input'];
 }>;
 
 
 export type GetOrganizationByIdQuery = { __typename?: 'Query', getOrganizationById?: { __typename?: 'Organization', id: number, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, headQuarters: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: number, name: string }, recruitmentProcess: { __typename?: 'Process', id: number } } | null };
 
 export type GetOrganizationBySlugNameQueryVariables = Exact<{
-  slugName: Scalars['String'];
+  slugName: Scalars['String']['input'];
 }>;
 
 
 export type GetOrganizationBySlugNameQuery = { __typename?: 'Query', getOrganizationBySlugName?: { __typename?: 'Organization', id: number, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: String | null, specializations?: Array<Specialization | null> | null, headQuarters: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } }, activitySector: { __typename?: 'ActivitySector', id: number, name: string }, recruitmentProcess: { __typename?: 'Process', id: number }, locations?: Array<{ __typename?: 'City', id: number, name: string, longitude?: number | null, latitude?: number | null, country: { __typename?: 'Country', code: string, name: string } } | null> | null, recruiters?: Array<{ __typename?: 'Recruiter', id: number, user: { __typename?: 'User', firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
-  jobName: Scalars['String'];
+  jobName: Scalars['String']['input'];
 }>;
 
 
 export type GetRelatedJobListingsQuery = { __typename?: 'Query', getRelatedJobListings?: Array<{ __typename?: 'JobListing', id: number, title: string, availableFrom: Date, availableTo: Date, city: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } }, organization: { __typename?: 'Organization', id: number, name: string, photography?: string | null }, applications?: Array<{ __typename?: 'Application', id: number, dateOfApplication: Date } | null> | null } | null> | null };
 
 export type GetMyApplicationForJobListingQueryVariables = Exact<{
-  JobListingId: Scalars['Long'];
+  JobListingId: Scalars['Long']['input'];
 }>;
 
 
 export type GetMyApplicationForJobListingQuery = { __typename?: 'Query', getMyApplicationForJobListing?: { __typename?: 'Application', id: number, dateOfApplication: Date, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: number, registeredAt: Date, processStep: { __typename?: 'ProcessSteps', order: number, step: { __typename?: 'Step', title: string, description: string } } } | null> | null, jobListing: { __typename?: 'JobListing', id: number } } | null };
 
 export type GetApplicationByIdQueryVariables = Exact<{
-  applicationId: Scalars['Long'];
+  applicationId: Scalars['Long']['input'];
 }>;
 
 
@@ -1459,14 +1461,14 @@ export type GetAllProcessesQueryVariables = Exact<{
 export type GetAllProcessesQuery = { __typename?: 'Query', getAllProcesses?: { __typename?: 'ProcessPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Process', id: number, name: string, description: string, processSteps?: Array<{ __typename?: 'ProcessSteps', id: number, status: Status, order: number, step: { __typename?: 'Step', id: number, title: string, description: string } } | null> | null } | null> | null } | null };
 
 export type GetAllRecruitersForOrganizationBySlugQueryVariables = Exact<{
-  organizationSlug: Scalars['String'];
+  organizationSlug: Scalars['String']['input'];
 }>;
 
 
 export type GetAllRecruitersForOrganizationBySlugQuery = { __typename?: 'Query', getAllRecruitersForOrganizationBySlug?: Array<{ __typename?: 'Recruiter', id: number, user: { __typename?: 'User', firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null };
 
 export type GetRecruiterByIdQueryVariables = Exact<{
-  recruiterId: Scalars['Long'];
+  recruiterId: Scalars['Long']['input'];
 }>;
 
 
@@ -1492,21 +1494,21 @@ export type GetAllJobsPaginatedQueryVariables = Exact<{
 export type GetAllJobsPaginatedQuery = { __typename?: 'Query', getAllJobsPaginated?: { __typename?: 'JobPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Job', id: number, name: string, description: string } | null> | null } | null };
 
 export type GetMyApplicationsQueryVariables = Exact<{
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 }>;
 
 
 export type GetMyApplicationsQuery = { __typename?: 'Query', getMyApplications?: Array<{ __typename?: 'Application', id: number, dateOfApplication: Date, jobListing: { __typename?: 'JobListing', id: number, title: string, organization: { __typename?: 'Organization', id: number, name: string, photography?: string | null, slugName: string }, city: { __typename?: 'City', name: string, country: { __typename?: 'Country', name: string } } }, processSteps?: Array<{ __typename?: 'ApplicationProcessSteps', id: number } | null> | null } | null> | null };
 
 export type GetApplicationsForJobIdCountByStepsQueryVariables = Exact<{
-  jobId: Scalars['Long'];
+  jobId: Scalars['Long']['input'];
 }>;
 
 
 export type GetApplicationsForJobIdCountByStepsQuery = { __typename?: 'Query', getApplicationsForJobIdCountBySteps?: Array<{ __typename?: 'ApplicationsCountByStep', applicationsCount: number, stepTitle: string } | null> | null };
 
 export type GetPrivateChatByIdQueryVariables = Exact<{
-  chatId: Scalars['Long'];
+  chatId: Scalars['Long']['input'];
 }>;
 
 
@@ -1520,7 +1522,7 @@ export type GetChatAdvSearchQueryVariables = Exact<{
 export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Chat', id: number, unreadMessagesCount: number, title?: string | null, messages?: Array<{ __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
 
 export type GetChatsWithUsersIdsQueryVariables = Exact<{
-  userIds: Array<InputMaybe<Scalars['Long']>> | InputMaybe<Scalars['Long']>;
+  userIds: Array<InputMaybe<Scalars['Long']['input']>> | InputMaybe<Scalars['Long']['input']>;
 }>;
 
 
@@ -1553,19 +1555,19 @@ export type FindRecruitersAdvSearchQueryVariables = Exact<{
 export type FindRecruitersAdvSearchQuery = { __typename?: 'Query', findRecruitersAdvSearch?: { __typename?: 'RecruiterPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Recruiter', id: number, registeredAt: Date, user: { __typename?: 'User', id: number, firstName: string, lastName: string, displayName: string, birthDate?: Date | null, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetConnectionInvitationsForUserQueryVariables = Exact<{
-  userId: Scalars['Long'];
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
+  userId: Scalars['Long']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
 export type GetConnectionInvitationsForUserQuery = { __typename?: 'Query', getNewConnectionForUser?: { __typename?: 'ConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Connection', id: number, connectionStatus: ConnectionStatus, lastModified: Date, requester: { __typename?: 'User', id: number, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } } | null> | null } | null };
 
 export type GetConnectionsForUserQueryVariables = Exact<{
-  userId: Scalars['Long'];
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  searchQuery?: InputMaybe<Scalars['String']>;
+  userId: Scalars['Long']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  searchQuery?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<SortsInput>;
 }>;
 
@@ -1573,15 +1575,15 @@ export type GetConnectionsForUserQueryVariables = Exact<{
 export type GetConnectionsForUserQuery = { __typename?: 'Query', getConnectionsForUser?: { __typename?: 'UserConnectionPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'UserConnection', id: number, connectedAt: Date, user: { __typename?: 'User', id: number, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string, profileSlugUrl: string } } } | null> | null } | null };
 
 export type GetAllUserConnectionSuggestionsQueryVariables = Exact<{
-  page?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
 export type GetAllUserConnectionSuggestionsQuery = { __typename?: 'Query', getAllUserConnectionSuggestions?: { __typename?: 'UserPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'User', id: number, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', coverPhotography?: string | null, photography?: string | null, profileTitle: string, profileSlugUrl: string } } | null> | null } | null };
 
 export type GetChatWithUserIdQueryVariables = Exact<{
-  userId: Scalars['Long'];
+  userId: Scalars['Long']['input'];
 }>;
 
 
@@ -2416,7 +2418,6 @@ export const useInfiniteGetCurrentUserQuery = <
       TData = GetCurrentUserQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetCurrentUserQueryVariables,
       client: GraphQLClient,
       variables?: GetCurrentUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetCurrentUserQuery, TError, TData>,
@@ -2525,7 +2526,6 @@ export const useInfiniteGetAllJobListingsQuery = <
       TData = GetAllJobListingsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllJobListingsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllJobListingsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobListingsQuery, TError, TData>,
@@ -2641,7 +2641,6 @@ export const useInfiniteGetUserProfileQuery = <
       TData = GetUserProfileQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetUserProfileQueryVariables,
       client: GraphQLClient,
       variables?: GetUserProfileQueryVariables,
       options?: UseInfiniteQueryOptions<GetUserProfileQuery, TError, TData>,
@@ -2694,7 +2693,6 @@ export const useInfiniteGetCountriesCitiesQuery = <
       TData = GetCountriesCitiesQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetCountriesCitiesQueryVariables,
       client: GraphQLClient,
       variables?: GetCountriesCitiesQueryVariables,
       options?: UseInfiniteQueryOptions<GetCountriesCitiesQuery, TError, TData>,
@@ -2773,7 +2771,6 @@ export const useInfiniteGetAllOrganizationsQuery = <
       TData = GetAllOrganizationsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllOrganizationsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllOrganizationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllOrganizationsQuery, TError, TData>,
@@ -2822,7 +2819,6 @@ export const useInfiniteGetAllActivitySectorsQuery = <
       TData = GetAllActivitySectorsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllActivitySectorsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllActivitySectorsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllActivitySectorsQuery, TError, TData>,
@@ -2873,7 +2869,6 @@ export const useInfiniteGetAllInstitutionsQuery = <
       TData = GetAllInstitutionsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllInstitutionsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllInstitutionsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllInstitutionsQuery, TError, TData>,
@@ -2922,7 +2917,6 @@ export const useInfiniteGetAllDomainsQuery = <
       TData = GetAllDomainsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllDomainsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllDomainsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllDomainsQuery, TError, TData>,
@@ -2971,7 +2965,6 @@ export const useInfiniteGetAllCertificationsQuery = <
       TData = GetAllCertificationsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllCertificationsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllCertificationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllCertificationsQuery, TError, TData>,
@@ -3020,7 +3013,6 @@ export const useInfiniteGetAllJobCategoriesQuery = <
       TData = GetAllJobCategoriesQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllJobCategoriesQueryVariables,
       client: GraphQLClient,
       variables?: GetAllJobCategoriesQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobCategoriesQuery, TError, TData>,
@@ -3070,7 +3062,6 @@ export const useInfiniteGetAllJobsQuery = <
       TData = GetAllJobsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllJobsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllJobsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobsQuery, TError, TData>,
@@ -3141,7 +3132,6 @@ export const useInfiniteGetOrganizationByIdQuery = <
       TData = GetOrganizationByIdQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetOrganizationByIdQueryVariables,
       client: GraphQLClient,
       variables: GetOrganizationByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetOrganizationByIdQuery, TError, TData>,
@@ -3235,7 +3225,6 @@ export const useInfiniteGetOrganizationBySlugNameQuery = <
       TData = GetOrganizationBySlugNameQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetOrganizationBySlugNameQueryVariables,
       client: GraphQLClient,
       variables: GetOrganizationBySlugNameQueryVariables,
       options?: UseInfiniteQueryOptions<GetOrganizationBySlugNameQuery, TError, TData>,
@@ -3303,7 +3292,6 @@ export const useInfiniteGetRelatedJobListingsQuery = <
       TData = GetRelatedJobListingsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetRelatedJobListingsQueryVariables,
       client: GraphQLClient,
       variables: GetRelatedJobListingsQueryVariables,
       options?: UseInfiniteQueryOptions<GetRelatedJobListingsQuery, TError, TData>,
@@ -3366,7 +3354,6 @@ export const useInfiniteGetMyApplicationForJobListingQuery = <
       TData = GetMyApplicationForJobListingQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetMyApplicationForJobListingQueryVariables,
       client: GraphQLClient,
       variables: GetMyApplicationForJobListingQueryVariables,
       options?: UseInfiniteQueryOptions<GetMyApplicationForJobListingQuery, TError, TData>,
@@ -3460,7 +3447,6 @@ export const useInfiniteGetApplicationByIdQuery = <
       TData = GetApplicationByIdQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetApplicationByIdQueryVariables,
       client: GraphQLClient,
       variables: GetApplicationByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetApplicationByIdQuery, TError, TData>,
@@ -3540,7 +3526,6 @@ export const useInfiniteGetAllApplicationsQuery = <
       TData = GetAllApplicationsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllApplicationsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllApplicationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllApplicationsQuery, TError, TData>,
@@ -3605,7 +3590,6 @@ export const useInfiniteGetAllProcessesQuery = <
       TData = GetAllProcessesQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllProcessesQueryVariables,
       client: GraphQLClient,
       variables?: GetAllProcessesQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllProcessesQuery, TError, TData>,
@@ -3662,7 +3646,6 @@ export const useInfiniteGetAllRecruitersForOrganizationBySlugQuery = <
       TData = GetAllRecruitersForOrganizationBySlugQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllRecruitersForOrganizationBySlugQueryVariables,
       client: GraphQLClient,
       variables: GetAllRecruitersForOrganizationBySlugQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>,
@@ -3741,7 +3724,6 @@ export const useInfiniteGetRecruiterByIdQuery = <
       TData = GetRecruiterByIdQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetRecruiterByIdQueryVariables,
       client: GraphQLClient,
       variables: GetRecruiterByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetRecruiterByIdQuery, TError, TData>,
@@ -3795,7 +3777,6 @@ export const useInfiniteGetAllUsersQuery = <
       TData = GetAllUsersQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllUsersQueryVariables,
       client: GraphQLClient,
       variables?: GetAllUsersQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUsersQuery, TError, TData>,
@@ -3856,7 +3837,6 @@ export const useInfiniteGetAllUsersPagedQuery = <
       TData = GetAllUsersPagedQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllUsersPagedQueryVariables,
       client: GraphQLClient,
       variables?: GetAllUsersPagedQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUsersPagedQuery, TError, TData>,
@@ -3911,7 +3891,6 @@ export const useInfiniteGetAllJobsPaginatedQuery = <
       TData = GetAllJobsPaginatedQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllJobsPaginatedQueryVariables,
       client: GraphQLClient,
       variables?: GetAllJobsPaginatedQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobsPaginatedQuery, TError, TData>,
@@ -3979,7 +3958,6 @@ export const useInfiniteGetMyApplicationsQuery = <
       TData = GetMyApplicationsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetMyApplicationsQueryVariables,
       client: GraphQLClient,
       variables: GetMyApplicationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetMyApplicationsQuery, TError, TData>,
@@ -4028,7 +4006,6 @@ export const useInfiniteGetApplicationsForJobIdCountByStepsQuery = <
       TData = GetApplicationsForJobIdCountByStepsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetApplicationsForJobIdCountByStepsQueryVariables,
       client: GraphQLClient,
       variables: GetApplicationsForJobIdCountByStepsQueryVariables,
       options?: UseInfiniteQueryOptions<GetApplicationsForJobIdCountByStepsQuery, TError, TData>,
@@ -4093,7 +4070,6 @@ export const useInfiniteGetPrivateChatByIdQuery = <
       TData = GetPrivateChatByIdQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetPrivateChatByIdQueryVariables,
       client: GraphQLClient,
       variables: GetPrivateChatByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetPrivateChatByIdQuery, TError, TData>,
@@ -4181,7 +4157,6 @@ export const useInfiniteGetChatAdvSearchQuery = <
       TData = GetChatAdvSearchQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetChatAdvSearchQueryVariables,
       client: GraphQLClient,
       variables: GetChatAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatAdvSearchQuery, TError, TData>,
@@ -4264,7 +4239,6 @@ export const useInfiniteGetChatsWithUsersIdsQuery = <
       TData = GetChatsWithUsersIdsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetChatsWithUsersIdsQueryVariables,
       client: GraphQLClient,
       variables: GetChatsWithUsersIdsQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatsWithUsersIdsQuery, TError, TData>,
@@ -4337,7 +4311,6 @@ export const useInfiniteGetChatLinesAdvSearchQuery = <
       TData = GetChatLinesAdvSearchQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetChatLinesAdvSearchQueryVariables,
       client: GraphQLClient,
       variables: GetChatLinesAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatLinesAdvSearchQuery, TError, TData>,
@@ -4403,7 +4376,6 @@ export const useInfiniteGetMessagesPaginatedQuery = <
       TData = GetMessagesPaginatedQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetMessagesPaginatedQueryVariables,
       client: GraphQLClient,
       variables?: GetMessagesPaginatedQueryVariables,
       options?: UseInfiniteQueryOptions<GetMessagesPaginatedQuery, TError, TData>,
@@ -4453,7 +4425,6 @@ export const useInfiniteGetAllStepsQuery = <
       TData = GetAllStepsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllStepsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllStepsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllStepsQuery, TError, TData>,
@@ -4518,7 +4489,6 @@ export const useInfiniteFindRecruitersAdvSearchQuery = <
       TData = FindRecruitersAdvSearchQuery,
       TError = unknown
     >(
-      pageParamKey: keyof FindRecruitersAdvSearchQueryVariables,
       client: GraphQLClient,
       variables?: FindRecruitersAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<FindRecruitersAdvSearchQuery, TError, TData>,
@@ -4583,7 +4553,6 @@ export const useInfiniteGetConnectionInvitationsForUserQuery = <
       TData = GetConnectionInvitationsForUserQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetConnectionInvitationsForUserQueryVariables,
       client: GraphQLClient,
       variables: GetConnectionInvitationsForUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetConnectionInvitationsForUserQuery, TError, TData>,
@@ -4654,7 +4623,6 @@ export const useInfiniteGetConnectionsForUserQuery = <
       TData = GetConnectionsForUserQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetConnectionsForUserQueryVariables,
       client: GraphQLClient,
       variables: GetConnectionsForUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetConnectionsForUserQuery, TError, TData>,
@@ -4716,7 +4684,6 @@ export const useInfiniteGetAllUserConnectionSuggestionsQuery = <
       TData = GetAllUserConnectionSuggestionsQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetAllUserConnectionSuggestionsQueryVariables,
       client: GraphQLClient,
       variables?: GetAllUserConnectionSuggestionsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUserConnectionSuggestionsQuery, TError, TData>,
@@ -4769,7 +4736,6 @@ export const useInfiniteGetChatWithUserIdQuery = <
       TData = GetChatWithUserIdQuery,
       TError = unknown
     >(
-      pageParamKey: keyof GetChatWithUserIdQueryVariables,
       client: GraphQLClient,
       variables: GetChatWithUserIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatWithUserIdQuery, TError, TData>,
@@ -4797,8 +4763,30 @@ export const isDefinedNonNullAny = (v: any): v is definedNonNullAny => v !== und
 
 export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny(v));
 
+export const ApplicationStatusSchema = z.nativeEnum(ApplicationStatus);
+
+export const ChatTypeSchema = z.nativeEnum(ChatType);
+
+export const ConnectionStatusSchema = z.nativeEnum(ConnectionStatus);
+
+export const ContractTypeSchema = z.nativeEnum(ContractType);
+
+export const FieldTypeSchema = z.nativeEnum(FieldType);
+
+export const OperatorSchema = z.nativeEnum(Operator);
+
+export const OrganizationSizeSchema = z.nativeEnum(OrganizationSize);
+
+export const SortDirectionSchema = z.nativeEnum(SortDirection);
+
+export const SpecializationSchema = z.nativeEnum(Specialization);
+
+export const StatusSchema = z.nativeEnum(Status);
+
+export const WorkTypeSchema = z.nativeEnum(WorkType);
+
 export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInput>> {
-  return z.object<Properties<ApplicationInput>>({
+  return z.object({
     applicantProfileId: z.number(),
     dateOfApplication: definedNonNullAnySchema.nullish(),
     id: z.number().nullish(),
@@ -4810,7 +4798,7 @@ export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInpu
 }
 
 export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<ApplicationProcessStepsInput>> {
-  return z.object<Properties<ApplicationProcessStepsInput>>({
+  return z.object({
     applicationId: z.number(),
     id: z.number().nullish(),
     processStepId: z.number(),
@@ -4818,16 +4806,14 @@ export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<App
   })
 }
 
-export const ApplicationStatusSchema = z.nativeEnum(ApplicationStatus);
-
 export function CertificationInputSchema(): z.ZodObject<Properties<CertificationInput>> {
-  return z.object<Properties<CertificationInput>>({
+  return z.object({
     name: z.string()
   })
 }
 
 export function ChatInputSchema(): z.ZodObject<Properties<ChatInput>> {
-  return z.object<Properties<ChatInput>>({
+  return z.object({
     chatType: ChatTypeSchema.nullish(),
     id: z.number().nullish(),
     messages: z.array(z.lazy(() => MessageInputSchema().nullable())).nullish(),
@@ -4835,10 +4821,8 @@ export function ChatInputSchema(): z.ZodObject<Properties<ChatInput>> {
   })
 }
 
-export const ChatTypeSchema = z.nativeEnum(ChatType);
-
 export function ConnectionCreateInputSchema(): z.ZodObject<Properties<ConnectionCreateInput>> {
-  return z.object<Properties<ConnectionCreateInput>>({
+  return z.object({
     addressedId: z.number(),
     connectionStatus: ConnectionStatusSchema,
     id: z.number().nullish(),
@@ -4846,10 +4830,8 @@ export function ConnectionCreateInputSchema(): z.ZodObject<Properties<Connection
   })
 }
 
-export const ConnectionStatusSchema = z.nativeEnum(ConnectionStatus);
-
 export function ConnectionUpdateInputSchema(): z.ZodObject<Properties<ConnectionUpdateInput>> {
-  return z.object<Properties<ConnectionUpdateInput>>({
+  return z.object({
     addressedId: z.number(),
     connectionStatus: ConnectionStatusSchema,
     id: z.number(),
@@ -4857,16 +4839,14 @@ export function ConnectionUpdateInputSchema(): z.ZodObject<Properties<Connection
   })
 }
 
-export const ContractTypeSchema = z.nativeEnum(ContractType);
-
 export function DomainInputSchema(): z.ZodObject<Properties<DomainInput>> {
-  return z.object<Properties<DomainInput>>({
+  return z.object({
     name: z.string()
   })
 }
 
 export function ExperienceInputSchema(): z.ZodObject<Properties<ExperienceInput>> {
-  return z.object<Properties<ExperienceInput>>({
+  return z.object({
     activitySectorId: z.number(),
     city: z.string().nullish(),
     contractType: ContractTypeSchema,
@@ -4880,10 +4860,8 @@ export function ExperienceInputSchema(): z.ZodObject<Properties<ExperienceInput>
   })
 }
 
-export const FieldTypeSchema = z.nativeEnum(FieldType);
-
 export function FiltersInputSchema(): z.ZodObject<Properties<FiltersInput>> {
-  return z.object<Properties<FiltersInput>>({
+  return z.object({
     fieldType: FieldTypeSchema,
     key: z.string(),
     operator: OperatorSchema,
@@ -4894,7 +4872,7 @@ export function FiltersInputSchema(): z.ZodObject<Properties<FiltersInput>> {
 }
 
 export function InstitutionInputSchema(): z.ZodObject<Properties<InstitutionInput>> {
-  return z.object<Properties<InstitutionInput>>({
+  return z.object({
     description: z.string().nullish(),
     name: z.string(),
     photography: z.string().nullish()
@@ -4902,14 +4880,14 @@ export function InstitutionInputSchema(): z.ZodObject<Properties<InstitutionInpu
 }
 
 export function JobCategoryInputSchema(): z.ZodObject<Properties<JobCategoryInput>> {
-  return z.object<Properties<JobCategoryInput>>({
+  return z.object({
     id: z.number().nullish(),
     name: z.string()
   })
 }
 
 export function JobInputSchema(): z.ZodObject<Properties<JobInput>> {
-  return z.object<Properties<JobInput>>({
+  return z.object({
     description: z.string().min(5).max(250, "Field must not be longer than 250 characters"),
     id: z.number().nullish(),
     name: z.string().min(5)
@@ -4917,7 +4895,7 @@ export function JobInputSchema(): z.ZodObject<Properties<JobInput>> {
 }
 
 export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>> {
-  return z.object<Properties<JobListingInput>>({
+  return z.object({
     availableFrom: z.date(),
     availableTo: z.date(),
     categoryId: z.number().min(1),
@@ -4936,7 +4914,7 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
 }
 
 export function MessageInputSchema(): z.ZodObject<Properties<MessageInput>> {
-  return z.object<Properties<MessageInput>>({
+  return z.object({
     chatId: z.number(),
     content: z.string(),
     id: z.number().nullish(),
@@ -4945,16 +4923,14 @@ export function MessageInputSchema(): z.ZodObject<Properties<MessageInput>> {
 }
 
 export function MessageSeenInputSchema(): z.ZodObject<Properties<MessageSeenInput>> {
-  return z.object<Properties<MessageSeenInput>>({
+  return z.object({
     id: z.number().nullish(),
     userId: z.number().nullish()
   })
 }
 
-export const OperatorSchema = z.nativeEnum(Operator);
-
 export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationInput>> {
-  return z.object<Properties<OrganizationInput>>({
+  return z.object({
     activitySectorId: z.number().min(1),
     companySize: OrganizationSizeSchema.nullish(),
     description: z.string().min(5),
@@ -4970,10 +4946,8 @@ export function OrganizationInputSchema(): z.ZodObject<Properties<OrganizationIn
   })
 }
 
-export const OrganizationSizeSchema = z.nativeEnum(OrganizationSize);
-
 export function ProcessInputSchema(): z.ZodObject<Properties<ProcessInput>> {
-  return z.object<Properties<ProcessInput>>({
+  return z.object({
     description: z.string(),
     id: z.number().nullish(),
     name: z.string(),
@@ -4983,7 +4957,7 @@ export function ProcessInputSchema(): z.ZodObject<Properties<ProcessInput>> {
 }
 
 export function ProcessInputCreateSchema(): z.ZodObject<Properties<ProcessInputCreate>> {
-  return z.object<Properties<ProcessInputCreate>>({
+  return z.object({
     description: z.string(),
     id: z.number().nullish(),
     name: z.string(),
@@ -4993,7 +4967,7 @@ export function ProcessInputCreateSchema(): z.ZodObject<Properties<ProcessInputC
 }
 
 export function ProcessStepsInputSchema(): z.ZodObject<Properties<ProcessStepsInput>> {
-  return z.object<Properties<ProcessStepsInput>>({
+  return z.object({
     id: z.number().nullish(),
     order: z.number(),
     processId: z.number(),
@@ -5003,7 +4977,7 @@ export function ProcessStepsInputSchema(): z.ZodObject<Properties<ProcessStepsIn
 }
 
 export function ProcessStepsInputCreateSchema(): z.ZodObject<Properties<ProcessStepsInputCreate>> {
-  return z.object<Properties<ProcessStepsInputCreate>>({
+  return z.object({
     id: z.number().nullish(),
     order: z.number(),
     status: StatusSchema,
@@ -5012,7 +4986,7 @@ export function ProcessStepsInputCreateSchema(): z.ZodObject<Properties<ProcessS
 }
 
 export function RecruiterInputSchema(): z.ZodObject<Properties<RecruiterInput>> {
-  return z.object<Properties<RecruiterInput>>({
+  return z.object({
     id: z.number(),
     isActive: z.boolean().nullish(),
     lastActive: definedNonNullAnySchema.nullish(),
@@ -5021,7 +4995,7 @@ export function RecruiterInputSchema(): z.ZodObject<Properties<RecruiterInput>> 
 }
 
 export function SearchQueryInputSchema(): z.ZodObject<Properties<SearchQueryInput>> {
-  return z.object<Properties<SearchQueryInput>>({
+  return z.object({
     filters: z.array(z.lazy(() => FiltersInputSchema().nullable())).nullish(),
     page: z.number().nullish(),
     size: z.number().nullish(),
@@ -5029,28 +5003,22 @@ export function SearchQueryInputSchema(): z.ZodObject<Properties<SearchQueryInpu
   })
 }
 
-export const SortDirectionSchema = z.nativeEnum(SortDirection);
-
 export function SortsInputSchema(): z.ZodObject<Properties<SortsInput>> {
-  return z.object<Properties<SortsInput>>({
+  return z.object({
     direction: SortDirectionSchema,
     key: z.string()
   })
 }
 
-export const SpecializationSchema = z.nativeEnum(Specialization);
-
-export const StatusSchema = z.nativeEnum(Status);
-
 export function StepInputSchema(): z.ZodObject<Properties<StepInput>> {
-  return z.object<Properties<StepInput>>({
+  return z.object({
     description: z.string().min(3).max(150, "Field must not be longer than 150 characters"),
     title: z.string().min(2).max(15, "Field must not be longer than 15 characters")
   })
 }
 
 export function StudyInputSchema(): z.ZodObject<Properties<StudyInput>> {
-  return z.object<Properties<StudyInput>>({
+  return z.object({
     certification: z.number().nullish(),
     degree: z.string().nullish(),
     description: z.string().nullish(),
@@ -5064,7 +5032,7 @@ export function StudyInputSchema(): z.ZodObject<Properties<StudyInput>> {
 }
 
 export function UserProfileInputSchema(): z.ZodObject<Properties<UserProfileInput>> {
-  return z.object<Properties<UserProfileInput>>({
+  return z.object({
     city: z.string(),
     description: z.string(),
     firstName: z.string(),
@@ -5074,5 +5042,3 @@ export function UserProfileInputSchema(): z.ZodObject<Properties<UserProfileInpu
     profileTitle: z.string()
   })
 }
-
-export const WorkTypeSchema = z.nativeEnum(WorkType);

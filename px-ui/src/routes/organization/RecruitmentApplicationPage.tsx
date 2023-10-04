@@ -182,7 +182,6 @@ const RecruitmentApplicationPage = () => {
     fetchNextPage,
     isFetching,
   } = useInfiniteGetMessagesPaginatedQuery(
-    "searchQuery",
     graphqlRequestClient,
     {
       searchQuery,

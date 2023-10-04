@@ -161,7 +161,6 @@ const ChatRoomPage = () => {
     hasNextPage,
     isFetching,
   } = useInfiniteGetMessagesPaginatedQuery(
-    "searchQuery",
     graphqlRequestClient,
     {
       searchQuery,

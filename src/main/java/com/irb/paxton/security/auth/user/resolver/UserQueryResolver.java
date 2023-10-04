@@ -10,6 +10,7 @@ import com.netflix.graphql.dgs.InputArgument;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 @DgsComponent
 public class UserQueryResolver {
@@ -20,6 +21,11 @@ public class UserQueryResolver {
     @DgsQuery
     public List<User> getAllUsers() {
         return this.userService.getUsers();
+    }
+
+    @DgsQuery
+    public Optional<User> getCurrentUser() {
+        return this.userService.getCurrentUser();
     }
 
     @DgsQuery

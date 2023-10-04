@@ -1,7 +1,7 @@
 import { refreshLogin } from "@auth/authApi";
 import { FullAPiResponse } from "@interfaces/api.resp.types";
 import { LoginUserMutationResponseP } from "@interfaces/login.types";
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 
 export default function useRefreshLogin(
@@ -14,12 +14,7 @@ export default function useRefreshLogin(
     mutationKey: ["refreshLogin"],
   }
 ) {
-  return useMutation<
-    AxiosResponse<LoginUserMutationResponseP>,
-    AxiosError<FullAPiResponse>,
-    void,
-    null
-  >({
+  return useMutation({
     mutationFn: refreshLogin,
     ...options,
   });

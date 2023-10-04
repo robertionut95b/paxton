@@ -5,41 +5,31 @@ import com.irb.paxton.security.auth.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
-public class RegistrationTokenService {
+public class RegistrationTokenService extends AbstractTokenService<RegistrationToken> {
 
     @Autowired
-    private TokenRegistrationRepository tokenRepository;
+    private RegistrationTokenRepository registrationTokenRepository;
 
+    protected RegistrationTokenService(TokenRepository<RegistrationToken> tokenRepository) {
+        super(tokenRepository);
+    }
+
+    @Override
     public void checkDuplicateTokenForUser(User user) {
-        Optional<RegistrationToken> tokenOptional = this.tokenRepository.findByExpiresAtGreaterThanAndUserId(LocalDateTime.now(), user.getId());
+        Optional<RegistrationToken> tokenOptional = this.registrationTokenRepository.findByExpiresAtGreaterThanAndUserId(OffsetDateTime.now(), user.getId());
         if (tokenOptional.isPresent()) {
             throw new TokenAlreadyExistsException("Valid token already exists for this user");
         }
     }
 
-    public RegistrationToken createUserRegistrationToken(User user) {
+    @Override
+    public RegistrationToken createTokenForUser(User user) {
         checkDuplicateTokenForUser(user);
-        RegistrationToken tkn = new RegistrationToken(user, LocalDateTime.now().plusMinutes(15), false);
-        tkn.setTokenType(TokenType.REGISTRATION);
-        this.tokenRepository.save(tkn);
-        return tkn;
-    }
-
-    public Optional<RegistrationToken> getRegistrationToken(UUID token) {
-        return Optional.ofNullable(this.tokenRepository.findById(token));
-    }
-
-    public void expireToken(RegistrationToken token) {
-        token.setExpiresAt(LocalDateTime.now());
-        this.tokenRepository.save(token);
-    }
-
-    public RegistrationToken updateToken(RegistrationToken token) {
-        return this.tokenRepository.save(token);
+        RegistrationToken tkn = new RegistrationToken(user);
+        return this.registrationTokenRepository.save(tkn);
     }
 }

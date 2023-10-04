@@ -1,19 +1,28 @@
 package com.irb.paxton.security.auth.logout.event;
 
 import com.irb.paxton.security.auth.device.UserDevice;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OnUserLogoutSuccess {
 
-    private final String user;
+    private LocalDate eventTime = LocalDate.now();
 
-    private final String token;
+    private String user;
 
-    private final UserDevice userDevice;
+    private String token;
 
-    private final LocalDate eventTime = LocalDate.now();
+    private UserDevice userDevice;
 
+    public OnUserLogoutSuccess(String user, String token, UserDevice userDevice) {
+        this.user = user;
+        this.token = token;
+        this.userDevice = userDevice;
+    }
 }

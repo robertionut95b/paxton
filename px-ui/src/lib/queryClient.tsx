@@ -13,7 +13,10 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: false,
       refetchOnMount: false,
       refetchInterval: false,
-      retry: 0,
+      retry: (failureCount, error) => {
+        const err = error as GraphqlApiResponse;
+        return failureCount === 0 && err?.response?.status === 401;
+      },
       onError: (err) => {
         if ((err as GraphqlApiResponse).response.errors) {
           const error = err as GraphqlApiResponse;

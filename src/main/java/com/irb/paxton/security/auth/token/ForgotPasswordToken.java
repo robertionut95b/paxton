@@ -1,38 +1,32 @@
 package com.irb.paxton.security.auth.token;
 
 import com.irb.paxton.security.auth.user.User;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
 @Table(name = TABLE_PREFIX + "_FORGOT_PASSWORD_TOKEN")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
 public class ForgotPasswordToken extends Token {
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
-    private User user;
+    public ForgotPasswordToken(@Future(message = "Expires at must be higher than current date") @NotNull OffsetDateTime expiresAt, User user) {
+        super(TokenType.PASSWORD_RESET, expiresAt, user);
+    }
 
-    @NotNull
-    private LocalDateTime expiresAt;
-
-    @Transient
-    private Boolean isExpired;
-
-    public Boolean getExpired() {
-        return LocalDateTime.now().isAfter(this.expiresAt);
+    public ForgotPasswordToken(User user) {
+        super(TokenType.PASSWORD_RESET, user);
     }
 }

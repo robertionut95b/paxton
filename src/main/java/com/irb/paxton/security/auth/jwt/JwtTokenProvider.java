@@ -13,6 +13,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
@@ -24,8 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
@@ -34,8 +34,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @Component
 @Slf4j
@@ -152,11 +150,11 @@ public class JwtTokenProvider {
     }
 
     public ResponseCookie getCleanJwtRefreshCookie() {
-        return ResponseCookie.from(jwtProperties.getJwtRefreshCookieName(), null).path("/auth/refreshtoken").maxAge(0).build();
+        return ResponseCookie.from(jwtProperties.getJwtRefreshCookieName(), null).path("/").maxAge(0).build();
     }
 
     private ResponseCookie generateCookie(String name, String value) {
-        return ResponseCookie.from(name, value).path("api/" + API_VERSION + "/auth/refreshtoken").maxAge(jwtProperties.getRefreshTokenExpiryInSeconds()).httpOnly(true).build();
+        return ResponseCookie.from(name, value).path("/").maxAge(jwtProperties.getRefreshTokenExpiryInSeconds()).httpOnly(true).build();
     }
 
     public String getJwtRefreshFromCookies(HttpServletRequest request) {

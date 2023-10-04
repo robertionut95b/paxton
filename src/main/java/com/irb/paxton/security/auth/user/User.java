@@ -10,17 +10,20 @@ import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
-import lombok.*;
-import org.hibernate.Hibernate;
-
+import com.irb.paxton.security.oauth2.AuthProvider;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.hibernate.Hibernate;
+
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -91,6 +94,12 @@ public class User extends PaxtonEntity<Long> {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Candidate candidate;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "auth_providers")
+    @JsonIgnore
+    @CollectionTable(name = "px_user_auth_providers", joinColumns = @JoinColumn(name = "owner_id"))
+    private Set<AuthProvider> authProviders = new LinkedHashSet<>();
+
     public User(Long id, String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {
         this.id = id;
         this.firstName = firstName;
@@ -140,6 +149,10 @@ public class User extends PaxtonEntity<Long> {
 
     public void removeRole(Role role) {
         this.roles.remove(role);
+    }
+
+    public void addProvider(AuthProvider provider) {
+        this.authProviders.add(provider);
     }
 
     @Override

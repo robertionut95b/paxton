@@ -3,6 +3,10 @@ export interface LoginUserMutationProps {
   password: string;
 }
 
+export interface LoginUserByTokenMutationProps {
+  token: string;
+}
+
 export interface LoginUserMutationResponseP {
   access_token: string;
   expires_in: number;

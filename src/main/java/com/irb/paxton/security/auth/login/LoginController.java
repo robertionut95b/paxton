@@ -1,35 +1,22 @@
 package com.irb.paxton.security.auth.login;
 
-import com.irb.paxton.security.auth.device.UserDevice;
-import com.irb.paxton.security.auth.device.UserDeviceService;
+import com.irb.paxton.security.AuthenticationService;
 import com.irb.paxton.security.auth.jwt.JwtTokenProvider;
-import com.irb.paxton.security.auth.jwt.token.RefreshToken;
-import com.irb.paxton.security.auth.jwt.token.RefreshTokenService;
 import com.irb.paxton.security.auth.login.response.LoginResponse;
-import com.irb.paxton.security.auth.role.Role;
-import com.irb.paxton.security.auth.user.PaxtonUserDetails;
-import com.irb.paxton.security.auth.user.User;
-import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.dto.UserLoginDto;
+import com.irb.paxton.security.auth.user.dto.UserLoginTokenDto;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
-import static com.irb.paxton.utils.HttpUtils.getRequestIP;
 
 @RestController
 @Slf4j
@@ -37,56 +24,28 @@ import static com.irb.paxton.utils.HttpUtils.getRequestIP;
 public class LoginController {
 
     @Autowired
-    JwtTokenProvider jwtTokenProvider;
+    private AuthenticationService authenticationService;
 
     @Autowired
-    JmsTemplate jmsTemplate;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private UserDeviceService userDeviceService;
-
-    @Autowired
-    private UserService userService;
+    private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping(path = "/auth/login")
-    public ResponseEntity<?> token(HttpServletRequest request, @Valid @RequestBody UserLoginDto userLoginDto, @RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent) {
-        PaxtonUserDetails userDetails = (PaxtonUserDetails) this.authenticateUser(userLoginDto);
-        User user = userDetails.getUserProfile().getUser();
-        UserDevice userDevice = new UserDevice(getRequestIP(request), userAgent, user);
-
-        // register device login
-        UserDevice regDevice = userDeviceService.checkAndSaveUserDevice(userDevice);
-        if (regDevice != null) {
-            jmsTemplate.convertAndSend("userDeviceRegistrationQueue", userDevice);
-        }
-
-        String token = jwtTokenProvider.generateTokenFromUserDetails(userDetails);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
-        ResponseCookie jwtRefreshCookie = jwtTokenProvider.generateRefreshJwtCookie(refreshToken.getToken());
-
-        log.info(String.format("Auth principal '%s' logged in, included authorities [%s]",
-                userDetails.getUsername(), userDetails.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")))
-        );
+    public ResponseEntity<LoginResponse> loginByUsernameAndPassword(@Valid @RequestBody UserLoginDto userLoginDto) {
+        LoginResponse loginResponse = authenticationService.loginByUsernameAndPassword(userLoginDto);
+        ResponseCookie jwtRefreshCookie = jwtTokenProvider.generateRefreshJwtCookie(loginResponse.getRefreshToken());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(
-                        new LoginResponse(token, jwtTokenProvider.getExpiresAtFromTokenAsLong(token),
-                                refreshToken.getToken(), jwtTokenProvider.getExpiresAtFromTokenAsLong(refreshToken.getToken()))
-                );
+                .body(loginResponse);
     }
 
-    public UserDetails authenticateUser(UserLoginDto userLoginDto) {
-        UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(), userLoginDto.getPassword());
-        Authentication authentication = authenticationManager.authenticate(authReq);
-        PaxtonUserDetails userDetails = (PaxtonUserDetails) authentication.getPrincipal();
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return userDetails;
+    @PostMapping(path = "/auth/login/token")
+    public ResponseEntity<LoginResponse> loginByOAuth2CodeToken(@Valid @RequestBody UserLoginTokenDto requestBody) {
+        LoginResponse loginResponse = authenticationService.loginByOAuth2Code(requestBody.getToken());
+        ResponseCookie jwtRefreshCookie = jwtTokenProvider.generateRefreshJwtCookie(loginResponse.getRefreshToken());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+                .body(loginResponse);
     }
 }

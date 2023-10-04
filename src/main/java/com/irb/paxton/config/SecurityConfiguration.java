@@ -6,10 +6,12 @@ import com.irb.paxton.config.properties.FrontendProperties;
 import com.irb.paxton.security.auth.PaxtonUserDetailsService;
 import com.irb.paxton.security.auth.jwt.JwtAuthenticationFilter;
 import com.irb.paxton.security.auth.role.PaxtonRole;
+import com.irb.paxton.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.irb.paxton.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.irb.paxton.security.oauth2.PaxtonOAuth2Service;
 import com.irb.paxton.security.response.PxAccessDeniedHandler;
 import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,10 +27,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,6 +42,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -51,16 +55,25 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class SecurityConfiguration {
 
     @Autowired
-    PaxtonUserDetailsService paxtonUserDetailsService;
+    private PaxtonUserDetailsService paxtonUserDetailsService;
 
     @Autowired
-    FrontendProperties frontendProperties;
+    private FrontendProperties frontendProperties;
 
     @Autowired
-    ApplicationProperties applicationProperties;
+    private ApplicationProperties applicationProperties;
 
     @Autowired
-    CorsProperties corsProperties;
+    private CorsProperties corsProperties;
+
+    @Autowired
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @Autowired
+    private PaxtonOAuth2Service paxtonOAuth2Service;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -106,7 +119,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DefaultSecurityFilterChain devSpringWebFilterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -122,11 +135,13 @@ public class SecurityConfiguration {
                         .requestMatchers(antMatcher("/assets/**")).permitAll()
                         .requestMatchers(mvc.pattern("/api/v*/auth/**")).permitAll()
                         .requestMatchers(mvc.pattern("/api/v*/images/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/login/**")).permitAll()
                         // front-end paths
                         .requestMatchers(mvc.pattern("/app/**")).permitAll()
                         // h2 console, dev only
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers(toH2Console()).permitAll()
                         .requestMatchers(antMatcher("/graphiql")).permitAll()
+                        .requestMatchers(antMatcher("/error")).permitAll()
                         .requestMatchers(antMatcher("/")).permitAll()
                         .requestMatchers(antMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(antMatcher("/**/*.png")).permitAll()
@@ -138,10 +153,21 @@ public class SecurityConfiguration {
                         .requestMatchers(antMatcher("/**/*.js")).permitAll()
                         .anyRequest()
                         .authenticated()
-                );
-        // disable for production
-        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        http.addFilterBefore(tokenAuthenticationFilter(), BasicAuthenticationFilter.class);
+                )
+                .oauth2Login(oauth2 ->
+                        oauth2.authorizationEndpoint(auth ->
+                                        auth.baseUri("/api/%s/auth/login/oauth2/".formatted(API_VERSION))
+                                )
+                                .redirectionEndpoint(auth ->
+                                        auth.baseUri("/api/%s/auth/login/oauth2/callback/*".formatted(API_VERSION)))
+                                .userInfoEndpoint(userInfoEndpointConfig ->
+                                        userInfoEndpointConfig.userService(paxtonOAuth2Service))
+                                .failureHandler(oAuth2AuthenticationFailureHandler)
+                                .successHandler(oAuth2AuthenticationSuccessHandler)
+                )
+                // disable for production
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

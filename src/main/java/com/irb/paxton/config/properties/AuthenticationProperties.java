@@ -15,5 +15,5 @@ public class AuthenticationProperties {
 
     private String headerPrefix = "Bearer ";
 
+    private String oauth2RedirectUri = "http://localhost:3000/oauth2/redirect";
 }
-

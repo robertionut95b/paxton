@@ -7,6 +7,7 @@ import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
+import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.credentials.Credentials;
@@ -15,12 +16,15 @@ import com.irb.paxton.security.auth.user.dto.UserSignupDto;
 import com.irb.paxton.security.auth.user.exceptions.UserAlreadyExistsException;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.irb.paxton.security.auth.user.response.CurrentUserDetails;
+import com.irb.paxton.security.oauth2.AuthProvider;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +53,11 @@ public class UserService extends AbstractService<User, Long> {
         return this.userRepository.findAll();
     }
 
+    public Optional<User> getCurrentUser() {
+        Authentication authentication = SecurityUtils.getCurrentUserAuth();
+        return this.userRepository.findByUsername(authentication.getName());
+    }
+
     public User findByEmailOrUsername(String email, String username) {
         return this.userRepository.findByEmailOrUsername(email, username);
     }
@@ -61,8 +70,8 @@ public class UserService extends AbstractService<User, Long> {
         return this.userRepository.findByUsername(username);
     }
 
-    public void updateUser(User user) {
-        this.userRepository.save(user);
+    public User updateUser(User user) {
+        return this.userRepository.save(user);
     }
 
     public void confirmEmailUser(User user) {
@@ -89,15 +98,17 @@ public class UserService extends AbstractService<User, Long> {
     }
 
     @Transactional
-    public void registerNewUser(User user) throws UserAlreadyExistsException {
+    public User registerNewUser(User user) throws UserAlreadyExistsException {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
+        user.setRoles(Collections.singletonList(roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString())));
         userRepository.save(user);
         userProfileRepository.save(
                 new UserProfile(user, null, null, null, null,
                         null, null, String.format("%s's Profile", user.getUsername()), null)
         );
+        return user;
     }
 
     public CurrentUserDetails getCurrentUserDetails(String username) {
@@ -113,5 +124,9 @@ public class UserService extends AbstractService<User, Long> {
 
     public boolean checkUserIsInRole(String userName, String roleName) {
         return userRepository.existsByRoles_NameAndUsername(roleName, userName);
+    }
+
+    public Optional<User> findByEmailAndAuthProviders(String email, AuthProvider authProvider) {
+        return userRepository.findByEmailAndAuthProviders(email, authProvider);
     }
 }

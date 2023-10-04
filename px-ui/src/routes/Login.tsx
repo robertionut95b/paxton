@@ -1,12 +1,16 @@
 import { useAuth } from "@auth/useAuth";
+import { APP_API_BASE_URL, APP_API_VERSION } from "@constants/Properties";
 import {
   Anchor,
   Button,
   Checkbox,
   Container,
+  Divider,
   Group,
+  Image,
   Paper,
   PasswordInput,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -45,13 +49,7 @@ export default function Login() {
 
   return (
     <Container size={"xs"} py={40}>
-      <Title align="center">Welcome to Paxton</Title>
-      <p className="text-center">
-        Do not have an account yet?{" "}
-        <Anchor component={NavLink} to="/signup">
-          Create account
-        </Anchor>
-      </p>
+      <Title align="center">Welcome to Paxton!</Title>
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form
           className="px-mantine-form"
@@ -72,7 +70,11 @@ export default function Login() {
           />
           <Group position="apart" mt="md">
             <Checkbox label="Remember me" />
-            <Anchor component={NavLink} to={"/forgot-password/request"}>
+            <Anchor
+              size="sm"
+              component={NavLink}
+              to={"/forgot-password/request"}
+            >
               Forgot password?
             </Anchor>
           </Group>
@@ -80,6 +82,45 @@ export default function Login() {
             Log in
           </Button>
         </form>
+        <Divider label="OR" labelPosition="center" my="sm" />
+        <Group>
+          <Anchor
+            component={NavLink}
+            to={`${APP_API_BASE_URL}/api/v${APP_API_VERSION}/auth/login/oauth2/github`}
+          >
+            <Button
+              leftIcon={
+                <Image
+                  src={"/images/github-icon.svg"}
+                  width={24}
+                  color="white"
+                />
+              }
+              loading={isMutating > 0}
+              color="gray"
+              variant="outline"
+            >
+              Continue with Github
+            </Button>
+          </Anchor>
+          <Button
+            leftIcon={
+              <Image src={"/images/google-icon.svg"} width={20} color="white" />
+            }
+            loading={isMutating > 0}
+            color="blue.7"
+            variant="outline"
+            disabled
+          >
+            Continue with Google
+          </Button>
+        </Group>
+        <Text mt="sm" size="sm" className="text-center">
+          Don&apos;t have an account yet?{" "}
+          <Anchor component={NavLink} to="/signup">
+            Sign up
+          </Anchor>
+        </Text>
       </Paper>
     </Container>
   );

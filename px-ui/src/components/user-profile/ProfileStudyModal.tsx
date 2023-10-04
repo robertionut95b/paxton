@@ -483,38 +483,44 @@ export default function ProfileStudyModal() {
             {...form.getInputProps("endDate")}
           />
         </ShowIf>
-        <Group grow>
-          <Button
-            type="button"
-            mt="xl"
-            color="red.7"
-            loading={isAddStudyLoading || isUpdateStudyLoading}
-            onClick={() =>
-              openConfirmModal({
-                title: "Delete study",
-                children: (
-                  <Stack>
-                    <Text size="sm">Are you sure you want to delete this?</Text>
-                    <Text size="sm" weight="bold">
-                      This action is irreversible!
-                    </Text>
-                  </Stack>
-                ),
-                labels: { cancel: "Cancel", confirm: "Confirm" },
-                confirmProps: { color: "red.7" },
-                onCancel: () => null,
-                onConfirm: () =>
-                  removeStudy({
-                    studyId: Number(studyId),
-                  }),
-              })
-            }
-          >
-            Remove study
-          </Button>
+        <Group grow={!!initialStudySelected}>
+          <ShowIf if={initialStudySelected}>
+            <Button
+              type="button"
+              mt="xl"
+              fullWidth
+              color="red.7"
+              loading={isAddStudyLoading || isUpdateStudyLoading}
+              onClick={() =>
+                openConfirmModal({
+                  title: "Delete study",
+                  children: (
+                    <Stack>
+                      <Text size="sm">
+                        Are you sure you want to delete this?
+                      </Text>
+                      <Text size="sm" weight="bold">
+                        This action is irreversible!
+                      </Text>
+                    </Stack>
+                  ),
+                  labels: { cancel: "Cancel", confirm: "Confirm" },
+                  confirmProps: { color: "red.7" },
+                  onCancel: () => null,
+                  onConfirm: () =>
+                    removeStudy({
+                      studyId: Number(studyId),
+                    }),
+                })
+              }
+            >
+              Remove study
+            </Button>
+          </ShowIf>
           <Button
             type="submit"
             mt="xl"
+            fullWidth
             loading={isAddStudyLoading || isUpdateStudyLoading}
           >
             Submit

@@ -716,6 +716,7 @@ input SearchQueryInput {
 
 type Query {
     healthCheck: String
+    getCurrentUser: User
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
     getAllUsersPaged(searchQuery: SearchQueryInput): UserPage

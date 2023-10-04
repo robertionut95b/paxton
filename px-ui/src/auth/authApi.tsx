@@ -1,5 +1,6 @@
 import { APP_API_PATH } from "@constants/Properties";
 import {
+  LoginUserByTokenMutationProps,
   LoginUserMutationProps,
   LoginUserMutationResponseP,
 } from "@interfaces/login.types";
@@ -26,6 +27,15 @@ export const submitLogin = async (
   return data;
 };
 
+export const submitLoginByToken = async (
+  body: LoginUserByTokenMutationProps
+): Promise<LoginUserMutationResponseP> => {
+  const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login/token`, {
+    ...body,
+  });
+  return data;
+};
+
 export const getCurrentUser = async () => {
   const resp = await api.post(`${APP_API_PATH}/users/current`, null);
   return resp;
@@ -34,10 +44,7 @@ export const getCurrentUser = async () => {
 export const refreshLogin = async (): Promise<
   AxiosResponse<LoginUserMutationResponseP>
 > => {
-  const resp = await api.post(
-    `${APP_API_PATH}/${AUTH_PATH}/refreshtoken`,
-    null
-  );
+  const resp = await api.post(`${APP_API_PATH}/${AUTH_PATH}/refreshtoken`);
   return resp;
 };
 

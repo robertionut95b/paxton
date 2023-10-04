@@ -1,14 +1,16 @@
 package com.irb.paxton.security.auth.device;
 
-import com.irb.paxton.auditable.AuditableEntity;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
-import lombok.*;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;

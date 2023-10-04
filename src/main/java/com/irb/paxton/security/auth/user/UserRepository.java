@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth.user;
 
 import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.security.oauth2.AuthProvider;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,8 @@ public interface UserRepository extends AbstractRepository<User, Long> {
     Optional<User> findByUserProfile_Id(Long id);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByEmailAndAuthProviders(String email, AuthProvider authProviders);
 
     Optional<User> findByUsername(String username);
 

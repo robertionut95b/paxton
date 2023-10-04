@@ -21,6 +21,7 @@ const ForgotPasswordReset = lazy(() => import("./ForgotPasswordReset"));
 const Index = lazy(() => import("./IndexPage"));
 const JobsPage = lazy(() => import("./jobs/JobsPage"));
 const Login = lazy(() => import("./Login"));
+const OAuth2RedirectPage = lazy(() => import("./OAuth2RedirectPage"));
 const NetworkPage = lazy(() => import("./NetworkPage"));
 const NetworkMyContactsPage = lazy(() => import("./NetworkMyContactsPage"));
 const SignUp = lazy(() => import("./SignUp"));
@@ -276,6 +277,14 @@ export default function AppUI() {
             element={
               <RequireNonAuth>
                 <Login />
+              </RequireNonAuth>
+            }
+          />
+          <Route
+            path="oauth2/redirect"
+            element={
+              <RequireNonAuth>
+                <OAuth2RedirectPage />
               </RequireNonAuth>
             }
           />

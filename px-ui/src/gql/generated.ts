@@ -772,6 +772,7 @@ export type Query = {
   getChatsWithUsersIds?: Maybe<Array<Maybe<Chat>>>;
   getConnectionsForUser?: Maybe<UserConnectionPage>;
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
+  getCurrentUser?: Maybe<User>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getMessagesPaginated?: Maybe<MessagePage>;
   getMessagesSliced?: Maybe<MessageSlice>;
@@ -1348,6 +1349,11 @@ export type RemoveUserProfileExperienceMutationVariables = Exact<{
 
 
 export type RemoveUserProfileExperienceMutation = { __typename?: 'Mutation', removeUserProfileExperience?: { __typename?: 'UserProfile', id: number } | null };
+
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser?: { __typename?: 'User', id: number, firstName: string, lastName: string, username: string } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -2376,6 +2382,57 @@ export const useRemoveUserProfileExperienceMutation = <
 useRemoveUserProfileExperienceMutation.getKey = () => ['RemoveUserProfileExperience'];
 
 useRemoveUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: RemoveUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUserProfileExperienceMutation, RemoveUserProfileExperienceMutationVariables>(client, RemoveUserProfileExperienceDocument, variables, headers);
+export const GetCurrentUserDocument = `
+    query GetCurrentUser {
+  getCurrentUser {
+    id
+    firstName
+    lastName
+    username
+  }
+}
+    `;
+export const useGetCurrentUserQuery = <
+      TData = GetCurrentUserQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetCurrentUserQueryVariables,
+      options?: UseQueryOptions<GetCurrentUserQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetCurrentUserQuery, TError, TData>(
+      variables === undefined ? ['GetCurrentUser'] : ['GetCurrentUser', variables],
+      fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, variables, headers),
+      options
+    );
+useGetCurrentUserQuery.document = GetCurrentUserDocument;
+
+
+useGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) => variables === undefined ? ['GetCurrentUser'] : ['GetCurrentUser', variables];
+;
+
+export const useInfiniteGetCurrentUserQuery = <
+      TData = GetCurrentUserQuery,
+      TError = unknown
+    >(
+      pageParamKey: keyof GetCurrentUserQueryVariables,
+      client: GraphQLClient,
+      variables?: GetCurrentUserQueryVariables,
+      options?: UseInfiniteQueryOptions<GetCurrentUserQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useInfiniteQuery<GetCurrentUserQuery, TError, TData>(
+      variables === undefined ? ['GetCurrentUser.infinite'] : ['GetCurrentUser.infinite', variables],
+      (metaData) => fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    );
+
+
+useInfiniteGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) => variables === undefined ? ['GetCurrentUser.infinite'] : ['GetCurrentUser.infinite', variables];
+;
+
+useGetCurrentUserQuery.fetcher = (client: GraphQLClient, variables?: GetCurrentUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, variables, headers);
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {

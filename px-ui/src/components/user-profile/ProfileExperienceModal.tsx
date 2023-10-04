@@ -373,35 +373,40 @@ export default function ProfileExperienceModal() {
             {...form.getInputProps("endDate")}
           />
         </ShowIf>
-        <Group grow>
-          <Button
-            type="button"
-            mt="xl"
-            color="red.7"
-            loading={isLoading || updateLoading}
-            onClick={() =>
-              openConfirmModal({
-                title: "Delete study",
-                children: (
-                  <Stack>
-                    <Text size="sm">Are you sure you want to delete this?</Text>
-                    <Text size="sm" weight="bold">
-                      This action is irreversible!
-                    </Text>
-                  </Stack>
-                ),
-                labels: { cancel: "Cancel", confirm: "Confirm" },
-                confirmProps: { color: "red.7" },
-                onCancel: () => null,
-                onConfirm: () =>
-                  removeExperience({
-                    experienceId: Number(params.experienceId),
-                  }),
-              })
-            }
-          >
-            Remove experience
-          </Button>
+        <Group grow={!!initialExperienceSelected}>
+          <ShowIf if={initialExperienceSelected}>
+            <Button
+              type="button"
+              mt="xl"
+              fullWidth
+              color="red.7"
+              loading={isLoading || updateLoading}
+              onClick={() =>
+                openConfirmModal({
+                  title: "Delete study",
+                  children: (
+                    <Stack>
+                      <Text size="sm">
+                        Are you sure you want to delete this?
+                      </Text>
+                      <Text size="sm" weight="bold">
+                        This action is irreversible!
+                      </Text>
+                    </Stack>
+                  ),
+                  labels: { cancel: "Cancel", confirm: "Confirm" },
+                  confirmProps: { color: "red.7" },
+                  onCancel: () => null,
+                  onConfirm: () =>
+                    removeExperience({
+                      experienceId: Number(params.experienceId),
+                    }),
+                })
+              }
+            >
+              Remove experience
+            </Button>
+          </ShowIf>
           <Button
             type="submit"
             fullWidth

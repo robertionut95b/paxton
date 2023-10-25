@@ -64,7 +64,7 @@ export default function ClientApp() {
       profileSlugUrl: user?.profileSlugUrl ?? user?.profileSlugUrl,
     }
   );
-  const permissions = user?.roles || [];
+  const permissions = user?.roles ?? [];
   return (
     <div>
       <ShowIfElse

@@ -1,10 +1,8 @@
 package com.irb.paxton.exceptions.handler.common;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.Map;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public abstract class AbstractAlreadyExistsException extends PaxtonRuntimeException {
+public abstract class AbstractAlreadyExistsException extends PaxtonValidationException {
 
     protected AbstractAlreadyExistsException() {
     }
@@ -23,5 +21,25 @@ public abstract class AbstractAlreadyExistsException extends PaxtonRuntimeExcept
 
     protected AbstractAlreadyExistsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    protected AbstractAlreadyExistsException(Map<String, Object> errors) {
+        super(errors);
+    }
+
+    protected AbstractAlreadyExistsException(String message, Map<String, Object> errors) {
+        super(message, errors);
+    }
+
+    protected AbstractAlreadyExistsException(String message, Throwable cause, Map<String, Object> errors) {
+        super(message, cause, errors);
+    }
+
+    protected AbstractAlreadyExistsException(Throwable cause, Map<String, Object> errors) {
+        super(cause, errors);
+    }
+
+    protected AbstractAlreadyExistsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, Map<String, Object> errors) {
+        super(message, cause, enableSuppression, writableStackTrace, errors);
     }
 }

@@ -71,7 +71,7 @@ public abstract class UserProfileMapper {
 
     public City mapCity(String cityValue) {
         return this.cityRepository.findByName(cityValue)
-                .orElseThrow(() -> new CityNotFoundException("%s does not exist".formatted(cityValue), "city"));
+                .orElseThrow(() -> new CityNotFoundException("%s does not exist".formatted(cityValue)));
     }
 
     public User mapUser(String username) {
@@ -122,17 +122,17 @@ public abstract class UserProfileMapper {
 
     public UserProfile mapUserProfileBySlugUrl(String userProfileSlugUrl) {
         return this.userProfileRepository.findByProfileSlugUrl(userProfileSlugUrl)
-                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userProfileSlugUrl), "userProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userProfileSlugUrl)));
     }
 
     public Organization mapOrganization(Long organizationId) {
         return this.organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("%s does not exist".formatted(organizationId), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException("%s does not exist".formatted(organizationId)));
     }
 
     public ActivitySector mapActivitySector(Long activitySectorId) {
         return this.activitySectorRepository.findById(activitySectorId)
-                .orElseThrow(() -> new ActivitySectorNotFoundException("%s does not exist".formatted(activitySectorId), "activitySectorId"));
+                .orElseThrow(() -> new ActivitySectorNotFoundException("%s does not exist".formatted(activitySectorId)));
     }
 
     @Mapping(target = "userProfile", source = "experienceInput.userProfileSlugUrl")
@@ -195,6 +195,6 @@ public abstract class UserProfileMapper {
 
     public UserProfile mapUserProfile(Long userId) {
         return this.userProfileRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userId), "userProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userId)));
     }
 }

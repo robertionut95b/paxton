@@ -39,12 +39,12 @@ public abstract class OrganizationMapper {
 
     public City mapCity(Long cityId) {
         return cityRepository.findById(cityId)
-                .orElseThrow(() -> new CityNotFoundException("City %s does not exist".formatted(cityId), "headQuartersId"));
+                .orElseThrow(() -> new CityNotFoundException("City %s does not exist".formatted(cityId)));
     }
 
     public ActivitySector mapActivitySector(Long activitySectorId) {
         return activitySectorRepository.findById(activitySectorId)
-                .orElseThrow(() -> new ActivitySectorNotFoundException("Activity sector %s does not exist".formatted(activitySectorId), "activitySectorId"));
+                .orElseThrow(() -> new ActivitySectorNotFoundException("Activity sector %s does not exist".formatted(activitySectorId)));
     }
 
     public Collection<Long> mapCities(Collection<City> value) {

@@ -17,6 +17,7 @@ import { Undo } from "@ckeditor/ckeditor5-undo";
 import Event from "@ckeditor/ckeditor5-utils/src/eventinfo";
 import { useMemo } from "react";
 
+import { JOB_POSTING_INITIAL_DESCRIPTION } from "@constants/Properties";
 import "@styles/ckEditorDark.css";
 
 export interface EditorProps {
@@ -25,10 +26,10 @@ export interface EditorProps {
   onChange?: (event: Event, editor: ClassicEditor) => void;
   readOnly?: boolean;
   disabled?: boolean;
+  onEditorReady?: (editor: ClassicEditor) => void;
 }
 
-const propsInitialValue =
-  "<h1><strong>About the job</strong></h1><p></p><h2><strong>Description</strong></h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut dui tellus. Quisque congue luctus risus non consequat. Nullam nec lorem at dolor ullamcorper iaculis. Nullam nec ultricies ex, non luctus orci.<p></p> Aenean ex ligula, molestie et dolor at, mattis sodales nibh. Maecenas sed dignissim orci, sed accumsan ante. Praesent vulputate sed sem id tempus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed commodo bibendum velit, nec porta turpis efficitur vel. Aenean quam tellus, ultricies sed tortor tempus, consectetur finibus odio.</p>";
+const propsInitialValue = JOB_POSTING_INITIAL_DESCRIPTION;
 
 const Editor = ({
   configuration,
@@ -36,6 +37,7 @@ const Editor = ({
   onChange,
   readOnly = false,
   disabled = false,
+  onEditorReady,
 }: EditorProps) => {
   const editorConfiguration: EditorConfig = useMemo(
     () => ({
@@ -113,6 +115,7 @@ const Editor = ({
             editableElement.style.border = "0px";
           } else toolbarElement.style.display = "flex";
         }
+        onEditorReady?.(editor);
       }}
     />
   );

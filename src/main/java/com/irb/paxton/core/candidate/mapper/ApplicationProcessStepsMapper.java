@@ -37,7 +37,7 @@ public abstract class ApplicationProcessStepsMapper {
 
     public Application mapApplication(Long value) {
         return applicationRepository.findById(value)
-                .orElseThrow(() -> new ApplicationNotFoundException("Application by id %s does not exist".formatted(value), "applicationId"));
+                .orElseThrow(() -> new ApplicationNotFoundException("Application by id %s does not exist".formatted(value)));
     }
 }
 

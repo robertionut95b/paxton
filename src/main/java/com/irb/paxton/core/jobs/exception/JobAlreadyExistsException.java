@@ -1,49 +1,54 @@
 package com.irb.paxton.core.jobs.exception;
 
-import graphql.ErrorClassification;
-import graphql.ErrorType;
-import graphql.GraphQLError;
-import graphql.language.SourceLocation;
+import com.irb.paxton.exceptions.handler.common.AbstractAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class JobAlreadyExistsException extends RuntimeException implements GraphQLError {
+public class JobAlreadyExistsException extends AbstractAlreadyExistsException {
 
     @Serial
     private static final long serialVersionUID = 1803708763847314597L;
-    private String path;
+
+    public JobAlreadyExistsException() {
+    }
 
     public JobAlreadyExistsException(String message) {
         super(message);
-    }
-
-    public JobAlreadyExistsException(String message, String path) {
-        super(message);
-        this.path = path;
     }
 
     public JobAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    @Override
-    public List<Object> getPath() {
-        return Collections.singletonList(Optional.ofNullable(path));
+    public JobAlreadyExistsException(Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public List<SourceLocation> getLocations() {
-        return null;
+    public JobAlreadyExistsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    @Override
-    public ErrorClassification getErrorType() {
-        return ErrorType.ValidationError;
+    public JobAlreadyExistsException(Map<String, Object> errors) {
+        super(errors);
+    }
+
+    public JobAlreadyExistsException(String message, Map<String, Object> errors) {
+        super(message, errors);
+    }
+
+    public JobAlreadyExistsException(String message, Throwable cause, Map<String, Object> errors) {
+        super(message, cause, errors);
+    }
+
+    public JobAlreadyExistsException(Throwable cause, Map<String, Object> errors) {
+        super(cause, errors);
+    }
+
+    public JobAlreadyExistsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, Map<String, Object> errors) {
+        super(message, cause, enableSuppression, writableStackTrace, errors);
     }
 }

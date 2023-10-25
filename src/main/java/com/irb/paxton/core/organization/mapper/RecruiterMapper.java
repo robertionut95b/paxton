@@ -33,7 +33,7 @@ public abstract class RecruiterMapper {
 
     public Organization mapOrganization(Long id) {
         return organizationRepository.findById(id)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(id), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(id)));
     }
 
     @Mapping(target = "organization", source = "recruiterInput.organizationId")

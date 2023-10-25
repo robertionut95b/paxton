@@ -1,20 +1,20 @@
 package com.irb.paxton.exceptions.handler.common;
 
-public class PaxtonRuntimeException extends RuntimeException {
+public abstract class PaxtonRuntimeException extends RuntimeException {
 
-    public PaxtonRuntimeException() {
+    protected PaxtonRuntimeException() {
         super();
     }
 
-    public PaxtonRuntimeException(String message) {
+    protected PaxtonRuntimeException(String message) {
         super(message);
     }
 
-    public PaxtonRuntimeException(String message, Throwable cause) {
+    protected PaxtonRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PaxtonRuntimeException(Throwable cause) {
+    protected PaxtonRuntimeException(Throwable cause) {
         super(cause);
     }
 

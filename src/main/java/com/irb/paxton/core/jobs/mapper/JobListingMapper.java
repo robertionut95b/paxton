@@ -54,12 +54,12 @@ public abstract class JobListingMapper {
 
     public Organization mapOrganization(Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %d does not exist".formatted(organizationId), "organizationId"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization by id %d does not exist".formatted(organizationId)));
     }
 
     public JobCategory mapJobCategory(Long categoryId) {
         return jobCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new JobCategoryNotFoundException("Job Category by id %d does not exist".formatted(categoryId), "categoryId"));
+                .orElseThrow(() -> new JobCategoryNotFoundException("Job Category by id %d does not exist".formatted(categoryId)));
     }
 
     public City mapCity(String location) {
@@ -68,7 +68,7 @@ public abstract class JobListingMapper {
 
     public Job mapJob(Long jobId) {
         return jobService.findById(jobId)
-                .orElseThrow(() -> new JobNotFoundException("Job by id %d does not exist".formatted(jobId), "jobId"));
+                .orElseThrow(() -> new JobNotFoundException("Job by id %d does not exist".formatted(jobId)));
     }
 
     public Recruiter mapRecruiter(Long recruiterId) {

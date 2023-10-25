@@ -1,11 +1,11 @@
 package com.irb.paxton.core.jobs.input;
 
-import lombok.Data;
-import org.hibernate.validator.constraints.Length;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -20,11 +20,12 @@ public class JobInput implements Serializable {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Length(min = 3, max = 25, message = "Name must be between {min} and {max} characters")
     private String name;
 
     @NotNull
     @NotBlank
     @NotEmpty
-    @Length(min = 10, message = "Description must be longer than 10 characters")
+    @Length(min = 10, max = 100, message = "Description must be between {min} and {max} characters")
     private String description;
 }

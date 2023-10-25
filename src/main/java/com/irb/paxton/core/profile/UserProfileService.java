@@ -61,7 +61,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateUserProfile(UserProfileInput userProfileInput) {
         UserProfile userProfile = this.userProfileRepository.findById(userProfileInput.getId())
-                .orElseThrow(() -> new UserProfileNotFoundException("User profile does not exist", "id"));
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile does not exist"));
 
         User user = userProfile.getUser();
         if (!userProfileInput.getLastName().equals(user.getLastName())
@@ -88,7 +88,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateExperience(ExperienceInput experienceInput) {
         Experience actualExperience = this.experienceRepository.findById(experienceInput.getId())
-                .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString()), "id"));
+                .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString())));
         Experience updatedExperience = this.userProfileMapper.updateUserProfileExperience(actualExperience, experienceInput);
         experienceRepository.save(updatedExperience);
 
@@ -111,7 +111,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile updateStudy(StudyInput studyInput) {
         Study actualStudy = this.studyRepository.findById(studyInput.getId())
-                .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString()), "id"));
+                .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString())));
         Study updatedStudy = this.userProfileMapper.updateUserProfileStudy(actualStudy, studyInput);
         this.studyRepository.save(updatedStudy);
         return updatedStudy.getUserProfile();
@@ -121,7 +121,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile deleteStudy(Long studyId) {
         Study actualStudy = this.studyRepository.findById(studyId)
-                .orElseThrow(() -> new StudyNotFoundException(String.format("Study %s does not exist", studyId), "id"));
+                .orElseThrow(() -> new StudyNotFoundException(String.format("Study %s does not exist", studyId)));
         this.studyRepository.deleteById(actualStudy.getId());
         return actualStudy.getUserProfile();
     }
@@ -130,7 +130,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.user.username)")
     public UserProfile deleteExperience(Long experienceId) {
         Experience currentExperience = this.experienceRepository.findById(experienceId)
-                .orElseThrow(() -> new ExperienceNotFoundException(String.format("Experience %s does not exist", experienceId), "id"));
+                .orElseThrow(() -> new ExperienceNotFoundException(String.format("Experience %s does not exist", experienceId)));
         this.experienceRepository.deleteById(currentExperience.getId());
         return currentExperience.getUserProfile();
     }

@@ -7,8 +7,4 @@ public class PhotographyNotFoundException extends AbstractNotFoundException {
     public PhotographyNotFoundException(String message) {
         super(message);
     }
-
-    public PhotographyNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

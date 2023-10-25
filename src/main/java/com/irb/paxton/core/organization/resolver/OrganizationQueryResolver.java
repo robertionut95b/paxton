@@ -28,7 +28,7 @@ public class OrganizationQueryResolver {
     @DgsQuery
     public Organization getOrganizationById(@InputArgument Long organizationId) {
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization %s does not exist".formatted(organizationId), "id"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization %s does not exist".formatted(organizationId)));
     }
 
     @DgsQuery

@@ -24,7 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,7 +101,7 @@ public class UserService extends AbstractService<User, Long> {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
-        user.setRoles(Collections.singletonList(roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString())));
+        user.addRole(roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString()));
         userRepository.save(user);
         userProfileRepository.save(
                 new UserProfile(user, null, null, null, null,

@@ -14,13 +14,13 @@ import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.Role;
 import com.irb.paxton.security.auth.role.RoleRepository;
 import com.irb.paxton.security.auth.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class RecruiterService extends AbstractService<Recruiter, Long> {
             throw new EmptyUsersListException("Empty input list of users provided");
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(
-                        () -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(organizationId), "organizationId")
+                        () -> new OrganizationNotFoundException("Organization by id %s does not exist".formatted(organizationId))
                 );
 
         List<Recruiter> currentRecruiters = (List<Recruiter>) organization.getRecruiters();
@@ -69,8 +69,8 @@ public class RecruiterService extends AbstractService<Recruiter, Long> {
         for (Recruiter newRecruit : newRecruits) {
             // check if user is already assigned in an organization
             if (recruiterRepository.existsByUser_IdAndOrganization_IdNot(newRecruit.getUser().getId(), organizationId)) {
-                throw new RecruiterAlreadyAssignedException("User \"%s\" is already assigned as recruiter in another organization"
-                        .formatted(newRecruit.getUser().getDisplayName()), "recruiterInput");
+                throw new RecruiterAlreadyAssignedException("User [\"%s\"] is already assigned as recruiter in another organization"
+                        .formatted(newRecruit.getUser().getDisplayName()));
             }
             // check if the user also has the Recruiter role
             boolean usrInRole = userService

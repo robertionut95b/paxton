@@ -9,19 +9,22 @@ public class ApplicationNotFoundException extends AbstractNotFoundException {
     @Serial
     private static final long serialVersionUID = 3710672327013105433L;
 
-    private String path;
+    public ApplicationNotFoundException() {
+    }
 
     public ApplicationNotFoundException(String message) {
         super(message);
     }
 
-    public ApplicationNotFoundException(String message, String path) {
-        super(message);
-        this.path = path;
+    public ApplicationNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ApplicationNotFoundException(String message, Throwable cause, String path) {
-        super(message, cause);
-        this.path = path;
+    public ApplicationNotFoundException(Throwable cause) {
+        super(cause);
+    }
+
+    public ApplicationNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -97,7 +97,7 @@ public abstract class ApplicationMapper {
 
     public JobListing mapJobListing(Long jobListingId) {
         return jobListingRepository.findById(jobListingId)
-                .orElseThrow(() -> new JobNotFoundException("Job listing by id %d does not exist".formatted(jobListingId), "jobListingId"));
+                .orElseThrow(() -> new JobNotFoundException("Job listing by id %d does not exist".formatted(jobListingId)));
     }
 
     public Candidate mapCandidate(Long userId) {
@@ -111,6 +111,6 @@ public abstract class ApplicationMapper {
 
     public UserProfile mapUserProfile(Long userProfileId) {
         return userProfileRepository.findById(userProfileId)
-                .orElseThrow(() -> new UserProfileNotFoundException("User profile by id %d does not exist".formatted(userProfileId), "applicantProfileId"));
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile by id %d does not exist".formatted(userProfileId)));
     }
 }

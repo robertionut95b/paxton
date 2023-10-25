@@ -1,39 +1,25 @@
 package com.irb.paxton.core.study.exception;
 
 import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
-import graphql.ErrorClassification;
-import graphql.ErrorType;
-import graphql.GraphQLError;
-import graphql.language.SourceLocation;
 
-import java.util.List;
+public class StudyNotFoundException extends AbstractNotFoundException {
 
-public class StudyNotFoundException extends AbstractNotFoundException implements GraphQLError {
+    public StudyNotFoundException() {
+    }
 
-    private final String path;
-
-    public StudyNotFoundException(String message, String path) {
+    public StudyNotFoundException(String message) {
         super(message);
-        this.path = path;
     }
 
-    public StudyNotFoundException(String message, Throwable cause, String path) {
+    public StudyNotFoundException(String message, Throwable cause) {
         super(message, cause);
-        this.path = path;
     }
 
-    @Override
-    public List<SourceLocation> getLocations() {
-        return null;
+    public StudyNotFoundException(Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public ErrorClassification getErrorType() {
-        return ErrorType.ValidationError;
-    }
-
-    @Override
-    public List<Object> getPath() {
-        return GraphQLError.super.getPath();
+    public StudyNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

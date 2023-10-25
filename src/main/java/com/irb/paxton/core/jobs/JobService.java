@@ -43,7 +43,7 @@ public class JobService {
         } else {
             Optional<Job> jobOptional = jobRepository.findByName(jobInput.getName());
             if (jobOptional.isPresent()) {
-                throw new JobAlreadyExistsException("Job by name %s is already defined".formatted(jobInput.getName()), "name");
+                throw new JobAlreadyExistsException("Job by name %s is already defined".formatted(jobInput.getName()));
             }
             job = jobMapper.toEntity(jobInput);
         }

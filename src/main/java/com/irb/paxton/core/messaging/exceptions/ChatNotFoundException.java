@@ -1,10 +1,7 @@
 package com.irb.paxton.core.messaging.exceptions;
 
 import com.irb.paxton.exceptions.handler.common.AbstractNotFoundException;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ChatNotFoundException extends AbstractNotFoundException {
 
     public ChatNotFoundException() {

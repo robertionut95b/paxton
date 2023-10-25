@@ -51,6 +51,17 @@ interface Error {
 
 interface Extensions {
   classification: string;
+  errorType:
+    | "UNKNOWN"
+    | "INTERNAL"
+    | "NOT_FOUND"
+    | "UNAUTHENTICATED"
+    | "PERMISSION_DENIED"
+    | "BAD_REQUEST"
+    | "UNAVAILABLE"
+    | "FAILED_PRECONDITION";
+  debugInfo: object;
+  errorDetails?: Record<string, string>;
 }
 
 export function isGraphqlApiResponse(

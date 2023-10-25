@@ -9,6 +9,7 @@ import {
   FieldType,
   GetOrganizationBySlugNameQuery,
   Operator,
+  WorkType,
   useAddJobCategoryMutation,
   useGetAllJobCategoriesQuery,
   useGetAllJobListingsQuery,
@@ -18,7 +19,6 @@ import {
   useGetCountriesCitiesQuery,
   useGetOrganizationBySlugNameQuery,
   usePublishJobListingMutation,
-  WorkType,
 } from "@gql/generated";
 import {
   BuildingOffice2Icon,
@@ -43,8 +43,8 @@ import {
   NumberInput,
   Select,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, zodResolver } from "@mantine/form";
@@ -229,8 +229,7 @@ export default function OrganizationPostJobForm() {
       id: jobListingId ? Number(jobListingId) : null,
       title: jobListingItem?.title ?? "",
       description: jobListingItem?.description ?? "",
-      formattedDescription:
-        jobListingItem?.formattedDescription ?? ([] as string[]),
+      formattedDescription: jobListingItem?.formattedDescription ?? "",
       availableFrom: jobListingItem?.availableFrom
         ? new Date(jobListingItem.availableFrom)
         : new Date(),
@@ -312,6 +311,12 @@ export default function OrganizationPostJobForm() {
             );
             form.setFieldValue("formattedDescription", data);
             form.setFieldValue("description", plainText);
+          }}
+          onEditorReady={(editor) => {
+            const plainText = viewToPlainText(
+              // @ts-expect-error("ckeditor types")
+              editor.editing.view.document.getRoot()
+            );
             setDesc(plainText);
           }}
         />

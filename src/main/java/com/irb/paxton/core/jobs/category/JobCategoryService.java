@@ -1,6 +1,6 @@
 package com.irb.paxton.core.jobs.category;
 
-import com.irb.paxton.core.jobs.category.exception.JobCategoryDuplicateException;
+import com.irb.paxton.core.jobs.category.exception.JobCategoryAlreadyExistsException;
 import com.irb.paxton.core.jobs.category.exception.JobCategoryNotFoundException;
 import com.irb.paxton.core.jobs.category.input.JobCategoryInput;
 import com.irb.paxton.core.jobs.category.mapper.JobCategoryMapper;
@@ -22,12 +22,12 @@ public class JobCategoryService {
         JobCategory jobCategory;
         if (jobCategoryInput.getId() != null) {
             jobCategory = jobCategoryRepository.findById(jobCategoryInput.getId())
-                    .orElseThrow(() -> new JobCategoryNotFoundException("Job category by id %s does not exist".formatted(jobCategoryInput.getId()), "id"));
+                    .orElseThrow(() -> new JobCategoryNotFoundException("Job category by id %s does not exist".formatted(jobCategoryInput.getId())));
             jobCategoryMapper.partialUpdate(jobCategoryInput, jobCategory);
         } else {
             Optional<JobCategory> jobCategoryOptional = jobCategoryRepository.findByName(jobCategoryInput.getName());
             if (jobCategoryOptional.isPresent()) {
-                throw new JobCategoryDuplicateException("Job category by name %s is already defined".formatted(jobCategoryInput.getName()), "name");
+                throw new JobCategoryAlreadyExistsException("Job category by name %s is already defined".formatted(jobCategoryInput.getName()));
             }
             jobCategory = jobCategoryMapper.inputToJobCategory(jobCategoryInput);
         }

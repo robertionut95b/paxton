@@ -2,10 +2,11 @@ package com.irb.paxton.core.messaging.input;
 
 import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.input.AbstractInput;
-import lombok.Data;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
 import java.util.Collection;
 
 @Data
@@ -13,11 +14,13 @@ public class ChatInput extends AbstractInput {
 
     private Long id;
 
+    @NotNull
     @NotEmpty
-    private Collection<Long> users;
+    @Size(min = 2, message = "Chat must have at least {min} users")
+    private Collection<@NotNull Long> users;
 
     @NotNull
     private ChatType chatType;
-    
+
     private Collection<MessageInput> messages;
 }

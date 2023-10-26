@@ -4,14 +4,15 @@ import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -38,6 +39,9 @@ public class Chat extends PaxtonEntity<Long> {
                     @Index(name = "idx_chat_users", columnList = "chat_id, users_id", unique = true)
             }
     )
+    @NotNull
+    @NotEmpty
+    @Size(min = 2, message = "Chat must have at least {min} users")
     private Collection<User> users = new ArrayList<>();
 
     @Column(length = 25)

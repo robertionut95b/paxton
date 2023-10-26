@@ -49,15 +49,9 @@ export default function ProfileBannerModal() {
     },
     onError: (error) => {
       if (error) {
-        let message = "";
-        if (error.response?.data.errors?.[0] === "This file already exists.") {
-          message = "Could not update as this file already exists";
-        } else {
-          message = "Unknown error occurred";
-        }
         showNotification({
           title: "Avatar update",
-          message,
+          message: error.response?.data.message ?? "Unknown error ocurred",
           autoClose: 5000,
           icon: <ExclamationTriangleIcon width={20} />,
         });

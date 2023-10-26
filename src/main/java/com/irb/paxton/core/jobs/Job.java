@@ -33,7 +33,7 @@ public class Job extends PaxtonEntity<Long> {
     @NotNull
     @NotBlank
     @NotEmpty
-    @Length(min = 10, max = 100, message = "Description must be between {min} and {max} characters")
+    @Length(min = 10, max = 250, message = "Description must be between {min} and {max} characters")
     private String description;
 
     @OneToMany(mappedBy = "job", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

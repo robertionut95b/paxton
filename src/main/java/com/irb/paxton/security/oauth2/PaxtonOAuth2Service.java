@@ -1,6 +1,8 @@
 package com.irb.paxton.security.oauth2;
 
 import com.irb.paxton.exceptions.handler.common.OAuth2AuthenticationProcessingException;
+import com.irb.paxton.security.auth.role.PaxtonRole;
+import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.PaxtonUserDetails;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
@@ -22,6 +24,9 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -69,6 +74,7 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setUsername(oAuth2UserInfo.getUsername());
         user.setEmailConfirmed(true);
+        user.addRole(roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString()));
         user = userService.registerNewUser(user);
 
         return user;

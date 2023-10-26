@@ -13,4 +13,10 @@ public class ApiResponse {
 
     protected int status;
 
+    protected String code = "SUCCESS";
+
+    public ApiResponse(String message, int status) {
+        this.message = message;
+        this.status = status;
+    }
 }

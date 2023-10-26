@@ -1,5 +1,6 @@
 package com.irb.paxton.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irb.paxton.config.properties.ApplicationProperties;
 import com.irb.paxton.config.properties.CorsProperties;
 import com.irb.paxton.config.properties.FrontendProperties;
@@ -9,8 +10,10 @@ import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.irb.paxton.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.irb.paxton.security.oauth2.PaxtonOAuth2Service;
-import com.irb.paxton.security.response.PxAccessDeniedHandler;
-import com.irb.paxton.security.response.PxAuthenticationEntryPoint;
+import io.github.wimdeblauwe.errorhandlingspringbootstarter.UnauthorizedEntryPoint;
+import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.ErrorCodeMapper;
+import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.ErrorMessageMapper;
+import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.HttpStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,7 +122,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+    public UnauthorizedEntryPoint unauthorizedEntryPoint(HttpStatusMapper httpStatusMapper,
+                                                         ErrorCodeMapper errorCodeMapper,
+                                                         ErrorMessageMapper errorMessageMapper,
+                                                         ObjectMapper objectMapper) {
+        return new UnauthorizedEntryPoint(httpStatusMapper, errorCodeMapper, errorMessageMapper, objectMapper);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc, UnauthorizedEntryPoint unauthorizedEntryPoint) throws Exception {
         http
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -128,8 +139,8 @@ public class SecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(authProvider())
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new PxAuthenticationEntryPoint())
-                        .accessDeniedHandler(new PxAccessDeniedHandler()))
+                        .authenticationEntryPoint(unauthorizedEntryPoint)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(antMatcher("/resources/**")).permitAll()
                         .requestMatchers(antMatcher("/assets/**")).permitAll()

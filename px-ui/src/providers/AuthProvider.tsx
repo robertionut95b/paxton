@@ -23,7 +23,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CheckUserHasRolesOrPermissions } from "@utils/security";
 import { useCallback, useMemo } from "react";
 import { useInterval } from "usehooks-ts";
-import { AuthErrorMessages } from "./messages";
 
 export default function AuthProvider({
   children,
@@ -70,12 +69,9 @@ export default function AuthProvider({
   const { mutate: logIn } = useLoginUser({
     onSuccess: ({ access_token }) => loadAuthenticationByToken(access_token),
     onError: (err) => {
-      let msg = "Unknown error encountered, please try again later";
-      if (err.response && err.response.status === 401) {
-        msg =
-          AuthErrorMessages[err.response.data.message] ??
-          AuthErrorMessages["Unknown"];
-      }
+      const msg =
+        err.response?.data.message ??
+        "Unknown error encountered, please try again later";
       showNotification({
         title: "Authentication error",
         message: msg,
@@ -89,12 +85,9 @@ export default function AuthProvider({
   const { mutate: loginByToken } = useLoginUserByToken({
     onSuccess: ({ access_token }) => loadAuthenticationByToken(access_token),
     onError: (err) => {
-      let msg = "Unknown error encountered, please try again later";
-      if (err.response && err.response.status === 401) {
-        msg =
-          AuthErrorMessages[err.response.data.message] ??
-          AuthErrorMessages["Unknown"];
-      }
+      const msg =
+        err.response?.data.message ??
+        "Unknown error encountered, please try again later";
       showNotification({
         title: "Authentication error",
         message: msg,
@@ -103,9 +96,7 @@ export default function AuthProvider({
       });
       if (
         err.response &&
-        err.response.status === 400 &&
-        err.response.data.message ===
-          "Token is expired, please re-submit login request"
+        (err.response.status === 404 || err.response.status === 400)
       ) {
         window.location.href = "/login";
       }

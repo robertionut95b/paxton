@@ -1,4 +1,4 @@
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import useRegisterUser from "@hooks/useRegisterUser";
 import {
   Anchor,
@@ -44,6 +44,17 @@ export default function SignUp() {
       setTimeout(() => {
         navigate("/login", { replace: true });
       }, 3000);
+    },
+    onError: (err) => {
+      const msg =
+        err.response?.data.message ??
+        "Unknown error encountered, please try again later";
+      showNotification({
+        title: "Authentication error",
+        message: msg,
+        autoClose: 5000,
+        icon: <LockClosedIcon width={20} />,
+      });
     },
   });
 

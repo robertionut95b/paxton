@@ -2,7 +2,7 @@ import { useAuth } from "@auth/useAuth";
 import { Container, Group, Loader, Paper, Stack, Text } from "@mantine/core";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
-import { useEffectOnce } from "usehooks-ts";
+import { useTimeout } from "usehooks-ts";
 
 const OAuth2RedirectPage = () => {
   const navigate = useNavigate();
@@ -11,10 +11,6 @@ const OAuth2RedirectPage = () => {
   const { signInByToken } = useAuth();
 
   const from = location.state?.from?.pathname || "/app";
-
-  useEffectOnce(() => {
-    triggerLogin();
-  });
 
   const triggerLogin = () => {
     const accessToken = searchParams.get("token");
@@ -27,6 +23,8 @@ const OAuth2RedirectPage = () => {
       );
     }
   };
+
+  useTimeout(triggerLogin, 1000);
 
   return (
     <Container className="flex h-screen" size="xs" py={40}>

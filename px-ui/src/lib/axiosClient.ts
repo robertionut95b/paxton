@@ -5,7 +5,7 @@ import {
   setUserByToken,
 } from "@auth/authUtils";
 import { APP_API_BASE_URL } from "@constants/Properties";
-import { FullAPiResponse } from "@interfaces/api.resp.types";
+import { ApiAuthCodes, FullAPiResponse } from "@interfaces/api.resp.types";
 import axios, {
   AxiosError,
   AxiosHeaders,
@@ -51,14 +51,13 @@ api.interceptors.response.use(
     const config: AxiosRequestConfig & { _retry?: boolean } = err.config ?? {};
     const originalReq: AxiosRequestConfig & { _retry?: boolean } =
       err.config ?? {};
-    const notAuthMSg =
-      err.response?.data.message ===
-      "Full authentication is required to access this resource";
+    const notAuthCode =
+      err.response?.data.code === ApiAuthCodes["UNAUTHORIZED"].toString();
     if (
       err.response &&
       err.response.status === 401 &&
       !config._retry &&
-      notAuthMSg
+      notAuthCode
     ) {
       originalReq._retry = true;
       try {

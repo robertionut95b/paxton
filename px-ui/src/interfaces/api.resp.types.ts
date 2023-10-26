@@ -1,13 +1,21 @@
 export interface ApiResponse {
   message: string;
-  code: number;
+  code: string;
+  status: number;
+}
+
+export interface ErrorObject {
+  code: string;
+  property: string;
+  message: string;
+  rejectedValue: string;
+  path: string;
 }
 
 export interface FullAPiResponse extends ApiResponse {
-  errors: string[];
-  path: string;
-  status: number;
-  timestamp: Date;
+  fieldErrors?: ErrorObject[];
+  globalErrors?: ErrorObject[];
+  parameterErrors?: ErrorObject[];
 }
 
 export interface GraphqlApiResponse {
@@ -62,6 +70,12 @@ interface Extensions {
     | "FAILED_PRECONDITION";
   debugInfo: object;
   errorDetails?: Record<string, string>;
+}
+
+export enum ApiAuthCodes {
+  "UNAUTHORIZED",
+  "BAD_CREDENTIALS",
+  "ACCESS_DENIED",
 }
 
 export function isGraphqlApiResponse(

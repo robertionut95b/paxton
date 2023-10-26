@@ -2,15 +2,15 @@ import { useAuth } from "@auth/useAuth";
 import { Container, Group, Loader, Paper, Stack, Text } from "@mantine/core";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
-import { useTimeout } from "usehooks-ts";
+import { useReadLocalStorage, useTimeout } from "usehooks-ts";
 
 const OAuth2RedirectPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { signInByToken } = useAuth();
-
-  const from = location.state?.from?.pathname || "/app";
+  const from =
+    useReadLocalStorage("redirUrl") ?? location.state?.from?.pathname ?? "/app";
 
   const triggerLogin = () => {
     const accessToken = searchParams.get("token");

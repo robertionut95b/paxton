@@ -23,6 +23,11 @@ public class JobQueryResolver {
     }
 
     @DgsQuery
+    public Job getJobById(@InputArgument Long jobId) {
+        return this.jobService.findById(jobId);
+    }
+
+    @DgsQuery
     public PaginatedResponse<Job> getAllJobsPaginated(@InputArgument SearchRequest searchQuery) {
         return jobService.getAllJobsPaginatedFiltered(searchQuery);
     }

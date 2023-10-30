@@ -721,6 +721,7 @@ type Query {
     getAllUsers: [User]
     getAllUsersPaged(searchQuery: SearchQueryInput): UserPage
     getAllJobs: [Job]
+    getJobById(jobId: Long!): Job
     getAllJobsPaginated(searchQuery: SearchQueryInput): JobPage
     getAllOrganizations: [Organization]
     getOrganizationById(organizationId: Long!): Organization

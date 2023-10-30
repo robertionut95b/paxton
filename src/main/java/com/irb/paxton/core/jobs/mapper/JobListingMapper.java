@@ -2,7 +2,7 @@ package com.irb.paxton.core.jobs.mapper;
 
 import com.irb.paxton.core.jobs.Job;
 import com.irb.paxton.core.jobs.JobListing;
-import com.irb.paxton.core.jobs.JobService;
+import com.irb.paxton.core.jobs.JobRepository;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.category.exception.JobCategoryNotFoundException;
@@ -31,7 +31,7 @@ public abstract class JobListingMapper {
     private CityRepository cityRepository;
 
     @Autowired
-    private JobService jobService;
+    private JobRepository jobRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -67,7 +67,7 @@ public abstract class JobListingMapper {
     }
 
     public Job mapJob(Long jobId) {
-        return jobService.findById(jobId)
+        return jobRepository.findById(jobId)
                 .orElseThrow(() -> new JobNotFoundException("Job by id %d does not exist".formatted(jobId)));
     }
 

@@ -7,6 +7,7 @@ import com.irb.paxton.core.organization.OrganizationRepository;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
@@ -19,7 +20,7 @@ public class JobMutationResolver {
     private OrganizationRepository organizationRepository;
 
     @DgsMutation
-    public Job publishJob(@InputArgument JobInput JobInput) {
+    public Job publishJob(@InputArgument @Valid JobInput JobInput) {
         return jobService.publishJob(JobInput);
     }
 }

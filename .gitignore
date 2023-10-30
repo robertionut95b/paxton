@@ -36,3 +36,6 @@ build/
 
 ### Fs databases ###
 db/
+
+### env files ###
+.env

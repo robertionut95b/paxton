@@ -3,25 +3,15 @@ package com.irb.paxton.storage;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
-
 public interface StorageService {
 
     void init();
 
-    void store(MultipartFile file);
+    FileResponse store(MultipartFile file, String... additionalPath);
 
-    FileResponse storeWithPaths(MultipartFile file, String... additionalPath);
+    Resource loadAsResourceFromPath(String filePath);
 
-    Path load(String filename);
-
-    Resource loadAsResource(String filename);
-
-    Resource loadAsResourceFromFullPath(String filePath);
-
-    void remove(String filename);
-
-    void remove(Path filePath);
+    void remove(String filePath);
 
     void deleteAll();
 

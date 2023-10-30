@@ -55,8 +55,9 @@ public class JobService {
         return this.jobRepository.findAll();
     }
 
-    public Optional<Job> findById(Long jobId) {
-        return this.jobRepository.findById(jobId);
+    public Job findById(Long jobId) {
+        return this.jobRepository.findById(jobId)
+                .orElseThrow(() -> new JobNotFoundException("Job by id [%s] does not exist".formatted(jobId)));
     }
 
     public PaginatedResponse<Job> getAllJobsPaginatedFiltered(SearchRequest searchRequest) {

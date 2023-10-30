@@ -25,7 +25,7 @@
                 <groupId>com.netflix.graphql.dgs</groupId>
                 <artifactId>graphql-dgs-platform-dependencies</artifactId>
                 <!-- The DGS BOM/platform dependency. This is the only place you set version of DGS -->
-                <version>7.5.3</version>
+                <version>7.6.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -189,6 +189,13 @@
             <groupId>io.github.wimdeblauwe</groupId>
             <artifactId>error-handling-spring-boot-starter</artifactId>
             <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.6</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <build>

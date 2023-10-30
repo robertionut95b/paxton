@@ -1,6 +1,6 @@
 package com.irb.paxton.core.media;
 
-import com.irb.paxton.storage.FileStorageService;
+import com.irb.paxton.storage.StorageService;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION
 public class PhotographyController {
 
     @Autowired
-    FileStorageService fileStorageService;
+    StorageService storageService;
 
     @Autowired
     PhotographyService photographyService;
@@ -47,7 +47,7 @@ public class PhotographyController {
     @GetMapping(value = {"/images/{size}/{imageName}", "/images/{imageName}"}, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable(required = false) Optional<String> size, @PathVariable String imageName) throws IOException {
         Photography photography = photographyService.findByName(imageName);
-        Resource image = fileStorageService.loadAsResourceFromFullPath(photography.getPath());
+        Resource image = storageService.loadAsResourceFromPath(photography.getPath());
         CacheControl cacheControl = CacheControl.maxAge(60, TimeUnit.SECONDS).noTransform().mustRevalidate();
         if (size.isEmpty()) {
             try (InputStream in = image.getInputStream()) {

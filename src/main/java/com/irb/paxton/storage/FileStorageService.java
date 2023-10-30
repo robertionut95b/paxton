@@ -3,6 +3,9 @@ package com.irb.paxton.storage;
 import com.irb.paxton.config.properties.FileStorageProperties;
 import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
 import com.irb.paxton.storage.exception.FileStorageException;
+import io.minio.MinioClient;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.*;
-import java.util.Objects;
+import java.util.UUID;
 
 @Service
+@ConditionalOnMissingBean(value = MinioClient.class)
 public class FileStorageService implements StorageService {
 
     private final Path rootLocation;
@@ -24,6 +28,7 @@ public class FileStorageService implements StorageService {
         this.rootLocation = Paths.get(
                 "%s/%s/".formatted(properties.getStorageRootPath(), properties.getStorageUserPath())
         );
+        this.init();
     }
 
     @Override
@@ -35,29 +40,14 @@ public class FileStorageService implements StorageService {
         }
     }
 
-    @Override
-    public void store(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                throw new FileStorageException("Failed to store empty file.");
-            }
-            Path destinationFile = this.rootLocation.resolve(
-                            Paths.get(Objects.requireNonNull(file.getOriginalFilename()))
-                    )
-                    .normalize();
-            if (!destinationFile.getParent().startsWith(this.rootLocation)) {
-                throw new FileStorageException("Cannot store file outside current directory.");
-            }
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
-            throw new FileStorageException("Failed to store file.", e);
-        }
-    }
-
-    public FileResponse storeWithPaths(MultipartFile file, String... additionalPath) {
+    public FileResponse store(MultipartFile file, String... additionalPath) {
         Path destinationFile;
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String fileName = UUID.randomUUID().toString();
+        String newFileName = "%s.%s".formatted(fileName, fileExtension);
+        Path additionalPaths = Paths.get("", additionalPath);
+        String newFilePath = additionalPaths
+                .resolve(newFileName).toString();
         try {
             if (file.isEmpty()) {
                 throw new FileStorageException("Failed to store empty file.");
@@ -65,10 +55,10 @@ public class FileStorageService implements StorageService {
             if (file.getOriginalFilename() == null) {
                 throw new FileStorageException("File has no name.");
             }
-            Path additionalPaths = Paths.get("", additionalPath);
+
             destinationFile = this.rootLocation
                     .resolve(additionalPaths)
-                    .resolve(Paths.get(file.getOriginalFilename()))
+                    .resolve(newFileName)
                     .normalize();
             // create subdirectories if not exists
             Files.createDirectories(destinationFile);
@@ -83,33 +73,13 @@ public class FileStorageService implements StorageService {
         } catch (IOException e) {
             throw new FileStorageException("Failed to store file.", e);
         }
-        return new FileResponse(file.getOriginalFilename(), destinationFile.toString());
+        return new FileResponse(newFileName, newFilePath);
     }
 
     @Override
-    public Path load(String filename) {
-        return rootLocation.resolve(filename);
-    }
-
-    @Override
-    public Resource loadAsResource(String filename) {
+    public Resource loadAsResourceFromPath(String filePath) {
         try {
-            Path file = load(filename);
-            Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new FileStorageException("Could not read file: %s".formatted(filename));
-            }
-        } catch (MalformedURLException e) {
-            throw new FileStorageException("Could not read file: %s".formatted(filename), e);
-        }
-    }
-
-    @Override
-    public Resource loadAsResourceFromFullPath(String filePath) {
-        try {
-            Path file = Paths.get(filePath);
+            Path file = this.rootLocation.resolve(Paths.get(filePath));
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -122,22 +92,9 @@ public class FileStorageService implements StorageService {
     }
 
     @Override
-    public void remove(String filename) {
-        Path targetPath = Paths.get(filename);
+    public void remove(String filePath) {
+        Path targetPath = this.rootLocation.resolve(filePath);
         if (!targetPath.getParent().startsWith(this.rootLocation)) {
-            throw new FileStorageException("Cannot delete file outside current directory.");
-        }
-        try {
-            Files.deleteIfExists(targetPath);
-        } catch (IOException e) {
-            throw new FileStorageException("Could not delete : File not found %s".formatted(targetPath));
-        }
-    }
-
-    @Override
-    public void remove(Path filePath) {
-        Path targetPath = this.load(filePath.toString());
-        if (!filePath.getParent().startsWith(this.rootLocation)) {
             throw new FileStorageException("Cannot delete file outside current directory.");
         }
         try {

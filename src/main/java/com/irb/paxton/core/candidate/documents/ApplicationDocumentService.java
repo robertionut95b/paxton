@@ -6,15 +6,15 @@ import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.ApplicationStatus;
 import com.irb.paxton.core.candidate.documents.input.ApplicationDocumentInput;
 import com.irb.paxton.storage.FileResponse;
-import com.irb.paxton.storage.FileStorageService;
+import com.irb.paxton.storage.StorageService;
 import com.irb.paxton.storage.exception.FileNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -24,7 +24,7 @@ public class ApplicationDocumentService {
     private ApplicationRepository applicationRepository;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private StorageService storageService;
 
     @Autowired
     private DocumentRepository documentRepository;
@@ -42,7 +42,7 @@ public class ApplicationDocumentService {
         MultipartFile documentInput = applicationDocumentInput.getFiles();
         // store file on the server
         String userApplicationsLoc = application.getApplicantProfile().getUser().getId().toString();
-        FileResponse fileResponse = fileStorageService.storeWithPaths(documentInput, userApplicationsLoc, "applications", application.getId().toString());
+        FileResponse fileResponse = storageService.store(documentInput, userApplicationsLoc, "applications", application.getId().toString());
         Document document = new Document(fileResponse.getName(), fileResponse.getPath());
         // store the document record
         documentRepository.save(document);
@@ -64,7 +64,7 @@ public class ApplicationDocumentService {
             throw new FileNotFoundException("No such application document by name %s exists in the application %s".formatted(fileName, application.getId()));
         }
         ApplicationDocument document = applicationDocument.get();
-        return fileStorageService.loadAsResourceFromFullPath(document.getDocument().getUrl());
+        return storageService.loadAsResourceFromPath(document.getDocument().getUrl());
     }
 
     @Transactional
@@ -82,7 +82,7 @@ public class ApplicationDocumentService {
         if (doc.isPresent()) {
             ApplicationDocument applicationDocument = doc.get();
             Document document = doc.get().getDocument();
-            fileStorageService.remove(document.getUrl());
+            storageService.remove(document.getUrl());
 
             application.removeApplicationDocument(applicationDocument);
             applicationRepository.save(application);

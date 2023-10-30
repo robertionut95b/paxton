@@ -24,7 +24,7 @@ public class PhotographyService {
     private UserProfileMapper userProfileMapper;
 
     @Autowired
-    private StorageService fileStorageService;
+    private StorageService storageService;
 
     public Photography findByName(String imageName) {
         return this.photographyRepository
@@ -35,48 +35,52 @@ public class PhotographyService {
     @Transactional
     public Photography changeProfileBanner(@NotNull PhotographyInput photographyInput) {
         MultipartFile part = photographyInput.getPhotography();
-        Photography photography = userProfileMapper.updateUserProfileBanner(photographyInput);
-        UserProfile userProfile = photography.getUserProfile();
+        Photography newPhotography = userProfileMapper.updateUserProfileBanner(photographyInput);
+        UserProfile userProfile = newPhotography.getUserProfile();
         String currentBanner = userProfile.getCoverPhotography();
+        Photography currentPhotography = photographyRepository.findByName(currentBanner)
+                .orElse(null);
 
         String id = userProfile.getUser().getId().toString();
-        FileResponse fr = fileStorageService.storeWithPaths(part, id);
+        FileResponse fr = storageService.store(part, id);
         String filePath = fr.getPath();
 
-        photography.setName(fr.getName());
-        photography.setPath(filePath);
+        newPhotography.setName(fr.getName());
+        newPhotography.setPath(filePath);
         userProfile.setCoverPhotography(null);
 
-        if (currentBanner != null && !currentBanner.equals(filePath)) {
-            fileStorageService.remove(currentBanner);
-            log.info("Cleaned old cover photography file within service");
+        if (currentPhotography != null && !currentPhotography.getPath().equals(filePath)) {
+            storageService.remove(currentPhotography.getPath());
+            log.info("Cleaned old cover newPhotography file within service");
         }
-        photographyRepository.save(photography);
-        userProfile.setCoverPhotography(photography.getName());
-        return photography;
+        photographyRepository.save(newPhotography);
+        userProfile.setCoverPhotography(newPhotography.getName());
+        return newPhotography;
     }
 
     @Transactional
     public Photography changeProfileAvatar(@NotNull PhotographyInput photographyInput) {
         MultipartFile part = photographyInput.getPhotography();
-        Photography photography = userProfileMapper.updateUserProfileAvatar(photographyInput);
-        UserProfile userProfile = photography.getUserProfile();
+        Photography newPhotography = userProfileMapper.updateUserProfileAvatar(photographyInput);
+        UserProfile userProfile = newPhotography.getUserProfile();
         String currentAvatar = userProfile.getPhotography();
+        Photography currentPhotography = photographyRepository.findByName(currentAvatar)
+                .orElse(null);
 
         String id = userProfile.getUser().getId().toString();
-        FileResponse fr = fileStorageService.storeWithPaths(part, id);
+        FileResponse fr = storageService.store(part, id);
         String filePath = fr.getPath();
 
-        photography.setName(fr.getName());
-        photography.setPath(filePath);
+        newPhotography.setName(fr.getName());
+        newPhotography.setPath(filePath);
         userProfile.setPhotography(null);
 
-        if (currentAvatar != null && !currentAvatar.equals(filePath)) {
-            fileStorageService.remove(currentAvatar);
-            log.info("Cleaned old avatar photography file within service");
+        if (currentPhotography != null && !currentPhotography.getPath().equals(filePath)) {
+            storageService.remove(currentPhotography.getPath());
+            log.info("Cleaned old avatar newPhotography file within service");
         }
-        photographyRepository.save(photography);
-        userProfile.setPhotography(photography.getName());
-        return photography;
+        photographyRepository.save(newPhotography);
+        userProfile.setPhotography(newPhotography.getName());
+        return newPhotography;
     }
 }

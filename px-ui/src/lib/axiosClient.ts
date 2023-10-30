@@ -1,6 +1,6 @@
 import { refreshLogin } from "@auth/authApi";
-import { authStore } from "@auth/authStore";
 import {
+  resetAuthStateOnErr,
   setAuthenticationByAccessToken,
   setUserByToken,
 } from "@auth/authUtils";
@@ -19,16 +19,6 @@ const api = axios.create({
 });
 
 let access_token: string | null = null;
-
-const resetAuthStateOnErr = () => {
-  authStore.setState(() => ({
-    isRefreshing: false,
-    user: null,
-    userLoading: false,
-    accessToken: null,
-    tokenExpiry: null,
-  }));
-};
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   config.headers = { ...config.headers } as AxiosHeaders;
@@ -73,7 +63,6 @@ api.interceptors.response.use(
         return Promise.reject(err);
       }
     }
-    resetAuthStateOnErr();
     return Promise.reject(err);
   }
 );

@@ -40,3 +40,13 @@ export const setUserByToken = (accessToken: string) => {
   authStore.getState().setTokenExpiry(expiry);
   authStore.setState(() => ({ isRefreshing: false }));
 };
+
+export const resetAuthStateOnErr = () => {
+  authStore.setState(() => ({
+    isRefreshing: false,
+    user: null,
+    userLoading: false,
+    accessToken: null,
+    tokenExpiry: null,
+  }));
+};

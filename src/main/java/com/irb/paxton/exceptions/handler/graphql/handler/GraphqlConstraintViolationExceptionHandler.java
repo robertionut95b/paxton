@@ -5,8 +5,9 @@ import com.irb.paxton.exceptions.handler.graphql.domain.GqlFieldError;
 import com.irb.paxton.exceptions.handler.graphql.domain.GqlGlobalError;
 import com.irb.paxton.exceptions.handler.graphql.domain.GqlParameterError;
 import com.netflix.graphql.types.errors.ErrorType;
-import com.netflix.graphql.types.errors.TypedGraphQLError;
 import graphql.GraphQLError;
+import graphql.GraphqlErrorBuilder;
+import graphql.execution.DataFetcherExceptionHandlerParameters;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ElementKind;
@@ -28,7 +29,7 @@ public class GraphqlConstraintViolationExceptionHandler implements GraphqlExcept
     }
 
     @Override
-    public GraphQLError handleError(Throwable throwable, TypedGraphQLError.Builder builder) {
+    public GraphQLError handleError(Throwable throwable, DataFetcherExceptionHandlerParameters handlerParameters) {
         ConstraintViolationException constraintViolationException = (ConstraintViolationException) throwable;
         Set<ConstraintViolation<?>> violations = constraintViolationException.getConstraintViolations();
         GqlErrorDetails gqlErrorDetails = new GqlErrorDetails();
@@ -76,9 +77,12 @@ public class GraphqlConstraintViolationExceptionHandler implements GraphqlExcept
 
         extensions.put("errorDetails", gqlErrorDetails);
 
-        return builder
+        return GraphqlErrorBuilder
+                .newError()
                 .errorType(ErrorType.BAD_REQUEST)
                 .message("Validation error")
+                .path(handlerParameters.getPath())
+                .location(handlerParameters.getSourceLocation())
                 .extensions(extensions)
                 .build();
     }

@@ -2,7 +2,6 @@ package com.irb.paxton.exceptions.handler.graphql;
 
 import com.irb.paxton.exceptions.handler.graphql.handler.GraphqlExceptionHandler;
 import com.netflix.graphql.types.errors.ErrorType;
-import com.netflix.graphql.types.errors.TypedGraphQLError;
 import graphql.GraphQLError;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
@@ -27,26 +26,26 @@ public class DataFetchingExceptionHandler implements DataFetcherExceptionHandler
 
     @Override
     public CompletableFuture<DataFetcherExceptionHandlerResult> handleException(DataFetcherExceptionHandlerParameters handlerParameters) {
-        String uncaughtErrorMessage = "Unexpected error occurred";
         Throwable t = NestedExceptionUtils.getMostSpecificCause(handlerParameters.getException());
-        TypedGraphQLError.Builder errorBuilder = TypedGraphQLError
-                .newBuilder()
-                .message(uncaughtErrorMessage)
-                .path(handlerParameters.getPath())
-                .errorType(t instanceof GraphQLError ? (ErrorType) ((GraphQLError) t).getErrorType() : ErrorType.INTERNAL);
 
         for (GraphqlExceptionHandler handler : handlers) {
             if (handler.canHandle(t)) {
-                GraphQLError graphQLError = handler.handleError(t, errorBuilder);
+                GraphQLError graphQLError = handler.handleError(t, handlerParameters);
                 DataFetcherExceptionHandlerResult result = DataFetcherExceptionHandlerResult
                         .newResult(graphQLError)
                         .build();
                 return CompletableFuture.completedFuture(result);
             }
         }
+        String uncaughtErrorMessage = "Unexpected error occurred";
         log.error(uncaughtErrorMessage, handlerParameters.getException());
 
-        GraphQLError graphqlError = errorBuilder.build();
+        GraphQLError graphqlError = GraphQLError.newError()
+                .message(uncaughtErrorMessage)
+                .path(handlerParameters.getPath())
+                .location(handlerParameters.getSourceLocation())
+                .errorType(ErrorType.INTERNAL)
+                .build();
         DataFetcherExceptionHandlerResult result = DataFetcherExceptionHandlerResult
                 .newResult()
                 .error(graphqlError)

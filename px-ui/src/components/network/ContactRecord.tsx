@@ -37,7 +37,7 @@ const ContactRecord = ({
           {displayInitials(
             "U",
             userConnection.firstName,
-            userConnection.lastName
+            userConnection.lastName,
           )}
         </Avatar>
         <Stack spacing={2}>

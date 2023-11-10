@@ -88,10 +88,10 @@ const OrganizationProcessPage = () => {
         onSuccess: (data) => {
           form.setFieldValue(
             "organizationId",
-            data?.getOrganizationBySlugName?.id ?? 0
+            data?.getOrganizationBySlugName?.id ?? 0,
           );
         },
-      }
+      },
     );
   const { data: processData, isLoading: isProcLoading } =
     useGetAllProcessesQuery(
@@ -125,7 +125,7 @@ const OrganizationProcessPage = () => {
                 order: ps?.order ?? 1,
                 status: ps?.status as Status,
                 step: ps?.step as Step,
-              }))
+              })),
             );
           }
           form.setValues({
@@ -134,7 +134,7 @@ const OrganizationProcessPage = () => {
             description: process?.description,
           });
         },
-      }
+      },
     );
   const { data: stepsData, isLoading: isStepsLoading } = useGetAllStepsQuery(
     graphqlRequestClient,
@@ -150,7 +150,7 @@ const OrganizationProcessPage = () => {
           });
         }
       },
-    }
+    },
   );
 
   const prevProcessData = queryClient.getQueryData<GetAllProcessesQuery>(
@@ -167,12 +167,12 @@ const OrganizationProcessPage = () => {
           },
         ],
       },
-    })
+    }),
   );
 
   const [updPs, setUpdPs] = useState<StepProps[]>(
     (prevProcessData?.getAllProcesses?.list?.[0]
-      ?.processSteps as StepProps[]) ?? []
+      ?.processSteps as StepProps[]) ?? [],
   );
 
   const stepsSelectionData = useMemo(
@@ -182,7 +182,7 @@ const OrganizationProcessPage = () => {
         label: ps?.title ?? "unknown",
         description: ps?.description ?? "unknown",
       })) ?? [],
-    [stepsData]
+    [stepsData],
   );
 
   const { mutate: updateProcess } = useUpdateProcessForOrganizationIdMutation(
@@ -226,11 +226,11 @@ const OrganizationProcessPage = () => {
                       ],
                     },
                   }
-                : prev
+                : prev,
           );
         }
       },
-    }
+    },
   );
 
   const { mutateAsync: addStep } = useCreateStepMutation(graphqlRequestClient, {
@@ -242,7 +242,7 @@ const OrganizationProcessPage = () => {
             prev
               ? // @ts-expect-error(types-erro)
                 { ...prev, getAllSteps: [...prev.getAllSteps, data.createStep] }
-              : prev
+              : prev,
         );
         return showNotification({
           title: "Steps update",
@@ -279,11 +279,11 @@ const OrganizationProcessPage = () => {
   });
 
   const onSubmitModal = (
-    values: z.infer<ReturnType<typeof ProcessStepsInputCreateSchema>>
+    values: z.infer<ReturnType<typeof ProcessStepsInputCreateSchema>>,
   ) => {
     const order = values.order;
     const step = stepsData?.getAllSteps?.filter(
-      (s) => s?.id === values.stepId
+      (s) => s?.id === values.stepId,
     )?.[0];
 
     setUpdPs((prev) =>
@@ -298,7 +298,7 @@ const OrganizationProcessPage = () => {
         },
       })
         .sort((a, b) => a.order - b.order)
-        .map((p, idx) => ({ ...p, order: idx + 1 }))
+        .map((p, idx) => ({ ...p, order: idx + 1 })),
     );
     setOpenedModal(false);
   };
@@ -318,7 +318,7 @@ const OrganizationProcessPage = () => {
       prev
         .filter((sp) => sp.id !== ps.id)
         .sort((a, b) => a.order - b.order)
-        .map((sp, idx) => ({ ...sp, order: idx + 1 }))
+        .map((sp, idx) => ({ ...sp, order: idx + 1 })),
     );
   };
 
@@ -362,7 +362,7 @@ const OrganizationProcessPage = () => {
   };
 
   const onSubmitModalCreate = async (
-    values: z.infer<ReturnType<typeof StepInputSchema>> & { order: number }
+    values: z.infer<ReturnType<typeof StepInputSchema>> & { order: number },
   ) => {
     const order = values.order;
     const step = await addStep({
@@ -384,7 +384,7 @@ const OrganizationProcessPage = () => {
           },
         })
           .sort((a, b) => a.order - b.order)
-          .map((p, idx) => ({ ...p, order: idx + 1 }))
+          .map((p, idx) => ({ ...p, order: idx + 1 })),
       );
       setOpenedModal(false);
     }
@@ -397,10 +397,10 @@ const OrganizationProcessPage = () => {
         updPs.map((u) => {
           const { step, ...rest } = u;
           return { ...rest, stepId: u.step.id };
-        })
+        }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [updPs]
+    [updPs],
   );
 
   if (isOrgLoading || isProcLoading || isStepsLoading)
@@ -535,8 +535,8 @@ const OrganizationProcessPage = () => {
                               ? "green.0"
                               : "transparent"
                             : ps.newVal
-                            ? "#113514"
-                            : "transparent"
+                              ? "#113514"
+                              : "transparent"
                         }
                         mt={0}
                       >
@@ -563,7 +563,7 @@ const OrganizationProcessPage = () => {
                           </ActionIcon>
                         </Group>
                       </Timeline.Item>
-                    )
+                    ),
                 )}
               </Timeline>
               <Button

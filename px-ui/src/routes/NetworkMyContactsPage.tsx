@@ -73,7 +73,7 @@ const NetworkMyContactsPage = () => {
     },
     {
       keepPreviousData: true,
-    }
+    },
   );
 
   const { mutate: removeConnectionMutation } = useRemoveConnectionMutation(
@@ -92,13 +92,13 @@ const NetworkMyContactsPage = () => {
               getConnectionsForUser: {
                 ...connectionsData?.getConnectionsForUser,
                 list: connectionsData?.getConnectionsForUser?.list?.filter(
-                  (cu) => cu?.id !== data.removeConnection?.id
+                  (cu) => cu?.id !== data.removeConnection?.id,
                 ),
                 totalElements:
                   (connectionsData?.getConnectionsForUser?.totalElements ?? 0) -
                   1,
               },
-            }
+            },
           );
 
           showNotification({
@@ -109,7 +109,7 @@ const NetworkMyContactsPage = () => {
           });
         }
       },
-    }
+    },
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -132,7 +132,7 @@ const NetworkMyContactsPage = () => {
           navigate(`/app/inbox/messages/chat/new?chatUser=${selectedUser?.id}`);
         }
       },
-    }
+    },
   );
 
   const [parent] = useAutoAnimate();
@@ -252,7 +252,7 @@ const NetworkMyContactsPage = () => {
                           })
                         }
                       />
-                    )
+                    ),
                 )}
               </Stack>
             </Stack>

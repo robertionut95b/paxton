@@ -47,7 +47,7 @@ const OrganizationSettings = () => {
 
   if (
     !recruitersData?.findRecruitersAdvSearch?.list?.find(
-      (r) => r?.id.toString() === user?.userId.toString()
+      (r) => r?.id.toString() === user?.userId.toString(),
     )
   ) {
     return <AccessDenied />;

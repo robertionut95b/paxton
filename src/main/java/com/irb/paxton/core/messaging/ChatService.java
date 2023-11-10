@@ -14,13 +14,14 @@ import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import jakarta.transaction.Transactional;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,9 @@ public class ChatService extends AbstractService<Chat, Long> {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ChatRoomManager chatStream;
+
     public ChatService(AbstractRepository<Chat, Long> repository) {
         super(repository);
     }
@@ -55,6 +59,8 @@ public class ChatService extends AbstractService<Chat, Long> {
         Chat chat = message.getChat();
         messageRepository.save(message);
         chat.addMessage(message);
+        // publish message to subscribers
+        chatStream.publishMessageToRoom(chat.getId(), message);
         return chatRepository.save(chat);
     }
 
@@ -132,5 +138,10 @@ public class ChatService extends AbstractService<Chat, Long> {
                 .orElseThrow(() -> new ChatNotFoundException("Chat by id %s does not exist".formatted(chatId)));
         this.chatRepository.delete(findChat);
         return findChat;
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
+    public Publisher<Message> getChatMessagesPublisher(Long chatId) {
+        return chatStream.joinRoom(chatId);
     }
 }

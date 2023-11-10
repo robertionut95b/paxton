@@ -12,13 +12,13 @@ interface AuthContextType {
   signin: (credentials: LoginUserMutationProps, callback: VoidFunction) => void;
   signInByToken: (
     tokenProps: LoginUserByTokenMutationProps,
-    callback: VoidFunction
+    callback: VoidFunction,
   ) => void;
   signout: (callback: VoidFunction) => void;
   loading: boolean;
   isAuthorized: (
     roleNames?: RoleType[] | string[],
-    permissionsNames?: string[]
+    permissionsNames?: string[],
   ) => boolean;
   accessToken: string | null;
 }

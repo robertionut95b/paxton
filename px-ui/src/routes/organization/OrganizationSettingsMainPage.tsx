@@ -51,9 +51,9 @@ const OrganizationSettingsMainPage = () => {
           name: l?.name ?? "",
           lng: l?.longitude?.toString() ?? "",
           lat: l?.latitude?.toString() ?? "",
-        })
+        }),
       ),
-    [organizationData?.getOrganizationBySlugName?.locations]
+    [organizationData?.getOrganizationBySlugName?.locations],
   );
 
   if (isOrganizationLoading)
@@ -156,7 +156,7 @@ const OrganizationSettingsMainPage = () => {
             </Box>
             <Group spacing={10}>
               {organization.specializations.map(
-                (s) => s && <Badge key={s}>{prettyEnumValue(s)}</Badge>
+                (s) => s && <Badge key={s}>{prettyEnumValue(s)}</Badge>,
               )}
             </Group>
           </Stack>
@@ -192,7 +192,7 @@ const OrganizationSettingsMainPage = () => {
                           <Badge size="xs">Headquarters</Badge>
                         )}
                       </List.Item>
-                    )
+                    ),
                 )}
               </List>
               <MapChart darkMode={isDarkMode} markers={mapMarkers} />

@@ -9,6 +9,7 @@ import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.HttpStatusMap
 import org.simpleframework.xml.Order;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.AuthenticationException;
 
 @Configuration
 public class ErrorHandlingConfiguration {
@@ -20,6 +21,9 @@ public class ErrorHandlingConfiguration {
         return new AbstractApiExceptionHandler(httpStatusMapper, errorCodeMapper, errorMessageMapper) {
             @Override
             public boolean canHandle(Throwable exception) {
+                if (exception instanceof AuthenticationException) {
+                    return false;
+                }
                 return httpStatusMapper.getHttpStatus(exception).is5xxServerError();
             }
 

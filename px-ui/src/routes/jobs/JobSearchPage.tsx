@@ -66,7 +66,7 @@ const JobSearchPage = () => {
 
   const prevUserProfileQueryData =
     queryClient.getQueryData<GetUserProfileQuery>(
-      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
+      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl }),
     );
 
   const currentJobId = searchParams.get("currentJobId");
@@ -99,12 +99,12 @@ const JobSearchPage = () => {
             const currentSearchParams = searchParams;
             currentSearchParams.set(
               "city",
-              data.getUserProfile.city.id.toString()
+              data.getUserProfile.city.id.toString(),
             );
             setSearchParams(currentSearchParams);
           }
         },
-      }
+      },
     );
 
   const {
@@ -206,7 +206,7 @@ const JobSearchPage = () => {
       keepPreviousData: true,
       staleTime: 1000 * 60,
       enabled: !isProfileLoading,
-    }
+    },
   );
 
   const { data: cityData, isInitialLoading: cityIsLoading } =
@@ -228,7 +228,7 @@ const JobSearchPage = () => {
           return locs;
         })
         .flat(1) ?? [],
-    [cityData]
+    [cityData],
   );
 
   const organizations = useMemo(
@@ -237,7 +237,7 @@ const JobSearchPage = () => {
         value: o?.slugName ?? "",
         label: o?.name ?? "",
       })) ?? [],
-    [organizationsData]
+    [organizationsData],
   );
 
   const baseJobs = useMemo(
@@ -246,7 +246,7 @@ const JobSearchPage = () => {
         value: String(j?.id) ?? "",
         label: j?.name ?? "",
       })),
-    [jobsData]
+    [jobsData],
   );
 
   const onChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -288,7 +288,7 @@ const JobSearchPage = () => {
         const currentSearchParams = searchParams;
         currentSearchParams.set(
           "currentJobId",
-          firstAvailableJob.id.toString()
+          firstAvailableJob.id.toString(),
         );
         setSearchParams(currentSearchParams);
       }
@@ -319,7 +319,7 @@ const JobSearchPage = () => {
                     totalPages: prev.getAllJobListings?.totalPages ?? 1,
                   },
                 }
-              : prev
+              : prev,
         );
       });
     }
@@ -449,7 +449,7 @@ const JobSearchPage = () => {
                         const currentSearchParams = searchParams;
                         currentSearchParams.set(
                           "currentJobId",
-                          jl.id.toString()
+                          jl.id.toString(),
                         );
                         setSearchParams(currentSearchParams);
                       }}
@@ -461,7 +461,7 @@ const JobSearchPage = () => {
                       />
                       {idx !== jobs.length - 1 && <Divider />}
                     </div>
-                  )
+                  ),
               )}
             </ScrollArea>
             <Paper className="px-jobs-pagination">

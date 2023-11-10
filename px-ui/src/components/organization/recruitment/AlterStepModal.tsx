@@ -35,7 +35,7 @@ type AlterStepModalProps = {
   }[];
   onSubmitModal: (values: InputValuesProps) => void;
   onSubmitCreateModal: (
-    values: InputValuesCreateProps & { order: number }
+    values: InputValuesCreateProps & { order: number },
   ) => void;
   initialValues?: InputValuesProps;
 };
@@ -62,7 +62,7 @@ const AlterStepModal = ({
     validate: zodResolver(
       ProcessStepsInputSchema().extend({
         stepId: z.coerce.number(),
-      })
+      }),
     ),
     transformValues: (values) => ({
       ...values,
@@ -77,7 +77,7 @@ const AlterStepModal = ({
       order: order,
     },
     validate: zodResolver(
-      StepInputSchema().extend({ order: z.number().min(0).max(20) })
+      StepInputSchema().extend({ order: z.number().min(0).max(20) }),
     ),
   });
 

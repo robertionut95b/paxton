@@ -42,7 +42,7 @@ const OrganizationJobsTab = ({
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
 
   const organizationItem = organization?.getOrganizationBySlugName;
@@ -91,18 +91,18 @@ const OrganizationJobsTab = ({
                 page: 0,
                 totalElements: 1,
                 totalPages: 1,
-              }
-            )
+              },
+            ),
           );
           const org = data.getAllJobListings?.list?.[0]?.organization;
           queryClient.setQueryData(
             ["GetOrganizationById", { organizationId: org?.id }],
             {
               getOrganizationById: org,
-            }
+            },
           );
         },
-      }
+      },
     );
 
   const orgJobsData = orgJobs?.getAllJobListings?.list || [];

@@ -33,7 +33,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const recrToTrsfItem = (
   recruiters: NonNullable<
     GetOrganizationBySlugNameQuery["getOrganizationBySlugName"]
-  >["recruiters"]
+  >["recruiters"],
 ): TransferListItem[] => {
   if (!recruiters) {
     return [];
@@ -50,7 +50,7 @@ const recrToTrsfItem = (
 };
 
 const usrToTrsfItem = (
-  users: NonNullable<NonNullable<GetAllUsersQuery>["getAllUsers"]>
+  users: NonNullable<NonNullable<GetAllUsersQuery>["getAllUsers"]>,
 ): TransferListItem[] => {
   if (!users) return [];
   return users.map((u) => ({
@@ -68,7 +68,7 @@ const filterExistingUsr = (
   usrs: NonNullable<NonNullable<GetAllUsersQuery>["getAllUsers"]>,
   recs: NonNullable<
     GetOrganizationBySlugNameQuery["getOrganizationBySlugName"]
-  >["recruiters"]
+  >["recruiters"],
 ) =>
   (recs?.length ?? 0) > 0
     ? usrs.filter((u) => !recs?.some((r) => r?.id === u?.id))
@@ -89,26 +89,26 @@ const OrganizationRecruitersModal = () => {
   const closeAlert = useCallback(() => setErr(undefined), []);
 
   const prevQueryUsers = queryClient.getQueryData<GetAllUsersQuery>(
-    useGetAllUsersQuery.getKey({})
+    useGetAllUsersQuery.getKey({}),
   );
   const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
     useGetOrganizationBySlugNameQuery.getKey({
       slugName: organizationSlug ?? "",
-    })
+    }),
   );
 
   const [data, setData] = useState<TransferListData>([
     [
       ...recrToTrsfItem(
-        prevOrgQuery?.getOrganizationBySlugName?.recruiters ?? []
+        prevOrgQuery?.getOrganizationBySlugName?.recruiters ?? [],
       ),
     ],
     [
       ...usrToTrsfItem(
         filterExistingUsr(
           prevQueryUsers?.getAllUsers ?? [],
-          prevOrgQuery?.getOrganizationBySlugName?.recruiters ?? []
-        )
+          prevOrgQuery?.getOrganizationBySlugName?.recruiters ?? [],
+        ),
       ),
     ],
   ]);
@@ -126,7 +126,7 @@ const OrganizationRecruitersModal = () => {
         const recArr = recrToTrsfItem(recruiters);
         setData([recArr, data[1]]);
       },
-    }
+    },
   );
 
   const recruiters = organizationData?.getOrganizationBySlugName?.recruiters;
@@ -143,7 +143,7 @@ const OrganizationRecruitersModal = () => {
         setData([data[0], userArr]);
       },
       enabled: !!recruiters,
-    }
+    },
   );
 
   const { mutate } = useAlterRecruitersInOrganizationMutation(
@@ -160,13 +160,13 @@ const OrganizationRecruitersModal = () => {
         queryClient.invalidateQueries(
           useGetOrganizationBySlugNameQuery.getKey({
             slugName: organizationSlug ?? "",
-          })
+          }),
         );
       },
       onError: (err: GraphqlApiResponse) => {
         if (err.response.errors) setErr(err.response.errors[0].message);
       },
-    }
+    },
   );
 
   const submitChanges = useCallback(() => {
@@ -182,7 +182,7 @@ const OrganizationRecruitersModal = () => {
       const flatErrors = result.error.flatten().fieldErrors;
       setErr(
         flatErrors.OrganizationId?.toString() ??
-          flatErrors.RecruiterInput?.toString()
+          flatErrors.RecruiterInput?.toString(),
       );
     } else mutate(input);
     // eslint-disable-next-line react-hooks/exhaustive-deps

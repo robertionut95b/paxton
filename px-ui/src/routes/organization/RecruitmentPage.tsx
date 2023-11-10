@@ -23,7 +23,7 @@ export default function RecruitmentPage() {
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
 
   const organization = organizationData?.getOrganizationBySlugName;

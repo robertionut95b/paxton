@@ -47,7 +47,7 @@ const ApplicationJobExtend = ({
   const prevJobListing = queryClient.getQueryData<GetAllJobListingsQuery>(
     useGetAllJobListingsQuery.getKey({
       searchQuery: searchQuery as SearchQueryInput,
-    })
+    }),
   );
 
   const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
@@ -66,7 +66,7 @@ const ApplicationJobExtend = ({
     },
     {
       enabled: !!jobId,
-    }
+    },
   );
 
   const { mutate: publishJob } = usePublishJobListingMutation(
@@ -82,10 +82,10 @@ const ApplicationJobExtend = ({
         queryClient.invalidateQueries(
           useGetAllJobListingsQuery.getKey({
             ...searchQuery,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   const jobListingItem =
@@ -123,11 +123,11 @@ const ApplicationJobExtend = ({
         organizationId: jobListingItem?.organization.id ?? 0,
         availableFrom: format(
           values.availableFrom,
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         ) as unknown as Date,
         availableTo: format(
           values.availableTo,
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         ) as unknown as Date,
       },
     });

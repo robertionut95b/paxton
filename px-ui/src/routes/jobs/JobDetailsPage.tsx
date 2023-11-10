@@ -52,7 +52,7 @@ const JobDetailsPage = () => {
           },
         ],
       },
-    }
+    },
   );
   const job = jobData?.getAllJobListings?.list?.[0];
   const { data: relatedJobsData, isLoading: relatedJobsIsLoading } =
@@ -65,7 +65,7 @@ const JobDetailsPage = () => {
         enabled: !!job?.job.name,
         select: (data) =>
           data.getRelatedJobListings?.filter((j) => j?.id !== jobId),
-      }
+      },
     );
   const { data: myApplication, isInitialLoading: isMyApplicationLoading } =
     useGetMyApplicationForJobListingQuery(
@@ -80,7 +80,7 @@ const JobDetailsPage = () => {
             //pass
           }
         },
-      }
+      },
     );
 
   const { isLoading: isApplyLoading, mutate } = useApplyToJobListingMutation(
@@ -116,7 +116,7 @@ const JobDetailsPage = () => {
           icon: <CheckCircleIcon width={20} />,
         });
       },
-    }
+    },
   );
 
   const submitCandidature = useCallback(
@@ -130,7 +130,7 @@ const JobDetailsPage = () => {
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [job?.id, user?.profileId, user?.userId]
+    [job?.id, user?.profileId, user?.userId],
   );
 
   if (isLoading) return <GenericLoadingSkeleton />;

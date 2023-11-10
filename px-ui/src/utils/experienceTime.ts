@@ -3,7 +3,7 @@ import { differenceInDays } from "date-fns";
 
 export const getTimeBetweenInExperience = (
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): string => {
   const days = endDate
     ? differenceInDays(endDate, startDate)
@@ -12,16 +12,16 @@ export const getTimeBetweenInExperience = (
 };
 
 export const getTotalTimeInOrganizationByExperiences = (
-  experiences: Experience[]
+  experiences: Experience[],
 ) => {
   const days = experiences.reduce(
     (prev, e) =>
       prev +
       differenceInDays(
         e.endDate ? new Date(e.endDate) : new Date(),
-        new Date(e.startDate)
+        new Date(e.startDate),
       ),
-    0
+    0,
   );
   return daysFmt(days);
 };

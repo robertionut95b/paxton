@@ -34,7 +34,7 @@ const OrganizationRecruitersPage = () => {
           },
         ],
       },
-    }
+    },
   );
 
   if (isLoading)
@@ -83,7 +83,7 @@ const OrganizationRecruitersPage = () => {
                     joinedAt={r.registeredAt}
                   />
                 </div>
-              )
+              ),
           )}
         </Stack>
         <PaginationToolbar

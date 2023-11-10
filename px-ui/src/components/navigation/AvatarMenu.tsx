@@ -10,8 +10,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import { Avatar, Menu } from "@mantine/core";
+import { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useEffectOnce } from "usehooks-ts";
 
 const AvatarMenu = ({
   user,
@@ -25,9 +25,11 @@ const AvatarMenu = ({
   signOutFn?: () => void;
 }) => {
   const link = `/app/up/${profileLink}`;
-  useEffectOnce(() => {
-    if (!signOutFn) console.warn("Sign out function should be defined");
-  });
+  useEffect(() => {
+    if (!signOutFn) {
+      // pass
+    }
+  }, [signOutFn]);
   return (
     <Menu shadow="md" width={200} transitionDuration={300}>
       <Menu.Target>

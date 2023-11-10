@@ -38,7 +38,7 @@ export default function JobsPage() {
 
   const prevUserProfileQueryData =
     queryClient.getQueryData<GetUserProfileQuery>(
-      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
+      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl }),
     );
 
   const refPage = searchParams.get("ref");
@@ -59,12 +59,12 @@ export default function JobsPage() {
             const currentSearchParams = searchParams;
             currentSearchParams.set(
               "city",
-              data.getUserProfile.city.id.toString()
+              data.getUserProfile.city.id.toString(),
             );
             setSearchParams(currentSearchParams);
           }
         },
-      }
+      },
     );
 
   const { data, isLoading: jobsLoading } = useGetAllJobListingsQuery(
@@ -134,13 +134,13 @@ export default function JobsPage() {
                 page: 0,
                 totalElements: 1,
                 totalPages: 1,
-              }
-            )
+              },
+            ),
           );
         }
       },
       enabled: !isProfileLoading,
-    }
+    },
   );
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export default function JobsPage() {
       const currentSearchParams = searchParams;
       currentSearchParams.set(
         "city",
-        userProfile.getUserProfile.city.id.toString()
+        userProfile.getUserProfile.city.id.toString(),
       );
       setSearchParams(currentSearchParams);
     }

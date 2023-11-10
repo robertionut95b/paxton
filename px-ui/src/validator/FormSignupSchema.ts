@@ -19,14 +19,14 @@ const FormSignupSchema = z
       .string()
       .regex(
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-        "Password must contain at least one uppercase character, one number and one special character"
+        "Password must contain at least one uppercase character, one number and one special character",
       )
       .min(2, { message: "Password must be filled" }),
     confirmPassword: z
       .string()
       .regex(
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-        "Password must contain at least one uppercase character, one number and one special character"
+        "Password must contain at least one uppercase character, one number and one special character",
       )
       .min(2, { message: "Confirm password must be filled" }),
   })

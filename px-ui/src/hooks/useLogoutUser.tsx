@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 export default function useLogoutUser(
   options: UseMutationOptions<void, AxiosError> = {
     mutationKey: ["logoutUser"],
-  }
+  },
 ) {
   return useMutation({ mutationFn: logoutUser, ...options });
 }

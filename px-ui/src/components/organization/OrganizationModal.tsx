@@ -52,10 +52,10 @@ const OrganizationModal = () => {
   const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
     useGetOrganizationBySlugNameQuery.getKey({
       slugName: organizationSlug ?? "",
-    })
+    }),
   );
   const [desc, setDesc] = useState<string>(
-    prevOrgQuery?.getOrganizationBySlugName?.description ?? ""
+    prevOrgQuery?.getOrganizationBySlugName?.description ?? "",
   );
 
   const { data: countries, isLoading: isCountryListLoading } =
@@ -81,7 +81,7 @@ const OrganizationModal = () => {
             ...rest
           } = data.getOrganizationBySlugName ?? {};
           const trsfLocs = data.getOrganizationBySlugName?.locations?.map((l) =>
-            l?.id.toString()
+            l?.id.toString(),
           );
           form.setValues({
             ...rest,
@@ -102,7 +102,7 @@ const OrganizationModal = () => {
           });
           setDesc(data.getOrganizationBySlugName?.description ?? "");
         },
-      }
+      },
     );
 
   const { mutate } = useCreateOrUpdateOrganizationMutation(
@@ -120,10 +120,10 @@ const OrganizationModal = () => {
         queryClient.invalidateQueries(
           useGetOrganizationBySlugNameQuery.getKey({
             slugName: organizationSlug ?? "",
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   const closeModal = useCallback(() => {
@@ -156,7 +156,7 @@ const OrganizationModal = () => {
         organizationData?.getOrganizationBySlugName?.specializations ?? [],
       locations:
         organizationData?.getOrganizationBySlugName?.locations?.map((l) =>
-          l?.id.toString()
+          l?.id.toString(),
         ) ?? [],
       photography:
         organizationData?.getOrganizationBySlugName?.photography ?? "",
@@ -177,7 +177,7 @@ const OrganizationModal = () => {
           return locs;
         })
         .flat(1) ?? [],
-    [countries]
+    [countries],
   );
 
   const handleSubmit = async (values: typeof form.values) => {
@@ -187,7 +187,7 @@ const OrganizationModal = () => {
         activitySectorId: Number(values.activitySectorId),
         headQuartersId: Number(values.headQuartersId),
         locations: values.locations.map((l) =>
-          Number(l)
+          Number(l),
         ) as unknown as number[],
         specializations: values.specializations ?? [],
         foundedAt: format(values.foundedAt, "yyyy-MM-dd") as unknown as Date,
@@ -200,7 +200,7 @@ const OrganizationModal = () => {
       setDesc(e.currentTarget.value);
       form.setFieldValue("description", e.currentTarget.value);
     },
-    [form]
+    [form],
   );
 
   if (isOrganizationLoading) return <ApplicationSpinner />;

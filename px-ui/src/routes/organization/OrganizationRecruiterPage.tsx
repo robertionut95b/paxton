@@ -38,7 +38,7 @@ const OrganizationRecruiterPage = () => {
     graphqlRequestClient,
     {
       recruiterId: Number(recruiterId) ?? 0,
-    }
+    },
   );
 
   const closeModal = useCallback(() => {

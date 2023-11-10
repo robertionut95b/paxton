@@ -34,7 +34,7 @@ export default function OrganizationPage() {
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
 
   const organizationItem = organizationData?.getOrganizationBySlugName;
@@ -43,11 +43,11 @@ export default function OrganizationPage() {
   if (!organizationItem) return <NotFoundPage />;
 
   const OrganizationToolbar = lazy(
-    () => import("@components/organization/OrganizationToolbar")
+    () => import("@components/organization/OrganizationToolbar"),
   );
 
   const OrganizationLeftMenu = lazy(
-    () => import("@components/organization/OrganizationMenu")
+    () => import("@components/organization/OrganizationMenu"),
   );
 
   return (

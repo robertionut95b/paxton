@@ -28,58 +28,58 @@ const SignUp = lazy(() => import("./SignUp"));
 const RecruitmentPage = lazy(() => import("./organization/RecruitmentPage"));
 const UserProfile = lazy(() => import("./user/UserProfile"));
 const OrganizationPostJobForm = lazy(
-  () => import("./organization/OrganizationPostJobForm")
+  () => import("./organization/OrganizationPostJobForm"),
 );
 const OrganizationPage = lazy(() => import("./organization/OrganizationPage"));
 const OrganizationSettingsMainPage = lazy(
-  () => import("./organization/OrganizationSettingsMainPage")
+  () => import("./organization/OrganizationSettingsMainPage"),
 );
 const OrganizationSettingsPage = lazy(
-  () => import("./organization/OrganizationSettingsPage")
+  () => import("./organization/OrganizationSettingsPage"),
 );
 const OrganizationProcessPage = lazy(
-  () => import("./organization/OrganizationProcessPage")
+  () => import("./organization/OrganizationProcessPage"),
 );
 const OrganizationRecruiterPage = lazy(
-  () => import("./organization/OrganizationRecruiterPage")
+  () => import("./organization/OrganizationRecruiterPage"),
 );
 const OrganizationRecruitersPage = lazy(
-  () => import("./organization/OrganizationRecruitersPage")
+  () => import("./organization/OrganizationRecruitersPage"),
 );
 const OrganizationRecruiterJobsPage = lazy(
-  () => import("./organization/OrganizationRecruiterJobsPage")
+  () => import("./organization/OrganizationRecruiterJobsPage"),
 );
 const OrganizationAboutPanel = lazy(
-  () => import("@components/organization/OrganizationAboutPanel")
+  () => import("@components/organization/OrganizationAboutPanel"),
 );
 const OrganizationJobsPanel = lazy(
-  () => import("@components/organization/OrganizationJobsPanel")
+  () => import("@components/organization/OrganizationJobsPanel"),
 );
 const OrganizationHomePanel = lazy(
-  () => import("@components/organization/OrganizationHomePanel")
+  () => import("@components/organization/OrganizationHomePanel"),
 );
 const OrganizationModal = lazy(
-  () => import("@components/organization/OrganizationModal")
+  () => import("@components/organization/OrganizationModal"),
 );
 const OrganizationRecruitersModal = lazy(
-  () => import("@components/organization/OrganizationRecruitersModal")
+  () => import("@components/organization/OrganizationRecruitersModal"),
 );
 const MyOrganizationPage = lazy(() => import("./organization/MyOrganization"));
 const NotFoundPage = lazy(() => import("./NotFoundPage"));
 const JobDetailsPage = lazy(() => import("./jobs/JobDetailsPage"));
 const RecruitmentApplicationPage = lazy(
-  () => import("./organization/RecruitmentApplicationPage")
+  () => import("./organization/RecruitmentApplicationPage"),
 );
 const RecruitmentCandidatesPage = lazy(
-  () => import("./organization/RecruitmentCandidatesPage")
+  () => import("./organization/RecruitmentCandidatesPage"),
 );
 const AdminPage = lazy(() => import("./AdminPage"));
 const AdminJobs = lazy(() => import("../components/admin/AdminJobs"));
 const AdminJobListings = lazy(
-  () => import("../components/admin/AdminJobListings")
+  () => import("../components/admin/AdminJobListings"),
 );
 const AdminOrganizations = lazy(
-  () => import("../components/admin/AdminOrganizations")
+  () => import("../components/admin/AdminOrganizations"),
 );
 const NotificationsPage = lazy(() => import("./NotificationsPage"));
 const ChatPage = lazy(() => import("./ChatPage"));

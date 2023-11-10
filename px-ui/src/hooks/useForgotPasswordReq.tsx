@@ -11,7 +11,7 @@ export default function useForgotPasswordRequest(
     null
   > = {
     mutationKey: ["forgotPasswordRequest"],
-  }
+  },
 ) {
   return useMutation<void, AxiosError, ResetPasswordRequestProps, null>({
     mutationFn: forgotPassword,

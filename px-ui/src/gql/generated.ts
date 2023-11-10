@@ -775,6 +775,7 @@ export type Query = {
   getCountriesCities?: Maybe<Array<Maybe<Country>>>;
   getCurrentUser?: Maybe<User>;
   getCurrentUserProfile?: Maybe<UserProfile>;
+  getJobById?: Maybe<Job>;
   getMessagesPaginated?: Maybe<MessagePage>;
   getMessagesSliced?: Maybe<MessageSlice>;
   getMyApplicationForJobListing?: Maybe<Application>;
@@ -878,6 +879,11 @@ export type QueryGetConnectionsForUserArgs = {
   size?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<SortsInput>;
   userId: Scalars['Long']['input'];
+};
+
+
+export type QueryGetJobByIdArgs = {
+  jobId: Scalars['Long']['input'];
 };
 
 
@@ -1082,6 +1088,17 @@ export type StudyInput = {
   institution: Scalars['Long']['input'];
   startDate: Scalars['Date']['input'];
   userProfileSlugUrl: Scalars['String']['input'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  getMessagesForChatId?: Maybe<Message>;
+};
+
+
+export type SubscriptionGetMessagesForChatIdArgs = {
+  auth: Scalars['String']['input'];
+  chatId: Scalars['Long']['input'];
 };
 
 export type User = {
@@ -1588,6 +1605,15 @@ export type GetChatWithUserIdQueryVariables = Exact<{
 
 export type GetChatWithUserIdQuery = { __typename?: 'Query', getChatWithUserId?: { __typename?: 'Chat', id: number, title?: string | null, unreadMessagesCount: number, latestMessage?: { __typename?: 'Message', content: string } | null } | null };
 
+export type GetMessagesForChatIdSubscriptionVariables = Exact<{
+  chatId: Scalars['Long']['input'];
+  auth: Scalars['String']['input'];
+}>;
+
+
+export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
+
+
 
 export const UpdateUserProfileDocument = `
     mutation UpdateUserProfile($UserProfileInput: UserProfileInput!) {
@@ -1602,6 +1628,7 @@ export const UpdateUserProfileDocument = `
   }
 }
     `;
+
 export const useUpdateUserProfileMutation = <
       TError = unknown,
       TContext = unknown
@@ -1609,15 +1636,19 @@ export const useUpdateUserProfileMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateUserProfileMutation, TError, UpdateUserProfileMutationVariables, TContext>(
       ['UpdateUserProfile'],
       (variables?: UpdateUserProfileMutationVariables) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateUserProfileMutation.getKey = () => ['UpdateUserProfile'];
 
+
 useUpdateUserProfileMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(client, UpdateUserProfileDocument, variables, headers);
+
 export const AddUserProfileExperienceDocument = `
     mutation AddUserProfileExperience($ExperienceInput: ExperienceInput!) {
   addUserProfileExperience(ExperienceInput: $ExperienceInput) {
@@ -1635,6 +1666,7 @@ export const AddUserProfileExperienceDocument = `
   }
 }
     `;
+
 export const useAddUserProfileExperienceMutation = <
       TError = unknown,
       TContext = unknown
@@ -1642,15 +1674,19 @@ export const useAddUserProfileExperienceMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddUserProfileExperienceMutation, TError, AddUserProfileExperienceMutationVariables, TContext>(
       ['AddUserProfileExperience'],
       (variables?: AddUserProfileExperienceMutationVariables) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddUserProfileExperienceMutation.getKey = () => ['AddUserProfileExperience'];
 
+
 useAddUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: AddUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUserProfileExperienceMutation, AddUserProfileExperienceMutationVariables>(client, AddUserProfileExperienceDocument, variables, headers);
+
 export const UpdateUserProfileExperienceDocument = `
     mutation UpdateUserProfileExperience($ExperienceInput: ExperienceInput!) {
   updateUserProfileExperience(ExperienceInput: $ExperienceInput) {
@@ -1668,6 +1704,7 @@ export const UpdateUserProfileExperienceDocument = `
   }
 }
     `;
+
 export const useUpdateUserProfileExperienceMutation = <
       TError = unknown,
       TContext = unknown
@@ -1675,15 +1712,19 @@ export const useUpdateUserProfileExperienceMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateUserProfileExperienceMutation, TError, UpdateUserProfileExperienceMutationVariables, TContext>(
       ['UpdateUserProfileExperience'],
       (variables?: UpdateUserProfileExperienceMutationVariables) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateUserProfileExperienceMutation.getKey = () => ['UpdateUserProfileExperience'];
 
+
 useUpdateUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileExperienceMutation, UpdateUserProfileExperienceMutationVariables>(client, UpdateUserProfileExperienceDocument, variables, headers);
+
 export const AddUserProfileStudyDocument = `
     mutation AddUserProfileStudy($StudyInput: StudyInput!) {
   addUserProfileStudy(StudyInput: $StudyInput) {
@@ -1696,6 +1737,7 @@ export const AddUserProfileStudyDocument = `
   }
 }
     `;
+
 export const useAddUserProfileStudyMutation = <
       TError = unknown,
       TContext = unknown
@@ -1703,15 +1745,19 @@ export const useAddUserProfileStudyMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddUserProfileStudyMutation, TError, AddUserProfileStudyMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddUserProfileStudyMutation, TError, AddUserProfileStudyMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddUserProfileStudyMutation, TError, AddUserProfileStudyMutationVariables, TContext>(
       ['AddUserProfileStudy'],
       (variables?: AddUserProfileStudyMutationVariables) => fetcher<AddUserProfileStudyMutation, AddUserProfileStudyMutationVariables>(client, AddUserProfileStudyDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddUserProfileStudyMutation.getKey = () => ['AddUserProfileStudy'];
 
+
 useAddUserProfileStudyMutation.fetcher = (client: GraphQLClient, variables: AddUserProfileStudyMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUserProfileStudyMutation, AddUserProfileStudyMutationVariables>(client, AddUserProfileStudyDocument, variables, headers);
+
 export const UpdateUserProfileStudyDocument = `
     mutation UpdateUserProfileStudy($StudyInput: StudyInput!) {
   updateUserProfileStudy(StudyInput: $StudyInput) {
@@ -1724,6 +1770,7 @@ export const UpdateUserProfileStudyDocument = `
   }
 }
     `;
+
 export const useUpdateUserProfileStudyMutation = <
       TError = unknown,
       TContext = unknown
@@ -1731,15 +1778,19 @@ export const useUpdateUserProfileStudyMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateUserProfileStudyMutation, TError, UpdateUserProfileStudyMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateUserProfileStudyMutation, TError, UpdateUserProfileStudyMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateUserProfileStudyMutation, TError, UpdateUserProfileStudyMutationVariables, TContext>(
       ['UpdateUserProfileStudy'],
       (variables?: UpdateUserProfileStudyMutationVariables) => fetcher<UpdateUserProfileStudyMutation, UpdateUserProfileStudyMutationVariables>(client, UpdateUserProfileStudyDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateUserProfileStudyMutation.getKey = () => ['UpdateUserProfileStudy'];
 
+
 useUpdateUserProfileStudyMutation.fetcher = (client: GraphQLClient, variables: UpdateUserProfileStudyMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateUserProfileStudyMutation, UpdateUserProfileStudyMutationVariables>(client, UpdateUserProfileStudyDocument, variables, headers);
+
 export const AddInstitutionDocument = `
     mutation AddInstitution($InstitutionInput: InstitutionInput!) {
   addInstitution(InstitutionInput: $InstitutionInput) {
@@ -1750,6 +1801,7 @@ export const AddInstitutionDocument = `
   }
 }
     `;
+
 export const useAddInstitutionMutation = <
       TError = unknown,
       TContext = unknown
@@ -1757,15 +1809,19 @@ export const useAddInstitutionMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddInstitutionMutation, TError, AddInstitutionMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddInstitutionMutation, TError, AddInstitutionMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddInstitutionMutation, TError, AddInstitutionMutationVariables, TContext>(
       ['AddInstitution'],
       (variables?: AddInstitutionMutationVariables) => fetcher<AddInstitutionMutation, AddInstitutionMutationVariables>(client, AddInstitutionDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddInstitutionMutation.getKey = () => ['AddInstitution'];
 
+
 useAddInstitutionMutation.fetcher = (client: GraphQLClient, variables: AddInstitutionMutationVariables, headers?: RequestInit['headers']) => fetcher<AddInstitutionMutation, AddInstitutionMutationVariables>(client, AddInstitutionDocument, variables, headers);
+
 export const AddDomainDocument = `
     mutation AddDomain($DomainInput: DomainInput!) {
   addDomain(DomainInput: $DomainInput) {
@@ -1774,6 +1830,7 @@ export const AddDomainDocument = `
   }
 }
     `;
+
 export const useAddDomainMutation = <
       TError = unknown,
       TContext = unknown
@@ -1781,15 +1838,19 @@ export const useAddDomainMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddDomainMutation, TError, AddDomainMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddDomainMutation, TError, AddDomainMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddDomainMutation, TError, AddDomainMutationVariables, TContext>(
       ['AddDomain'],
       (variables?: AddDomainMutationVariables) => fetcher<AddDomainMutation, AddDomainMutationVariables>(client, AddDomainDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddDomainMutation.getKey = () => ['AddDomain'];
 
+
 useAddDomainMutation.fetcher = (client: GraphQLClient, variables: AddDomainMutationVariables, headers?: RequestInit['headers']) => fetcher<AddDomainMutation, AddDomainMutationVariables>(client, AddDomainDocument, variables, headers);
+
 export const AddCertificationDocument = `
     mutation AddCertification($CertificationInput: CertificationInput!) {
   addCertification(CertificationInput: $CertificationInput) {
@@ -1798,6 +1859,7 @@ export const AddCertificationDocument = `
   }
 }
     `;
+
 export const useAddCertificationMutation = <
       TError = unknown,
       TContext = unknown
@@ -1805,15 +1867,19 @@ export const useAddCertificationMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddCertificationMutation, TError, AddCertificationMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddCertificationMutation, TError, AddCertificationMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddCertificationMutation, TError, AddCertificationMutationVariables, TContext>(
       ['AddCertification'],
       (variables?: AddCertificationMutationVariables) => fetcher<AddCertificationMutation, AddCertificationMutationVariables>(client, AddCertificationDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddCertificationMutation.getKey = () => ['AddCertification'];
 
+
 useAddCertificationMutation.fetcher = (client: GraphQLClient, variables: AddCertificationMutationVariables, headers?: RequestInit['headers']) => fetcher<AddCertificationMutation, AddCertificationMutationVariables>(client, AddCertificationDocument, variables, headers);
+
 export const PublishJobListingDocument = `
     mutation PublishJobListing($JobListingInput: JobListingInput!) {
   publishJobListing(JobListingInput: $JobListingInput) {
@@ -1823,6 +1889,7 @@ export const PublishJobListingDocument = `
   }
 }
     `;
+
 export const usePublishJobListingMutation = <
       TError = unknown,
       TContext = unknown
@@ -1830,15 +1897,19 @@ export const usePublishJobListingMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<PublishJobListingMutation, TError, PublishJobListingMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<PublishJobListingMutation, TError, PublishJobListingMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<PublishJobListingMutation, TError, PublishJobListingMutationVariables, TContext>(
       ['PublishJobListing'],
       (variables?: PublishJobListingMutationVariables) => fetcher<PublishJobListingMutation, PublishJobListingMutationVariables>(client, PublishJobListingDocument, variables, headers)(),
       options
-    );
+    )};
+
 usePublishJobListingMutation.getKey = () => ['PublishJobListing'];
 
+
 usePublishJobListingMutation.fetcher = (client: GraphQLClient, variables: PublishJobListingMutationVariables, headers?: RequestInit['headers']) => fetcher<PublishJobListingMutation, PublishJobListingMutationVariables>(client, PublishJobListingDocument, variables, headers);
+
 export const AddJobCategoryDocument = `
     mutation AddJobCategory($JobCategoryInput: JobCategoryInput!) {
   addJobCategory(JobCategoryInput: $JobCategoryInput) {
@@ -1847,6 +1918,7 @@ export const AddJobCategoryDocument = `
   }
 }
     `;
+
 export const useAddJobCategoryMutation = <
       TError = unknown,
       TContext = unknown
@@ -1854,15 +1926,19 @@ export const useAddJobCategoryMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddJobCategoryMutation, TError, AddJobCategoryMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddJobCategoryMutation, TError, AddJobCategoryMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddJobCategoryMutation, TError, AddJobCategoryMutationVariables, TContext>(
       ['AddJobCategory'],
       (variables?: AddJobCategoryMutationVariables) => fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(client, AddJobCategoryDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddJobCategoryMutation.getKey = () => ['AddJobCategory'];
 
+
 useAddJobCategoryMutation.fetcher = (client: GraphQLClient, variables: AddJobCategoryMutationVariables, headers?: RequestInit['headers']) => fetcher<AddJobCategoryMutation, AddJobCategoryMutationVariables>(client, AddJobCategoryDocument, variables, headers);
+
 export const ApplyToJobListingDocument = `
     mutation ApplyToJobListing($ApplicationInput: ApplicationInput!) {
   applyToJobListing(ApplicationInput: $ApplicationInput) {
@@ -1871,6 +1947,7 @@ export const ApplyToJobListingDocument = `
   }
 }
     `;
+
 export const useApplyToJobListingMutation = <
       TError = unknown,
       TContext = unknown
@@ -1878,15 +1955,19 @@ export const useApplyToJobListingMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<ApplyToJobListingMutation, TError, ApplyToJobListingMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<ApplyToJobListingMutation, TError, ApplyToJobListingMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<ApplyToJobListingMutation, TError, ApplyToJobListingMutationVariables, TContext>(
       ['ApplyToJobListing'],
       (variables?: ApplyToJobListingMutationVariables) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers)(),
       options
-    );
+    )};
+
 useApplyToJobListingMutation.getKey = () => ['ApplyToJobListing'];
 
+
 useApplyToJobListingMutation.fetcher = (client: GraphQLClient, variables: ApplyToJobListingMutationVariables, headers?: RequestInit['headers']) => fetcher<ApplyToJobListingMutation, ApplyToJobListingMutationVariables>(client, ApplyToJobListingDocument, variables, headers);
+
 export const CreateOrUpdateOrganizationDocument = `
     mutation CreateOrUpdateOrganization($OrganizationInput: OrganizationInput!) {
   createOrUpdateOrganization(OrganizationInput: $OrganizationInput) {
@@ -1895,6 +1976,7 @@ export const CreateOrUpdateOrganizationDocument = `
   }
 }
     `;
+
 export const useCreateOrUpdateOrganizationMutation = <
       TError = unknown,
       TContext = unknown
@@ -1902,15 +1984,19 @@ export const useCreateOrUpdateOrganizationMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<CreateOrUpdateOrganizationMutation, TError, CreateOrUpdateOrganizationMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<CreateOrUpdateOrganizationMutation, TError, CreateOrUpdateOrganizationMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<CreateOrUpdateOrganizationMutation, TError, CreateOrUpdateOrganizationMutationVariables, TContext>(
       ['CreateOrUpdateOrganization'],
       (variables?: CreateOrUpdateOrganizationMutationVariables) => fetcher<CreateOrUpdateOrganizationMutation, CreateOrUpdateOrganizationMutationVariables>(client, CreateOrUpdateOrganizationDocument, variables, headers)(),
       options
-    );
+    )};
+
 useCreateOrUpdateOrganizationMutation.getKey = () => ['CreateOrUpdateOrganization'];
 
+
 useCreateOrUpdateOrganizationMutation.fetcher = (client: GraphQLClient, variables: CreateOrUpdateOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateOrUpdateOrganizationMutation, CreateOrUpdateOrganizationMutationVariables>(client, CreateOrUpdateOrganizationDocument, variables, headers);
+
 export const AlterRecruitersInOrganizationDocument = `
     mutation AlterRecruitersInOrganization($RecruiterInput: [RecruiterInput]!, $OrganizationId: Long!) {
   alterRecruitersInOrganization(
@@ -1929,6 +2015,7 @@ export const AlterRecruitersInOrganizationDocument = `
   }
 }
     `;
+
 export const useAlterRecruitersInOrganizationMutation = <
       TError = unknown,
       TContext = unknown
@@ -1936,15 +2023,19 @@ export const useAlterRecruitersInOrganizationMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AlterRecruitersInOrganizationMutation, TError, AlterRecruitersInOrganizationMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AlterRecruitersInOrganizationMutation, TError, AlterRecruitersInOrganizationMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AlterRecruitersInOrganizationMutation, TError, AlterRecruitersInOrganizationMutationVariables, TContext>(
       ['AlterRecruitersInOrganization'],
       (variables?: AlterRecruitersInOrganizationMutationVariables) => fetcher<AlterRecruitersInOrganizationMutation, AlterRecruitersInOrganizationMutationVariables>(client, AlterRecruitersInOrganizationDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAlterRecruitersInOrganizationMutation.getKey = () => ['AlterRecruitersInOrganization'];
 
+
 useAlterRecruitersInOrganizationMutation.fetcher = (client: GraphQLClient, variables: AlterRecruitersInOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<AlterRecruitersInOrganizationMutation, AlterRecruitersInOrganizationMutationVariables>(client, AlterRecruitersInOrganizationDocument, variables, headers);
+
 export const PublishJobDocument = `
     mutation PublishJob($JobInput: JobInput!) {
   publishJob(JobInput: $JobInput) {
@@ -1953,6 +2044,7 @@ export const PublishJobDocument = `
   }
 }
     `;
+
 export const usePublishJobMutation = <
       TError = unknown,
       TContext = unknown
@@ -1960,15 +2052,19 @@ export const usePublishJobMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<PublishJobMutation, TError, PublishJobMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<PublishJobMutation, TError, PublishJobMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<PublishJobMutation, TError, PublishJobMutationVariables, TContext>(
       ['PublishJob'],
       (variables?: PublishJobMutationVariables) => fetcher<PublishJobMutation, PublishJobMutationVariables>(client, PublishJobDocument, variables, headers)(),
       options
-    );
+    )};
+
 usePublishJobMutation.getKey = () => ['PublishJob'];
 
+
 usePublishJobMutation.fetcher = (client: GraphQLClient, variables: PublishJobMutationVariables, headers?: RequestInit['headers']) => fetcher<PublishJobMutation, PublishJobMutationVariables>(client, PublishJobDocument, variables, headers);
+
 export const UpdateApplicationDocument = `
     mutation updateApplication($ApplicationInput: ApplicationInput!) {
   updateApplication(ApplicationInput: $ApplicationInput) {
@@ -1988,6 +2084,7 @@ export const UpdateApplicationDocument = `
   }
 }
     `;
+
 export const useUpdateApplicationMutation = <
       TError = unknown,
       TContext = unknown
@@ -1995,15 +2092,19 @@ export const useUpdateApplicationMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateApplicationMutation, TError, UpdateApplicationMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateApplicationMutation, TError, UpdateApplicationMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateApplicationMutation, TError, UpdateApplicationMutationVariables, TContext>(
       ['updateApplication'],
       (variables?: UpdateApplicationMutationVariables) => fetcher<UpdateApplicationMutation, UpdateApplicationMutationVariables>(client, UpdateApplicationDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateApplicationMutation.getKey = () => ['updateApplication'];
 
+
 useUpdateApplicationMutation.fetcher = (client: GraphQLClient, variables: UpdateApplicationMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateApplicationMutation, UpdateApplicationMutationVariables>(client, UpdateApplicationDocument, variables, headers);
+
 export const AddMessageToApplicationChatDocument = `
     mutation AddMessageToApplicationChat($MessageInput: MessageInput!, $applicationId: Long!) {
   addMessageToApplicationChat(
@@ -2014,6 +2115,7 @@ export const AddMessageToApplicationChatDocument = `
   }
 }
     `;
+
 export const useAddMessageToApplicationChatMutation = <
       TError = unknown,
       TContext = unknown
@@ -2021,15 +2123,19 @@ export const useAddMessageToApplicationChatMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddMessageToApplicationChatMutation, TError, AddMessageToApplicationChatMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddMessageToApplicationChatMutation, TError, AddMessageToApplicationChatMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddMessageToApplicationChatMutation, TError, AddMessageToApplicationChatMutationVariables, TContext>(
       ['AddMessageToApplicationChat'],
       (variables?: AddMessageToApplicationChatMutationVariables) => fetcher<AddMessageToApplicationChatMutation, AddMessageToApplicationChatMutationVariables>(client, AddMessageToApplicationChatDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddMessageToApplicationChatMutation.getKey = () => ['AddMessageToApplicationChat'];
 
+
 useAddMessageToApplicationChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageToApplicationChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageToApplicationChatMutation, AddMessageToApplicationChatMutationVariables>(client, AddMessageToApplicationChatDocument, variables, headers);
+
 export const CreateChatDocument = `
     mutation CreateChat($ChatInput: ChatInput!) {
   createChat(ChatInput: $ChatInput) {
@@ -2049,6 +2155,7 @@ export const CreateChatDocument = `
   }
 }
     `;
+
 export const useCreateChatMutation = <
       TError = unknown,
       TContext = unknown
@@ -2056,15 +2163,19 @@ export const useCreateChatMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<CreateChatMutation, TError, CreateChatMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<CreateChatMutation, TError, CreateChatMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<CreateChatMutation, TError, CreateChatMutationVariables, TContext>(
       ['CreateChat'],
       (variables?: CreateChatMutationVariables) => fetcher<CreateChatMutation, CreateChatMutationVariables>(client, CreateChatDocument, variables, headers)(),
       options
-    );
+    )};
+
 useCreateChatMutation.getKey = () => ['CreateChat'];
 
+
 useCreateChatMutation.fetcher = (client: GraphQLClient, variables: CreateChatMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateChatMutation, CreateChatMutationVariables>(client, CreateChatDocument, variables, headers);
+
 export const AddMessageToChatDocument = `
     mutation AddMessageToChat($MessageInput: MessageInput!) {
   addMessageToChat(MessageInput: $MessageInput) {
@@ -2084,6 +2195,7 @@ export const AddMessageToChatDocument = `
   }
 }
     `;
+
 export const useAddMessageToChatMutation = <
       TError = unknown,
       TContext = unknown
@@ -2091,15 +2203,19 @@ export const useAddMessageToChatMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<AddMessageToChatMutation, TError, AddMessageToChatMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<AddMessageToChatMutation, TError, AddMessageToChatMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<AddMessageToChatMutation, TError, AddMessageToChatMutationVariables, TContext>(
       ['AddMessageToChat'],
       (variables?: AddMessageToChatMutationVariables) => fetcher<AddMessageToChatMutation, AddMessageToChatMutationVariables>(client, AddMessageToChatDocument, variables, headers)(),
       options
-    );
+    )};
+
 useAddMessageToChatMutation.getKey = () => ['AddMessageToChat'];
 
+
 useAddMessageToChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageToChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageToChatMutation, AddMessageToChatMutationVariables>(client, AddMessageToChatDocument, variables, headers);
+
 export const MarkAllMessagesAsSeenDocument = `
     mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
   markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
@@ -2117,6 +2233,7 @@ export const MarkAllMessagesAsSeenDocument = `
   }
 }
     `;
+
 export const useMarkAllMessagesAsSeenMutation = <
       TError = unknown,
       TContext = unknown
@@ -2124,15 +2241,19 @@ export const useMarkAllMessagesAsSeenMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<MarkAllMessagesAsSeenMutation, TError, MarkAllMessagesAsSeenMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<MarkAllMessagesAsSeenMutation, TError, MarkAllMessagesAsSeenMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<MarkAllMessagesAsSeenMutation, TError, MarkAllMessagesAsSeenMutationVariables, TContext>(
       ['MarkAllMessagesAsSeen'],
       (variables?: MarkAllMessagesAsSeenMutationVariables) => fetcher<MarkAllMessagesAsSeenMutation, MarkAllMessagesAsSeenMutationVariables>(client, MarkAllMessagesAsSeenDocument, variables, headers)(),
       options
-    );
+    )};
+
 useMarkAllMessagesAsSeenMutation.getKey = () => ['MarkAllMessagesAsSeen'];
 
+
 useMarkAllMessagesAsSeenMutation.fetcher = (client: GraphQLClient, variables: MarkAllMessagesAsSeenMutationVariables, headers?: RequestInit['headers']) => fetcher<MarkAllMessagesAsSeenMutation, MarkAllMessagesAsSeenMutationVariables>(client, MarkAllMessagesAsSeenDocument, variables, headers);
+
 export const UpdateChatDocument = `
     mutation UpdateChat($ChatInput: ChatInput!) {
   updateChat(ChatInput: $ChatInput) {
@@ -2140,6 +2261,7 @@ export const UpdateChatDocument = `
   }
 }
     `;
+
 export const useUpdateChatMutation = <
       TError = unknown,
       TContext = unknown
@@ -2147,15 +2269,19 @@ export const useUpdateChatMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateChatMutation, TError, UpdateChatMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateChatMutation, TError, UpdateChatMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateChatMutation, TError, UpdateChatMutationVariables, TContext>(
       ['UpdateChat'],
       (variables?: UpdateChatMutationVariables) => fetcher<UpdateChatMutation, UpdateChatMutationVariables>(client, UpdateChatDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateChatMutation.getKey = () => ['UpdateChat'];
 
+
 useUpdateChatMutation.fetcher = (client: GraphQLClient, variables: UpdateChatMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateChatMutation, UpdateChatMutationVariables>(client, UpdateChatDocument, variables, headers);
+
 export const UpdateProcessForOrganizationIdDocument = `
     mutation UpdateProcessForOrganizationId($processInput: ProcessInputCreate!, $organizationId: Long!) {
   updateProcessForOrganizationId(
@@ -2178,6 +2304,7 @@ export const UpdateProcessForOrganizationIdDocument = `
   }
 }
     `;
+
 export const useUpdateProcessForOrganizationIdMutation = <
       TError = unknown,
       TContext = unknown
@@ -2185,15 +2312,19 @@ export const useUpdateProcessForOrganizationIdMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateProcessForOrganizationIdMutation, TError, UpdateProcessForOrganizationIdMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateProcessForOrganizationIdMutation, TError, UpdateProcessForOrganizationIdMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateProcessForOrganizationIdMutation, TError, UpdateProcessForOrganizationIdMutationVariables, TContext>(
       ['UpdateProcessForOrganizationId'],
       (variables?: UpdateProcessForOrganizationIdMutationVariables) => fetcher<UpdateProcessForOrganizationIdMutation, UpdateProcessForOrganizationIdMutationVariables>(client, UpdateProcessForOrganizationIdDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateProcessForOrganizationIdMutation.getKey = () => ['UpdateProcessForOrganizationId'];
 
+
 useUpdateProcessForOrganizationIdMutation.fetcher = (client: GraphQLClient, variables: UpdateProcessForOrganizationIdMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateProcessForOrganizationIdMutation, UpdateProcessForOrganizationIdMutationVariables>(client, UpdateProcessForOrganizationIdDocument, variables, headers);
+
 export const CreateStepDocument = `
     mutation createStep($stepInput: StepInput!) {
   createStep(stepInput: $stepInput) {
@@ -2203,6 +2334,7 @@ export const CreateStepDocument = `
   }
 }
     `;
+
 export const useCreateStepMutation = <
       TError = unknown,
       TContext = unknown
@@ -2210,15 +2342,19 @@ export const useCreateStepMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<CreateStepMutation, TError, CreateStepMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<CreateStepMutation, TError, CreateStepMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<CreateStepMutation, TError, CreateStepMutationVariables, TContext>(
       ['createStep'],
       (variables?: CreateStepMutationVariables) => fetcher<CreateStepMutation, CreateStepMutationVariables>(client, CreateStepDocument, variables, headers)(),
       options
-    );
+    )};
+
 useCreateStepMutation.getKey = () => ['createStep'];
 
+
 useCreateStepMutation.fetcher = (client: GraphQLClient, variables: CreateStepMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateStepMutation, CreateStepMutationVariables>(client, CreateStepDocument, variables, headers);
+
 export const CreateConnectionRequestDocument = `
     mutation CreateConnectionRequest($connectionCreateInput: ConnectionCreateInput!) {
   createConnection(connectionCreateInput: $connectionCreateInput) {
@@ -2240,6 +2376,7 @@ export const CreateConnectionRequestDocument = `
   }
 }
     `;
+
 export const useCreateConnectionRequestMutation = <
       TError = unknown,
       TContext = unknown
@@ -2247,15 +2384,19 @@ export const useCreateConnectionRequestMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<CreateConnectionRequestMutation, TError, CreateConnectionRequestMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<CreateConnectionRequestMutation, TError, CreateConnectionRequestMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<CreateConnectionRequestMutation, TError, CreateConnectionRequestMutationVariables, TContext>(
       ['CreateConnectionRequest'],
       (variables?: CreateConnectionRequestMutationVariables) => fetcher<CreateConnectionRequestMutation, CreateConnectionRequestMutationVariables>(client, CreateConnectionRequestDocument, variables, headers)(),
       options
-    );
+    )};
+
 useCreateConnectionRequestMutation.getKey = () => ['CreateConnectionRequest'];
 
+
 useCreateConnectionRequestMutation.fetcher = (client: GraphQLClient, variables: CreateConnectionRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateConnectionRequestMutation, CreateConnectionRequestMutationVariables>(client, CreateConnectionRequestDocument, variables, headers);
+
 export const UpdateConnectionDocument = `
     mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
   updateConnection(connectionRequestInput: $connectionRequestInput) {
@@ -2274,6 +2415,7 @@ export const UpdateConnectionDocument = `
   }
 }
     `;
+
 export const useUpdateConnectionMutation = <
       TError = unknown,
       TContext = unknown
@@ -2281,15 +2423,19 @@ export const useUpdateConnectionMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<UpdateConnectionMutation, TError, UpdateConnectionMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<UpdateConnectionMutation, TError, UpdateConnectionMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<UpdateConnectionMutation, TError, UpdateConnectionMutationVariables, TContext>(
       ['UpdateConnection'],
       (variables?: UpdateConnectionMutationVariables) => fetcher<UpdateConnectionMutation, UpdateConnectionMutationVariables>(client, UpdateConnectionDocument, variables, headers)(),
       options
-    );
+    )};
+
 useUpdateConnectionMutation.getKey = () => ['UpdateConnection'];
 
+
 useUpdateConnectionMutation.fetcher = (client: GraphQLClient, variables: UpdateConnectionMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateConnectionMutation, UpdateConnectionMutationVariables>(client, UpdateConnectionDocument, variables, headers);
+
 export const RemoveConnectionDocument = `
     mutation RemoveConnection($connectionId: Long!) {
   removeConnection(connectionId: $connectionId) {
@@ -2298,6 +2444,7 @@ export const RemoveConnectionDocument = `
   }
 }
     `;
+
 export const useRemoveConnectionMutation = <
       TError = unknown,
       TContext = unknown
@@ -2305,15 +2452,19 @@ export const useRemoveConnectionMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<RemoveConnectionMutation, TError, RemoveConnectionMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<RemoveConnectionMutation, TError, RemoveConnectionMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<RemoveConnectionMutation, TError, RemoveConnectionMutationVariables, TContext>(
       ['RemoveConnection'],
       (variables?: RemoveConnectionMutationVariables) => fetcher<RemoveConnectionMutation, RemoveConnectionMutationVariables>(client, RemoveConnectionDocument, variables, headers)(),
       options
-    );
+    )};
+
 useRemoveConnectionMutation.getKey = () => ['RemoveConnection'];
 
+
 useRemoveConnectionMutation.fetcher = (client: GraphQLClient, variables: RemoveConnectionMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveConnectionMutation, RemoveConnectionMutationVariables>(client, RemoveConnectionDocument, variables, headers);
+
 export const RemoveChatDocument = `
     mutation RemoveChat($chatId: Long!) {
   removeChat(chatId: $chatId) {
@@ -2321,6 +2472,7 @@ export const RemoveChatDocument = `
   }
 }
     `;
+
 export const useRemoveChatMutation = <
       TError = unknown,
       TContext = unknown
@@ -2328,15 +2480,19 @@ export const useRemoveChatMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<RemoveChatMutation, TError, RemoveChatMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<RemoveChatMutation, TError, RemoveChatMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<RemoveChatMutation, TError, RemoveChatMutationVariables, TContext>(
       ['RemoveChat'],
       (variables?: RemoveChatMutationVariables) => fetcher<RemoveChatMutation, RemoveChatMutationVariables>(client, RemoveChatDocument, variables, headers)(),
       options
-    );
+    )};
+
 useRemoveChatMutation.getKey = () => ['RemoveChat'];
 
+
 useRemoveChatMutation.fetcher = (client: GraphQLClient, variables: RemoveChatMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveChatMutation, RemoveChatMutationVariables>(client, RemoveChatDocument, variables, headers);
+
 export const RemoveUserProfileStudyDocument = `
     mutation RemoveUserProfileStudy($studyId: Long!) {
   removeUserProfileStudy(studyId: $studyId) {
@@ -2344,6 +2500,7 @@ export const RemoveUserProfileStudyDocument = `
   }
 }
     `;
+
 export const useRemoveUserProfileStudyMutation = <
       TError = unknown,
       TContext = unknown
@@ -2351,15 +2508,19 @@ export const useRemoveUserProfileStudyMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<RemoveUserProfileStudyMutation, TError, RemoveUserProfileStudyMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<RemoveUserProfileStudyMutation, TError, RemoveUserProfileStudyMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<RemoveUserProfileStudyMutation, TError, RemoveUserProfileStudyMutationVariables, TContext>(
       ['RemoveUserProfileStudy'],
       (variables?: RemoveUserProfileStudyMutationVariables) => fetcher<RemoveUserProfileStudyMutation, RemoveUserProfileStudyMutationVariables>(client, RemoveUserProfileStudyDocument, variables, headers)(),
       options
-    );
+    )};
+
 useRemoveUserProfileStudyMutation.getKey = () => ['RemoveUserProfileStudy'];
 
+
 useRemoveUserProfileStudyMutation.fetcher = (client: GraphQLClient, variables: RemoveUserProfileStudyMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUserProfileStudyMutation, RemoveUserProfileStudyMutationVariables>(client, RemoveUserProfileStudyDocument, variables, headers);
+
 export const RemoveUserProfileExperienceDocument = `
     mutation RemoveUserProfileExperience($experienceId: Long!) {
   removeUserProfileExperience(experienceId: $experienceId) {
@@ -2367,6 +2528,7 @@ export const RemoveUserProfileExperienceDocument = `
   }
 }
     `;
+
 export const useRemoveUserProfileExperienceMutation = <
       TError = unknown,
       TContext = unknown
@@ -2374,15 +2536,19 @@ export const useRemoveUserProfileExperienceMutation = <
       client: GraphQLClient,
       options?: UseMutationOptions<RemoveUserProfileExperienceMutation, TError, RemoveUserProfileExperienceMutationVariables, TContext>,
       headers?: RequestInit['headers']
-    ) =>
-    useMutation<RemoveUserProfileExperienceMutation, TError, RemoveUserProfileExperienceMutationVariables, TContext>(
+    ) => {
+    
+    return useMutation<RemoveUserProfileExperienceMutation, TError, RemoveUserProfileExperienceMutationVariables, TContext>(
       ['RemoveUserProfileExperience'],
       (variables?: RemoveUserProfileExperienceMutationVariables) => fetcher<RemoveUserProfileExperienceMutation, RemoveUserProfileExperienceMutationVariables>(client, RemoveUserProfileExperienceDocument, variables, headers)(),
       options
-    );
+    )};
+
 useRemoveUserProfileExperienceMutation.getKey = () => ['RemoveUserProfileExperience'];
 
+
 useRemoveUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: RemoveUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUserProfileExperienceMutation, RemoveUserProfileExperienceMutationVariables>(client, RemoveUserProfileExperienceDocument, variables, headers);
+
 export const GetCurrentUserDocument = `
     query GetCurrentUser {
   getCurrentUser {
@@ -2393,6 +2559,7 @@ export const GetCurrentUserDocument = `
   }
 }
     `;
+
 export const useGetCurrentUserQuery = <
       TData = GetCurrentUserQuery,
       TError = unknown
@@ -2401,17 +2568,17 @@ export const useGetCurrentUserQuery = <
       variables?: GetCurrentUserQueryVariables,
       options?: UseQueryOptions<GetCurrentUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetCurrentUserQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetCurrentUserQuery, TError, TData>(
       variables === undefined ? ['GetCurrentUser'] : ['GetCurrentUser', variables],
       fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, variables, headers),
       options
-    );
+    )};
+
 useGetCurrentUserQuery.document = GetCurrentUserDocument;
 
-
 useGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) => variables === undefined ? ['GetCurrentUser'] : ['GetCurrentUser', variables];
-;
 
 export const useInfiniteGetCurrentUserQuery = <
       TData = GetCurrentUserQuery,
@@ -2421,18 +2588,19 @@ export const useInfiniteGetCurrentUserQuery = <
       variables?: GetCurrentUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetCurrentUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetCurrentUserQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetCurrentUserQuery, TError, TData>(
       variables === undefined ? ['GetCurrentUser.infinite'] : ['GetCurrentUser.infinite', variables],
       (metaData) => fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) => variables === undefined ? ['GetCurrentUser.infinite'] : ['GetCurrentUser.infinite', variables];
-;
+
 
 useGetCurrentUserQuery.fetcher = (client: GraphQLClient, variables?: GetCurrentUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(client, GetCurrentUserDocument, variables, headers);
+
 export const GetAllJobListingsDocument = `
     query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
@@ -2501,6 +2669,7 @@ export const GetAllJobListingsDocument = `
   }
 }
     `;
+
 export const useGetAllJobListingsQuery = <
       TData = GetAllJobListingsQuery,
       TError = unknown
@@ -2509,17 +2678,17 @@ export const useGetAllJobListingsQuery = <
       variables?: GetAllJobListingsQueryVariables,
       options?: UseQueryOptions<GetAllJobListingsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllJobListingsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllJobListingsQuery, TError, TData>(
       variables === undefined ? ['GetAllJobListings'] : ['GetAllJobListings', variables],
       fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllJobListingsQuery.document = GetAllJobListingsDocument;
 
-
 useGetAllJobListingsQuery.getKey = (variables?: GetAllJobListingsQueryVariables) => variables === undefined ? ['GetAllJobListings'] : ['GetAllJobListings', variables];
-;
 
 export const useInfiniteGetAllJobListingsQuery = <
       TData = GetAllJobListingsQuery,
@@ -2529,18 +2698,19 @@ export const useInfiniteGetAllJobListingsQuery = <
       variables?: GetAllJobListingsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobListingsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllJobListingsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllJobListingsQuery, TError, TData>(
       variables === undefined ? ['GetAllJobListings.infinite'] : ['GetAllJobListings.infinite', variables],
       (metaData) => fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllJobListingsQuery.getKey = (variables?: GetAllJobListingsQueryVariables) => variables === undefined ? ['GetAllJobListings.infinite'] : ['GetAllJobListings.infinite', variables];
-;
+
 
 useGetAllJobListingsQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobListingsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobListingsQuery, GetAllJobListingsQueryVariables>(client, GetAllJobListingsDocument, variables, headers);
+
 export const GetUserProfileDocument = `
     query GetUserProfile($profileSlugUrl: String) {
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
@@ -2616,6 +2786,7 @@ export const GetUserProfileDocument = `
   }
 }
     `;
+
 export const useGetUserProfileQuery = <
       TData = GetUserProfileQuery,
       TError = unknown
@@ -2624,17 +2795,17 @@ export const useGetUserProfileQuery = <
       variables?: GetUserProfileQueryVariables,
       options?: UseQueryOptions<GetUserProfileQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetUserProfileQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetUserProfileQuery, TError, TData>(
       variables === undefined ? ['GetUserProfile'] : ['GetUserProfile', variables],
       fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, variables, headers),
       options
-    );
+    )};
+
 useGetUserProfileQuery.document = GetUserProfileDocument;
 
-
 useGetUserProfileQuery.getKey = (variables?: GetUserProfileQueryVariables) => variables === undefined ? ['GetUserProfile'] : ['GetUserProfile', variables];
-;
 
 export const useInfiniteGetUserProfileQuery = <
       TData = GetUserProfileQuery,
@@ -2644,18 +2815,19 @@ export const useInfiniteGetUserProfileQuery = <
       variables?: GetUserProfileQueryVariables,
       options?: UseInfiniteQueryOptions<GetUserProfileQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetUserProfileQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetUserProfileQuery, TError, TData>(
       variables === undefined ? ['GetUserProfile.infinite'] : ['GetUserProfile.infinite', variables],
       (metaData) => fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetUserProfileQuery.getKey = (variables?: GetUserProfileQueryVariables) => variables === undefined ? ['GetUserProfile.infinite'] : ['GetUserProfile.infinite', variables];
-;
+
 
 useGetUserProfileQuery.fetcher = (client: GraphQLClient, variables?: GetUserProfileQueryVariables, headers?: RequestInit['headers']) => fetcher<GetUserProfileQuery, GetUserProfileQueryVariables>(client, GetUserProfileDocument, variables, headers);
+
 export const GetCountriesCitiesDocument = `
     query GetCountriesCities {
   getCountriesCities {
@@ -2668,6 +2840,7 @@ export const GetCountriesCitiesDocument = `
   }
 }
     `;
+
 export const useGetCountriesCitiesQuery = <
       TData = GetCountriesCitiesQuery,
       TError = unknown
@@ -2676,17 +2849,17 @@ export const useGetCountriesCitiesQuery = <
       variables?: GetCountriesCitiesQueryVariables,
       options?: UseQueryOptions<GetCountriesCitiesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetCountriesCitiesQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetCountriesCitiesQuery, TError, TData>(
       variables === undefined ? ['GetCountriesCities'] : ['GetCountriesCities', variables],
       fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers),
       options
-    );
+    )};
+
 useGetCountriesCitiesQuery.document = GetCountriesCitiesDocument;
 
-
 useGetCountriesCitiesQuery.getKey = (variables?: GetCountriesCitiesQueryVariables) => variables === undefined ? ['GetCountriesCities'] : ['GetCountriesCities', variables];
-;
 
 export const useInfiniteGetCountriesCitiesQuery = <
       TData = GetCountriesCitiesQuery,
@@ -2696,18 +2869,19 @@ export const useInfiniteGetCountriesCitiesQuery = <
       variables?: GetCountriesCitiesQueryVariables,
       options?: UseInfiniteQueryOptions<GetCountriesCitiesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetCountriesCitiesQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetCountriesCitiesQuery, TError, TData>(
       variables === undefined ? ['GetCountriesCities.infinite'] : ['GetCountriesCities.infinite', variables],
       (metaData) => fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetCountriesCitiesQuery.getKey = (variables?: GetCountriesCitiesQueryVariables) => variables === undefined ? ['GetCountriesCities.infinite'] : ['GetCountriesCities.infinite', variables];
-;
+
 
 useGetCountriesCitiesQuery.fetcher = (client: GraphQLClient, variables?: GetCountriesCitiesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetCountriesCitiesQuery, GetCountriesCitiesQueryVariables>(client, GetCountriesCitiesDocument, variables, headers);
+
 export const GetAllOrganizationsDocument = `
     query getAllOrganizations {
   getAllOrganizations {
@@ -2746,6 +2920,7 @@ export const GetAllOrganizationsDocument = `
   }
 }
     `;
+
 export const useGetAllOrganizationsQuery = <
       TData = GetAllOrganizationsQuery,
       TError = unknown
@@ -2754,17 +2929,17 @@ export const useGetAllOrganizationsQuery = <
       variables?: GetAllOrganizationsQueryVariables,
       options?: UseQueryOptions<GetAllOrganizationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllOrganizationsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllOrganizationsQuery, TError, TData>(
       variables === undefined ? ['getAllOrganizations'] : ['getAllOrganizations', variables],
       fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllOrganizationsQuery.document = GetAllOrganizationsDocument;
 
-
 useGetAllOrganizationsQuery.getKey = (variables?: GetAllOrganizationsQueryVariables) => variables === undefined ? ['getAllOrganizations'] : ['getAllOrganizations', variables];
-;
 
 export const useInfiniteGetAllOrganizationsQuery = <
       TData = GetAllOrganizationsQuery,
@@ -2774,18 +2949,19 @@ export const useInfiniteGetAllOrganizationsQuery = <
       variables?: GetAllOrganizationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllOrganizationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllOrganizationsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllOrganizationsQuery, TError, TData>(
       variables === undefined ? ['getAllOrganizations.infinite'] : ['getAllOrganizations.infinite', variables],
       (metaData) => fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllOrganizationsQuery.getKey = (variables?: GetAllOrganizationsQueryVariables) => variables === undefined ? ['getAllOrganizations.infinite'] : ['getAllOrganizations.infinite', variables];
-;
+
 
 useGetAllOrganizationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllOrganizationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllOrganizationsQuery, GetAllOrganizationsQueryVariables>(client, GetAllOrganizationsDocument, variables, headers);
+
 export const GetAllActivitySectorsDocument = `
     query getAllActivitySectors {
   getAllActivitySectors {
@@ -2794,6 +2970,7 @@ export const GetAllActivitySectorsDocument = `
   }
 }
     `;
+
 export const useGetAllActivitySectorsQuery = <
       TData = GetAllActivitySectorsQuery,
       TError = unknown
@@ -2802,17 +2979,17 @@ export const useGetAllActivitySectorsQuery = <
       variables?: GetAllActivitySectorsQueryVariables,
       options?: UseQueryOptions<GetAllActivitySectorsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllActivitySectorsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllActivitySectorsQuery, TError, TData>(
       variables === undefined ? ['getAllActivitySectors'] : ['getAllActivitySectors', variables],
       fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllActivitySectorsQuery.document = GetAllActivitySectorsDocument;
 
-
 useGetAllActivitySectorsQuery.getKey = (variables?: GetAllActivitySectorsQueryVariables) => variables === undefined ? ['getAllActivitySectors'] : ['getAllActivitySectors', variables];
-;
 
 export const useInfiniteGetAllActivitySectorsQuery = <
       TData = GetAllActivitySectorsQuery,
@@ -2822,18 +2999,19 @@ export const useInfiniteGetAllActivitySectorsQuery = <
       variables?: GetAllActivitySectorsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllActivitySectorsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllActivitySectorsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllActivitySectorsQuery, TError, TData>(
       variables === undefined ? ['getAllActivitySectors.infinite'] : ['getAllActivitySectors.infinite', variables],
       (metaData) => fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllActivitySectorsQuery.getKey = (variables?: GetAllActivitySectorsQueryVariables) => variables === undefined ? ['getAllActivitySectors.infinite'] : ['getAllActivitySectors.infinite', variables];
-;
+
 
 useGetAllActivitySectorsQuery.fetcher = (client: GraphQLClient, variables?: GetAllActivitySectorsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllActivitySectorsQuery, GetAllActivitySectorsQueryVariables>(client, GetAllActivitySectorsDocument, variables, headers);
+
 export const GetAllInstitutionsDocument = `
     query getAllInstitutions {
   getAllInstitutions {
@@ -2844,6 +3022,7 @@ export const GetAllInstitutionsDocument = `
   }
 }
     `;
+
 export const useGetAllInstitutionsQuery = <
       TData = GetAllInstitutionsQuery,
       TError = unknown
@@ -2852,17 +3031,17 @@ export const useGetAllInstitutionsQuery = <
       variables?: GetAllInstitutionsQueryVariables,
       options?: UseQueryOptions<GetAllInstitutionsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllInstitutionsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllInstitutionsQuery, TError, TData>(
       variables === undefined ? ['getAllInstitutions'] : ['getAllInstitutions', variables],
       fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllInstitutionsQuery.document = GetAllInstitutionsDocument;
 
-
 useGetAllInstitutionsQuery.getKey = (variables?: GetAllInstitutionsQueryVariables) => variables === undefined ? ['getAllInstitutions'] : ['getAllInstitutions', variables];
-;
 
 export const useInfiniteGetAllInstitutionsQuery = <
       TData = GetAllInstitutionsQuery,
@@ -2872,18 +3051,19 @@ export const useInfiniteGetAllInstitutionsQuery = <
       variables?: GetAllInstitutionsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllInstitutionsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllInstitutionsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllInstitutionsQuery, TError, TData>(
       variables === undefined ? ['getAllInstitutions.infinite'] : ['getAllInstitutions.infinite', variables],
       (metaData) => fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllInstitutionsQuery.getKey = (variables?: GetAllInstitutionsQueryVariables) => variables === undefined ? ['getAllInstitutions.infinite'] : ['getAllInstitutions.infinite', variables];
-;
+
 
 useGetAllInstitutionsQuery.fetcher = (client: GraphQLClient, variables?: GetAllInstitutionsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllInstitutionsQuery, GetAllInstitutionsQueryVariables>(client, GetAllInstitutionsDocument, variables, headers);
+
 export const GetAllDomainsDocument = `
     query getAllDomains {
   getAllDomains {
@@ -2892,6 +3072,7 @@ export const GetAllDomainsDocument = `
   }
 }
     `;
+
 export const useGetAllDomainsQuery = <
       TData = GetAllDomainsQuery,
       TError = unknown
@@ -2900,17 +3081,17 @@ export const useGetAllDomainsQuery = <
       variables?: GetAllDomainsQueryVariables,
       options?: UseQueryOptions<GetAllDomainsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllDomainsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllDomainsQuery, TError, TData>(
       variables === undefined ? ['getAllDomains'] : ['getAllDomains', variables],
       fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllDomainsQuery.document = GetAllDomainsDocument;
 
-
 useGetAllDomainsQuery.getKey = (variables?: GetAllDomainsQueryVariables) => variables === undefined ? ['getAllDomains'] : ['getAllDomains', variables];
-;
 
 export const useInfiniteGetAllDomainsQuery = <
       TData = GetAllDomainsQuery,
@@ -2920,18 +3101,19 @@ export const useInfiniteGetAllDomainsQuery = <
       variables?: GetAllDomainsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllDomainsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllDomainsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllDomainsQuery, TError, TData>(
       variables === undefined ? ['getAllDomains.infinite'] : ['getAllDomains.infinite', variables],
       (metaData) => fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllDomainsQuery.getKey = (variables?: GetAllDomainsQueryVariables) => variables === undefined ? ['getAllDomains.infinite'] : ['getAllDomains.infinite', variables];
-;
+
 
 useGetAllDomainsQuery.fetcher = (client: GraphQLClient, variables?: GetAllDomainsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllDomainsQuery, GetAllDomainsQueryVariables>(client, GetAllDomainsDocument, variables, headers);
+
 export const GetAllCertificationsDocument = `
     query getAllCertifications {
   getAllCertifications {
@@ -2940,6 +3122,7 @@ export const GetAllCertificationsDocument = `
   }
 }
     `;
+
 export const useGetAllCertificationsQuery = <
       TData = GetAllCertificationsQuery,
       TError = unknown
@@ -2948,17 +3131,17 @@ export const useGetAllCertificationsQuery = <
       variables?: GetAllCertificationsQueryVariables,
       options?: UseQueryOptions<GetAllCertificationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllCertificationsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllCertificationsQuery, TError, TData>(
       variables === undefined ? ['getAllCertifications'] : ['getAllCertifications', variables],
       fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllCertificationsQuery.document = GetAllCertificationsDocument;
 
-
 useGetAllCertificationsQuery.getKey = (variables?: GetAllCertificationsQueryVariables) => variables === undefined ? ['getAllCertifications'] : ['getAllCertifications', variables];
-;
 
 export const useInfiniteGetAllCertificationsQuery = <
       TData = GetAllCertificationsQuery,
@@ -2968,18 +3151,19 @@ export const useInfiniteGetAllCertificationsQuery = <
       variables?: GetAllCertificationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllCertificationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllCertificationsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllCertificationsQuery, TError, TData>(
       variables === undefined ? ['getAllCertifications.infinite'] : ['getAllCertifications.infinite', variables],
       (metaData) => fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllCertificationsQuery.getKey = (variables?: GetAllCertificationsQueryVariables) => variables === undefined ? ['getAllCertifications.infinite'] : ['getAllCertifications.infinite', variables];
-;
+
 
 useGetAllCertificationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllCertificationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllCertificationsQuery, GetAllCertificationsQueryVariables>(client, GetAllCertificationsDocument, variables, headers);
+
 export const GetAllJobCategoriesDocument = `
     query getAllJobCategories {
   getAllJobCategories {
@@ -2988,6 +3172,7 @@ export const GetAllJobCategoriesDocument = `
   }
 }
     `;
+
 export const useGetAllJobCategoriesQuery = <
       TData = GetAllJobCategoriesQuery,
       TError = unknown
@@ -2996,17 +3181,17 @@ export const useGetAllJobCategoriesQuery = <
       variables?: GetAllJobCategoriesQueryVariables,
       options?: UseQueryOptions<GetAllJobCategoriesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllJobCategoriesQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllJobCategoriesQuery, TError, TData>(
       variables === undefined ? ['getAllJobCategories'] : ['getAllJobCategories', variables],
       fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(client, GetAllJobCategoriesDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllJobCategoriesQuery.document = GetAllJobCategoriesDocument;
 
-
 useGetAllJobCategoriesQuery.getKey = (variables?: GetAllJobCategoriesQueryVariables) => variables === undefined ? ['getAllJobCategories'] : ['getAllJobCategories', variables];
-;
 
 export const useInfiniteGetAllJobCategoriesQuery = <
       TData = GetAllJobCategoriesQuery,
@@ -3016,18 +3201,19 @@ export const useInfiniteGetAllJobCategoriesQuery = <
       variables?: GetAllJobCategoriesQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobCategoriesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllJobCategoriesQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllJobCategoriesQuery, TError, TData>(
       variables === undefined ? ['getAllJobCategories.infinite'] : ['getAllJobCategories.infinite', variables],
       (metaData) => fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(client, GetAllJobCategoriesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllJobCategoriesQuery.getKey = (variables?: GetAllJobCategoriesQueryVariables) => variables === undefined ? ['getAllJobCategories.infinite'] : ['getAllJobCategories.infinite', variables];
-;
+
 
 useGetAllJobCategoriesQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobCategoriesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobCategoriesQuery, GetAllJobCategoriesQueryVariables>(client, GetAllJobCategoriesDocument, variables, headers);
+
 export const GetAllJobsDocument = `
     query getAllJobs {
   getAllJobs {
@@ -3037,6 +3223,7 @@ export const GetAllJobsDocument = `
   }
 }
     `;
+
 export const useGetAllJobsQuery = <
       TData = GetAllJobsQuery,
       TError = unknown
@@ -3045,17 +3232,17 @@ export const useGetAllJobsQuery = <
       variables?: GetAllJobsQueryVariables,
       options?: UseQueryOptions<GetAllJobsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllJobsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllJobsQuery, TError, TData>(
       variables === undefined ? ['getAllJobs'] : ['getAllJobs', variables],
       fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllJobsQuery.document = GetAllJobsDocument;
 
-
 useGetAllJobsQuery.getKey = (variables?: GetAllJobsQueryVariables) => variables === undefined ? ['getAllJobs'] : ['getAllJobs', variables];
-;
 
 export const useInfiniteGetAllJobsQuery = <
       TData = GetAllJobsQuery,
@@ -3065,18 +3252,19 @@ export const useInfiniteGetAllJobsQuery = <
       variables?: GetAllJobsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllJobsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllJobsQuery, TError, TData>(
       variables === undefined ? ['getAllJobs.infinite'] : ['getAllJobs.infinite', variables],
       (metaData) => fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllJobsQuery.getKey = (variables?: GetAllJobsQueryVariables) => variables === undefined ? ['getAllJobs.infinite'] : ['getAllJobs.infinite', variables];
-;
+
 
 useGetAllJobsQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobsQuery, GetAllJobsQueryVariables>(client, GetAllJobsDocument, variables, headers);
+
 export const GetOrganizationByIdDocument = `
     query GetOrganizationById($organizationId: Long!) {
   getOrganizationById(organizationId: $organizationId) {
@@ -3107,6 +3295,7 @@ export const GetOrganizationByIdDocument = `
   }
 }
     `;
+
 export const useGetOrganizationByIdQuery = <
       TData = GetOrganizationByIdQuery,
       TError = unknown
@@ -3115,17 +3304,17 @@ export const useGetOrganizationByIdQuery = <
       variables: GetOrganizationByIdQueryVariables,
       options?: UseQueryOptions<GetOrganizationByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetOrganizationByIdQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetOrganizationByIdQuery, TError, TData>(
       ['GetOrganizationById', variables],
       fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers),
       options
-    );
+    )};
+
 useGetOrganizationByIdQuery.document = GetOrganizationByIdDocument;
 
-
 useGetOrganizationByIdQuery.getKey = (variables: GetOrganizationByIdQueryVariables) => ['GetOrganizationById', variables];
-;
 
 export const useInfiniteGetOrganizationByIdQuery = <
       TData = GetOrganizationByIdQuery,
@@ -3135,18 +3324,19 @@ export const useInfiniteGetOrganizationByIdQuery = <
       variables: GetOrganizationByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetOrganizationByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetOrganizationByIdQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetOrganizationByIdQuery, TError, TData>(
       ['GetOrganizationById.infinite', variables],
       (metaData) => fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetOrganizationByIdQuery.getKey = (variables: GetOrganizationByIdQueryVariables) => ['GetOrganizationById.infinite', variables];
-;
+
 
 useGetOrganizationByIdQuery.fetcher = (client: GraphQLClient, variables: GetOrganizationByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetOrganizationByIdQuery, GetOrganizationByIdQueryVariables>(client, GetOrganizationByIdDocument, variables, headers);
+
 export const GetOrganizationBySlugNameDocument = `
     query GetOrganizationBySlugName($slugName: String!) {
   getOrganizationBySlugName(slugName: $slugName) {
@@ -3200,6 +3390,7 @@ export const GetOrganizationBySlugNameDocument = `
   }
 }
     `;
+
 export const useGetOrganizationBySlugNameQuery = <
       TData = GetOrganizationBySlugNameQuery,
       TError = unknown
@@ -3208,17 +3399,17 @@ export const useGetOrganizationBySlugNameQuery = <
       variables: GetOrganizationBySlugNameQueryVariables,
       options?: UseQueryOptions<GetOrganizationBySlugNameQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetOrganizationBySlugNameQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetOrganizationBySlugNameQuery, TError, TData>(
       ['GetOrganizationBySlugName', variables],
       fetcher<GetOrganizationBySlugNameQuery, GetOrganizationBySlugNameQueryVariables>(client, GetOrganizationBySlugNameDocument, variables, headers),
       options
-    );
+    )};
+
 useGetOrganizationBySlugNameQuery.document = GetOrganizationBySlugNameDocument;
 
-
 useGetOrganizationBySlugNameQuery.getKey = (variables: GetOrganizationBySlugNameQueryVariables) => ['GetOrganizationBySlugName', variables];
-;
 
 export const useInfiniteGetOrganizationBySlugNameQuery = <
       TData = GetOrganizationBySlugNameQuery,
@@ -3228,18 +3419,19 @@ export const useInfiniteGetOrganizationBySlugNameQuery = <
       variables: GetOrganizationBySlugNameQueryVariables,
       options?: UseInfiniteQueryOptions<GetOrganizationBySlugNameQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetOrganizationBySlugNameQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetOrganizationBySlugNameQuery, TError, TData>(
       ['GetOrganizationBySlugName.infinite', variables],
       (metaData) => fetcher<GetOrganizationBySlugNameQuery, GetOrganizationBySlugNameQueryVariables>(client, GetOrganizationBySlugNameDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetOrganizationBySlugNameQuery.getKey = (variables: GetOrganizationBySlugNameQueryVariables) => ['GetOrganizationBySlugName.infinite', variables];
-;
+
 
 useGetOrganizationBySlugNameQuery.fetcher = (client: GraphQLClient, variables: GetOrganizationBySlugNameQueryVariables, headers?: RequestInit['headers']) => fetcher<GetOrganizationBySlugNameQuery, GetOrganizationBySlugNameQueryVariables>(client, GetOrganizationBySlugNameDocument, variables, headers);
+
 export const GetRelatedJobListingsDocument = `
     query GetRelatedJobListings($jobName: String!) {
   getRelatedJobListings(jobName: $jobName) {
@@ -3267,6 +3459,7 @@ export const GetRelatedJobListingsDocument = `
   }
 }
     `;
+
 export const useGetRelatedJobListingsQuery = <
       TData = GetRelatedJobListingsQuery,
       TError = unknown
@@ -3275,17 +3468,17 @@ export const useGetRelatedJobListingsQuery = <
       variables: GetRelatedJobListingsQueryVariables,
       options?: UseQueryOptions<GetRelatedJobListingsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetRelatedJobListingsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetRelatedJobListingsQuery, TError, TData>(
       ['GetRelatedJobListings', variables],
       fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetRelatedJobListingsQuery.document = GetRelatedJobListingsDocument;
 
-
 useGetRelatedJobListingsQuery.getKey = (variables: GetRelatedJobListingsQueryVariables) => ['GetRelatedJobListings', variables];
-;
 
 export const useInfiniteGetRelatedJobListingsQuery = <
       TData = GetRelatedJobListingsQuery,
@@ -3295,18 +3488,19 @@ export const useInfiniteGetRelatedJobListingsQuery = <
       variables: GetRelatedJobListingsQueryVariables,
       options?: UseInfiniteQueryOptions<GetRelatedJobListingsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetRelatedJobListingsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetRelatedJobListingsQuery, TError, TData>(
       ['GetRelatedJobListings.infinite', variables],
       (metaData) => fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetRelatedJobListingsQuery.getKey = (variables: GetRelatedJobListingsQueryVariables) => ['GetRelatedJobListings.infinite', variables];
-;
+
 
 useGetRelatedJobListingsQuery.fetcher = (client: GraphQLClient, variables: GetRelatedJobListingsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetRelatedJobListingsQuery, GetRelatedJobListingsQueryVariables>(client, GetRelatedJobListingsDocument, variables, headers);
+
 export const GetMyApplicationForJobListingDocument = `
     query GetMyApplicationForJobListing($JobListingId: Long!) {
   getMyApplicationForJobListing(JobListingId: $JobListingId) {
@@ -3329,6 +3523,7 @@ export const GetMyApplicationForJobListingDocument = `
   }
 }
     `;
+
 export const useGetMyApplicationForJobListingQuery = <
       TData = GetMyApplicationForJobListingQuery,
       TError = unknown
@@ -3337,17 +3532,17 @@ export const useGetMyApplicationForJobListingQuery = <
       variables: GetMyApplicationForJobListingQueryVariables,
       options?: UseQueryOptions<GetMyApplicationForJobListingQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetMyApplicationForJobListingQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetMyApplicationForJobListingQuery, TError, TData>(
       ['GetMyApplicationForJobListing', variables],
       fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers),
       options
-    );
+    )};
+
 useGetMyApplicationForJobListingQuery.document = GetMyApplicationForJobListingDocument;
 
-
 useGetMyApplicationForJobListingQuery.getKey = (variables: GetMyApplicationForJobListingQueryVariables) => ['GetMyApplicationForJobListing', variables];
-;
 
 export const useInfiniteGetMyApplicationForJobListingQuery = <
       TData = GetMyApplicationForJobListingQuery,
@@ -3357,18 +3552,19 @@ export const useInfiniteGetMyApplicationForJobListingQuery = <
       variables: GetMyApplicationForJobListingQueryVariables,
       options?: UseInfiniteQueryOptions<GetMyApplicationForJobListingQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetMyApplicationForJobListingQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetMyApplicationForJobListingQuery, TError, TData>(
       ['GetMyApplicationForJobListing.infinite', variables],
       (metaData) => fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetMyApplicationForJobListingQuery.getKey = (variables: GetMyApplicationForJobListingQueryVariables) => ['GetMyApplicationForJobListing.infinite', variables];
-;
+
 
 useGetMyApplicationForJobListingQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationForJobListingQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationForJobListingQuery, GetMyApplicationForJobListingQueryVariables>(client, GetMyApplicationForJobListingDocument, variables, headers);
+
 export const GetApplicationByIdDocument = `
     query GetApplicationById($applicationId: Long!) {
   getApplicationById(applicationId: $applicationId) {
@@ -3422,6 +3618,7 @@ export const GetApplicationByIdDocument = `
   }
 }
     `;
+
 export const useGetApplicationByIdQuery = <
       TData = GetApplicationByIdQuery,
       TError = unknown
@@ -3430,17 +3627,17 @@ export const useGetApplicationByIdQuery = <
       variables: GetApplicationByIdQueryVariables,
       options?: UseQueryOptions<GetApplicationByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetApplicationByIdQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetApplicationByIdQuery, TError, TData>(
       ['GetApplicationById', variables],
       fetcher<GetApplicationByIdQuery, GetApplicationByIdQueryVariables>(client, GetApplicationByIdDocument, variables, headers),
       options
-    );
+    )};
+
 useGetApplicationByIdQuery.document = GetApplicationByIdDocument;
 
-
 useGetApplicationByIdQuery.getKey = (variables: GetApplicationByIdQueryVariables) => ['GetApplicationById', variables];
-;
 
 export const useInfiniteGetApplicationByIdQuery = <
       TData = GetApplicationByIdQuery,
@@ -3450,18 +3647,19 @@ export const useInfiniteGetApplicationByIdQuery = <
       variables: GetApplicationByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetApplicationByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetApplicationByIdQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetApplicationByIdQuery, TError, TData>(
       ['GetApplicationById.infinite', variables],
       (metaData) => fetcher<GetApplicationByIdQuery, GetApplicationByIdQueryVariables>(client, GetApplicationByIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetApplicationByIdQuery.getKey = (variables: GetApplicationByIdQueryVariables) => ['GetApplicationById.infinite', variables];
-;
+
 
 useGetApplicationByIdQuery.fetcher = (client: GraphQLClient, variables: GetApplicationByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationByIdQuery, GetApplicationByIdQueryVariables>(client, GetApplicationByIdDocument, variables, headers);
+
 export const GetAllApplicationsDocument = `
     query GetAllApplications($searchQuery: SearchQueryInput) {
   getAllApplications(searchQuery: $searchQuery) {
@@ -3501,6 +3699,7 @@ export const GetAllApplicationsDocument = `
   }
 }
     `;
+
 export const useGetAllApplicationsQuery = <
       TData = GetAllApplicationsQuery,
       TError = unknown
@@ -3509,17 +3708,17 @@ export const useGetAllApplicationsQuery = <
       variables?: GetAllApplicationsQueryVariables,
       options?: UseQueryOptions<GetAllApplicationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllApplicationsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllApplicationsQuery, TError, TData>(
       variables === undefined ? ['GetAllApplications'] : ['GetAllApplications', variables],
       fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllApplicationsQuery.document = GetAllApplicationsDocument;
 
-
 useGetAllApplicationsQuery.getKey = (variables?: GetAllApplicationsQueryVariables) => variables === undefined ? ['GetAllApplications'] : ['GetAllApplications', variables];
-;
 
 export const useInfiniteGetAllApplicationsQuery = <
       TData = GetAllApplicationsQuery,
@@ -3529,18 +3728,19 @@ export const useInfiniteGetAllApplicationsQuery = <
       variables?: GetAllApplicationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllApplicationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllApplicationsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllApplicationsQuery, TError, TData>(
       variables === undefined ? ['GetAllApplications.infinite'] : ['GetAllApplications.infinite', variables],
       (metaData) => fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllApplicationsQuery.getKey = (variables?: GetAllApplicationsQueryVariables) => variables === undefined ? ['GetAllApplications.infinite'] : ['GetAllApplications.infinite', variables];
-;
+
 
 useGetAllApplicationsQuery.fetcher = (client: GraphQLClient, variables?: GetAllApplicationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllApplicationsQuery, GetAllApplicationsQueryVariables>(client, GetAllApplicationsDocument, variables, headers);
+
 export const GetAllProcessesDocument = `
     query GetAllProcesses($searchQuery: SearchQueryInput) {
   getAllProcesses(searchQuery: $searchQuery) {
@@ -3565,6 +3765,7 @@ export const GetAllProcessesDocument = `
   }
 }
     `;
+
 export const useGetAllProcessesQuery = <
       TData = GetAllProcessesQuery,
       TError = unknown
@@ -3573,17 +3774,17 @@ export const useGetAllProcessesQuery = <
       variables?: GetAllProcessesQueryVariables,
       options?: UseQueryOptions<GetAllProcessesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllProcessesQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllProcessesQuery, TError, TData>(
       variables === undefined ? ['GetAllProcesses'] : ['GetAllProcesses', variables],
       fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllProcessesQuery.document = GetAllProcessesDocument;
 
-
 useGetAllProcessesQuery.getKey = (variables?: GetAllProcessesQueryVariables) => variables === undefined ? ['GetAllProcesses'] : ['GetAllProcesses', variables];
-;
 
 export const useInfiniteGetAllProcessesQuery = <
       TData = GetAllProcessesQuery,
@@ -3593,18 +3794,19 @@ export const useInfiniteGetAllProcessesQuery = <
       variables?: GetAllProcessesQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllProcessesQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllProcessesQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllProcessesQuery, TError, TData>(
       variables === undefined ? ['GetAllProcesses.infinite'] : ['GetAllProcesses.infinite', variables],
       (metaData) => fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllProcessesQuery.getKey = (variables?: GetAllProcessesQueryVariables) => variables === undefined ? ['GetAllProcesses.infinite'] : ['GetAllProcesses.infinite', variables];
-;
+
 
 useGetAllProcessesQuery.fetcher = (client: GraphQLClient, variables?: GetAllProcessesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllProcessesQuery, GetAllProcessesQueryVariables>(client, GetAllProcessesDocument, variables, headers);
+
 export const GetAllRecruitersForOrganizationBySlugDocument = `
     query GetAllRecruitersForOrganizationBySlug($organizationSlug: String!) {
   getAllRecruitersForOrganizationBySlug(organizationSlug: $organizationSlug) {
@@ -3621,6 +3823,7 @@ export const GetAllRecruitersForOrganizationBySlugDocument = `
   }
 }
     `;
+
 export const useGetAllRecruitersForOrganizationBySlugQuery = <
       TData = GetAllRecruitersForOrganizationBySlugQuery,
       TError = unknown
@@ -3629,17 +3832,17 @@ export const useGetAllRecruitersForOrganizationBySlugQuery = <
       variables: GetAllRecruitersForOrganizationBySlugQueryVariables,
       options?: UseQueryOptions<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>(
       ['GetAllRecruitersForOrganizationBySlug', variables],
       fetcher<GetAllRecruitersForOrganizationBySlugQuery, GetAllRecruitersForOrganizationBySlugQueryVariables>(client, GetAllRecruitersForOrganizationBySlugDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllRecruitersForOrganizationBySlugQuery.document = GetAllRecruitersForOrganizationBySlugDocument;
 
-
 useGetAllRecruitersForOrganizationBySlugQuery.getKey = (variables: GetAllRecruitersForOrganizationBySlugQueryVariables) => ['GetAllRecruitersForOrganizationBySlug', variables];
-;
 
 export const useInfiniteGetAllRecruitersForOrganizationBySlugQuery = <
       TData = GetAllRecruitersForOrganizationBySlugQuery,
@@ -3649,18 +3852,19 @@ export const useInfiniteGetAllRecruitersForOrganizationBySlugQuery = <
       variables: GetAllRecruitersForOrganizationBySlugQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllRecruitersForOrganizationBySlugQuery, TError, TData>(
       ['GetAllRecruitersForOrganizationBySlug.infinite', variables],
       (metaData) => fetcher<GetAllRecruitersForOrganizationBySlugQuery, GetAllRecruitersForOrganizationBySlugQueryVariables>(client, GetAllRecruitersForOrganizationBySlugDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllRecruitersForOrganizationBySlugQuery.getKey = (variables: GetAllRecruitersForOrganizationBySlugQueryVariables) => ['GetAllRecruitersForOrganizationBySlug.infinite', variables];
-;
+
 
 useGetAllRecruitersForOrganizationBySlugQuery.fetcher = (client: GraphQLClient, variables: GetAllRecruitersForOrganizationBySlugQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllRecruitersForOrganizationBySlugQuery, GetAllRecruitersForOrganizationBySlugQueryVariables>(client, GetAllRecruitersForOrganizationBySlugDocument, variables, headers);
+
 export const GetRecruiterByIdDocument = `
     query GetRecruiterById($recruiterId: Long!) {
   getRecruiterById(recruiterId: $recruiterId) {
@@ -3699,6 +3903,7 @@ export const GetRecruiterByIdDocument = `
   }
 }
     `;
+
 export const useGetRecruiterByIdQuery = <
       TData = GetRecruiterByIdQuery,
       TError = unknown
@@ -3707,17 +3912,17 @@ export const useGetRecruiterByIdQuery = <
       variables: GetRecruiterByIdQueryVariables,
       options?: UseQueryOptions<GetRecruiterByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetRecruiterByIdQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetRecruiterByIdQuery, TError, TData>(
       ['GetRecruiterById', variables],
       fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, variables, headers),
       options
-    );
+    )};
+
 useGetRecruiterByIdQuery.document = GetRecruiterByIdDocument;
 
-
 useGetRecruiterByIdQuery.getKey = (variables: GetRecruiterByIdQueryVariables) => ['GetRecruiterById', variables];
-;
 
 export const useInfiniteGetRecruiterByIdQuery = <
       TData = GetRecruiterByIdQuery,
@@ -3727,18 +3932,19 @@ export const useInfiniteGetRecruiterByIdQuery = <
       variables: GetRecruiterByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetRecruiterByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetRecruiterByIdQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetRecruiterByIdQuery, TError, TData>(
       ['GetRecruiterById.infinite', variables],
       (metaData) => fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetRecruiterByIdQuery.getKey = (variables: GetRecruiterByIdQueryVariables) => ['GetRecruiterById.infinite', variables];
-;
+
 
 useGetRecruiterByIdQuery.fetcher = (client: GraphQLClient, variables: GetRecruiterByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetRecruiterByIdQuery, GetRecruiterByIdQueryVariables>(client, GetRecruiterByIdDocument, variables, headers);
+
 export const GetAllUsersDocument = `
     query GetAllUsers {
   getAllUsers {
@@ -3752,6 +3958,7 @@ export const GetAllUsersDocument = `
   }
 }
     `;
+
 export const useGetAllUsersQuery = <
       TData = GetAllUsersQuery,
       TError = unknown
@@ -3760,17 +3967,17 @@ export const useGetAllUsersQuery = <
       variables?: GetAllUsersQueryVariables,
       options?: UseQueryOptions<GetAllUsersQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllUsersQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllUsersQuery, TError, TData>(
       variables === undefined ? ['GetAllUsers'] : ['GetAllUsers', variables],
       fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllUsersQuery.document = GetAllUsersDocument;
 
-
 useGetAllUsersQuery.getKey = (variables?: GetAllUsersQueryVariables) => variables === undefined ? ['GetAllUsers'] : ['GetAllUsers', variables];
-;
 
 export const useInfiniteGetAllUsersQuery = <
       TData = GetAllUsersQuery,
@@ -3780,18 +3987,19 @@ export const useInfiniteGetAllUsersQuery = <
       variables?: GetAllUsersQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUsersQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllUsersQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllUsersQuery, TError, TData>(
       variables === undefined ? ['GetAllUsers.infinite'] : ['GetAllUsers.infinite', variables],
       (metaData) => fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllUsersQuery.getKey = (variables?: GetAllUsersQueryVariables) => variables === undefined ? ['GetAllUsers.infinite'] : ['GetAllUsers.infinite', variables];
-;
+
 
 useGetAllUsersQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersQuery, GetAllUsersQueryVariables>(client, GetAllUsersDocument, variables, headers);
+
 export const GetAllUsersPagedDocument = `
     query GetAllUsersPaged($searchQuery: SearchQueryInput) {
   getAllUsersPaged(searchQuery: $searchQuery) {
@@ -3812,6 +4020,7 @@ export const GetAllUsersPagedDocument = `
   }
 }
     `;
+
 export const useGetAllUsersPagedQuery = <
       TData = GetAllUsersPagedQuery,
       TError = unknown
@@ -3820,17 +4029,17 @@ export const useGetAllUsersPagedQuery = <
       variables?: GetAllUsersPagedQueryVariables,
       options?: UseQueryOptions<GetAllUsersPagedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllUsersPagedQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllUsersPagedQuery, TError, TData>(
       variables === undefined ? ['GetAllUsersPaged'] : ['GetAllUsersPaged', variables],
       fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllUsersPagedQuery.document = GetAllUsersPagedDocument;
 
-
 useGetAllUsersPagedQuery.getKey = (variables?: GetAllUsersPagedQueryVariables) => variables === undefined ? ['GetAllUsersPaged'] : ['GetAllUsersPaged', variables];
-;
 
 export const useInfiniteGetAllUsersPagedQuery = <
       TData = GetAllUsersPagedQuery,
@@ -3840,18 +4049,19 @@ export const useInfiniteGetAllUsersPagedQuery = <
       variables?: GetAllUsersPagedQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUsersPagedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllUsersPagedQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllUsersPagedQuery, TError, TData>(
       variables === undefined ? ['GetAllUsersPaged.infinite'] : ['GetAllUsersPaged.infinite', variables],
       (metaData) => fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllUsersPagedQuery.getKey = (variables?: GetAllUsersPagedQueryVariables) => variables === undefined ? ['GetAllUsersPaged.infinite'] : ['GetAllUsersPaged.infinite', variables];
-;
+
 
 useGetAllUsersPagedQuery.fetcher = (client: GraphQLClient, variables?: GetAllUsersPagedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUsersPagedQuery, GetAllUsersPagedQueryVariables>(client, GetAllUsersPagedDocument, variables, headers);
+
 export const GetAllJobsPaginatedDocument = `
     query GetAllJobsPaginated($searchQuery: SearchQueryInput) {
   getAllJobsPaginated(searchQuery: $searchQuery) {
@@ -3866,6 +4076,7 @@ export const GetAllJobsPaginatedDocument = `
   }
 }
     `;
+
 export const useGetAllJobsPaginatedQuery = <
       TData = GetAllJobsPaginatedQuery,
       TError = unknown
@@ -3874,17 +4085,17 @@ export const useGetAllJobsPaginatedQuery = <
       variables?: GetAllJobsPaginatedQueryVariables,
       options?: UseQueryOptions<GetAllJobsPaginatedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllJobsPaginatedQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllJobsPaginatedQuery, TError, TData>(
       variables === undefined ? ['GetAllJobsPaginated'] : ['GetAllJobsPaginated', variables],
       fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllJobsPaginatedQuery.document = GetAllJobsPaginatedDocument;
 
-
 useGetAllJobsPaginatedQuery.getKey = (variables?: GetAllJobsPaginatedQueryVariables) => variables === undefined ? ['GetAllJobsPaginated'] : ['GetAllJobsPaginated', variables];
-;
 
 export const useInfiniteGetAllJobsPaginatedQuery = <
       TData = GetAllJobsPaginatedQuery,
@@ -3894,18 +4105,19 @@ export const useInfiniteGetAllJobsPaginatedQuery = <
       variables?: GetAllJobsPaginatedQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllJobsPaginatedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllJobsPaginatedQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllJobsPaginatedQuery, TError, TData>(
       variables === undefined ? ['GetAllJobsPaginated.infinite'] : ['GetAllJobsPaginated.infinite', variables],
       (metaData) => fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllJobsPaginatedQuery.getKey = (variables?: GetAllJobsPaginatedQueryVariables) => variables === undefined ? ['GetAllJobsPaginated.infinite'] : ['GetAllJobsPaginated.infinite', variables];
-;
+
 
 useGetAllJobsPaginatedQuery.fetcher = (client: GraphQLClient, variables?: GetAllJobsPaginatedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllJobsPaginatedQuery, GetAllJobsPaginatedQueryVariables>(client, GetAllJobsPaginatedDocument, variables, headers);
+
 export const GetMyApplicationsDocument = `
     query GetMyApplications($userId: Long!) {
   getMyApplications(userId: $userId) {
@@ -3933,6 +4145,7 @@ export const GetMyApplicationsDocument = `
   }
 }
     `;
+
 export const useGetMyApplicationsQuery = <
       TData = GetMyApplicationsQuery,
       TError = unknown
@@ -3941,17 +4154,17 @@ export const useGetMyApplicationsQuery = <
       variables: GetMyApplicationsQueryVariables,
       options?: UseQueryOptions<GetMyApplicationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetMyApplicationsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetMyApplicationsQuery, TError, TData>(
       ['GetMyApplications', variables],
       fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetMyApplicationsQuery.document = GetMyApplicationsDocument;
 
-
 useGetMyApplicationsQuery.getKey = (variables: GetMyApplicationsQueryVariables) => ['GetMyApplications', variables];
-;
 
 export const useInfiniteGetMyApplicationsQuery = <
       TData = GetMyApplicationsQuery,
@@ -3961,18 +4174,19 @@ export const useInfiniteGetMyApplicationsQuery = <
       variables: GetMyApplicationsQueryVariables,
       options?: UseInfiniteQueryOptions<GetMyApplicationsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetMyApplicationsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetMyApplicationsQuery, TError, TData>(
       ['GetMyApplications.infinite', variables],
       (metaData) => fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetMyApplicationsQuery.getKey = (variables: GetMyApplicationsQueryVariables) => ['GetMyApplications.infinite', variables];
-;
+
 
 useGetMyApplicationsQuery.fetcher = (client: GraphQLClient, variables: GetMyApplicationsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMyApplicationsQuery, GetMyApplicationsQueryVariables>(client, GetMyApplicationsDocument, variables, headers);
+
 export const GetApplicationsForJobIdCountByStepsDocument = `
     query GetApplicationsForJobIdCountBySteps($jobId: Long!) {
   getApplicationsForJobIdCountBySteps(jobId: $jobId) {
@@ -3981,6 +4195,7 @@ export const GetApplicationsForJobIdCountByStepsDocument = `
   }
 }
     `;
+
 export const useGetApplicationsForJobIdCountByStepsQuery = <
       TData = GetApplicationsForJobIdCountByStepsQuery,
       TError = unknown
@@ -3989,17 +4204,17 @@ export const useGetApplicationsForJobIdCountByStepsQuery = <
       variables: GetApplicationsForJobIdCountByStepsQueryVariables,
       options?: UseQueryOptions<GetApplicationsForJobIdCountByStepsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetApplicationsForJobIdCountByStepsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetApplicationsForJobIdCountByStepsQuery, TError, TData>(
       ['GetApplicationsForJobIdCountBySteps', variables],
       fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetApplicationsForJobIdCountByStepsQuery.document = GetApplicationsForJobIdCountByStepsDocument;
 
-
 useGetApplicationsForJobIdCountByStepsQuery.getKey = (variables: GetApplicationsForJobIdCountByStepsQueryVariables) => ['GetApplicationsForJobIdCountBySteps', variables];
-;
 
 export const useInfiniteGetApplicationsForJobIdCountByStepsQuery = <
       TData = GetApplicationsForJobIdCountByStepsQuery,
@@ -4009,18 +4224,19 @@ export const useInfiniteGetApplicationsForJobIdCountByStepsQuery = <
       variables: GetApplicationsForJobIdCountByStepsQueryVariables,
       options?: UseInfiniteQueryOptions<GetApplicationsForJobIdCountByStepsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetApplicationsForJobIdCountByStepsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetApplicationsForJobIdCountByStepsQuery, TError, TData>(
       ['GetApplicationsForJobIdCountBySteps.infinite', variables],
       (metaData) => fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetApplicationsForJobIdCountByStepsQuery.getKey = (variables: GetApplicationsForJobIdCountByStepsQueryVariables) => ['GetApplicationsForJobIdCountBySteps.infinite', variables];
-;
+
 
 useGetApplicationsForJobIdCountByStepsQuery.fetcher = (client: GraphQLClient, variables: GetApplicationsForJobIdCountByStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetApplicationsForJobIdCountByStepsQuery, GetApplicationsForJobIdCountByStepsQueryVariables>(client, GetApplicationsForJobIdCountByStepsDocument, variables, headers);
+
 export const GetPrivateChatByIdDocument = `
     query GetPrivateChatById($chatId: Long!) {
   getPrivateChatById(chatId: $chatId) {
@@ -4045,6 +4261,7 @@ export const GetPrivateChatByIdDocument = `
   }
 }
     `;
+
 export const useGetPrivateChatByIdQuery = <
       TData = GetPrivateChatByIdQuery,
       TError = unknown
@@ -4053,17 +4270,17 @@ export const useGetPrivateChatByIdQuery = <
       variables: GetPrivateChatByIdQueryVariables,
       options?: UseQueryOptions<GetPrivateChatByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetPrivateChatByIdQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetPrivateChatByIdQuery, TError, TData>(
       ['GetPrivateChatById', variables],
       fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers),
       options
-    );
+    )};
+
 useGetPrivateChatByIdQuery.document = GetPrivateChatByIdDocument;
 
-
 useGetPrivateChatByIdQuery.getKey = (variables: GetPrivateChatByIdQueryVariables) => ['GetPrivateChatById', variables];
-;
 
 export const useInfiniteGetPrivateChatByIdQuery = <
       TData = GetPrivateChatByIdQuery,
@@ -4073,18 +4290,19 @@ export const useInfiniteGetPrivateChatByIdQuery = <
       variables: GetPrivateChatByIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetPrivateChatByIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetPrivateChatByIdQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetPrivateChatByIdQuery, TError, TData>(
       ['GetPrivateChatById.infinite', variables],
       (metaData) => fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetPrivateChatByIdQuery.getKey = (variables: GetPrivateChatByIdQueryVariables) => ['GetPrivateChatById.infinite', variables];
-;
+
 
 useGetPrivateChatByIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers);
+
 export const GetChatAdvSearchDocument = `
     query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
@@ -4132,6 +4350,7 @@ export const GetChatAdvSearchDocument = `
   }
 }
     `;
+
 export const useGetChatAdvSearchQuery = <
       TData = GetChatAdvSearchQuery,
       TError = unknown
@@ -4140,17 +4359,17 @@ export const useGetChatAdvSearchQuery = <
       variables: GetChatAdvSearchQueryVariables,
       options?: UseQueryOptions<GetChatAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetChatAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetChatAdvSearchQuery, TError, TData>(
       ['GetChatAdvSearch', variables],
       fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers),
       options
-    );
+    )};
+
 useGetChatAdvSearchQuery.document = GetChatAdvSearchDocument;
 
-
 useGetChatAdvSearchQuery.getKey = (variables: GetChatAdvSearchQueryVariables) => ['GetChatAdvSearch', variables];
-;
 
 export const useInfiniteGetChatAdvSearchQuery = <
       TData = GetChatAdvSearchQuery,
@@ -4160,18 +4379,19 @@ export const useInfiniteGetChatAdvSearchQuery = <
       variables: GetChatAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetChatAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetChatAdvSearchQuery, TError, TData>(
       ['GetChatAdvSearch.infinite', variables],
       (metaData) => fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetChatAdvSearchQuery.getKey = (variables: GetChatAdvSearchQueryVariables) => ['GetChatAdvSearch.infinite', variables];
-;
+
 
 useGetChatAdvSearchQuery.fetcher = (client: GraphQLClient, variables: GetChatAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers);
+
 export const GetChatsWithUsersIdsDocument = `
     query GetChatsWithUsersIds($userIds: [Long]!) {
   getChatsWithUsersIds(userIds: $userIds) {
@@ -4214,6 +4434,7 @@ export const GetChatsWithUsersIdsDocument = `
   }
 }
     `;
+
 export const useGetChatsWithUsersIdsQuery = <
       TData = GetChatsWithUsersIdsQuery,
       TError = unknown
@@ -4222,17 +4443,17 @@ export const useGetChatsWithUsersIdsQuery = <
       variables: GetChatsWithUsersIdsQueryVariables,
       options?: UseQueryOptions<GetChatsWithUsersIdsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetChatsWithUsersIdsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetChatsWithUsersIdsQuery, TError, TData>(
       ['GetChatsWithUsersIds', variables],
       fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetChatsWithUsersIdsQuery.document = GetChatsWithUsersIdsDocument;
 
-
 useGetChatsWithUsersIdsQuery.getKey = (variables: GetChatsWithUsersIdsQueryVariables) => ['GetChatsWithUsersIds', variables];
-;
 
 export const useInfiniteGetChatsWithUsersIdsQuery = <
       TData = GetChatsWithUsersIdsQuery,
@@ -4242,18 +4463,19 @@ export const useInfiniteGetChatsWithUsersIdsQuery = <
       variables: GetChatsWithUsersIdsQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatsWithUsersIdsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetChatsWithUsersIdsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetChatsWithUsersIdsQuery, TError, TData>(
       ['GetChatsWithUsersIds.infinite', variables],
       (metaData) => fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetChatsWithUsersIdsQuery.getKey = (variables: GetChatsWithUsersIdsQueryVariables) => ['GetChatsWithUsersIds.infinite', variables];
-;
+
 
 useGetChatsWithUsersIdsQuery.fetcher = (client: GraphQLClient, variables: GetChatsWithUsersIdsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatsWithUsersIdsQuery, GetChatsWithUsersIdsQueryVariables>(client, GetChatsWithUsersIdsDocument, variables, headers);
+
 export const GetChatLinesAdvSearchDocument = `
     query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
@@ -4286,6 +4508,7 @@ export const GetChatLinesAdvSearchDocument = `
   }
 }
     `;
+
 export const useGetChatLinesAdvSearchQuery = <
       TData = GetChatLinesAdvSearchQuery,
       TError = unknown
@@ -4294,17 +4517,17 @@ export const useGetChatLinesAdvSearchQuery = <
       variables: GetChatLinesAdvSearchQueryVariables,
       options?: UseQueryOptions<GetChatLinesAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetChatLinesAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetChatLinesAdvSearchQuery, TError, TData>(
       ['GetChatLinesAdvSearch', variables],
       fetcher<GetChatLinesAdvSearchQuery, GetChatLinesAdvSearchQueryVariables>(client, GetChatLinesAdvSearchDocument, variables, headers),
       options
-    );
+    )};
+
 useGetChatLinesAdvSearchQuery.document = GetChatLinesAdvSearchDocument;
 
-
 useGetChatLinesAdvSearchQuery.getKey = (variables: GetChatLinesAdvSearchQueryVariables) => ['GetChatLinesAdvSearch', variables];
-;
 
 export const useInfiniteGetChatLinesAdvSearchQuery = <
       TData = GetChatLinesAdvSearchQuery,
@@ -4314,18 +4537,19 @@ export const useInfiniteGetChatLinesAdvSearchQuery = <
       variables: GetChatLinesAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatLinesAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetChatLinesAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetChatLinesAdvSearchQuery, TError, TData>(
       ['GetChatLinesAdvSearch.infinite', variables],
       (metaData) => fetcher<GetChatLinesAdvSearchQuery, GetChatLinesAdvSearchQueryVariables>(client, GetChatLinesAdvSearchDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetChatLinesAdvSearchQuery.getKey = (variables: GetChatLinesAdvSearchQueryVariables) => ['GetChatLinesAdvSearch.infinite', variables];
-;
+
 
 useGetChatLinesAdvSearchQuery.fetcher = (client: GraphQLClient, variables: GetChatLinesAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatLinesAdvSearchQuery, GetChatLinesAdvSearchQueryVariables>(client, GetChatLinesAdvSearchDocument, variables, headers);
+
 export const GetMessagesPaginatedDocument = `
     query GetMessagesPaginated($searchQuery: SearchQueryInput) {
   getMessagesPaginated(searchQuery: $searchQuery) {
@@ -4351,6 +4575,7 @@ export const GetMessagesPaginatedDocument = `
   }
 }
     `;
+
 export const useGetMessagesPaginatedQuery = <
       TData = GetMessagesPaginatedQuery,
       TError = unknown
@@ -4359,17 +4584,17 @@ export const useGetMessagesPaginatedQuery = <
       variables?: GetMessagesPaginatedQueryVariables,
       options?: UseQueryOptions<GetMessagesPaginatedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetMessagesPaginatedQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetMessagesPaginatedQuery, TError, TData>(
       variables === undefined ? ['GetMessagesPaginated'] : ['GetMessagesPaginated', variables],
       fetcher<GetMessagesPaginatedQuery, GetMessagesPaginatedQueryVariables>(client, GetMessagesPaginatedDocument, variables, headers),
       options
-    );
+    )};
+
 useGetMessagesPaginatedQuery.document = GetMessagesPaginatedDocument;
 
-
 useGetMessagesPaginatedQuery.getKey = (variables?: GetMessagesPaginatedQueryVariables) => variables === undefined ? ['GetMessagesPaginated'] : ['GetMessagesPaginated', variables];
-;
 
 export const useInfiniteGetMessagesPaginatedQuery = <
       TData = GetMessagesPaginatedQuery,
@@ -4379,18 +4604,19 @@ export const useInfiniteGetMessagesPaginatedQuery = <
       variables?: GetMessagesPaginatedQueryVariables,
       options?: UseInfiniteQueryOptions<GetMessagesPaginatedQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetMessagesPaginatedQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetMessagesPaginatedQuery, TError, TData>(
       variables === undefined ? ['GetMessagesPaginated.infinite'] : ['GetMessagesPaginated.infinite', variables],
       (metaData) => fetcher<GetMessagesPaginatedQuery, GetMessagesPaginatedQueryVariables>(client, GetMessagesPaginatedDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetMessagesPaginatedQuery.getKey = (variables?: GetMessagesPaginatedQueryVariables) => variables === undefined ? ['GetMessagesPaginated.infinite'] : ['GetMessagesPaginated.infinite', variables];
-;
+
 
 useGetMessagesPaginatedQuery.fetcher = (client: GraphQLClient, variables?: GetMessagesPaginatedQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMessagesPaginatedQuery, GetMessagesPaginatedQueryVariables>(client, GetMessagesPaginatedDocument, variables, headers);
+
 export const GetAllStepsDocument = `
     query GetAllSteps {
   getAllSteps {
@@ -4400,6 +4626,7 @@ export const GetAllStepsDocument = `
   }
 }
     `;
+
 export const useGetAllStepsQuery = <
       TData = GetAllStepsQuery,
       TError = unknown
@@ -4408,17 +4635,17 @@ export const useGetAllStepsQuery = <
       variables?: GetAllStepsQueryVariables,
       options?: UseQueryOptions<GetAllStepsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllStepsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllStepsQuery, TError, TData>(
       variables === undefined ? ['GetAllSteps'] : ['GetAllSteps', variables],
       fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllStepsQuery.document = GetAllStepsDocument;
 
-
 useGetAllStepsQuery.getKey = (variables?: GetAllStepsQueryVariables) => variables === undefined ? ['GetAllSteps'] : ['GetAllSteps', variables];
-;
 
 export const useInfiniteGetAllStepsQuery = <
       TData = GetAllStepsQuery,
@@ -4428,18 +4655,19 @@ export const useInfiniteGetAllStepsQuery = <
       variables?: GetAllStepsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllStepsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllStepsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllStepsQuery, TError, TData>(
       variables === undefined ? ['GetAllSteps.infinite'] : ['GetAllSteps.infinite', variables],
       (metaData) => fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllStepsQuery.getKey = (variables?: GetAllStepsQueryVariables) => variables === undefined ? ['GetAllSteps.infinite'] : ['GetAllSteps.infinite', variables];
-;
+
 
 useGetAllStepsQuery.fetcher = (client: GraphQLClient, variables?: GetAllStepsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllStepsQuery, GetAllStepsQueryVariables>(client, GetAllStepsDocument, variables, headers);
+
 export const FindRecruitersAdvSearchDocument = `
     query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
   findRecruitersAdvSearch(searchQuery: $searchQuery) {
@@ -4464,6 +4692,7 @@ export const FindRecruitersAdvSearchDocument = `
   }
 }
     `;
+
 export const useFindRecruitersAdvSearchQuery = <
       TData = FindRecruitersAdvSearchQuery,
       TError = unknown
@@ -4472,17 +4701,17 @@ export const useFindRecruitersAdvSearchQuery = <
       variables?: FindRecruitersAdvSearchQueryVariables,
       options?: UseQueryOptions<FindRecruitersAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<FindRecruitersAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<FindRecruitersAdvSearchQuery, TError, TData>(
       variables === undefined ? ['FindRecruitersAdvSearch'] : ['FindRecruitersAdvSearch', variables],
       fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, variables, headers),
       options
-    );
+    )};
+
 useFindRecruitersAdvSearchQuery.document = FindRecruitersAdvSearchDocument;
 
-
 useFindRecruitersAdvSearchQuery.getKey = (variables?: FindRecruitersAdvSearchQueryVariables) => variables === undefined ? ['FindRecruitersAdvSearch'] : ['FindRecruitersAdvSearch', variables];
-;
 
 export const useInfiniteFindRecruitersAdvSearchQuery = <
       TData = FindRecruitersAdvSearchQuery,
@@ -4492,18 +4721,19 @@ export const useInfiniteFindRecruitersAdvSearchQuery = <
       variables?: FindRecruitersAdvSearchQueryVariables,
       options?: UseInfiniteQueryOptions<FindRecruitersAdvSearchQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<FindRecruitersAdvSearchQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<FindRecruitersAdvSearchQuery, TError, TData>(
       variables === undefined ? ['FindRecruitersAdvSearch.infinite'] : ['FindRecruitersAdvSearch.infinite', variables],
       (metaData) => fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteFindRecruitersAdvSearchQuery.getKey = (variables?: FindRecruitersAdvSearchQueryVariables) => variables === undefined ? ['FindRecruitersAdvSearch.infinite'] : ['FindRecruitersAdvSearch.infinite', variables];
-;
+
 
 useFindRecruitersAdvSearchQuery.fetcher = (client: GraphQLClient, variables?: FindRecruitersAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<FindRecruitersAdvSearchQuery, FindRecruitersAdvSearchQueryVariables>(client, FindRecruitersAdvSearchDocument, variables, headers);
+
 export const GetConnectionInvitationsForUserDocument = `
     query GetConnectionInvitationsForUser($userId: Long!, $page: Int, $size: Int) {
   getNewConnectionForUser(userId: $userId, page: $page, size: $size) {
@@ -4528,6 +4758,7 @@ export const GetConnectionInvitationsForUserDocument = `
   }
 }
     `;
+
 export const useGetConnectionInvitationsForUserQuery = <
       TData = GetConnectionInvitationsForUserQuery,
       TError = unknown
@@ -4536,17 +4767,17 @@ export const useGetConnectionInvitationsForUserQuery = <
       variables: GetConnectionInvitationsForUserQueryVariables,
       options?: UseQueryOptions<GetConnectionInvitationsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetConnectionInvitationsForUserQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetConnectionInvitationsForUserQuery, TError, TData>(
       ['GetConnectionInvitationsForUser', variables],
       fetcher<GetConnectionInvitationsForUserQuery, GetConnectionInvitationsForUserQueryVariables>(client, GetConnectionInvitationsForUserDocument, variables, headers),
       options
-    );
+    )};
+
 useGetConnectionInvitationsForUserQuery.document = GetConnectionInvitationsForUserDocument;
 
-
 useGetConnectionInvitationsForUserQuery.getKey = (variables: GetConnectionInvitationsForUserQueryVariables) => ['GetConnectionInvitationsForUser', variables];
-;
 
 export const useInfiniteGetConnectionInvitationsForUserQuery = <
       TData = GetConnectionInvitationsForUserQuery,
@@ -4556,18 +4787,19 @@ export const useInfiniteGetConnectionInvitationsForUserQuery = <
       variables: GetConnectionInvitationsForUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetConnectionInvitationsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetConnectionInvitationsForUserQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetConnectionInvitationsForUserQuery, TError, TData>(
       ['GetConnectionInvitationsForUser.infinite', variables],
       (metaData) => fetcher<GetConnectionInvitationsForUserQuery, GetConnectionInvitationsForUserQueryVariables>(client, GetConnectionInvitationsForUserDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetConnectionInvitationsForUserQuery.getKey = (variables: GetConnectionInvitationsForUserQueryVariables) => ['GetConnectionInvitationsForUser.infinite', variables];
-;
+
 
 useGetConnectionInvitationsForUserQuery.fetcher = (client: GraphQLClient, variables: GetConnectionInvitationsForUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionInvitationsForUserQuery, GetConnectionInvitationsForUserQueryVariables>(client, GetConnectionInvitationsForUserDocument, variables, headers);
+
 export const GetConnectionsForUserDocument = `
     query GetConnectionsForUser($userId: Long!, $page: Int, $size: Int, $searchQuery: String, $sortBy: SortsInput) {
   getConnectionsForUser(
@@ -4598,6 +4830,7 @@ export const GetConnectionsForUserDocument = `
   }
 }
     `;
+
 export const useGetConnectionsForUserQuery = <
       TData = GetConnectionsForUserQuery,
       TError = unknown
@@ -4606,17 +4839,17 @@ export const useGetConnectionsForUserQuery = <
       variables: GetConnectionsForUserQueryVariables,
       options?: UseQueryOptions<GetConnectionsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetConnectionsForUserQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetConnectionsForUserQuery, TError, TData>(
       ['GetConnectionsForUser', variables],
       fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, variables, headers),
       options
-    );
+    )};
+
 useGetConnectionsForUserQuery.document = GetConnectionsForUserDocument;
 
-
 useGetConnectionsForUserQuery.getKey = (variables: GetConnectionsForUserQueryVariables) => ['GetConnectionsForUser', variables];
-;
 
 export const useInfiniteGetConnectionsForUserQuery = <
       TData = GetConnectionsForUserQuery,
@@ -4626,18 +4859,19 @@ export const useInfiniteGetConnectionsForUserQuery = <
       variables: GetConnectionsForUserQueryVariables,
       options?: UseInfiniteQueryOptions<GetConnectionsForUserQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetConnectionsForUserQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetConnectionsForUserQuery, TError, TData>(
       ['GetConnectionsForUser.infinite', variables],
       (metaData) => fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetConnectionsForUserQuery.getKey = (variables: GetConnectionsForUserQueryVariables) => ['GetConnectionsForUser.infinite', variables];
-;
+
 
 useGetConnectionsForUserQuery.fetcher = (client: GraphQLClient, variables: GetConnectionsForUserQueryVariables, headers?: RequestInit['headers']) => fetcher<GetConnectionsForUserQuery, GetConnectionsForUserQueryVariables>(client, GetConnectionsForUserDocument, variables, headers);
+
 export const GetAllUserConnectionSuggestionsDocument = `
     query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
   getAllUserConnectionSuggestions(page: $page, size: $size) {
@@ -4659,6 +4893,7 @@ export const GetAllUserConnectionSuggestionsDocument = `
   }
 }
     `;
+
 export const useGetAllUserConnectionSuggestionsQuery = <
       TData = GetAllUserConnectionSuggestionsQuery,
       TError = unknown
@@ -4667,17 +4902,17 @@ export const useGetAllUserConnectionSuggestionsQuery = <
       variables?: GetAllUserConnectionSuggestionsQueryVariables,
       options?: UseQueryOptions<GetAllUserConnectionSuggestionsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetAllUserConnectionSuggestionsQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetAllUserConnectionSuggestionsQuery, TError, TData>(
       variables === undefined ? ['GetAllUserConnectionSuggestions'] : ['GetAllUserConnectionSuggestions', variables],
       fetcher<GetAllUserConnectionSuggestionsQuery, GetAllUserConnectionSuggestionsQueryVariables>(client, GetAllUserConnectionSuggestionsDocument, variables, headers),
       options
-    );
+    )};
+
 useGetAllUserConnectionSuggestionsQuery.document = GetAllUserConnectionSuggestionsDocument;
 
-
 useGetAllUserConnectionSuggestionsQuery.getKey = (variables?: GetAllUserConnectionSuggestionsQueryVariables) => variables === undefined ? ['GetAllUserConnectionSuggestions'] : ['GetAllUserConnectionSuggestions', variables];
-;
 
 export const useInfiniteGetAllUserConnectionSuggestionsQuery = <
       TData = GetAllUserConnectionSuggestionsQuery,
@@ -4687,18 +4922,19 @@ export const useInfiniteGetAllUserConnectionSuggestionsQuery = <
       variables?: GetAllUserConnectionSuggestionsQueryVariables,
       options?: UseInfiniteQueryOptions<GetAllUserConnectionSuggestionsQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetAllUserConnectionSuggestionsQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetAllUserConnectionSuggestionsQuery, TError, TData>(
       variables === undefined ? ['GetAllUserConnectionSuggestions.infinite'] : ['GetAllUserConnectionSuggestions.infinite', variables],
       (metaData) => fetcher<GetAllUserConnectionSuggestionsQuery, GetAllUserConnectionSuggestionsQueryVariables>(client, GetAllUserConnectionSuggestionsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetAllUserConnectionSuggestionsQuery.getKey = (variables?: GetAllUserConnectionSuggestionsQueryVariables) => variables === undefined ? ['GetAllUserConnectionSuggestions.infinite'] : ['GetAllUserConnectionSuggestions.infinite', variables];
-;
+
 
 useGetAllUserConnectionSuggestionsQuery.fetcher = (client: GraphQLClient, variables?: GetAllUserConnectionSuggestionsQueryVariables, headers?: RequestInit['headers']) => fetcher<GetAllUserConnectionSuggestionsQuery, GetAllUserConnectionSuggestionsQueryVariables>(client, GetAllUserConnectionSuggestionsDocument, variables, headers);
+
 export const GetChatWithUserIdDocument = `
     query GetChatWithUserId($userId: Long!) {
   getChatWithUserId(userId: $userId) {
@@ -4711,6 +4947,7 @@ export const GetChatWithUserIdDocument = `
   }
 }
     `;
+
 export const useGetChatWithUserIdQuery = <
       TData = GetChatWithUserIdQuery,
       TError = unknown
@@ -4719,17 +4956,17 @@ export const useGetChatWithUserIdQuery = <
       variables: GetChatWithUserIdQueryVariables,
       options?: UseQueryOptions<GetChatWithUserIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useQuery<GetChatWithUserIdQuery, TError, TData>(
+    ) => {
+    
+    return useQuery<GetChatWithUserIdQuery, TError, TData>(
       ['GetChatWithUserId', variables],
       fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, variables, headers),
       options
-    );
+    )};
+
 useGetChatWithUserIdQuery.document = GetChatWithUserIdDocument;
 
-
 useGetChatWithUserIdQuery.getKey = (variables: GetChatWithUserIdQueryVariables) => ['GetChatWithUserId', variables];
-;
 
 export const useInfiniteGetChatWithUserIdQuery = <
       TData = GetChatWithUserIdQuery,
@@ -4739,18 +4976,40 @@ export const useInfiniteGetChatWithUserIdQuery = <
       variables: GetChatWithUserIdQueryVariables,
       options?: UseInfiniteQueryOptions<GetChatWithUserIdQuery, TError, TData>,
       headers?: RequestInit['headers']
-    ) =>
-    useInfiniteQuery<GetChatWithUserIdQuery, TError, TData>(
+    ) => {
+    
+    return useInfiniteQuery<GetChatWithUserIdQuery, TError, TData>(
       ['GetChatWithUserId.infinite', variables],
       (metaData) => fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       options
-    );
-
+    )};
 
 useInfiniteGetChatWithUserIdQuery.getKey = (variables: GetChatWithUserIdQueryVariables) => ['GetChatWithUserId.infinite', variables];
-;
+
 
 useGetChatWithUserIdQuery.fetcher = (client: GraphQLClient, variables: GetChatWithUserIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, variables, headers);
+
+export const GetMessagesForChatIdDocument = `
+    subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
+  getMessagesForChatId(chatId: $chatId, auth: $auth) {
+    id
+    content
+    sender {
+      id
+      username
+      firstName
+      lastName
+      displayName
+      userProfile {
+        photography
+      }
+    }
+    deliveredAt
+    seenAt
+    content
+  }
+}
+    `;
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;

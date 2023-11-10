@@ -62,7 +62,7 @@ export default function ClientApp() {
     graphqlRequestClient,
     {
       profileSlugUrl: user?.profileSlugUrl ?? user?.profileSlugUrl,
-    }
+    },
   );
   const permissions = user?.roles ?? [];
   return (

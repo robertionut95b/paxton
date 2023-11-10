@@ -59,7 +59,7 @@ const OrganizationMenu = ({
                 {l.text}
               </Anchor>
             </List.Item>
-          ) : null
+          ) : null,
         )}
       </List>
     </Paper>

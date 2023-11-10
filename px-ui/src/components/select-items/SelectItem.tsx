@@ -20,7 +20,7 @@ export const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
         </div>
       </Group>
     </div>
-  )
+  ),
 );
 
 SelectItem.displayName = "SelectItem";

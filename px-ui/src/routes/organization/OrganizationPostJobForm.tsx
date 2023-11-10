@@ -65,11 +65,11 @@ export default function OrganizationPostJobForm() {
   const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
     useGetOrganizationBySlugNameQuery.getKey({
       slugName: organizationSlug ?? "",
-    })
+    }),
   );
 
   const [orgId, setOrgId] = useState<string | null>(
-    prevOrgQuery?.getOrganizationBySlugName?.id.toString() ?? null
+    prevOrgQuery?.getOrganizationBySlugName?.id.toString() ?? null,
   );
 
   const { data: jobListing, isInitialLoading } = useGetAllJobListingsQuery(
@@ -104,7 +104,7 @@ export default function OrganizationPostJobForm() {
           setSelectedJobCategory(firstItem?.category?.id.toString() ?? null);
         }
       },
-    }
+    },
   );
 
   const jobListingItem = jobListing?.getAllJobListings?.list?.[0];
@@ -123,14 +123,14 @@ export default function OrganizationPostJobForm() {
       {
         onSuccess: (data) => {
           const org = data.getAllOrganizations?.find(
-            (o) => o?.slugName === organizationSlug
+            (o) => o?.slugName === organizationSlug,
           );
           if (org) {
             setOrgId(org.id.toString());
             form.setFieldValue("organizationId", org.id.toString());
           }
         },
-      }
+      },
     );
 
   const { data: jobCategoriesData, isInitialLoading: isJobCategoriesLoading } =
@@ -140,7 +140,7 @@ export default function OrganizationPostJobForm() {
           getAllJobCategories?.map((j) => ({
             label: j?.name,
             value: j?.id.toString(),
-          })) ?? []
+          })) ?? [],
         );
       },
     });
@@ -156,7 +156,7 @@ export default function OrganizationPostJobForm() {
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
 
   const [jobCategories, setJobCategories] = useState<
@@ -165,11 +165,11 @@ export default function OrganizationPostJobForm() {
     jobCategoriesData?.getAllJobCategories?.map((j) => ({
       label: j?.name as string,
       value: j?.id.toString(),
-    })) ?? []
+    })) ?? [],
   );
 
   const [selectedJobCategory, setSelectedJobCategory] = useState<string | null>(
-    jobListingItem?.category?.id.toString() ?? null
+    jobListingItem?.category?.id.toString() ?? null,
   );
 
   const { mutateAsync: addJobCategory, isLoading: isAddJobCategoryLoading } =
@@ -203,7 +203,7 @@ export default function OrganizationPostJobForm() {
         });
         closeModal();
       },
-    }
+    },
   );
 
   const locations =
@@ -257,11 +257,11 @@ export default function OrganizationPostJobForm() {
         jobId: Number(values.jobId),
         availableFrom: format(
           values.availableFrom,
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         ) as unknown as Date,
         availableTo: format(
           values.availableTo,
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         ) as unknown as Date,
         formattedDescription: values.formattedDescription as string,
         recruiterId: Number(values.recruiterId),
@@ -307,7 +307,7 @@ export default function OrganizationPostJobForm() {
             const data = editor.getData();
             const plainText = viewToPlainText(
               // @ts-expect-error("ckeditor types")
-              editor.editing.view.document.getRoot()
+              editor.editing.view.document.getRoot(),
             );
             form.setFieldValue("formattedDescription", data);
             form.setFieldValue("description", plainText);
@@ -315,7 +315,7 @@ export default function OrganizationPostJobForm() {
           onEditorReady={(editor) => {
             const plainText = viewToPlainText(
               // @ts-expect-error("ckeditor types")
-              editor.editing.view.document.getRoot()
+              editor.editing.view.document.getRoot(),
             );
             setDesc(plainText);
           }}

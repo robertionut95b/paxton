@@ -51,7 +51,7 @@ const ApplicationCandidatureTimeline = ({
                   }) ?? "Invalid date"}
                 </Text>
               </Timeline.Item>
-            )
+            ),
         )}
       </Timeline>
     </Paper>

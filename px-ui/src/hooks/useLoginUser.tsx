@@ -15,7 +15,7 @@ export default function useLoginUser(
     null
   > = {
     mutationKey: ["loginUser"],
-  }
+  },
 ) {
   return useMutation({ mutationFn: submitLogin, ...options });
 }

@@ -11,7 +11,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,10 +30,26 @@ public class PhotographyService {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public Photography findByName(String imageName) {
         return this.photographyRepository
                 .findByName(imageName)
-                .orElseThrow(() -> new PhotographyNotFoundException("Image by name %s does not exist".formatted(imageName)));
+                .orElseThrow(() -> new PhotographyNotFoundException("Image does not exist"));
+    }
+
+    public Optional<Photography> findByNameReturnOptional(String imageName) {
+        return this.photographyRepository.findByName(imageName);
+    }
+
+    public byte[] getFromExternalUrlIfBase64(String imageName) {
+        Photography photography = this.findByName(imageName);
+        try {
+            return restTemplate.getForObject(photography.getPath(), byte[].class);
+        } catch (IllegalArgumentException | ResourceAccessException e) {
+            throw new PhotographyNotFoundException("Image does not exist");
+        }
     }
 
     @Transactional
@@ -82,5 +102,10 @@ public class PhotographyService {
         photographyRepository.save(newPhotography);
         userProfile.setPhotography(newPhotography.getName());
         return newPhotography;
+    }
+
+    @Transactional
+    public void createPhotography(@NotNull Photography photography) {
+        this.photographyRepository.save(photography);
     }
 }

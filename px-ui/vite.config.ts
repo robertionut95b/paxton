@@ -1,7 +1,7 @@
 import ckeditor5 from "@ckeditor/vite-plugin-ckeditor5";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import eslint from "vite-plugin-eslint";
+import eslint from "vite-plugin-eslint2";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import { createRequire } from "node:module";
@@ -12,7 +12,9 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    eslint(),
+    eslint({
+      fix: true,
+    }),
     ckeditor5({ theme: require.resolve("@ckeditor/ckeditor5-theme-lark") }),
   ],
   server: {

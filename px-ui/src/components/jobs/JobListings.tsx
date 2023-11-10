@@ -22,7 +22,7 @@ const JobListings = ({ jobs }: JobListingsProps) => {
               <JobListingItem data={jl} />
               {idx !== jobs.length - 1 && <Divider />}
             </div>
-          )
+          ),
       )}
     </>
   );

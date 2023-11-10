@@ -37,11 +37,11 @@ const JobFormModal = () => {
   const prevJobQueryData = queryClient.getQueryData<GetAllJobsPaginatedQuery>(
     useGetAllJobsPaginatedQuery.getKey({
       searchQuery: { filters: [queryFilters] },
-    })
+    }),
   );
 
   const [desc, setDesc] = useState<string>(
-    prevJobQueryData?.getAllJobsPaginated?.list?.[0]?.description ?? ""
+    prevJobQueryData?.getAllJobsPaginated?.list?.[0]?.description ?? "",
   );
 
   const { data: jobData } = useGetAllJobsPaginatedQuery(
@@ -62,7 +62,7 @@ const JobFormModal = () => {
         });
         setDesc(jobElem?.description ?? "");
       },
-    }
+    },
   );
 
   const { mutate: publishJob } = usePublishJobMutation(graphqlRequestClient, {
@@ -108,7 +108,7 @@ const JobFormModal = () => {
       setDesc(e.currentTarget.value);
       form.setFieldValue("description", e.currentTarget.value);
     },
-    [form]
+    [form],
   );
 
   const handleSubmit = async (values: (typeof form)["values"]) => {

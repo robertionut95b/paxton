@@ -19,7 +19,7 @@ const OAuth2RedirectPage = () => {
         {
           token: accessToken,
         },
-        () => navigate(from, { replace: true })
+        () => navigate(from, { replace: true }),
       );
     }
   };

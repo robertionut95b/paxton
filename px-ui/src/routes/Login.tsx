@@ -17,8 +17,9 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { useIsMutating } from "@tanstack/react-query";
 import FormLoginSchema from "@validator/FormLoginSchema";
+import { useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useEffectOnce, useLocalStorage } from "usehooks-ts";
+import { useLocalStorage } from "usehooks-ts";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function Login() {
   const isMutating = useIsMutating(["loginUser"]);
   const [from, setFrom] = useLocalStorage(
     "redirUrl",
-    location.state?.from?.pathname ?? "/app"
+    location.state?.from?.pathname ?? "/app",
   );
 
   const form = useForm({
@@ -48,9 +49,9 @@ export default function Login() {
     signin({ username, password }, () => navigate(from, { replace: true }));
   };
 
-  useEffectOnce(() => {
+  useEffect(() => {
     if (location.state?.from?.pathname) setFrom(location.state?.from?.pathname);
-  });
+  }, [location.state?.from?.pathname, setFrom]);
 
   if (user) return null;
 

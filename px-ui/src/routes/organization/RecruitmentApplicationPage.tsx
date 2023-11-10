@@ -95,7 +95,7 @@ const RecruitmentApplicationPage = () => {
           });
         }
       },
-    }
+    },
   );
   const { data: jobListingData, isLoading: isJobListingLoading } =
     useGetAllJobListingsQuery(graphqlRequestClient, {
@@ -129,7 +129,7 @@ const RecruitmentApplicationPage = () => {
             !!jobListingData?.getAllJobListings?.list?.[0]?.organization
               .slugName) &&
           isAuthorized([RoleType.ROLE_RECRUITER]),
-      }
+      },
     );
   const { data: processData, isInitialLoading: isProcessLoading } =
     useGetAllProcessesQuery(
@@ -150,7 +150,7 @@ const RecruitmentApplicationPage = () => {
       },
       {
         enabled: !!organizationData && isAuthorized([RoleType.ROLE_RECRUITER]),
-      }
+      },
     );
 
   const searchQuery = useMemo(
@@ -172,7 +172,7 @@ const RecruitmentApplicationPage = () => {
       page: 0,
       size: PAGE_SIZE,
     }),
-    [applicationData?.getApplicationById?.chat.id]
+    [applicationData?.getApplicationById?.chat.id],
   );
 
   const {
@@ -200,7 +200,7 @@ const RecruitmentApplicationPage = () => {
           };
       },
       enabled: !!applicationData?.getApplicationById?.chat.id,
-    }
+    },
   );
 
   const { mutate: updateApplication } = useUpdateApplicationMutation(
@@ -216,12 +216,12 @@ const RecruitmentApplicationPage = () => {
         queryClient.invalidateQueries(
           useGetApplicationByIdQuery.getKey({
             applicationId: Number(applicationId) ?? 0,
-          })
+          }),
         );
         queryClient.invalidateQueries(
           useGetApplicationsForJobIdCountByStepsQuery.getKey({
             jobId: Number(jobId) ?? 0,
-          })
+          }),
         );
       },
       onError: (error: GraphqlApiResponse) => {
@@ -238,7 +238,7 @@ const RecruitmentApplicationPage = () => {
           });
         }
       },
-    }
+    },
   );
 
   const { mutate: addMessage } = useAddMessageToApplicationChatMutation(
@@ -254,10 +254,10 @@ const RecruitmentApplicationPage = () => {
         queryClient.invalidateQueries(
           useInfiniteGetMessagesPaginatedQuery.getKey({
             searchQuery,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   const [parent] = useAutoAnimate();
@@ -268,7 +268,7 @@ const RecruitmentApplicationPage = () => {
         .flatMap((p) => p.getMessagesPaginated?.list ?? [])
         .reverse() ?? [],
 
-    [messagesData?.pages]
+    [messagesData?.pages],
   );
 
   if (
@@ -314,7 +314,7 @@ const RecruitmentApplicationPage = () => {
     (sp) =>
       sp?.order ===
         (currentStepProcess?.processStep?.order ?? Number.NEGATIVE_INFINITY) +
-          1 && sp.status === Status.Active
+          1 && sp.status === Status.Active,
   );
 
   const submitApplication = () =>
@@ -457,7 +457,7 @@ const RecruitmentApplicationPage = () => {
                         src={"/images/pdf-icon.svg"}
                         apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationById?.id}/documents/${doc.document.name}`}
                       />
-                    )
+                    ),
                 )}
               </Group>
             </ShowIfElse>
@@ -483,13 +483,13 @@ const RecruitmentApplicationPage = () => {
                     queryClient.invalidateQueries(
                       useGetApplicationByIdQuery.getKey({
                         applicationId: Number(applicationId) ?? 0,
-                      })
+                      }),
                     ),
                   onremovefile: () =>
                     queryClient.invalidateQueries(
                       useGetApplicationByIdQuery.getKey({
                         applicationId: Number(applicationId) ?? 0,
-                      })
+                      }),
                     ),
                   server: {
                     process: {

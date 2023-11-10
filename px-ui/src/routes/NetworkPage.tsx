@@ -50,7 +50,7 @@ export default function NetworkPage() {
       },
       {
         keepPreviousData: true,
-      }
+      },
     );
 
   const { data: connectionsData, isLoading: isLoadingConnections } =
@@ -71,7 +71,7 @@ export default function NetworkPage() {
     },
     {
       keepPreviousData: true,
-    }
+    },
   );
 
   const { mutate } = useUpdateConnectionMutation(graphqlRequestClient, {
@@ -96,17 +96,17 @@ export default function NetworkPage() {
             getNewConnectionForUser: {
               ...data?.getNewConnectionForUser,
               list: data?.getNewConnectionForUser?.list?.filter(
-                (c) => c?.id !== updateData.updateConnection?.id
+                (c) => c?.id !== updateData.updateConnection?.id,
               ),
             },
-          }
+          },
         );
         queryClient.invalidateQueries(
           useGetConnectionsForUserQuery.getKey({
             userId: user?.userId ?? 0,
             page: 0,
             size: API_PAGINATION_SIZE,
-          })
+          }),
         );
       }
     },
@@ -147,10 +147,10 @@ export default function NetworkPage() {
               getAllUserConnectionSuggestions: {
                 ...allUserSuggestionsData?.getAllUserConnectionSuggestions,
                 list: allUserSuggestionsData?.getAllUserConnectionSuggestions?.list?.filter(
-                  (s) => s?.id !== data.createConnection?.addressed.id
+                  (s) => s?.id !== data.createConnection?.addressed.id,
                 ),
               },
-            }
+            },
           );
         }
       },
@@ -166,7 +166,7 @@ export default function NetworkPage() {
           });
         }
       },
-    }
+    },
   );
 
   const connectionRequests = data?.getNewConnectionForUser?.list ?? [];
@@ -245,7 +245,7 @@ export default function NetworkPage() {
                             })
                           }
                         />
-                      )
+                      ),
                   )}
                 </InvitationsListSection>
               }
@@ -290,7 +290,7 @@ export default function NetworkPage() {
                             })
                           }
                         />
-                      )
+                      ),
                   )}
                 </UsersSuggestionsSection>
               }

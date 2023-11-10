@@ -30,7 +30,7 @@ const UserJobsPage = () => {
       },
       {
         enabled: !!user && segValue === "applied",
-      }
+      },
     );
 
   return (
@@ -87,7 +87,7 @@ const UserJobsPage = () => {
                             (applicationsData?.getMyApplications?.length ?? 0) -
                               1 && <Divider color="#edebeb" mt="sm" />}
                         </div>
-                      )
+                      ),
                   )}
               </ShowIfElse>
             )}

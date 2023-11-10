@@ -11,7 +11,7 @@ export default function useChangeProfileAvatar(
     null
   > = {
     mutationKey: ["changeProfileAvatar"],
-  }
+  },
 ) {
   return useMutation<
     void,

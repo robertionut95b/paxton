@@ -8,7 +8,7 @@ export default function useCurrentUser(
   options?: UseQueryOptions<
     AxiosResponse<CurrentUserMutationResponse>,
     AxiosError<FullAPiResponse>
-  >
+  >,
 ) {
   return useQuery<
     AxiosResponse<CurrentUserMutationResponse>,

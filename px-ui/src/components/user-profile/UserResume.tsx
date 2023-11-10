@@ -76,7 +76,7 @@ export default function UserResume({
                     study={s}
                   />
                 </div>
-              )
+              ),
           )}
         </Paper>
       </Paper>

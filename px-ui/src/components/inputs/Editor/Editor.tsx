@@ -94,7 +94,7 @@ const Editor = ({
         ],
       },
     }),
-    [configuration]
+    [configuration],
   );
 
   return (

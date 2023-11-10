@@ -3,7 +3,6 @@ import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatLinesSkeleton from "@components/messaging/chat/ChatLinesSkeleton";
 import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
@@ -23,6 +22,7 @@ import {
   Divider,
   Grid,
   Group,
+  Image,
   Paper,
   ScrollArea,
   Stack,
@@ -72,7 +72,7 @@ const ChatPage = () => {
       page: 0,
       size: PAGE_SIZE,
     }),
-    [user?.userId, debouncedSearch]
+    [user?.userId, debouncedSearch],
   );
 
   const {
@@ -87,6 +87,7 @@ const ChatPage = () => {
       searchQuery,
     },
     {
+      refetchInterval: 5000,
       getNextPageParam: (lastPage, allPages) => {
         const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
         const totalItems = lastPage.getChatAdvSearch?.totalElements ?? 0;
@@ -99,7 +100,7 @@ const ChatPage = () => {
             },
           };
       },
-    }
+    },
   );
 
   const chatLines = useMemo(
@@ -111,16 +112,16 @@ const ChatPage = () => {
           id: d?.id ?? 0,
           unreadMessagesCount: d?.unreadMessagesCount as number,
           users: d?.users?.filter(
-            (u) => String(u?.id) !== String(user?.userId)
+            (u) => String(u?.id) !== String(user?.userId),
           ),
         }))
         .sort((a, b) =>
           a.latestMessage?.deliveredAt && b.latestMessage?.deliveredAt
             ? new Date(b.latestMessage.deliveredAt).getTime() -
               new Date(a.latestMessage.deliveredAt).getTime()
-            : 0
+            : 0,
         ) ?? [],
-    [advChatData?.pages, user?.userId]
+    [advChatData?.pages, user?.userId],
   );
 
   useEffect(() => {
@@ -174,46 +175,40 @@ const ChatPage = () => {
                 })}
                 scrollbarSize={6}
               >
-                <ShowIfElse
-                  if={!isLoading}
-                  else={
-                    <Center mt="xs">
-                      <ChatLinesSkeleton />
-                    </Center>
-                  }
-                >
-                  <ShowIfElse
-                    if={chatLines.length > 0}
-                    else={
-                      <Text mt="sm" size="xs" align="center">
-                        No chat rooms yet
-                      </Text>
-                    }
+                <ShowIf if={isLoading}>
+                  <Center mt="xs">
+                    <ChatLinesSkeleton />
+                  </Center>
+                </ShowIf>
+                <ShowIf if={chatLines.length == 0 && !isLoading}>
+                  <Stack mt="sm" align="center" spacing={0}>
+                    <Image src="/images/chat-icon.svg" width={82} />
+                    <Text size="sm" align="center">
+                      No chat rooms yet
+                    </Text>
+                  </Stack>
+                </ShowIf>
+                <div className="px-chatlines-wrapper">
+                  {chatLines.map(
+                    (c, idx) =>
+                      c && (
+                        <div key={c?.id ?? 0 + idx}>
+                          <ChatLine chat={c} active={chatId === String(c.id)} />
+                        </div>
+                      ),
+                  )}
+                </div>
+                <ShowIf if={hasNextPage}>
+                  <Button
+                    fullWidth
+                    mt="xs"
+                    onClick={() => fetchNextPage()}
+                    loading={isFetching}
+                    variant="light"
                   >
-                    {chatLines.map(
-                      (c, idx) =>
-                        c && (
-                          <div key={c?.id ?? 0 + idx}>
-                            <ChatLine
-                              chat={c}
-                              active={chatId === String(c.id)}
-                            />
-                          </div>
-                        )
-                    )}
-                    <ShowIf if={hasNextPage}>
-                      <Button
-                        fullWidth
-                        mt="xs"
-                        onClick={() => fetchNextPage()}
-                        loading={isFetching}
-                        variant="light"
-                      >
-                        Load more
-                      </Button>
-                    </ShowIf>
-                  </ShowIfElse>
-                </ShowIfElse>
+                    Load more
+                  </Button>
+                </ShowIf>
               </ScrollArea>
             </Grid.Col>
             <Grid.Col

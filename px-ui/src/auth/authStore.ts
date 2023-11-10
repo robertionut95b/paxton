@@ -34,14 +34,14 @@ export const authStore = createStore<AuthStore>((set) => ({
 
 const createBoundedUseStore = ((store) => (selector, equals) =>
   useStoreWithEqualityFn(store, selector as never, equals)) as <
-  S extends StoreApi<unknown>
+  S extends StoreApi<unknown>,
 >(
-  store: S
+  store: S,
 ) => {
   (): ExtractState<S>;
   <T>(
     selector: (state: ExtractState<S>) => T,
-    equals?: (a: T, b: T) => boolean
+    equals?: (a: T, b: T) => boolean,
   ): T;
 };
 

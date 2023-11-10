@@ -41,7 +41,7 @@ const OrganizationAboutPanel = ({
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
   const organizationItem = organization?.getOrganizationBySlugName;
 
@@ -52,7 +52,7 @@ const OrganizationAboutPanel = ({
         lng: l?.longitude?.toString() ?? "",
         lat: l?.latitude?.toString() ?? "",
       })),
-    [organizationItem?.locations]
+    [organizationItem?.locations],
   );
 
   if (isLoadingOrganization) return <GenericLoadingSkeleton />;
@@ -152,7 +152,7 @@ const OrganizationAboutPanel = ({
                 </Text>
                 <Group spacing={5}>
                   {(specializations ?? []).map(
-                    (s) => s && <Badge key={s}>{prettyEnumValue(s)}</Badge>
+                    (s) => s && <Badge key={s}>{prettyEnumValue(s)}</Badge>,
                   )}
                 </Group>
               </ShowIf>
@@ -185,7 +185,7 @@ const OrganizationAboutPanel = ({
                         <Badge size="xs">Headquarters</Badge>
                       )}
                     </List.Item>
-                  )
+                  ),
               )}
             </List>
             <MapChart darkMode={isDarkMode} markers={mapMarkers} />

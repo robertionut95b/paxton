@@ -55,7 +55,7 @@ export default function AuthProvider({
           failureCount === 0 && err?.response?.status === 401 && !!accessToken
         );
       },
-    }
+    },
   );
 
   const loading = (user === null || isLoading) && userLoading;
@@ -112,19 +112,19 @@ export default function AuthProvider({
 
   const signin = (
     { username, password }: LoginUserMutationProps,
-    callback: VoidFunction
+    callback: VoidFunction,
   ) => {
     logIn(
       { username, password },
       {
         onSuccess: () => callback?.(),
-      }
+      },
     );
   };
 
   const signInByToken = (
     { token }: LoginUserByTokenMutationProps,
-    callback: VoidFunction
+    callback: VoidFunction,
   ) => {
     loginByToken({ token }, { onSuccess: () => callback?.() });
   };
@@ -146,12 +146,12 @@ export default function AuthProvider({
         hasAuthorization = CheckUserHasRolesOrPermissions(
           user,
           roleNames,
-          permissionNames
+          permissionNames,
         );
       }
       return hasAuthorization;
     },
-    [user]
+    [user],
   );
 
   useInterval(() => {
@@ -170,7 +170,7 @@ export default function AuthProvider({
       accessToken,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user, loading]
+    [user, loading],
   );
 
   if (loading) return <ApplicationSpinner />;

@@ -81,20 +81,20 @@ export default function ExperienceCard({
                       >
                         {format(
                           new Date(e.startDate),
-                          "MMM. yyyy"
+                          "MMM. yyyy",
                         )?.toLowerCase()}{" "}
                         -{" "}
                         {e.endDate
                           ? format(
                               new Date(e.endDate),
-                              "MMM. yyyy"
+                              "MMM. yyyy",
                             )?.toLowerCase()
                           : "present"}{" "}
                         ·{" "}
                         <span className="text-sm">
                           {getTimeBetweenInExperience(
                             new Date(e.startDate),
-                            e.endDate ? new Date(e.endDate) : new Date()
+                            e.endDate ? new Date(e.endDate) : new Date(),
                           )}
                         </span>
                       </Text>

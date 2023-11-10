@@ -36,7 +36,7 @@ const IsAllowed = ({
     // role check
     if (roles && userRoles && userRoles.length > 0) {
       const intersection = userRoles.filter((role: string) =>
-        roles.includes(RoleType[role as keyof typeof RoleType])
+        roles.includes(RoleType[role as keyof typeof RoleType]),
       );
       if (
         intersection.length > 0 ||
@@ -47,7 +47,7 @@ const IsAllowed = ({
     // permission check
     if (permissions && userPermissions && userPermissions.length > 0) {
       const intersection = userPermissions.filter((permission: string) =>
-        permissions.includes(permission)
+        permissions.includes(permission),
       );
       if (intersection.length > 0) setHasAccess(true);
     }

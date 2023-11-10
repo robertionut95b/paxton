@@ -17,12 +17,12 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [currPath, setCurrPath] = useState<string>(
-    location.pathname.split("/").at(-1) ?? "jobs"
+    location.pathname.split("/").at(-1) ?? "jobs",
   );
   const navigateTab = useCallback(
     (value: TabsValue) => navigate(`collections/${value}`),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [],
   );
 
   useEffect(() => {

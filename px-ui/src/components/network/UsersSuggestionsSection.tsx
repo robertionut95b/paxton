@@ -72,7 +72,7 @@ const UsersSuggestionsSection = ({
 };
 
 const UsersSuggestionItem = (
-  props: React.ComponentProps<typeof UserSuggestionCard>
+  props: React.ComponentProps<typeof UserSuggestionCard>,
 ) => {
   return (
     <Grid.Col span={6} sm={4} md={3}>

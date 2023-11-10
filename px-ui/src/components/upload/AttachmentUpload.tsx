@@ -21,7 +21,7 @@ registerPlugin(
   FilePondPluginImageCrop,
   FilePondPluginImageResize,
   FilePondPluginImageTransform,
-  FilePondPluginImageEdit
+  FilePondPluginImageEdit,
 );
 
 type AttachmentUploadProps = {

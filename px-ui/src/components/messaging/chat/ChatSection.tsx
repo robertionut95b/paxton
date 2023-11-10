@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import compose from "lodash/fp/compose";
 import groupBy from "lodash/fp/groupBy";
 import { useEffect, useMemo, useRef } from "react";
-import { useEffectOnce } from "usehooks-ts";
 
 type ChatSectionProps = {
   messages: NonNullable<
@@ -37,13 +36,13 @@ const ChatSection = ({
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     if (viewport.current) {
       viewport.current.scrollTo({
         top: viewport.current.scrollHeight,
       });
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (viewport.current && autoScroll) {
@@ -67,11 +66,11 @@ const ChatSection = ({
               // @ts-expect-error(lodash-types)
               new Date(m?.deliveredAt).getFullYear()
               ? "dd MMMM yyyy"
-              : "dd MMMM"
-          )
-        )
+              : "dd MMMM",
+          ),
+        ),
       )(messages),
-    [messages]
+    [messages],
   );
 
   return (
@@ -101,7 +100,7 @@ const ChatSection = ({
                     avatarInitials={displayInitials(
                       m.sender.username,
                       m.sender.firstName,
-                      m.sender.lastName
+                      m.sender.lastName,
                     )}
                     name={m.sender.firstName}
                     content={m.content}
@@ -109,7 +108,7 @@ const ChatSection = ({
                     sentAt={m.deliveredAt}
                   />
                 </div>
-              )
+              ),
           )}
         </Stack>
       ))}

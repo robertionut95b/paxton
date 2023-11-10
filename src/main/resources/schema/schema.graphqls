@@ -793,3 +793,7 @@ type Mutation {
     updateConnection(connectionRequestInput: ConnectionUpdateInput!): Connection
     removeConnection(connectionId: Long!): Connection
 }
+
+type Subscription {
+    getMessagesForChatId(chatId: Long!, auth: String!): Message
+}

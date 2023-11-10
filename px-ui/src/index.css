@@ -62,12 +62,12 @@ body,
 }
 
 .ck.ck-content ul,
-.ck.ck-content ul li{
+.ck.ck-content ul li {
   list-style-type: inherit;
 }
 
 .ck.ck-content ol,
-.ck.ck-content ol li{
+.ck.ck-content ol li {
   list-style-type: decimal;
 }
 
@@ -81,7 +81,7 @@ body,
   padding-left: 40px;
 }
 
-.ck.ck-editor{
+.ck.ck-editor {
   font-size: 14px;
 }
 

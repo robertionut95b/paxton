@@ -24,7 +24,7 @@ const JobListingsCards = ({ jobs }: JobListingsProps) => {
             <div key={jl.id}>
               <JobListingCard job={jl} />
             </div>
-          )
+          ),
       )}
     </SimpleGrid>
   );

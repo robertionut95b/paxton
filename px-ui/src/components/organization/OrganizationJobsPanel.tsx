@@ -30,7 +30,7 @@ const OrganizationJobsPanel = () => {
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
 
   const { data: jobListingsData } = useGetAllJobListingsQuery(
@@ -62,14 +62,14 @@ const OrganizationJobsPanel = () => {
     },
     {
       enabled: !!organization?.getOrganizationBySlugName?.id,
-    }
+    },
   );
 
   const { data: userProfileData } = useGetUserProfileQuery(
     graphqlRequestClient,
     {
       profileSlugUrl: user?.profileSlugUrl,
-    }
+    },
   );
 
   const { data: recommendedJobsData } = useGetAllJobListingsQuery(
@@ -99,7 +99,7 @@ const OrganizationJobsPanel = () => {
     },
     {
       enabled: !!userProfileData?.getUserProfile?.city?.id,
-    }
+    },
   );
 
   const jobListings = jobListingsData?.getAllJobListings?.list ?? [];

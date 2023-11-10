@@ -62,21 +62,21 @@ export default function ProfileExperienceModal() {
   ]);
 
   const initialExperienceSelected = prevData?.getUserProfile?.experiences?.find(
-    (e) => e?.id.toString() === params.experienceId
+    (e) => e?.id.toString() === params.experienceId,
   );
 
   const [activeJob, setActiveJob] = useState(
-    !initialExperienceSelected?.endDate
+    !initialExperienceSelected?.endDate,
   );
 
   const [desc, setDesc] = useState<string>(
-    initialExperienceSelected?.description ?? ""
+    initialExperienceSelected?.description ?? "",
   );
 
   const [startDate, setStartDate] = useState<Date>(
     initialExperienceSelected?.startDate
       ? new Date(initialExperienceSelected?.startDate)
-      : new Date()
+      : new Date(),
   );
 
   const { data: countries, isLoading: isCountryListLoading } =
@@ -104,7 +104,7 @@ export default function ProfileExperienceModal() {
           icon: <CheckCircleIcon width={20} />,
         });
       },
-    }
+    },
   );
 
   const { isLoading: updateLoading, mutate: mutateUpdate } =
@@ -156,16 +156,16 @@ export default function ProfileExperienceModal() {
               getUserProfile: {
                 ...prevData?.getUserProfile,
                 experiences: prevData?.getUserProfile?.experiences?.filter(
-                  (s) => s?.id.toString() !== params.experienceId
+                  (s) => s?.id.toString() !== params.experienceId,
                 ),
               },
-            }
+            },
           );
         }
         closeAllModals();
         closeModal();
       },
-    }
+    },
   );
 
   const form = useForm({

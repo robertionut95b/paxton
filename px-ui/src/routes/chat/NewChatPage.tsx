@@ -97,15 +97,15 @@ const NewChatPage = () => {
                 },
               ]
             : usrSearchDebounced.length > 1
-            ? [
-                {
-                  fieldType: FieldType.String,
-                  key: "firstName",
-                  operator: Operator.Like,
-                  value: usrSearchDebounced,
-                },
-              ]
-            : []),
+              ? [
+                  {
+                    fieldType: FieldType.String,
+                    key: "firstName",
+                    operator: Operator.Like,
+                    value: usrSearchDebounced,
+                  },
+                ]
+              : []),
         ],
       },
     },
@@ -113,9 +113,9 @@ const NewChatPage = () => {
       enabled: usrSearchDebounced.length > 1 || !!pChatUser,
       select: (data) =>
         data.getAllUsersPaged?.list?.filter(
-          (u) => String(u?.id) !== String(user?.userId)
+          (u) => String(u?.id) !== String(user?.userId),
         ),
-    }
+    },
   );
 
   const { data: chatSearchByMembersData } = useGetChatsWithUsersIdsQuery(
@@ -129,10 +129,10 @@ const NewChatPage = () => {
         data.getChatsWithUsersIds?.map((c) => ({
           ...c,
           users: c?.users?.filter(
-            (u) => String(u?.id) !== String(user?.userId)
+            (u) => String(u?.id) !== String(user?.userId),
           ),
         })),
-    }
+    },
   );
 
   const { mutateAsync: createChat, isSuccess: isSuccessCreateChat } =
@@ -146,12 +146,12 @@ const NewChatPage = () => {
           queryClient.invalidateQueries(
             useInfiniteGetChatLinesAdvSearchQuery.getKey({
               searchQuery: chatPageSearchQuery,
-            })
+            }),
           );
           navigate(`/app/inbox/messages/chat/${data?.addMessageToChat?.id}`);
         }
       },
-    }
+    },
   );
 
   const individualChatsCount = chatSearchByMembersData?.length ?? 0;
@@ -171,7 +171,7 @@ const NewChatPage = () => {
       await queryClient.invalidateQueries(
         useGetPrivateChatByIdQuery.getKey({
           chatId: chatSearchByMembersData?.[0]?.id ?? 0,
-        })
+        }),
       );
       await queryClient.invalidateQueries(
         useInfiniteGetMessagesPaginatedQuery.getKey({
@@ -193,10 +193,10 @@ const NewChatPage = () => {
             page: 0,
             size: API_PAGINATION_SIZE,
           },
-        })
+        }),
       );
       return navigate(
-        `/app/inbox/messages/chat/${chatSearchByMembersData?.[0]?.id}`
+        `/app/inbox/messages/chat/${chatSearchByMembersData?.[0]?.id}`,
       );
     } else {
       if (!user?.userId) return;
@@ -219,7 +219,7 @@ const NewChatPage = () => {
         queryClient.invalidateQueries(
           useInfiniteGetChatLinesAdvSearchQuery.getKey({
             searchQuery: chatPageSearchQuery,
-          })
+          }),
         );
       }
     }
@@ -237,7 +237,7 @@ const NewChatPage = () => {
     queryClient.invalidateQueries(
       useInfiniteGetChatLinesAdvSearchQuery.getKey({
         searchQuery: chatPageSearchQuery,
-      })
+      }),
     );
     if (data) navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
   };
@@ -258,7 +258,7 @@ const NewChatPage = () => {
         description: u?.userProfile.profileTitle,
       }));
       setUsersSelectItem((prevUsers) =>
-        uniqBy("value", [...prevUsers, ...users])
+        uniqBy("value", [...prevUsers, ...users]),
       );
     }
   }, [userData]);

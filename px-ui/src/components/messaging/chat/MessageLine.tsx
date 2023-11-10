@@ -60,8 +60,8 @@ const MessageLine = ({
                   ? theme.colors.violet[6]
                   : theme.colors.gray[1]
                 : position === "right"
-                ? theme.colors.violet[8]
-                : theme.colors.gray[8],
+                  ? theme.colors.violet[8]
+                  : theme.colors.gray[8],
           })}
         >
           <Text
@@ -78,8 +78,8 @@ const MessageLine = ({
                     ? theme.colors.gray[1]
                     : theme.colors.gray[9]
                   : position === "right"
-                  ? theme.colors.gray[3]
-                  : theme.colors.gray[4],
+                    ? theme.colors.gray[3]
+                    : theme.colors.gray[4],
             })}
           >
             {content}

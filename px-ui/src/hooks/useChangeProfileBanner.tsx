@@ -11,7 +11,7 @@ export default function useChangeProfileBanner(
     null
   > = {
     mutationKey: ["changeProfileBanner"],
-  }
+  },
 ) {
   return useMutation<
     void,

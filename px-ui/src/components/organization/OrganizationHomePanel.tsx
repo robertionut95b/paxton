@@ -24,7 +24,7 @@ const OrganizationHomePanel = () => {
     },
     {
       enabled: !!organizationSlug,
-    }
+    },
   );
   const { data: jobListingsData } = useGetAllJobListingsQuery(
     graphqlRequestClient,
@@ -55,7 +55,7 @@ const OrganizationHomePanel = () => {
     },
     {
       enabled: !!organizationData?.getOrganizationBySlugName?.id,
-    }
+    },
   );
 
   const jobListings = jobListingsData?.getAllJobListings?.list ?? [];

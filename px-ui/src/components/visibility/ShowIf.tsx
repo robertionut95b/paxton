@@ -10,7 +10,7 @@ const checkTypeFunction = (children: ReactElement | unknown) =>
 
 const ShowIf = React.memo(
   ({ if: show, children }: ShowIFProps): ReactElement | null =>
-    show ? checkTypeFunction(children) : null
+    show ? checkTypeFunction(children) : null,
 );
 
 ShowIf.displayName = "ShowIfElse";

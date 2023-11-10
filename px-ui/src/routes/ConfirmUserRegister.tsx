@@ -5,7 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 export default function ConfirmUserRegister() {
   const [msg, setMsg] = useState<string>(
-    "No valid registration was found for this link"
+    "No valid registration was found for this link",
   );
   const [success, setSuccess] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
@@ -21,7 +21,7 @@ export default function ConfirmUserRegister() {
           navigate("/login", { replace: true });
         }, 2000);
       },
-    }
+    },
   );
 
   if (isLoading) {

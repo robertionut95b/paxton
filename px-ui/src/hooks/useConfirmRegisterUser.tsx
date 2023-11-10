@@ -4,7 +4,7 @@ import { confirmRegisterUser } from "../auth/authApi";
 
 export default function useConfirmRegisterUser(
   token: string,
-  options?: UseQueryOptions<void, AxiosError>
+  options?: UseQueryOptions<void, AxiosError>,
 ) {
   return useQuery<void, AxiosError>({
     queryKey: ["confirmRegisterUser", token],

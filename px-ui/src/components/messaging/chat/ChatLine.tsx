@@ -19,19 +19,21 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
   const avatar =
     (c?.users?.length ?? 0) > 1 ? (
       <Avatar.Group spacing={20}>
-        {c?.users?.slice(0, 2).map((u) => (
-          <Avatar
-            key={u?.id}
-            src={
-              u?.userProfile.photography &&
-              `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
-            }
-            size={35}
-            title={u?.username}
-            radius="xl"
-            color="violet.3"
-          />
-        ))}
+        {c?.users
+          ?.slice(0, 2)
+          .map((u) => (
+            <Avatar
+              key={u?.id}
+              src={
+                u?.userProfile.photography &&
+                `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
+              }
+              size={35}
+              title={u?.username}
+              radius="xl"
+              color="violet.3"
+            />
+          ))}
       </Avatar.Group>
     ) : (
       <Avatar
@@ -51,7 +53,7 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
     (c?.users?.length ?? 0) > 1
       ? truncate(
           c?.users?.map((u) => `${u?.firstName}`).join(", ") as string,
-          18
+          18,
         )
       : `${c?.users?.[0]?.firstName} ${c?.users?.[0]?.lastName}`;
   const unreadMessages = c?.unreadMessagesCount ?? 0;
@@ -72,8 +74,8 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
                 ? theme.colors.gray[1]
                 : "transparent"
               : active
-              ? theme.colors.gray[8]
-              : "transparent",
+                ? theme.colors.gray[8]
+                : "transparent",
           cursor: "pointer",
           borderRadius: "10px",
         })}
@@ -112,7 +114,7 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
                     new Date(c.latestMessage.deliveredAt).getFullYear() !==
                       new Date().getFullYear()
                       ? "dd MMM yy"
-                      : "dd MMM"
+                      : "dd MMM",
                   )}
                 </Text>
                 <ShowIf if={unreadMessages > 0}>

@@ -12,7 +12,7 @@ export default function useRefreshLogin(
     null
   > = {
     mutationKey: ["refreshLogin"],
-  }
+  },
 ) {
   return useMutation({
     mutationFn: refreshLogin,

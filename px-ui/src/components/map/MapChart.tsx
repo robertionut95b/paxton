@@ -35,7 +35,7 @@ const MapMarker = forwardRef<SVGPathElement, MarkerProps>(
     >
       <circle r={2.5} fill={"#F00"} stroke="#fff" strokeWidth={1} />
     </Marker>
-  )
+  ),
 );
 
 MapMarker.displayName = "MapMarker";

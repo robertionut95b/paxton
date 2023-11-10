@@ -76,11 +76,11 @@ const AdminJobs = () => {
               page: 0,
               totalElements: 1,
               totalPages: 1,
-            }
-          )
+            },
+          ),
         );
       },
-    }
+    },
   );
 
   const renderRowContextMenu = useCallback(
@@ -95,7 +95,7 @@ const AdminJobs = () => {
       ];
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [],
   );
 
   if (isLoading)

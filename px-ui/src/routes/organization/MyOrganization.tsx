@@ -19,7 +19,7 @@ export default function MyOrganizationPage() {
   const prevQuery = queryClient.getQueryData<GetRecruiterByIdQuery>(
     useGetRecruiterByIdQuery.getKey({
       recruiterId: user?.userId ?? 0,
-    })
+    }),
   );
 
   const { isInitialLoading } = useGetRecruiterByIdQuery(
@@ -43,7 +43,7 @@ export default function MyOrganizationPage() {
         });
         navigate(`/app`);
       },
-    }
+    },
   );
 
   if (isInitialLoading) return <ApplicationSpinner />;

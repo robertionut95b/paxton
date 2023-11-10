@@ -30,7 +30,7 @@ const UserInvitation = ({ data, onAccept, onDecline }: UserInvitationProps) => {
           {displayInitials(
             "U",
             data.requester.firstName,
-            data.requester.lastName
+            data.requester.lastName,
           )}
         </Avatar>
         <Stack spacing={2}>

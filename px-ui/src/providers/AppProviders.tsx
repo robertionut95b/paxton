@@ -1,3 +1,5 @@
+import { ApolloProvider } from "@apollo/client";
+import apolloGqlClient from "@lib/graphqlWsClient";
 import { queryClient } from "@lib/queryClient";
 import {
   ColorScheme,
@@ -21,7 +23,7 @@ export default function AppProviders({
 }) {
   const { isDarkMode, toggle } = useDarkMode();
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    isDarkMode ? "dark" : "light"
+    isDarkMode ? "dark" : "light",
   );
   const htmlElement = document.documentElement;
   const rootElement = document.getElementById("root");
@@ -69,12 +71,14 @@ export default function AppProviders({
       >
         <NotificationsProvider>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <ModalsProvider>
-                <Provider>{children}</Provider>
-              </ModalsProvider>
-            </AuthProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
+            <ApolloProvider client={apolloGqlClient}>
+              <AuthProvider>
+                <ModalsProvider>
+                  <Provider>{children}</Provider>
+                </ModalsProvider>
+              </AuthProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </ApolloProvider>
           </QueryClientProvider>
         </NotificationsProvider>
       </MantineProvider>

@@ -35,7 +35,7 @@ const JobPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
     },
     {
       enabled: !!jobIdParam,
-    }
+    },
   );
   if (isLoading) return <Loader size={"xs"} />;
   if (!jobData?.getAllJobListings) return jobIdParam;
@@ -64,7 +64,7 @@ const ApplicationPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
     },
     {
       enabled: !!applicationId,
-    }
+    },
   );
   if (isLoading) return <Loader size={"xs"} />;
   if (!applicationData?.getAllApplications) return applicationId;
@@ -88,7 +88,7 @@ const OrgPageCrumb = ({ match }: BreadcrumbComponentProps<string>) => {
       },
       {
         enabled: !!orgSlugParam,
-      }
+      },
     );
   if (isLoading) return <Loader size={"xs"} />;
   if (!organizationData?.getOrganizationBySlugName) return orgSlugParam;

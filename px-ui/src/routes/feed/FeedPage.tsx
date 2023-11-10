@@ -35,7 +35,7 @@ export default function FeedPage() {
     },
     {
       enabled: !!user?.profileSlugUrl,
-    }
+    },
   );
 
   if (isLoading) return <GenericLoadingSkeleton />;

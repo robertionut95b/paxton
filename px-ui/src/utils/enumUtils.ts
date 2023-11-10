@@ -3,13 +3,13 @@ import { capitalizeFirstLetter } from "./capitalizeString";
 export const prettyEnumValue = <T extends string>(
   value: T,
   delimiter = "_",
-  join = " "
+  join = " ",
 ) => capitalizeFirstLetter(value.toLowerCase().split(delimiter).join(join));
 
 export const prettyEnumValueCompanySize = <T extends string>(
   value: T,
   delimiter = "_",
-  join = " "
+  join = " ",
 ) =>
   capitalizeFirstLetter(
     value
@@ -20,5 +20,5 @@ export const prettyEnumValueCompanySize = <T extends string>(
           return v + " to";
         return v;
       })
-      .join(join)
+      .join(join),
   );

@@ -12,7 +12,7 @@ export default function useRegisterUser(
     null
   > = {
     mutationKey: ["registerUser"],
-  }
+  },
 ) {
   return useMutation<
     void,

@@ -261,4 +261,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new OnUserLogoutSuccess(user.getUsername(), token, new UserDevice(getRequestIP(request), userAgent, user))
         );
     }
+
+    public Authentication identifyUserInToken(String token) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
 }

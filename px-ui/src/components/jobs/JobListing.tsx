@@ -104,7 +104,7 @@ export default function JobListingItem({
                     if={
                       differenceInBusinessDays(
                         new Date(availableTo),
-                        new Date()
+                        new Date(),
                       ) <= 3
                     }
                   >

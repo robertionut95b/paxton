@@ -1,7 +1,8 @@
 package com.irb.paxton.security.oauth2;
 
+import com.irb.paxton.core.media.Photography;
+import com.irb.paxton.core.media.PhotographyService;
 import com.irb.paxton.exceptions.handler.common.OAuth2AuthenticationProcessingException;
-import com.irb.paxton.security.auth.role.PaxtonRole;
 import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.PaxtonUserDetails;
 import com.irb.paxton.security.auth.user.User;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,9 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private PhotographyService photographyService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -74,7 +79,6 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setUsername(oAuth2UserInfo.getUsername());
         user.setEmailConfirmed(true);
-        user.addRole(roleService.findByName(PaxtonRole.ROLE_EVERYONE.toString()));
         user = userService.registerNewUser(user);
 
         return user;
@@ -83,7 +87,12 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         existingUser.setFirstName(oAuth2UserInfo.getFirstName());
         existingUser.setLastName(oAuth2UserInfo.getLastName());
-        existingUser.getUserProfile().setPhotography(oAuth2UserInfo.getImageUrl());
+        String base64ImageUrl = Base64.getEncoder().encodeToString(oAuth2UserInfo.getImageUrl().getBytes());
+        Optional<Photography> profileAvatarOpt = photographyService.findByNameReturnOptional(base64ImageUrl);
+        if (profileAvatarOpt.isEmpty()) {
+            photographyService.createPhotography(new Photography(base64ImageUrl, oAuth2UserInfo.getImageUrl(), existingUser.getUserProfile()));
+        }
+        existingUser.getUserProfile().setPhotography(Base64.getEncoder().encodeToString(oAuth2UserInfo.getImageUrl().getBytes()));
 
         return userService.updateUser(existingUser);
     }

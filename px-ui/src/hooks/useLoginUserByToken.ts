@@ -15,7 +15,7 @@ export default function useLoginUserByToken(
     null
   > = {
     mutationKey: ["loginUserByToken"],
-  }
+  },
 ) {
   return useMutation({ mutationFn: submitLoginByToken, ...options });
 }

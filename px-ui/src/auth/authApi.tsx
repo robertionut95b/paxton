@@ -19,7 +19,7 @@ export const logoutUser = async (): Promise<void> => {
 };
 
 export const submitLogin = async (
-  body: LoginUserMutationProps
+  body: LoginUserMutationProps,
 ): Promise<LoginUserMutationResponseP> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login`, {
     ...body,
@@ -28,7 +28,7 @@ export const submitLogin = async (
 };
 
 export const submitLoginByToken = async (
-  body: LoginUserByTokenMutationProps
+  body: LoginUserByTokenMutationProps,
 ): Promise<LoginUserMutationResponseP> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login/token`, {
     ...body,
@@ -49,7 +49,7 @@ export const refreshLogin = async (): Promise<
 };
 
 export const registerUser = async (
-  body: RegisterUserMutationProps
+  body: RegisterUserMutationProps,
 ): Promise<void> => {
   const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/signup`, {
     ...body,
@@ -59,17 +59,17 @@ export const registerUser = async (
 
 export const confirmRegisterUser = async (token: string) => {
   const { data } = await api.get(
-    `${APP_API_PATH}/${AUTH_PATH}/signup/confirmation?token=` + token
+    `${APP_API_PATH}/${AUTH_PATH}/signup/confirmation?token=` + token,
   );
   return data;
 };
 
 export const forgotPassword = async (
-  body: ResetPasswordRequestProps
+  body: ResetPasswordRequestProps,
 ): Promise<void> => {
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/forgot-password/request`,
-    body
+    body,
   );
   return data;
 };
@@ -78,7 +78,7 @@ export const resetPassword = async (bodyData: ResetPasswordProps) => {
   const { token, body } = bodyData;
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/forgot-password?token=` + token,
-    body
+    body,
   );
   return data;
 };
@@ -92,7 +92,7 @@ export const changeProfileCover = async (bodyData: FormData) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
   return data;
 };
@@ -106,7 +106,7 @@ export const changeProfileAvatar = async (bodyData: FormData) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
   return data;
 };

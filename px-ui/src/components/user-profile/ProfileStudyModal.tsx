@@ -61,21 +61,21 @@ export default function ProfileStudyModal() {
   ]);
 
   const initialStudySelected = prevData?.getUserProfile?.studies?.find(
-    (e) => e?.id.toString() === studyId
+    (e) => e?.id.toString() === studyId,
   );
 
   const [activeStudy, setActiveStudy] = useState(
-    !initialStudySelected?.endDate
+    !initialStudySelected?.endDate,
   );
 
   const [desc, setDesc] = useState<string>(
-    initialStudySelected?.description ?? ""
+    initialStudySelected?.description ?? "",
   );
 
   const [startDate, setStartDate] = useState<Date>(
     initialStudySelected?.startDate
       ? new Date(initialStudySelected?.startDate)
-      : new Date()
+      : new Date(),
   );
 
   const closeModal = () => {
@@ -88,11 +88,11 @@ export default function ProfileStudyModal() {
   >(String(initialStudySelected?.certification?.id) || null);
 
   const [selectedInstitution, setSelectedInstitution] = useState<string | null>(
-    String(initialStudySelected?.institution?.id) || null
+    String(initialStudySelected?.institution?.id) || null,
   );
 
   const [selectedDomain, setSelectedDomain] = useState<string | null>(
-    String(initialStudySelected?.domainStudy?.id) || null
+    String(initialStudySelected?.domainStudy?.id) || null,
   );
 
   const { data: institutionsData, isLoading: isInstitutionsLoading } =
@@ -102,7 +102,7 @@ export default function ProfileStudyModal() {
           data.getAllInstitutions?.map((i) => ({
             label: i?.name,
             value: i?.id.toString(),
-          })) ?? []
+          })) ?? [],
         );
       },
     });
@@ -113,7 +113,7 @@ export default function ProfileStudyModal() {
     institutionsData?.getAllInstitutions?.map((i) => ({
       label: i?.name,
       value: i?.id.toString(),
-    })) ?? []
+    })) ?? [],
   );
 
   const { data: domainsData, isLoading: isDomainsLoading } =
@@ -123,7 +123,7 @@ export default function ProfileStudyModal() {
           data.getAllDomains?.map((d) => ({
             label: d?.name,
             value: d?.id.toString(),
-          })) ?? []
+          })) ?? [],
         );
       },
     });
@@ -132,7 +132,7 @@ export default function ProfileStudyModal() {
     domainsData?.getAllDomains?.map((d) => ({
       label: d?.name,
       value: d?.id.toString(),
-    })) ?? []
+    })) ?? [],
   );
 
   const { data: certificationsData, isLoading: isCertificationsLoading } =
@@ -142,7 +142,7 @@ export default function ProfileStudyModal() {
           data.getAllCertifications?.map((c) => ({
             label: c?.name,
             value: c?.id.toString(),
-          })) ?? []
+          })) ?? [],
         );
       },
     });
@@ -153,7 +153,7 @@ export default function ProfileStudyModal() {
     certificationsData?.getAllCertifications?.map((c) => ({
       label: c?.name,
       value: c?.id.toString(),
-    })) ?? []
+    })) ?? [],
   );
 
   const { mutate: removeStudy } = useRemoveUserProfileStudyMutation(
@@ -171,16 +171,16 @@ export default function ProfileStudyModal() {
               getUserProfile: {
                 ...prevData?.getUserProfile,
                 studies: prevData?.getUserProfile?.studies?.filter(
-                  (s) => s?.id.toString() !== studyId
+                  (s) => s?.id.toString() !== studyId,
                 ),
               },
-            }
+            },
           );
         }
         closeAllModals();
         closeModal();
       },
-    }
+    },
   );
 
   const form = useForm({

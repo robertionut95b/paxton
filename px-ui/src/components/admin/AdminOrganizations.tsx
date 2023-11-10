@@ -88,7 +88,7 @@ const AdminOrganizations = () => {
   const navigate = useNavigate();
   const { data: organizationData, isLoading } = useGetAllOrganizationsQuery(
     graphqlRequestClient,
-    {}
+    {},
   );
   const { isDarkMode } = useDarkMode();
 
@@ -117,7 +117,7 @@ const AdminOrganizations = () => {
       ];
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [],
   );
 
   if (isLoading)

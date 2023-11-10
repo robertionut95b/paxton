@@ -6,6 +6,7 @@ import com.irb.paxton.security.auth.login.response.LoginResponse;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.dto.UserLoginDto;
 import com.irb.paxton.security.auth.user.dto.UserSignupDto;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthenticationService {
@@ -27,4 +28,6 @@ public interface AuthenticationService {
     LoginResponse refreshUserAuthenticationByToken(String refreshToken);
 
     void logOutUserByToken(String token);
+
+    public Authentication identifyUserInToken(String token);
 }

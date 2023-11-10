@@ -101,6 +101,9 @@ public class UserService extends AbstractService<User, Long> {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(List.of(roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))));
+        }
         userRepository.save(user);
         userProfileRepository.save(
                 new UserProfile(user, null, null, null, null,

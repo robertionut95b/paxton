@@ -127,7 +127,7 @@ export default function BasicUpdateProfileModal() {
           });
         }
         closeModalNewPath(
-          `/app/up/${data.updateUserProfile?.profileSlugUrl}` ?? ""
+          `/app/up/${data.updateUserProfile?.profileSlugUrl}` ?? "",
         );
         showNotification({
           title: "Profile update",
@@ -136,7 +136,7 @@ export default function BasicUpdateProfileModal() {
           icon: <CheckCircleIcon width={20} />,
         });
       },
-    }
+    },
   );
 
   const handleSubmit = async (values: (typeof form)["values"]) => {

@@ -60,7 +60,7 @@ const InvitationsListSection = ({ length, children }: InvitationListProps) => {
 };
 
 const InvitationsListSectionItem = (
-  props: React.ComponentProps<typeof UserInvitation>
+  props: React.ComponentProps<typeof UserInvitation>,
 ) => {
   return <UserInvitation {...props} />;
 };

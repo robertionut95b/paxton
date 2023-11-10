@@ -39,3 +39,6 @@ db/
 
 ### env files ###
 .env
+
+.eslintcache
+**/application-local.properties

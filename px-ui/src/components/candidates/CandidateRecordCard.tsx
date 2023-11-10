@@ -72,7 +72,7 @@ const ApplicationRecordCard = ({ application }: ApplicationRecordCardProps) => {
             }
           >
             {prettyEnumValue(
-              application?.status ?? ApplicationStatus.InProgress
+              application?.status ?? ApplicationStatus.InProgress,
             )}
           </Badge>
           {application?.dateOfApplication && (
@@ -83,7 +83,7 @@ const ApplicationRecordCard = ({ application }: ApplicationRecordCardProps) => {
                 new Date(),
                 {
                   unit: "day",
-                }
+                },
               )}
             </Text>
           )}

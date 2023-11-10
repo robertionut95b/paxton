@@ -4,7 +4,7 @@ import { User } from "@interfaces/user.types";
 export const CheckUserHasRolesOrPermissions = (
   user: User,
   roles?: RoleType[] | string[],
-  permissions?: string[]
+  permissions?: string[],
 ): boolean => {
   let hasRoles = false;
   let hasPermissions = false;
@@ -18,7 +18,7 @@ export const CheckUserHasRolesOrPermissions = (
   if (user.permissions && permissions && user.permissions.length > 0) {
     const userPermissions = user.permissions;
     const intersection = userPermissions.filter((permission) =>
-      permissions.includes(permission)
+      permissions.includes(permission),
     );
     hasPermissions = intersection.length > 0;
   }

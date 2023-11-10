@@ -55,7 +55,7 @@ const UserSearchPage = () => {
 
   const prevUserProfileQueryData =
     queryClient.getQueryData<GetUserProfileQuery>(
-      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl })
+      useGetUserProfileQuery.getKey({ profileSlugUrl: user?.profileSlugUrl }),
     );
 
   const cityId =
@@ -108,7 +108,7 @@ const UserSearchPage = () => {
     },
     {
       keepPreviousData: true,
-    }
+    },
   );
 
   const { data: cityData, isInitialLoading: cityIsLoading } =
@@ -139,7 +139,7 @@ const UserSearchPage = () => {
           navigate(`/app/inbox/messages/chat/new?chatUser=${selectedUser?.id}`);
         }
       },
-    }
+    },
   );
 
   const onChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,7 +170,7 @@ const UserSearchPage = () => {
           return locs;
         })
         .flat(1) ?? [],
-    [cityData]
+    [cityData],
   );
 
   useEffect(() => {
@@ -178,7 +178,7 @@ const UserSearchPage = () => {
       const currentSearchParams = searchParams;
       currentSearchParams.set(
         "city",
-        userProfileData?.getUserProfile?.city.id.toString()
+        userProfileData?.getUserProfile?.city.id.toString(),
       );
       setSearchParams(currentSearchParams);
     }
@@ -258,7 +258,7 @@ const UserSearchPage = () => {
                       userConnection={u}
                       onClickMessage={(c) => setSelectedUser(c)}
                     />
-                  )
+                  ),
               )}
             </Stack>
           </ShowIf>

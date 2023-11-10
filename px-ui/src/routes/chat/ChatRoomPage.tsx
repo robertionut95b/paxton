@@ -1,3 +1,4 @@
+import { gql, useSubscription } from "@apollo/client";
 import { useAuth } from "@auth/useAuth";
 import ChatRoomSkeleton from "@components/messaging/chat/ChatRoomSkeleton";
 import ChatSection from "@components/messaging/chat/ChatSection";
@@ -10,6 +11,10 @@ import {
 } from "@constants/Properties";
 import {
   FieldType,
+  GetChatLinesAdvSearchQuery,
+  GetMessagesForChatIdDocument,
+  GetMessagesForChatIdSubscription,
+  GetMessagesForChatIdSubscriptionVariables,
   Operator,
   SortDirection,
   useAddMessageToChatMutation,
@@ -26,6 +31,7 @@ import {
   EllipsisVerticalIcon,
   FlagIcon,
   InboxStackIcon,
+  ShieldExclamationIcon,
   StarIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -46,8 +52,9 @@ import {
   Title,
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import AccessDenied from "@routes/AccessDenied";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
 import { intlFormatDistance } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
@@ -56,7 +63,7 @@ import { useDebounce } from "usehooks-ts";
 
 const ChatRoomPage = () => {
   const { chatId } = useParams();
-  const { user } = useAuth();
+  const { user, accessToken } = useAuth();
   const queryClient = useQueryClient();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -121,14 +128,14 @@ const ChatRoomPage = () => {
       page: 0,
       size: API_PAGINATION_SIZE,
     }),
-    [chatId, debouncedSearch]
+    [chatId, debouncedSearch],
   );
 
   const { data: currentUserProfile } = useGetUserProfileQuery(
     graphqlRequestClient,
     {
       profileSlugUrl: user?.profileSlugUrl,
-    }
+    },
   );
 
   const {
@@ -147,11 +154,11 @@ const ChatRoomPage = () => {
         getPrivateChatById: {
           ...data.getPrivateChatById,
           users: data?.getPrivateChatById?.users?.filter(
-            (u) => String(u?.id) !== String(user?.userId)
+            (u) => String(u?.id) !== String(user?.userId),
           ),
         },
       }),
-    }
+    },
   );
 
   const {
@@ -178,28 +185,11 @@ const ChatRoomPage = () => {
             },
           };
       },
-    }
+    },
   );
 
-  const { mutate: addMessageToChat } = useAddMessageToChatMutation(
-    graphqlRequestClient,
-    {
-      onSuccess: (data) => {
-        if (data.addMessageToChat) {
-          queryClient.invalidateQueries(
-            useInfiniteGetMessagesPaginatedQuery.getKey({
-              searchQuery,
-            })
-          );
-          queryClient.invalidateQueries(
-            useInfiniteGetChatLinesAdvSearchQuery.getKey({
-              searchQuery: chatPageSearchQuery,
-            })
-          );
-        }
-      },
-    }
-  );
+  const { mutate: addMessageToChat } =
+    useAddMessageToChatMutation(graphqlRequestClient);
 
   const { mutate: markAllMessagesAsSeen } = useMarkAllMessagesAsSeenMutation(
     graphqlRequestClient,
@@ -208,10 +198,10 @@ const ChatRoomPage = () => {
         queryClient.invalidateQueries(
           useInfiniteGetChatLinesAdvSearchQuery.getKey({
             searchQuery: chatPageSearchQuery,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   const { mutate: removeChat } = useRemoveChatMutation(graphqlRequestClient, {
@@ -220,11 +210,79 @@ const ChatRoomPage = () => {
         return window.location.replace("/app/inbox/messages");
       }
     },
+    onError: (error: GraphqlApiResponse) => {
+      const message = error.response.errors?.[0].message ?? "";
+      if (message) {
+        showNotification({
+          title: "Unknown error",
+          message,
+          autoClose: 5000,
+          icon: <ShieldExclamationIcon width={20} />,
+        });
+      }
+    },
   });
+
+  // eslint-disable-next-line no-empty-pattern
+  const {} = useSubscription<
+    GetMessagesForChatIdSubscription,
+    GetMessagesForChatIdSubscriptionVariables
+  >(
+    gql`
+      ${GetMessagesForChatIdDocument}
+    `,
+    {
+      variables: {
+        auth: accessToken!,
+        chatId: Number(chatId),
+      },
+      onData: (opts) => {
+        const newMessage = opts.data.data?.getMessagesForChatId;
+        if (newMessage) {
+          // update the chat section with the new message
+          queryClient.setQueryData<typeof messagesData>(
+            useInfiniteGetMessagesPaginatedQuery.getKey({ searchQuery }),
+            // @ts-expect-error("types errors")
+            (oldData) => {
+              if (oldData) {
+                const firstPage = oldData.pages[0];
+                const firstPageUpdated = {
+                  ...firstPage,
+                  getMessagesPaginated: {
+                    ...firstPage.getMessagesPaginated,
+                    list: [
+                      newMessage,
+                      ...(firstPage.getMessagesPaginated?.list ?? []),
+                    ],
+                    totalElements:
+                      firstPage.getMessagesPaginated?.totalElements ?? 0 + 1,
+                  },
+                };
+                const otherPages = oldData.pages.slice(1);
+                return {
+                  pageParams: oldData?.pageParams,
+                  pages: [firstPageUpdated, ...otherPages],
+                };
+              } else return oldData;
+            },
+          );
+
+          // update chatline
+          queryClient.invalidateQueries<
+            InfiniteData<GetChatLinesAdvSearchQuery>
+          >(
+            useInfiniteGetChatLinesAdvSearchQuery.getKey({
+              searchQuery: chatPageSearchQuery,
+            }),
+          );
+        }
+      },
+    },
+  );
 
   const users = useMemo(
     () => chatData?.getPrivateChatById?.users ?? [],
-    [chatData?.getPrivateChatById.users]
+    [chatData?.getPrivateChatById.users],
   );
 
   const messages = useMemo(
@@ -232,7 +290,7 @@ const ChatRoomPage = () => {
       messagesData?.pages
         .flatMap((p) => p.getMessagesPaginated?.list ?? [])
         .reverse() ?? [],
-    [messagesData?.pages]
+    [messagesData?.pages],
   );
 
   useEffect(() => {
@@ -293,19 +351,21 @@ const ChatRoomPage = () => {
   const avatar =
     (users?.length ?? 0) > 1 ? (
       <Avatar.Group spacing={20}>
-        {users?.slice(0, 2).map((u) => (
-          <Avatar
-            key={u?.id}
-            src={
-              u?.userProfile.photography &&
-              `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
-            }
-            size="md"
-            title={u?.username}
-            radius="xl"
-            color="violet.3"
-          />
-        ))}
+        {users
+          ?.slice(0, 2)
+          .map((u) => (
+            <Avatar
+              key={u?.id}
+              src={
+                u?.userProfile.photography &&
+                `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
+              }
+              size="md"
+              title={u?.username}
+              radius="xl"
+              color="violet.3"
+            />
+          ))}
         {(users?.length ?? 1) > 2 && (
           <Avatar size={35} radius="xl" color="violet.3">
             +{(users?.length ?? 1) - 2}
@@ -338,11 +398,7 @@ const ChatRoomPage = () => {
         align="center"
         spacing={5}
         sx={(theme) => ({
-          borderBottom: `1px solid ${
-            theme.colorScheme === "dark"
-              ? theme.colors.gray[8]
-              : theme.colors.gray[4]
-          }`,
+          borderBottom: `1px solid ${theme.colorScheme === "dark" ? theme.colors.gray[8] : theme.colors.gray[4]}`,
         })}
       >
         <Group>
@@ -368,9 +424,9 @@ const ChatRoomPage = () => {
                     Last activity:{" "}
                     {intlFormatDistance(
                       new Date(
-                        chatData.getPrivateChatById.latestMessage.deliveredAt
+                        chatData.getPrivateChatById.latestMessage.deliveredAt,
                       ),
-                      new Date()
+                      new Date(),
                     )}
                   </Text>
                 ) : (

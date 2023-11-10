@@ -152,6 +152,9 @@ public class SecurityConfiguration {
                         // h2 console, dev only
                         .requestMatchers(toH2Console()).permitAll()
                         .requestMatchers(antMatcher("/graphiql")).permitAll()
+                        // leave this endpoint as unauthorized until we can find a way to authorize ws clients
+                        // initially, when hitting the ws init we cannot pass the Authorization header
+                        .requestMatchers(antMatcher("/subscriptions")).permitAll()
                         .requestMatchers(antMatcher("/error")).permitAll()
                         .requestMatchers(antMatcher("/")).permitAll()
                         .requestMatchers(antMatcher("/favicon.ico")).permitAll()

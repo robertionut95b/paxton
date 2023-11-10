@@ -80,7 +80,7 @@ export enum ApiAuthCodes {
 
 export function isGraphqlApiResponse(
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  object: any
+  object: any,
 ): object is GraphqlApiResponse {
   return "response" in object;
 }

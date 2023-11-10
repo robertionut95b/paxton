@@ -37,7 +37,7 @@ const RecruitmentCandidatesPage = () => {
       },
       {
         enabled: !!organizationSlug,
-      }
+      },
     );
   const {
     data: applicationsData,
@@ -74,7 +74,7 @@ const RecruitmentCandidatesPage = () => {
           });
         }
       },
-    }
+    },
   );
   const { data: jobListingData, isLoading: isJobListingLoading } =
     useGetAllJobListingsQuery(graphqlRequestClient, {
@@ -120,7 +120,7 @@ const RecruitmentCandidatesPage = () => {
     },
     {
       enabled: tabValue !== "all",
-    }
+    },
   );
 
   if (
@@ -216,7 +216,7 @@ const RecruitmentCandidatesPage = () => {
                   >
                     {ap.stepTitle}
                   </Tabs.Tab>
-                )
+                ),
             )}
           </Tabs.List>
           <Tabs.Panel value="all">
@@ -237,7 +237,7 @@ const RecruitmentCandidatesPage = () => {
                             1) -
                             1 && <Divider mt="sm" />}
                       </div>
-                    )
+                    ),
                 )}
               </ShowIfElse>
             )}
@@ -267,12 +267,12 @@ const RecruitmentCandidatesPage = () => {
                                   ?.list?.length ?? 1) -
                                   1 && <Divider mt="sm" />}
                             </div>
-                          )
+                          ),
                       )}
                     </ShowIfElse>
                   )}
                 </Tabs.Panel>
-              )
+              ),
           )}
         </Tabs>
       </Paper>

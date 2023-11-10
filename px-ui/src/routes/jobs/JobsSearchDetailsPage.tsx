@@ -45,7 +45,7 @@ const JobsSearchDetailsPage = () => {
         ],
       },
     },
-    { enabled: !!jobId }
+    { enabled: !!jobId },
   );
 
   const { data: myApplication, isInitialLoading: isMyApplicationLoading } =
@@ -62,7 +62,7 @@ const JobsSearchDetailsPage = () => {
             //pass
           }
         },
-      }
+      },
     );
 
   const { isLoading: isApplyLoading, mutate } = useApplyToJobListingMutation(
@@ -98,7 +98,7 @@ const JobsSearchDetailsPage = () => {
           icon: <CheckCircleIcon width={20} />,
         });
       },
-    }
+    },
   );
 
   const submitCandidature = useCallback(
@@ -112,7 +112,7 @@ const JobsSearchDetailsPage = () => {
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [jobData?.getAllJobListings?.list?.[0]?.id, user?.profileId, user?.userId]
+    [jobData?.getAllJobListings?.list?.[0]?.id, user?.profileId, user?.userId],
   );
 
   if (jobIsLoading || isMyApplicationLoading) return <JobDescriptionSkeleton />;

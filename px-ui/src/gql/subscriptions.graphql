@@ -1,0 +1,18 @@
+subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
+  getMessagesForChatId(chatId: $chatId, auth: $auth) {
+    id
+    content
+    sender {
+      id
+      username
+      firstName
+      lastName
+      displayName
+      userProfile {
+        photography
+      }
+    }
+    deliveredAt
+    seenAt
+  }
+}

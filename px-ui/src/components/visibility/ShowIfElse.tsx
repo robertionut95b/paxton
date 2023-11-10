@@ -15,7 +15,7 @@ const ShowIfElse = React.memo(
     else: elseChildren,
     children,
   }: ShowIFElseProps): ReactElement | null =>
-    show ? checkTypeFunction(children) : elseChildren
+    show ? checkTypeFunction(children) : elseChildren,
 );
 
 ShowIfElse.displayName = "ShowIfElse";

@@ -107,7 +107,7 @@ const AdminJobListings = () => {
         page: p - 1,
         size: ps,
       },
-    }
+    },
   );
   if (isLoading)
     return (

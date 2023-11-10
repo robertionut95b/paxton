@@ -57,7 +57,7 @@ const MessageAddForm = ({
       z.object({
         content: z.string().min(5).max(maxLength),
         senderUserId: z.number().min(1),
-      })
+      }),
     ),
   });
 
@@ -67,7 +67,7 @@ const MessageAddForm = ({
       setContent(e.currentTarget.value);
       form.setFieldValue("content", e.currentTarget.value);
     },
-    [form]
+    [form],
   );
 
   const handleSubmit = (values: (typeof form)["values"]) => {
@@ -123,7 +123,7 @@ const MessageAddForm = ({
                 // @ts-expect-error(missing types)
                 onEmojiSelect={({ unified }) => {
                   const newContent = content.concat(
-                    String.fromCodePoint(parseInt(unified, 16))
+                    String.fromCodePoint(parseInt(unified, 16)),
                   );
                   setContent(newContent);
                   form.setFieldValue("content", newContent);

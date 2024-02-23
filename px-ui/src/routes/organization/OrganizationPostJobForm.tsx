@@ -109,8 +109,6 @@ export default function OrganizationPostJobForm() {
 
   const jobListingItem = jobListing?.getAllJobListings?.list?.[0];
 
-  const [desc, setDesc] = useState<string>(jobListingItem?.description ?? "");
-
   const [startDate, setStartDate] = useState<Date>(new Date());
 
   const { data: countries, isInitialLoading: isCountryListLoading } =
@@ -312,13 +310,6 @@ export default function OrganizationPostJobForm() {
             form.setFieldValue("formattedDescription", data);
             form.setFieldValue("description", plainText);
           }}
-          onEditorReady={(editor) => {
-            const plainText = viewToPlainText(
-              // @ts-expect-error("ckeditor types")
-              editor.editing.view.document.getRoot(),
-            );
-            setDesc(plainText);
-          }}
         />
         <Textarea
           className="hidden"
@@ -329,11 +320,6 @@ export default function OrganizationPostJobForm() {
           minRows={6}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
-          value={desc}
-          onChange={(e) => {
-            setDesc(e.currentTarget.value);
-            form.setFieldValue("description", e.currentTarget.value);
-          }}
         />
         <Group position="right">
           <Text
@@ -341,7 +327,7 @@ export default function OrganizationPostJobForm() {
             color={!form.errors.description ? "dimmed" : "red"}
             mt={4}
           >
-            {desc.length}/8.000
+            {form.values.description.length}/8.000
           </Text>
         </Group>
         <ShowIfElse

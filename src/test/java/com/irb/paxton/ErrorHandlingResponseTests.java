@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(value = SignupController.class, excludeAutoConfiguration = {WebMvcConfig.class, SecurityConfiguration.class})
 @AutoConfigureMockMvc(addFilters = false)
-public class ErrorHandlingResponseTests {
+class ErrorHandlingResponseTests {
 
     @Autowired
     private MockMvc mockMvc;

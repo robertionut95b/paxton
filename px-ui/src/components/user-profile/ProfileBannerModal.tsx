@@ -89,7 +89,6 @@ export default function ProfileBannerModal() {
         onSubmit={form.onSubmit((values) => handleSubmit(values))}
       >
         <FileInput
-          placeholder="Choose a photography"
           label="Photography"
           description="An image is worth a thousand words"
           withAsterisk

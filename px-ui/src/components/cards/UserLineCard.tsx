@@ -6,7 +6,7 @@ import {
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/outline";
 import { ActionIcon, Avatar, Badge, Group, Stack, Text } from "@mantine/core";
-import format from "date-fns/format";
+import { format } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 type UserProfileType = Pick<UserProfile, "photography" | "profileTitle">;

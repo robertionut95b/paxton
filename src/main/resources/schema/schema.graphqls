@@ -752,7 +752,7 @@ type Query {
     getPrivateChatById(chatId: Long!): Chat
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getChatWithUserId(userId: Long!): Chat
-    getChatsWithUsersIds(userIds: [Long]!): [Chat]
+    getChatsWithUsersIds(userIds: [Long]!, chatType: ChatType!): [Chat]
     getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
     getNewConnectionForUser(userId: Long!, page: Int, size: Int): ConnectionPage

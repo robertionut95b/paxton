@@ -68,7 +68,13 @@ const JobMeetRecruitersSection = ({
             </Stack>
           </Group>
         </NavLink>
-        <Button disabled={isContactable}>Message</Button>
+        <Button disabled={isContactable}>
+          <NavLink
+            to={`/app/inbox/messages/chat/new?chatUser=${recruiter.user.id}`}
+          >
+            Message
+          </NavLink>
+        </Button>
       </Group>
     </Paper>
   );

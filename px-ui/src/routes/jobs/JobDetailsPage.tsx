@@ -164,7 +164,12 @@ const JobDetailsPage = () => {
           )}
         </ShowIf>
         <ShowIf if={recruiter}>
-          {recruiter && <JobMeetRecruitersSection recruiter={recruiter} />}
+          {recruiter && (
+            <JobMeetRecruitersSection
+              recruiter={recruiter}
+              isContactable={recruiter.user.id === user?.userId}
+            />
+          )}
         </ShowIf>
         <Paper shadow={"xs"} p="md">
           <JobDescriptionSection description={job.formattedDescription} />

@@ -2,6 +2,7 @@ package com.irb.paxton.core.messaging.resolver;
 
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatService;
+import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.netflix.graphql.dgs.DgsComponent;
@@ -33,7 +34,7 @@ public class ChatQueryResolver {
     }
 
     @DgsQuery
-    public List<Chat> getChatsWithUsersIds(@InputArgument List<Long> userIds) {
-        return chatService.getChatsWithUsersIds(userIds);
+    public List<Chat> getChatsWithUsersIds(@InputArgument List<Long> userIds, @InputArgument ChatType chatType) {
+        return chatService.getChatsWithUsersIds(userIds, chatType);
     }
 }

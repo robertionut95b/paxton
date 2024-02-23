@@ -680,8 +680,8 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   }
 }
 
-query GetChatsWithUsersIds($userIds: [Long]!) {
-  getChatsWithUsersIds(userIds: $userIds) {
+query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
+  getChatsWithUsersIds(userIds: $userIds, chatType: $chatType) {
     id
     unreadMessagesCount
     title

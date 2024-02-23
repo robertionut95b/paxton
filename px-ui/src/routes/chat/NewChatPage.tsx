@@ -122,6 +122,7 @@ const NewChatPage = () => {
     graphqlRequestClient,
     {
       userIds: [...searchUsers.map((u) => Number(u)), user?.userId ?? 0],
+      chatType: ChatType.PrivateChat,
     },
     {
       enabled: searchUsers.length > 0,
@@ -298,7 +299,7 @@ const NewChatPage = () => {
         />
       </Box>
       <ShowIfElse
-        if={individualChatsCount > 1}
+        if={individualChatsCount > 0}
         else={
           <div className="h-full grow">
             <ChatSection currentUser={user} messages={chatMessages} />
@@ -320,11 +321,12 @@ const NewChatPage = () => {
           <Text size="sm" my="xs" align="center" weight="bold">
             Select a chat ...
           </Text>
-          <Divider />
+          <Divider my="xs" />
           {chatLines?.map((c) => (
             // @ts-expect-error("type-check")
             <div key={c?.id}>{c.id && <ChatLine chat={c} />}</div>
           ))}
+          <Divider my="xs" />
           <Stack justify="center" align="center" spacing="xs">
             <Text size="sm" my="xs" align="center" weight="bold">
               Or create a new one

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, useInfiniteQuery, UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -869,6 +870,7 @@ export type QueryGetChatWithUserIdArgs = {
 
 
 export type QueryGetChatsWithUsersIdsArgs = {
+  chatType: ChatType;
   userIds: Array<InputMaybe<Scalars['Long']['input']>>;
 };
 
@@ -1539,6 +1541,7 @@ export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: {
 
 export type GetChatsWithUsersIdsQueryVariables = Exact<{
   userIds: Array<InputMaybe<Scalars['Long']['input']>> | InputMaybe<Scalars['Long']['input']>;
+  chatType: ChatType;
 }>;
 
 
@@ -4393,8 +4396,8 @@ useInfiniteGetChatAdvSearchQuery.getKey = (variables: GetChatAdvSearchQueryVaria
 useGetChatAdvSearchQuery.fetcher = (client: GraphQLClient, variables: GetChatAdvSearchQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatAdvSearchQuery, GetChatAdvSearchQueryVariables>(client, GetChatAdvSearchDocument, variables, headers);
 
 export const GetChatsWithUsersIdsDocument = `
-    query GetChatsWithUsersIds($userIds: [Long]!) {
-  getChatsWithUsersIds(userIds: $userIds) {
+    query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
+  getChatsWithUsersIds(userIds: $userIds, chatType: $chatType) {
     id
     unreadMessagesCount
     title
@@ -5006,7 +5009,6 @@ export const GetMessagesForChatIdDocument = `
     }
     deliveredAt
     seenAt
-    content
   }
 }
     `;

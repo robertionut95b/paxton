@@ -114,7 +114,7 @@ public class ChatService extends AbstractService<Chat, Long> {
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(authentication, returnObject)")
-    public List<Chat> getChatsWithUsersIds(List<Long> userIds) {
+    public List<Chat> getChatsWithUsersIds(List<Long> userIds, ChatType chatType) {
         Authentication authentication = SecurityUtils.getCurrentUserAuth();
         User thisUser = this.userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("Current user must be logged in"));
@@ -128,6 +128,7 @@ public class ChatService extends AbstractService<Chat, Long> {
 
         return chats.stream()
                 .filter(c -> c.getUsers().size() == userIds.size() && c.getUsers().containsAll(thoseUsers))
+                .filter(c -> c.getChatType().equals(chatType))
                 .toList();
     }
 

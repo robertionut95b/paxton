@@ -78,6 +78,12 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
                 : "transparent",
           cursor: "pointer",
           borderRadius: "10px",
+          "&:hover": {
+            backgroundColor:
+              theme.colorScheme === "light"
+                ? theme.colors.gray[2]
+                : theme.colors.gray[8],
+          },
         })}
       >
         <Grid.Col span={1} md={2}>

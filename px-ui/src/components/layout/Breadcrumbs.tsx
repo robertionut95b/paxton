@@ -125,7 +125,6 @@ const routes = [
 ];
 
 const Breadcrumbs = ({ excludePaths = [] }: { excludePaths?: string[] }) => {
-  // @ts-expect-error(types-error)
   const breadcrumbs = useBreadcrumbs(routes, {
     excludePaths: [...excPaths, ...excludePaths],
   });

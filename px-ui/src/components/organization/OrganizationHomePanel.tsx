@@ -1,4 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
 import {
   FieldType,
   Operator,
@@ -9,6 +8,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
 import { formatISO } from "date-fns";
+import { When } from "react-if";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationAboutPanel from "./OrganizationAboutPanel";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
@@ -63,12 +63,12 @@ const OrganizationHomePanel = () => {
   return (
     <Stack>
       <OrganizationAboutPanel compact />
-      <ShowIf if={jobListings.length > 0}>
+      <When condition={jobListings.length > 0}>
         <OrganizationLatestJobs
           organizationSlug={organizationSlug}
           jobs={jobListings}
         />
-      </ShowIf>
+      </When>
       <Outlet />
     </Stack>
   );

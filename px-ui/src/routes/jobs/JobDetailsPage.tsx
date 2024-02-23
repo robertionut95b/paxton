@@ -10,8 +10,6 @@ import JobsRelatedSection from "@components/jobs/job-page/JobsRelatedSection";
 import JobsListingsSkeleton from "@components/jobs/JobsListingsSkeleton";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
@@ -28,6 +26,7 @@ import { showNotification } from "@mantine/notifications";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { Else, If, Then, When } from "react-if";
 import { NavLink, useParams } from "react-router-dom";
 
 const JobDetailsPage = () => {
@@ -156,21 +155,21 @@ const JobDetailsPage = () => {
             isCandidatureLoading={isApplyLoading || isMyApplicationLoading}
           />
         </Paper>
-        <ShowIf if={myApplication?.getMyApplicationForJobListing}>
+        <When condition={!!myApplication?.getMyApplicationForJobListing}>
           {myApplication?.getMyApplicationForJobListing && (
             <ApplicationCandidatureTimeline
               application={myApplication?.getMyApplicationForJobListing}
             />
           )}
-        </ShowIf>
-        <ShowIf if={recruiter}>
+        </When>
+        <When condition={!!recruiter}>
           {recruiter && (
             <JobMeetRecruitersSection
               recruiter={recruiter}
               isContactable={recruiter.user.id === user?.userId}
             />
           )}
-        </ShowIf>
+        </When>
         <Paper shadow={"xs"} p="md">
           <JobDescriptionSection description={job.formattedDescription} />
         </Paper>
@@ -180,27 +179,24 @@ const JobDetailsPage = () => {
           isAlertAllowable
         />
         <JobOrganizationAboutCard organization={job.organization} />
-        <ShowIfElse
-          if={relatedJobsIsLoading}
-          else={
-            relatedJobsData &&
-            relatedJobsData.length > 0 && (
-              <>
-                <JobsRelatedSection jobs={relatedJobsData} />
-                <Center mt={"sm"}>
-                  <Button
-                    component={NavLink}
-                    to={`/app/jobs/search?jobId=${job.job.id}`}
-                  >
-                    See similar jobs
-                  </Button>
-                </Center>
-              </>
-            )
-          }
-        >
-          <JobsListingsSkeleton />
-        </ShowIfElse>
+        <If condition={relatedJobsIsLoading}>
+          <Then>
+            <JobsListingsSkeleton />
+          </Then>
+          <Else>
+            <When condition={relatedJobsData && relatedJobsData.length > 0}>
+              {relatedJobsData && <JobsRelatedSection jobs={relatedJobsData} />}
+              <Center mt={"sm"}>
+                <Button
+                  component={NavLink}
+                  to={`/app/jobs/search?jobId=${job.job.id}`}
+                >
+                  See similar jobs
+                </Button>
+              </Center>
+            </When>
+          </Else>
+        </If>
       </Stack>
     </Container>
   );

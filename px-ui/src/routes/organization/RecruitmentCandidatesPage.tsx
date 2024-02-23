@@ -3,8 +3,6 @@ import ApplicationRecordCard from "@components/candidates/CandidateRecordCard";
 import Breadcrumbs from "@components/layout/Breadcrumbs";
 import UnassignedProcessBanner from "@components/process/UnassignedProcessBanner";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   FieldType,
   Operator,
@@ -24,6 +22,7 @@ import { showNotification } from "@mantine/notifications";
 import AccessDenied from "@routes/AccessDenied";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useState } from "react";
+import { Else, If, Then, When } from "react-if";
 import { useParams } from "react-router-dom";
 
 const RecruitmentCandidatesPage = () => {
@@ -170,9 +169,11 @@ const RecruitmentCandidatesPage = () => {
         availableFrom={availableFrom}
         availableTo={availableTo}
       />
-      <ShowIf if={!organization.getOrganizationBySlugName.recruitmentProcess}>
+      <When
+        condition={!organization.getOrganizationBySlugName.recruitmentProcess}
+      >
         <UnassignedProcessBanner />
-      </ShowIf>
+      </When>
       <Paper shadow={"xs"} p="md" className="px-candidates">
         <Title mb="xs" order={4}>
           Candidates
@@ -220,14 +221,13 @@ const RecruitmentCandidatesPage = () => {
             )}
           </Tabs.List>
           <Tabs.Panel value="all">
-            {applicationsData && (
-              <ShowIfElse
-                if={
-                  (applicationsData.getAllApplications?.list?.length ?? 0) > 0
-                }
-                else={<Text mt="xs">No candidates yet</Text>}
-              >
-                {applicationsData.getAllApplications?.list?.map(
+            <If
+              condition={
+                (applicationsData?.getAllApplications?.list?.length ?? 0) > 0
+              }
+            >
+              <Then>
+                {applicationsData?.getAllApplications?.list?.map(
                   (a, idx) =>
                     a && (
                       <div key={a.id} className="mt-4">
@@ -239,8 +239,11 @@ const RecruitmentCandidatesPage = () => {
                       </div>
                     ),
                 )}
-              </ShowIfElse>
-            )}
+              </Then>
+              <Else>
+                <Text mt="xs">No candidates yet</Text>
+              </Else>
+            </If>
           </Tabs.Panel>
           {(
             applicationsByStepCountData?.getApplicationsForJobIdCountBySteps ??
@@ -249,14 +252,13 @@ const RecruitmentCandidatesPage = () => {
             (ap) =>
               ap && (
                 <Tabs.Panel key={ap.stepTitle} value={ap.stepTitle}>
-                  {applicationsData && (
-                    <ShowIfElse
-                      if={
-                        (applicationsData.getAllApplications?.list?.length ??
-                          0) > 0
-                      }
-                      else={<Text mt="xs">No candidates yet</Text>}
-                    >
+                  <If
+                    condition={
+                      (applicationsData?.getAllApplications?.list?.length ??
+                        0) > 0
+                    }
+                  >
+                    <Then>
                       {applicationByStepTitleData?.getAllApplications?.list?.map(
                         (a, idx) =>
                           a && (
@@ -269,8 +271,11 @@ const RecruitmentCandidatesPage = () => {
                             </div>
                           ),
                       )}
-                    </ShowIfElse>
-                  )}
+                    </Then>
+                    <Else>
+                      <Text mt="xs">No candidates yet</Text>
+                    </Else>
+                  </If>
                 </Tabs.Panel>
               ),
           )}

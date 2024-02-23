@@ -1,4 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { GetOrganizationBySlugNameQuery, Organization } from "@gql/generated";
 import {
   ArrowTopRightOnSquareIcon,
@@ -17,6 +16,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { When } from "react-if";
 import { NavLink, useLocation } from "react-router-dom";
 
 type OrganizationHeroProps = {
@@ -107,9 +107,9 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
         <Title order={3} mb={0}>
           {name}
         </Title>
-        <ShowIf if={slogan}>
+        <When condition={slogan}>
           <Text>{slogan}</Text>
-        </ShowIf>
+        </When>
         <Text size="sm" color="dimmed" mb="sm">
           {activitySector.name} -{" "}
           {`${headQuarters.country.name}, ${headQuarters.name}`} -{" "}
@@ -128,7 +128,7 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
         </Group>
         <Group>
           <Button leftIcon={<PlusIcon width={20} />}>Follow</Button>
-          <ShowIf if={webSite}>
+          <When condition={!!webSite}>
             <Button
               variant="outline"
               leftIcon={<ArrowTopRightOnSquareIcon width={20} />}
@@ -138,7 +138,7 @@ const OrganizationHero = ({ organization }: OrganizationHeroProps) => {
             >
               Visit website
             </Button>
-          </ShowIf>
+          </When>
           <Button
             variant="outline"
             rightIcon={<EllipsisHorizontalIcon width={20} />}

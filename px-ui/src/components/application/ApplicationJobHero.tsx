@@ -1,6 +1,5 @@
 import ApplicationJobExpire from "@components/application/ApplicationJobExpire";
 import ApplicationJobExtend from "@components/application/ApplicationJobExtend";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { ContractType } from "@gql/generated";
 import {
   BriefcaseIcon,
@@ -14,6 +13,7 @@ import {
 import { Button, Group, Paper, Text, Title } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { intlFormatDistance } from "date-fns";
+import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type ApplicationJobHeroProps = {
@@ -56,22 +56,22 @@ const ApplicationJobHero = ({
           >
             Edit
           </Button>
-          <ShowIfElse
-            if={jobIsActive}
-            else={
+          <If condition={jobIsActive}>
+            <Then>
+              <ApplicationJobExpire>
+                <Button variant="filled" leftIcon={<EyeSlashIcon width={16} />}>
+                  Stop candidature
+                </Button>
+              </ApplicationJobExpire>
+            </Then>
+            <Else>
               <ApplicationJobExtend>
                 <Button variant="light" leftIcon={<EyeIcon width={16} />}>
                   Extend
                 </Button>
               </ApplicationJobExtend>
-            }
-          >
-            <ApplicationJobExpire>
-              <Button variant="filled" leftIcon={<EyeSlashIcon width={16} />}>
-                Stop candidature
-              </Button>
-            </ApplicationJobExpire>
-          </ShowIfElse>
+            </Else>
+          </If>
         </Group>
       </Group>
       <Group spacing={"md"}>

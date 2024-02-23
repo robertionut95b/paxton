@@ -3,7 +3,6 @@ import JobListing from "@components/jobs/JobListing";
 import JobDescriptionSkeleton from "@components/jobs/job-page/JobDescriptionSkeleton";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   ContractType,
@@ -47,6 +46,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { formatISO } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
+import { Else, If, Then } from "react-if";
 import { useLocation, useSearchParams } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
 import { useDebounce } from "usehooks-ts";
@@ -398,9 +398,58 @@ const JobSearchPage = () => {
       </Grid.Col>
       <Grid.Col sm={5} span={12}>
         <Paper shadow="xs" p="md" className="px-jobs grid gap-8">
-          <ShowIfElse
-            if={jobs.length > 0}
-            else={
+          <If condition={jobs.length > 0}>
+            <Then>
+              <Title className="capitalize" mb={"xs"} order={5}>
+                <If condition={!!userProfile?.getUserProfile?.city}>
+                  <Then>
+                    {jobQuery ? `"${jobQuery}"` : "Jobs"} in:{" "}
+                    {`${userProfile?.getUserProfile?.city?.country.name}`}
+                  </Then>
+                  <Else>Recommended jobs</Else>
+                </If>
+              </Title>
+              <ScrollArea
+                sx={(theme) => ({
+                  [theme.fn.smallerThan("sm")]: {
+                    height: "40vh",
+                  },
+                  height: "75vh",
+                })}
+              >
+                {jobs.map(
+                  (jl, idx) =>
+                    jl && (
+                      <div
+                        className={`cursor-pointer`}
+                        key={jl.id}
+                        onClick={() => {
+                          const currentSearchParams = searchParams;
+                          currentSearchParams.set(
+                            "currentJobId",
+                            jl.id.toString(),
+                          );
+                          setSearchParams(currentSearchParams);
+                        }}
+                      >
+                        <JobListing navigable={false} data={jl} />
+                        {idx !== jobs.length - 1 && <Divider />}
+                      </div>
+                    ),
+                )}
+              </ScrollArea>
+              <Paper className="px-jobs-pagination">
+                <PaginationToolbar
+                  page={p}
+                  setPage={setP}
+                  pageSize={ps}
+                  setPageSize={setPs}
+                  totalElements={totalElements}
+                  totalPages={totalPages}
+                />
+              </Paper>
+            </Then>
+            <Else>
               <Stack spacing="xs" align="center">
                 <Title order={5}>No suitable jobs found</Title>
                 <Text size="sm" align="left" component={Balancer}>
@@ -420,87 +469,39 @@ const JobSearchPage = () => {
                   </Button>
                 </Group>
               </Stack>
-            }
-          >
-            <Title className="capitalize" mb={"xs"} order={5}>
-              <ShowIfElse
-                if={userProfile?.getUserProfile?.city}
-                else={"Recommended jobs"}
-              >
-                {jobQuery ? `"${jobQuery}"` : "Jobs"} in:{" "}
-                {`${userProfile?.getUserProfile?.city?.country.name}`}
-              </ShowIfElse>
-            </Title>
-            <ScrollArea
-              sx={(theme) => ({
-                [theme.fn.smallerThan("sm")]: {
-                  height: "40vh",
-                },
-                height: "75vh",
-              })}
-            >
-              {jobs.map(
-                (jl, idx) =>
-                  jl && (
-                    <div
-                      className={`cursor-pointer`}
-                      key={jl.id}
-                      onClick={() => {
-                        const currentSearchParams = searchParams;
-                        currentSearchParams.set(
-                          "currentJobId",
-                          jl.id.toString(),
-                        );
-                        setSearchParams(currentSearchParams);
-                      }}
-                    >
-                      <JobListing
-                        navigable={false}
-                        data={jl}
-                        withDescription={false}
-                      />
-                      {idx !== jobs.length - 1 && <Divider />}
-                    </div>
-                  ),
-              )}
-            </ScrollArea>
-            <Paper className="px-jobs-pagination">
-              <PaginationToolbar
-                page={p}
-                setPage={setP}
-                pageSize={ps}
-                setPageSize={setPs}
-                totalElements={totalElements}
-                totalPages={totalPages}
-              />
-            </Paper>
-          </ShowIfElse>
+            </Else>
+          </If>
         </Paper>
       </Grid.Col>
       <Grid.Col sm={7} span={12}>
         <Paper p="md" shadow="xs">
-          <ShowIfElse
-            if={(data?.getAllJobListings?.totalElements ?? 0) === 0}
-            else={
-              <ShowIfElse if={!jobsLoading} else={<JobDescriptionSkeleton />}>
-                <ScrollArea h="75vh" pr="xs">
-                  <JobsSearchDetailsPage />
-                </ScrollArea>
-              </ShowIfElse>
-            }
-          >
-            <Stack align="center" spacing="xs">
-              <Image width={82} src="/images/bow-tie.svg" alt="bowtie" />
-              <Title order={3}>No results found</Title>
-              <Text align="center" size="sm" component={Balancer}>
-                Your search might be too restrictive, or we do not have that
-                specific job. Try to reset the filters.
-              </Text>
-              <Button variant="subtle" onClick={clearAllFilters}>
-                Reset filters
-              </Button>
-            </Stack>
-          </ShowIfElse>
+          <If condition={(data?.getAllJobListings?.totalElements ?? 0) === 0}>
+            <Then>
+              <Stack align="center" spacing="xs">
+                <Image width={82} src="/images/bow-tie.svg" alt="bowtie" />
+                <Title order={3}>No results found</Title>
+                <Text align="center" size="sm" component={Balancer}>
+                  Your search might be too restrictive, or we do not have that
+                  specific job. Try to reset the filters.
+                </Text>
+                <Button variant="subtle" onClick={clearAllFilters}>
+                  Reset filters
+                </Button>
+              </Stack>
+            </Then>
+            <Else>
+              <If condition={!jobsLoading}>
+                <Then>
+                  <ScrollArea h="75vh" pr="xs">
+                    <JobsSearchDetailsPage />
+                  </ScrollArea>
+                </Then>
+                <Else>
+                  <JobDescriptionSkeleton />
+                </Else>
+              </If>
+            </Else>
+          </If>
         </Paper>
       </Grid.Col>
       <Drawer

@@ -1,5 +1,4 @@
 import AlterStepModal from "@components/organization/recruitment/AlterStepModal";
-import ShowIf from "@components/visibility/ShowIf";
 import {
   FieldType,
   GetAllProcessesQuery,
@@ -55,6 +54,7 @@ import isEmpty from "lodash/fp/isEmpty";
 import isEqual from "lodash/fp/isEqual";
 import map from "lodash/fp/map";
 import React, { useEffect, useMemo, useState } from "react";
+import { When } from "react-if";
 import { NavLink, useParams } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
 import { z } from "zod";
@@ -486,7 +486,7 @@ const OrganizationProcessPage = () => {
                 className="hidden"
                 {...form.getInputProps("processSteps")}
               />
-              <ShowIf if={showWarn}>
+              <When condition={showWarn}>
                 <Alert
                   icon={<ExclamationTriangleIcon width={24} />}
                   title="Important"
@@ -500,7 +500,7 @@ const OrganizationProcessPage = () => {
                     user applications to the new starting step.
                   </Text>
                 </Alert>
-              </ShowIf>
+              </When>
               <Button type="submit" mt="sm" fullWidth>
                 Submit changes
               </Button>

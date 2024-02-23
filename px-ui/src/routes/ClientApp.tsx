@@ -2,7 +2,6 @@ import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
@@ -15,6 +14,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Center, Container, Paper, Skeleton } from "@mantine/core";
 import { Suspense } from "react";
+import { Else, If, Then } from "react-if";
 import { Outlet } from "react-router-dom";
 
 const renderLinksByPermission = (permissions: string[]) => {
@@ -67,9 +67,15 @@ export default function ClientApp() {
   const permissions = user?.roles ?? [];
   return (
     <div>
-      <ShowIfElse
-        if={isLoading}
-        else={
+      <If condition={isLoading}>
+        <Then>
+          <Paper p="lg" mb="lg" w="100%">
+            <Center>
+              <Skeleton width={"58%"} height={12} radius="xl" />
+            </Center>
+          </Paper>
+        </Then>
+        <Else>
           <NavBar
             links={renderLinksByPermission(permissions)}
             user={user}
@@ -79,14 +85,8 @@ export default function ClientApp() {
               `${APP_IMAGES_API_PATH}/100x100/${profileData?.getUserProfile?.photography}`
             }
           />
-        }
-      >
-        <Paper p="lg" mb="lg" w="100%">
-          <Center>
-            <Skeleton width={"58%"} height={12} radius="xl" />
-          </Center>
-        </Paper>
-      </ShowIfElse>
+        </Else>
+      </If>
       <Container pb="lg" size="lg">
         <Suspense fallback={<ApplicationSpinner />}>
           <Outlet />

@@ -1,10 +1,9 @@
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { GetChatsWithUsersIdsQuery } from "@gql/generated";
 import { Avatar, Badge, Flex, Grid, Stack, Text } from "@mantine/core";
 import { truncate } from "@utils/truncateText";
 import { format } from "date-fns";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type ChatLineProps = {
@@ -99,18 +98,18 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
               >
                 {c?.title ?? chatName}
               </Text>
-              <ShowIfElse
-                if={c?.latestMessage}
-                else={
+              <If condition={!!c?.latestMessage}>
+                <Then>
+                  <Text size="xs" className="line-clamp-2">
+                    {`${c?.latestMessage?.sender.firstName}: ${c?.latestMessage?.content}`}
+                  </Text>
+                </Then>
+                <Else>
                   <Text size="xs" className="line-clamp-2">
                     No messages yet
                   </Text>
-                }
-              >
-                <Text size="xs" className="line-clamp-2">
-                  {`${c?.latestMessage?.sender.firstName}: ${c?.latestMessage?.content}`}
-                </Text>
-              </ShowIfElse>
+                </Else>
+              </If>
             </Stack>
             {c?.latestMessage?.deliveredAt && (
               <Stack spacing={4} w={60} className="flex-none" align="center">
@@ -123,11 +122,11 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
                       : "dd MMM",
                   )}
                 </Text>
-                <ShowIf if={unreadMessages > 0}>
+                <When condition={unreadMessages > 0}>
                   <Badge w={"fit-content"} variant="filled" size="sm">
                     {unreadMessages}
                   </Badge>
-                </ShowIf>
+                </When>
               </Stack>
             )}
           </Flex>

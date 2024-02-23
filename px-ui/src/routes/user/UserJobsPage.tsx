@@ -1,6 +1,5 @@
 import { useAuth } from "@auth/useAuth";
 import UserJobApplicationItem from "@components/jobs/UserJobApplicationItem";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { useGetMyApplicationsQuery } from "@gql/generated";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
@@ -16,6 +15,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useState } from "react";
+import { Else, If, Then } from "react-if";
 
 type SegOptions = "applied" | "saved" | "archived";
 
@@ -70,15 +70,13 @@ const UserJobsPage = () => {
             {isInitialLoading ? (
               <Loader size="sm" variant="dots" />
             ) : (
-              <ShowIfElse
-                if={
-                  applicationsData &&
-                  (applicationsData.getMyApplications?.length ?? 0) > 0
+              <If
+                condition={
+                  (applicationsData?.getMyApplications?.length ?? 0) > 0
                 }
-                else={<Text>No applications found</Text>}
               >
-                {applicationsData?.getMyApplications &&
-                  applicationsData.getMyApplications.map(
+                <Then>
+                  {applicationsData?.getMyApplications?.map(
                     (a, idx) =>
                       a && (
                         <div key={a.id}>
@@ -89,7 +87,11 @@ const UserJobsPage = () => {
                         </div>
                       ),
                   )}
-              </ShowIfElse>
+                </Then>
+                <Else>
+                  <Text>No applications found</Text>
+                </Else>
+              </If>
             )}
           </Stack>
         </Paper>

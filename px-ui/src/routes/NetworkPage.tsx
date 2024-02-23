@@ -3,7 +3,6 @@ import InvitationListSkeleton from "@components/network/InvitationListSkeleton";
 import InvitationsListSection from "@components/network/InvitationsListSection";
 import SuggestionsListSkeleton from "@components/network/SuggestionsListSkeleton";
 import UsersSuggestionsSection from "@components/network/UsersSuggestionsSection";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   ConnectionStatus,
@@ -35,6 +34,7 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 
 export default function NetworkPage() {
@@ -184,9 +184,15 @@ export default function NetworkPage() {
           <Title order={5} mb="md">
             Manage my network
           </Title>
-          <ShowIfElse
-            if={isLoadingConnections}
-            else={
+          <If condition={isLoadingConnections}>
+            <Then>
+              <Stack spacing={"sm"}>
+                {Array.from(Array(5).keys()).map((i) => (
+                  <Skeleton key={i} height={20} />
+                ))}
+              </Stack>
+            </Then>
+            <Else>
               <List spacing={"md"} size="sm" center>
                 <List.Item icon={<UsersIcon width={20} />}>
                   <Group position="apart" w="100%">
@@ -201,22 +207,28 @@ export default function NetworkPage() {
                   Following and followed
                 </List.Item>
               </List>
-            }
-          >
-            <Stack spacing={"sm"}>
-              {Array.from(Array(5).keys()).map((i) => (
-                <Skeleton key={i} height={20} />
-              ))}
-            </Stack>
-          </ShowIfElse>
+            </Else>
+          </If>
         </Paper>
       </Grid.Col>
       <Grid.Col span={12} sm={9}>
         <Stack>
           <Paper p="md" shadow="xs">
-            <ShowIfElse
-              if={isLoadingInvRequests}
-              else={
+            <If condition={isLoadingInvRequests}>
+              <Then>
+                <Grid align="center">
+                  <Grid.Col mb="sm">
+                    <Group position="apart">
+                      <Skeleton w={300} h={20} />
+                      <Skeleton w={100} h={20} />
+                    </Group>
+                  </Grid.Col>
+                </Grid>
+                <Grid.Col>
+                  <InvitationListSkeleton rowsNo={3} />
+                </Grid.Col>
+              </Then>
+              <Else>
                 <InvitationsListSection length={connectionRequests.length}>
                   {connectionRequests.map(
                     (c) =>
@@ -248,27 +260,25 @@ export default function NetworkPage() {
                       ),
                   )}
                 </InvitationsListSection>
-              }
-            >
-              <div>
+              </Else>
+            </If>
+          </Paper>
+          <Paper p="md" shadow="xs">
+            <If condition={isAllUserSuggestionsDataLoading}>
+              <Then>
                 <Grid align="center">
-                  <Grid.Col mb="sm">
+                  <Grid.Col>
                     <Group position="apart">
                       <Skeleton w={300} h={20} />
                       <Skeleton w={100} h={20} />
                     </Group>
                   </Grid.Col>
+                  <Grid.Col>
+                    <SuggestionsListSkeleton cardsNo={4} />
+                  </Grid.Col>
                 </Grid>
-                <Grid.Col>
-                  <InvitationListSkeleton rowsNo={3} />
-                </Grid.Col>
-              </div>
-            </ShowIfElse>
-          </Paper>
-          <Paper p="md" shadow="xs">
-            <ShowIfElse
-              if={isAllUserSuggestionsDataLoading}
-              else={
+              </Then>
+              <Else>
                 <UsersSuggestionsSection
                   title="Suggestions based on your workplace"
                   link={`by-workplace`}
@@ -293,20 +303,8 @@ export default function NetworkPage() {
                       ),
                   )}
                 </UsersSuggestionsSection>
-              }
-            >
-              <Grid align="center">
-                <Grid.Col>
-                  <Group position="apart">
-                    <Skeleton w={300} h={20} />
-                    <Skeleton w={100} h={20} />
-                  </Group>
-                </Grid.Col>
-                <Grid.Col>
-                  <SuggestionsListSkeleton cardsNo={4} />
-                </Grid.Col>
-              </Grid>
-            </ShowIfElse>
+              </Else>
+            </If>
           </Paper>
         </Stack>
       </Grid.Col>

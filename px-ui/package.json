@@ -11,7 +11,8 @@
     "codegen": "graphql-codegen --config codegen.yml",
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx,json}\"",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" --config ./.prettierrc"
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\" --config ./.prettierrc",
+    "knip": "knip"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
@@ -58,12 +59,12 @@
     "graphql-ws": "^5.15.0",
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
-    "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-filepond": "^7.1.2",
+    "react-if": "^4.1.5",
     "react-router-dom": "^6.22.1",
     "react-simple-maps": "^3.0.0",
     "react-wrap-balancer": "^1.1.0",

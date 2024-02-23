@@ -1,4 +1,3 @@
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { User, UserProfile } from "@gql/generated";
 import {
   ChatBubbleLeftEllipsisIcon,
@@ -7,6 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ActionIcon, Avatar, Badge, Group, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
+import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type UserProfileType = Pick<UserProfile, "photography" | "profileTitle">;
@@ -26,20 +26,20 @@ const UserLineCard = ({ user, joinedAt }: UserLineCardProps) => {
     <Stack>
       <Group position="apart" noWrap>
         <Group noWrap>
-          <ShowIfElse
-            if={user?.userProfile?.photography}
-            else={
+          <If condition={user.userProfile.photography}>
+            <Then>
+              <Avatar size="lg" radius="xl" src={user.userProfile.photography}>
+                {user.displayName}
+              </Avatar>
+            </Then>
+            <Else>
               <Avatar
                 size="lg"
                 radius="xl"
                 variant="filled"
               >{`${user.firstName?.[0].toUpperCase()}${user.lastName?.[0].toUpperCase()}`}</Avatar>
-            }
-          >
-            <Avatar size="lg" radius="xl" src={user.userProfile.photography}>
-              {user.displayName}
-            </Avatar>
-          </ShowIfElse>
+            </Else>
+          </If>
           <Stack spacing={0}>
             <NavLink to={`${user.id}`}>
               <Text size="sm" weight="bold" color="gray.8">

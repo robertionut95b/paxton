@@ -1,6 +1,6 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { Group, Pagination, Select, Text } from "@mantine/core";
 import { useState } from "react";
+import { When } from "react-if";
 
 type PaginationToolbarProps = {
   page: number;
@@ -57,11 +57,11 @@ export default function PaginationToolbar({
             setPage(1);
           }}
         />
-        <ShowIf if={totalElements > 0}>
+        <When condition={totalElements > 0}>
           <Text size={"xs"}>
-            {totalElements} result<ShowIf if={totalElements > 1}>s</ShowIf>
+            {totalElements} result<When condition={totalElements > 1}>s</When>
           </Text>
-        </ShowIf>
+        </When>
       </Group>
       <Pagination
         total={totalPages}

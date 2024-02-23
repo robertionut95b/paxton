@@ -1,6 +1,4 @@
 import { useAuth } from "@auth/useAuth";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   GetUserProfileQuery,
   useAddCertificationMutation,
@@ -28,7 +26,6 @@ import {
   Button,
   Checkbox,
   Group,
-  Loader,
   Modal,
   Select,
   Stack,
@@ -44,6 +41,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import FormAddStudySchema from "@validator/FormAddStudySchema";
 import { format } from "date-fns";
 import { useState } from "react";
+import { When } from "react-if";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function ProfileStudyModal() {
@@ -66,10 +64,6 @@ export default function ProfileStudyModal() {
 
   const [activeStudy, setActiveStudy] = useState(
     !initialStudySelected?.endDate,
-  );
-
-  const [desc, setDesc] = useState<string>(
-    initialStudySelected?.description ?? "",
   );
 
   const [startDate, setStartDate] = useState<Date>(
@@ -344,55 +338,47 @@ export default function ProfileStudyModal() {
         className="px-mantine-form"
         onSubmit={form.onSubmit((values) => handleSubmit(values))}
       >
-        <ShowIfElse
-          if={!isInstitutionsLoading || !isAddInstitutionLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Institution"
-            description="The place where you had this study"
-            searchable
-            creatable
-            getCreateLabel={(query) => `+ Create ${query}`}
-            // @ts-expect-error("types-check")
-            onCreate={(query) => createInstitutionCb(query)}
-            mt="md"
-            withAsterisk
-            icon={<BuildingLibraryIcon width={18} />}
-            // @ts-expect-error("types-check")
-            data={institutions}
-            {...form.getInputProps("institution")}
-            value={selectedInstitution}
-            onChange={(val) => {
-              setSelectedInstitution(val);
-              form.setFieldValue("institution", val?.toString() ?? "");
-            }}
-          />
-        </ShowIfElse>
-        <ShowIfElse
-          if={!isDomainsLoading || !isAddDomainLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Domain"
-            description="The area of expertise"
-            searchable
-            creatable
-            getCreateLabel={(query) => `+ Create ${query}`}
-            // @ts-expect-error("types-check")
-            onCreate={(query) => createDomainCb(query)}
-            mt="md"
-            icon={<CogIcon width={18} />}
-            // @ts-expect-error("types-check")
-            data={domains}
-            {...form.getInputProps("domainStudy")}
-            value={selectedDomain}
-            onChange={(val) => {
-              setSelectedDomain(val);
-              form.setFieldValue("domainStudy", val?.toString() ?? "");
-            }}
-          />
-        </ShowIfElse>
+        <Select
+          label="Institution"
+          description="The place where you had this study"
+          searchable
+          creatable
+          disabled={isInstitutionsLoading || isAddInstitutionLoading}
+          getCreateLabel={(query) => `+ Create ${query}`}
+          // @ts-expect-error("types-check")
+          onCreate={(query) => createInstitutionCb(query)}
+          mt="md"
+          withAsterisk
+          icon={<BuildingLibraryIcon width={18} />}
+          // @ts-expect-error("types-check")
+          data={institutions}
+          {...form.getInputProps("institution")}
+          value={selectedInstitution}
+          onChange={(val) => {
+            setSelectedInstitution(val);
+            form.setFieldValue("institution", val?.toString() ?? "");
+          }}
+        />
+        <Select
+          label="Domain"
+          description="The area of expertise"
+          searchable
+          creatable
+          disabled={isDomainsLoading || isAddDomainLoading}
+          getCreateLabel={(query) => `+ Create ${query}`}
+          // @ts-expect-error("types-check")
+          onCreate={(query) => createDomainCb(query)}
+          mt="md"
+          icon={<CogIcon width={18} />}
+          // @ts-expect-error("types-check")
+          data={domains}
+          {...form.getInputProps("domainStudy")}
+          value={selectedDomain}
+          onChange={(val) => {
+            setSelectedDomain(val);
+            form.setFieldValue("domainStudy", val?.toString() ?? "");
+          }}
+        />
         <TextInput
           label="Degree"
           mt="md"
@@ -400,30 +386,26 @@ export default function ProfileStudyModal() {
           icon={<DocumentDuplicateIcon width={18} />}
           {...form.getInputProps("degree")}
         />
-        <ShowIfElse
-          if={!isCertificationsLoading || !isAddCertificationLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Certification"
-            description="The license obtained in the institution's program"
-            searchable
-            creatable
-            getCreateLabel={(query) => `+ Create ${query}`}
-            // @ts-expect-error("types-check")
-            onCreate={(query) => createCertificationCb(query)}
-            mt="md"
-            icon={<DocumentCheckIcon width={18} />}
-            // @ts-expect-error("types-check")
-            data={certifications}
-            {...form.getInputProps("certification")}
-            value={selectedCertification}
-            onChange={(val) => {
-              setSelectedCertification(val);
-              form.setFieldValue("certification", val?.toString() ?? "");
-            }}
-          />
-        </ShowIfElse>
+        <Select
+          label="Certification"
+          description="The license obtained in the institution's program"
+          searchable
+          creatable
+          disabled={isCertificationsLoading || isAddCertificationLoading}
+          getCreateLabel={(query) => `+ Create ${query}`}
+          // @ts-expect-error("types-check")
+          onCreate={(query) => createCertificationCb(query)}
+          mt="md"
+          icon={<DocumentCheckIcon width={18} />}
+          // @ts-expect-error("types-check")
+          data={certifications}
+          {...form.getInputProps("certification")}
+          value={selectedCertification}
+          onChange={(val) => {
+            setSelectedCertification(val);
+            form.setFieldValue("certification", val?.toString() ?? "");
+          }}
+        />
         <Textarea
           label="Description"
           description="Describe as accurately as possible your studies"
@@ -431,11 +413,6 @@ export default function ProfileStudyModal() {
           minRows={6}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
-          value={desc}
-          onChange={(e) => {
-            setDesc(e.currentTarget.value);
-            form.setFieldValue("description", e.currentTarget.value);
-          }}
         />
         <Group position="right">
           <Text
@@ -443,7 +420,7 @@ export default function ProfileStudyModal() {
             color={!form.errors.description ? "dimmed" : "red"}
             mt={4}
           >
-            {desc.length}/1.000
+            {form.values.description.length}/1.000
           </Text>
         </Group>
         <DatePicker
@@ -471,7 +448,7 @@ export default function ProfileStudyModal() {
             form.setFieldValue("endDate", null);
           }}
         />
-        <ShowIf if={!activeStudy}>
+        <When condition={!activeStudy}>
           <DatePicker
             mt="md"
             label="Until"
@@ -482,9 +459,9 @@ export default function ProfileStudyModal() {
             maxDate={new Date()}
             {...form.getInputProps("endDate")}
           />
-        </ShowIf>
+        </When>
         <Group grow={!!initialStudySelected}>
-          <ShowIf if={initialStudySelected}>
+          <When condition={!!initialStudySelected}>
             <Button
               type="button"
               mt="xl"
@@ -516,7 +493,7 @@ export default function ProfileStudyModal() {
             >
               Remove study
             </Button>
-          </ShowIf>
+          </When>
           <Button
             type="submit"
             mt="xl"

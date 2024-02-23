@@ -1,8 +1,8 @@
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { User, UserProfile } from "@gql/generated";
 import { Grid, Group, Image, Stack, Text, Title } from "@mantine/core";
 import React, { ReactNode } from "react";
+import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 import UserSuggestionCard from "./UserSuggestionCard";
 
@@ -31,9 +31,23 @@ const UsersSuggestionsSection = ({
 }: UsersSuggestionsSectionProps) => {
   const [parent] = useAutoAnimate();
   return (
-    <ShowIfElse
-      if={length > 0}
-      else={
+    <If condition={length > 0}>
+      <Then>
+        <Stack>
+          <Group position="apart">
+            <Title order={5} weight="normal">
+              {title}
+            </Title>
+            <Title order={6}>
+              <NavLink to={link}>See everything</NavLink>
+            </Title>
+          </Group>
+          <Grid ref={parent} gutter="md">
+            {children}
+          </Grid>
+        </Stack>
+      </Then>
+      <Else>
         <Stack>
           <Title order={5} weight="normal" mb="sm">
             {title}
@@ -52,22 +66,8 @@ const UsersSuggestionsSection = ({
             </Text>
           </Stack>
         </Stack>
-      }
-    >
-      <Stack>
-        <Group position="apart">
-          <Title order={5} weight="normal">
-            {title}
-          </Title>
-          <Title order={6}>
-            <NavLink to={link}>See everything</NavLink>
-          </Title>
-        </Group>
-        <Grid ref={parent} gutter="md">
-          {children}
-        </Grid>
-      </Stack>
-    </ShowIfElse>
+      </Else>
+    </If>
   );
 };
 

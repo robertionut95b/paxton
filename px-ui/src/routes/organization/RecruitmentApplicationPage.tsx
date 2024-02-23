@@ -9,8 +9,6 @@ import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import AttachmentItem from "@components/upload/AttachmentItem";
 import AttachmentUpload from "@components/upload/AttachmentUpload";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   APP_API_BASE_URL,
   APP_API_PATH,
@@ -48,6 +46,7 @@ import {
   Divider,
   Grid,
   Group,
+  Image,
   Loader,
   Paper,
   Space,
@@ -60,6 +59,7 @@ import AccessDenied from "@routes/AccessDenied";
 import NotFoundPage from "@routes/NotFoundPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { Else, If, Then, When } from "react-if";
 import { useParams } from "react-router-dom";
 
 const PAGE_SIZE = 5;
@@ -308,7 +308,7 @@ const RecruitmentApplicationPage = () => {
   const jobListing = jobListingData.getAllJobListings.list[0];
   const currentStepProcesses = applicationData.getApplicationById.processSteps;
   const currentStepProcess =
-    currentStepProcesses?.[currentStepProcesses.length - 1 ?? 0];
+    currentStepProcesses?.[currentStepProcesses.length - 1];
   const nextStepProcess = processData?.getAllProcesses?.list?.[0]?.processSteps;
   const nextStep = nextStepProcess?.find(
     (sp) =>
@@ -430,40 +430,42 @@ const RecruitmentApplicationPage = () => {
               Attachments
             </Title>
             <Text size="sm">Documents added to this application</Text>
-            <ShowIfElse
-              if={
+            <If
+              condition={
                 (applicationData.getApplicationById.applicationDocuments
                   ?.length ?? 0) > 0
               }
-              else={
+            >
+              <Then>
+                <Group
+                  className="rounded-lg bg-gray-50"
+                  mt="sm"
+                  spacing="xl"
+                  p="sm"
+                  ref={parent}
+                >
+                  {applicationData.getApplicationById.applicationDocuments?.map(
+                    (doc) =>
+                      doc && (
+                        <AttachmentItem
+                          key={doc?.id}
+                          fileName={doc.document.name}
+                          src={"/images/pdf-icon.svg"}
+                          apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationById?.id}/documents/${doc.document.name}`}
+                        />
+                      ),
+                  )}
+                </Group>
+              </Then>
+              <Else>
                 <Text mt="sm" size="xs">
                   No documents added yet
                 </Text>
-              }
-            >
-              <Group
-                className="rounded-lg bg-gray-50"
-                mt="sm"
-                spacing="xl"
-                p="sm"
-                ref={parent}
-              >
-                {applicationData.getApplicationById.applicationDocuments?.map(
-                  (doc) =>
-                    doc && (
-                      <AttachmentItem
-                        key={doc?.id}
-                        fileName={doc.document.name}
-                        src={"/images/pdf-icon.svg"}
-                        apiUrl={`${APP_APPLICATION_DOCS_PATH}/${applicationData.getApplicationById?.id}/documents/${doc.document.name}`}
-                      />
-                    ),
-                )}
-              </Group>
-            </ShowIfElse>
+              </Else>
+            </If>
           </Paper>
         </Grid.Col>
-        <ShowIf if={!isAuthorized([RoleType.ROLE_RECRUITER])}>
+        <When condition={!isAuthorized([RoleType.ROLE_RECRUITER])}>
           <Grid.Col span={12} md={8}>
             <Paper shadow={"xs"} p="md">
               <Title order={4} mb={5}>
@@ -514,41 +516,50 @@ const RecruitmentApplicationPage = () => {
               />
             </Paper>
           </Grid.Col>
-        </ShowIf>
+        </When>
         <Grid.Col span={12} md={8}>
           <Paper shadow={"xs"} p="md">
             <Title order={4} mb={"sm"}>
               Messages
             </Title>
             <Divider />
-            <ShowIfElse
-              if={!messagesIsLoading}
-              else={<Loader size="xs" variant="dots" />}
-            >
-              <ShowIfElse
-                if={(messages?.length ?? 0) > 0}
-                else={<Text size="sm">There are no messages yet</Text>}
-              >
-                <ChatSection
-                  currentUser={user}
-                  messages={messages}
-                  childrenPre={
-                    <ShowIf if={hasNextPage}>
-                      <Button
-                        compact
-                        mt="xs"
-                        onClick={() => fetchNextPage()}
-                        loading={isFetching}
-                        variant="light"
-                        fullWidth
-                      >
-                        Load more
-                      </Button>
-                    </ShowIf>
-                  }
-                />
-              </ShowIfElse>
-            </ShowIfElse>
+            <If condition={!messagesIsLoading}>
+              <Then>
+                <If condition={(messages?.length ?? 0) > 0}>
+                  <Then>
+                    <ChatSection
+                      currentUser={user}
+                      messages={messages}
+                      childrenPre={
+                        <When condition={hasNextPage}>
+                          <Button
+                            compact
+                            mt="xs"
+                            onClick={() => fetchNextPage()}
+                            loading={isFetching}
+                            variant="light"
+                            fullWidth
+                          >
+                            Load more
+                          </Button>
+                        </When>
+                      }
+                    />
+                  </Then>
+                  <Else>
+                    <Stack mt="md" align="center" spacing={0}>
+                      <Image src="/images/chat-icon.svg" width={76} />
+                      <Text size="sm" align="center">
+                        No messages in this conversation
+                      </Text>
+                    </Stack>
+                  </Else>
+                </If>
+              </Then>
+              <Else>
+                <Loader size="xs" variant="dots" />
+              </Else>
+            </If>
             <Space h="lg" />
             <MessageAddForm
               currentUser={user}

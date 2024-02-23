@@ -1,7 +1,7 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { GetOrganizationBySlugNameQuery, Organization } from "@gql/generated";
 import { ClipboardDocumentIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Avatar, Button, Group, Paper, Text } from "@mantine/core";
+import { When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 export default function OrganizationToolbar({
@@ -31,7 +31,7 @@ export default function OrganizationToolbar({
             </Button>
           </NavLink>
         </Group>
-        <ShowIf if={organization}>
+        <When condition={!!organization}>
           <NavLink to={`/app/organizations/${organization?.slugName}/details`}>
             <Group>
               <Text className="hidden sm:block" size={"sm"}>
@@ -51,7 +51,7 @@ export default function OrganizationToolbar({
               </Avatar>
             </Group>
           </NavLink>
-        </ShowIf>
+        </When>
       </Group>
     </Paper>
   );

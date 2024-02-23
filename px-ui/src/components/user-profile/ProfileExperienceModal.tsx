@@ -1,7 +1,5 @@
 import { useAuth } from "@auth/useAuth";
 import { SelectItem } from "@components/select-items/SelectItem";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   ContractType,
   GetUserProfileQuery,
@@ -28,7 +26,6 @@ import {
   Button,
   Checkbox,
   Group,
-  Loader,
   Modal,
   Select,
   Stack,
@@ -45,6 +42,7 @@ import { prettyEnumValue } from "@utils/enumUtils";
 import FormAddExperienceSchema from "@validator/FormAddExperienceSchema";
 import { format } from "date-fns";
 import { useState } from "react";
+import { When } from "react-if";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function ProfileExperienceModal() {
@@ -270,41 +268,33 @@ export default function ProfileExperienceModal() {
             {desc.length}/1.000
           </Text>
         </Group>
-        <ShowIfElse
-          if={!isOrganizationsLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Organization"
-            description="The company at which you held this experience"
-            mt="md"
-            withAsterisk
-            itemComponent={SelectItem}
-            data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
-              label: o?.name,
-              value: String(o?.id),
-              image: o?.photography,
-              description: o?.activitySector.name,
-            }))}
-            icon={<BuildingOffice2Icon width={18} />}
-            {...form.getInputProps("organizationId")}
-          />
-        </ShowIfElse>
-        <ShowIfElse
-          if={!isCountryListLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Location"
-            description="The place where you had this experience"
-            searchable
-            mt="md"
-            withAsterisk
-            data={locations}
-            icon={<MapPinIcon width={18} />}
-            {...form.getInputProps("city")}
-          />
-        </ShowIfElse>
+        <Select
+          label="Organization"
+          description="The company at which you held this experience"
+          mt="md"
+          withAsterisk
+          itemComponent={SelectItem}
+          disabled={isOrganizationsLoading}
+          data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
+            label: o?.name,
+            value: String(o?.id),
+            image: o?.photography,
+            description: o?.activitySector.name,
+          }))}
+          icon={<BuildingOffice2Icon width={18} />}
+          {...form.getInputProps("organizationId")}
+        />
+        <Select
+          label="Location"
+          description="The place where you had this experience"
+          searchable
+          mt="md"
+          withAsterisk
+          disabled={isCountryListLoading}
+          data={locations}
+          icon={<MapPinIcon width={18} />}
+          {...form.getInputProps("city")}
+        />
         <Select
           label="Contract type"
           description="The type of contract during your work time"
@@ -317,24 +307,20 @@ export default function ProfileExperienceModal() {
           }))}
           {...form.getInputProps("contractType")}
         />
-        <ShowIfElse
-          if={!isActivitySectorsLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Activity sector"
-            description="The activity domain of your employment"
-            searchable
-            mt="md"
-            withAsterisk
-            icon={<CogIcon width={18} />}
-            data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
-              label: a?.name,
-              value: String(a?.id),
-            }))}
-            {...form.getInputProps("activitySectorId")}
-          />
-        </ShowIfElse>
+        <Select
+          label="Activity sector"
+          description="The activity domain of your employment"
+          searchable
+          mt="md"
+          withAsterisk
+          disabled={isActivitySectorsLoading}
+          icon={<CogIcon width={18} />}
+          data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
+            label: a?.name,
+            value: String(a?.id),
+          }))}
+          {...form.getInputProps("activitySectorId")}
+        />
         <DatePicker
           withAsterisk
           mt="md"
@@ -361,7 +347,7 @@ export default function ProfileExperienceModal() {
             form.setFieldValue("endDate", null);
           }}
         />
-        <ShowIf if={!activeJob}>
+        <When condition={!activeJob}>
           <DatePicker
             mt="md"
             label="Until"
@@ -372,9 +358,9 @@ export default function ProfileExperienceModal() {
             maxDate={new Date()}
             {...form.getInputProps("endDate")}
           />
-        </ShowIf>
+        </When>
         <Group grow={!!initialExperienceSelected}>
-          <ShowIf if={initialExperienceSelected}>
+          <When condition={!!initialExperienceSelected}>
             <Button
               type="button"
               mt="xl"
@@ -406,7 +392,7 @@ export default function ProfileExperienceModal() {
             >
               Remove experience
             </Button>
-          </ShowIf>
+          </When>
           <Button
             type="submit"
             fullWidth

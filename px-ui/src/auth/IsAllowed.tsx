@@ -4,7 +4,7 @@ import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
 import AccessDenied from "@routes/AccessDenied";
 import React, { useEffect, useState } from "react";
 
-export interface IsAllowedProps {
+interface IsAllowedProps {
   roles?: RoleType[] | string[];
   permissions?: string[];
   isLoading?: React.ReactElement;

@@ -1,4 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import { JobsDataPropsItem } from "@interfaces/jobs.types";
 import {
@@ -11,6 +10,7 @@ import {
   Title,
 } from "@mantine/core";
 import { intlFormatDistance } from "date-fns";
+import { If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type JobListingCardProps = {
@@ -54,10 +54,14 @@ const JobListingCard = ({
             })}
           </Text>
         </Group>
-        <ShowIf if={applications && applications.length > 0}>
-          {" - "}
-          <Text size={12}>{applications?.length} candidates</Text>
-        </ShowIf>
+        <If condition={applications && applications.length > 0}>
+          <Then>
+            <Text size={12}>
+              {" - "}
+              {applications?.length} candidates
+            </Text>
+          </Then>
+        </If>
       </Group>
     </Paper>
   );

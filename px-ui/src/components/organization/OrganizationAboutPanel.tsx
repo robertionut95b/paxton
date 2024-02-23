@@ -1,7 +1,6 @@
 import MapChart from "@components/map/MapChart";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
 import ExpandableText from "@components/visibility/ExpandableText";
-import ShowIf from "@components/visibility/ShowIf";
 import { useGetOrganizationBySlugNameQuery } from "@gql/generated";
 import { BuildingOfficeIcon, MapIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -21,6 +20,7 @@ import NotFoundPage from "@routes/NotFoundPage";
 import { prettyEnumValue, prettyEnumValueCompanySize } from "@utils/enumUtils";
 import { format } from "date-fns";
 import { useMemo } from "react";
+import { When } from "react-if";
 import { NavLink, useParams } from "react-router-dom";
 import { useDarkMode } from "usehooks-ts";
 
@@ -94,7 +94,7 @@ const OrganizationAboutPanel = ({
           </ExpandableText>
           <Stack>
             <Stack spacing={2}>
-              <ShowIf if={webSite}>
+              <When condition={!!webSite}>
                 <Text size="sm" weight="bold">
                   Website
                 </Text>
@@ -105,48 +105,48 @@ const OrganizationAboutPanel = ({
                 >
                   {webSite}
                 </Anchor>
-              </ShowIf>
+              </When>
             </Stack>
             <Stack spacing={2}>
-              <ShowIf if={activitySector}>
+              <When condition={!!activitySector.name}>
                 <Text size="sm" weight="bold">
                   Activity sector
                 </Text>
                 <Text size="sm">{activitySector.name}</Text>
-              </ShowIf>
+              </When>
             </Stack>
             <Stack spacing={2}>
-              <ShowIf if={companySize}>
+              <When condition={companySize}>
                 <Text size="sm" weight="bold">
                   Company size
                 </Text>
                 <Text size="sm">
                   {prettyEnumValueCompanySize(companySize)} employees
                 </Text>
-              </ShowIf>
+              </When>
             </Stack>
             <Stack spacing={2}>
-              <ShowIf if={headQuarters}>
+              <When condition={headQuarters.country.name}>
                 <Text size="sm" weight="bold">
                   Headquarters
                 </Text>
                 <Text size="sm">
                   {`${headQuarters.name}, ${headQuarters.country.name}`}
                 </Text>
-              </ShowIf>
+              </When>
             </Stack>
             <Stack spacing={2}>
-              <ShowIf if={foundedAt}>
+              <When condition={!!foundedAt}>
                 <Text size="sm" weight="bold">
                   Founded
                 </Text>
                 <Text size="sm">
                   {format(new Date(foundedAt), "dd MMM, yyyy")}
                 </Text>
-              </ShowIf>
+              </When>
             </Stack>
             <Stack spacing={"xs"}>
-              <ShowIf if={specializations}>
+              <When condition={!!specializations}>
                 <Text size="sm" weight="bold">
                   Specializations
                 </Text>
@@ -155,43 +155,41 @@ const OrganizationAboutPanel = ({
                     (s) => s && <Badge key={s}>{prettyEnumValue(s)}</Badge>,
                   )}
                 </Group>
-              </ShowIf>
+              </When>
             </Stack>
           </Stack>
         </Stack>
       </Paper>
-      <ShowIf if={locations && locations.length > 0}>
-        {locations && (
-          <Paper p="md" shadow="xs">
-            <Title order={5} mb="sm">
-              Locations ({locations?.length})
-            </Title>
-            <List size="sm" center spacing={"xs"}>
-              {locations.map(
-                (l) =>
-                  l && (
-                    <List.Item
-                      key={l.id}
-                      icon={
-                        l.id === headQuarters.id ? (
-                          <BuildingOfficeIcon width={14} />
-                        ) : (
-                          <MapIcon width={14} />
-                        )
-                      }
-                    >
-                      {`${l?.country.name}, ${l?.name}`}{" "}
-                      {l.id === headQuarters.id && (
-                        <Badge size="xs">Headquarters</Badge>
-                      )}
-                    </List.Item>
-                  ),
-              )}
-            </List>
-            <MapChart darkMode={isDarkMode} markers={mapMarkers} />
-          </Paper>
-        )}
-      </ShowIf>
+      <When condition={locations && locations.length > 0}>
+        <Paper p="md" shadow="xs">
+          <Title order={5} mb="sm">
+            Locations ({locations?.length})
+          </Title>
+          <List size="sm" center spacing={"xs"}>
+            {locations?.map(
+              (l) =>
+                l && (
+                  <List.Item
+                    key={l.id}
+                    icon={
+                      l.id === headQuarters.id ? (
+                        <BuildingOfficeIcon width={14} />
+                      ) : (
+                        <MapIcon width={14} />
+                      )
+                    }
+                  >
+                    {`${l?.country.name}, ${l?.name}`}{" "}
+                    {l.id === headQuarters.id && (
+                      <Badge size="xs">Headquarters</Badge>
+                    )}
+                  </List.Item>
+                ),
+            )}
+          </List>
+          <MapChart darkMode={isDarkMode} markers={mapMarkers} />
+        </Paper>
+      </When>
     </Stack>
   );
 };

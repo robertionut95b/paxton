@@ -1,10 +1,9 @@
 import { gql, useSubscription } from "@apollo/client";
 import { useAuth } from "@auth/useAuth";
+import ChatBubblesSkeleton from "@components/messaging/chat/ChatBubblesSkeleton";
 import ChatRoomSkeleton from "@components/messaging/chat/ChatRoomSkeleton";
 import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   API_PAGINATION_SIZE,
   APP_IMAGES_API_PATH,
@@ -45,7 +44,6 @@ import {
   Center,
   Divider,
   Group,
-  Loader,
   Menu,
   Stack,
   Text,
@@ -58,6 +56,7 @@ import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
 import { intlFormatDistance } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
+import { Else, If, Then, When } from "react-if";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
@@ -408,31 +407,36 @@ const ChatRoomPage = () => {
               <Text weight="bold" size="sm">
                 {chatData.getPrivateChatById.title ?? chatName}
               </Text>
-              <ShowIfElse
-                if={users.length > 1}
-                else={
+              <If condition={users.length > 1}>
+                <Then>
+                  <If condition={!!chatData.getPrivateChatById.latestMessage}>
+                    <Then>
+                      <Text size="xs">
+                        Last activity:{" "}
+                        {chatData?.getPrivateChatById?.latestMessage
+                          ?.deliveredAt &&
+                          intlFormatDistance(
+                            new Date(
+                              chatData?.getPrivateChatById?.latestMessage?.deliveredAt,
+                            ),
+                            new Date(),
+                          )}
+                      </Text>
+                    </Then>
+                    <Else>
+                      <Text size="xs">Group chat</Text>
+                    </Else>
+                  </If>
+                </Then>
+                <Else>
                   <Text className="line-clamp-1" size="xs">
                     {
                       chatData.getPrivateChatById.users?.[0]?.userProfile
                         .profileTitle
                     }
                   </Text>
-                }
-              >
-                {chatData.getPrivateChatById.latestMessage ? (
-                  <Text size="xs">
-                    Last activity:{" "}
-                    {intlFormatDistance(
-                      new Date(
-                        chatData.getPrivateChatById.latestMessage.deliveredAt,
-                      ),
-                      new Date(),
-                    )}
-                  </Text>
-                ) : (
-                  <Text size="xs">Group chat</Text>
-                )}
-              </ShowIfElse>
+                </Else>
+              </If>
             </Stack>
           </Group>
         </Group>
@@ -485,34 +489,34 @@ const ChatRoomPage = () => {
           </Menu.Dropdown>
         </Menu>
       </Group>
-      <ShowIfElse
-        if={!isMessagesLoading}
-        else={
-          <Center>
-            <Loader size="sm" variant="dots" />
-          </Center>
-        }
-      >
-        <ChatSection
-          height={720}
-          currentUser={user}
-          messages={messages}
-          childrenPre={
-            <ShowIf if={hasNextPage}>
-              <Button
-                compact
-                mt="xs"
-                onClick={() => fetchNextPage()}
-                loading={isFetching}
-                variant="light"
-                fullWidth
-              >
-                Load more
-              </Button>
-            </ShowIf>
-          }
-        />
-      </ShowIfElse>
+      <If condition={!isMessagesLoading}>
+        <Then>
+          <ChatSection
+            height={720}
+            currentUser={user}
+            messages={messages}
+            childrenPre={
+              <When condition={hasNextPage}>
+                <Button
+                  compact
+                  mt="xs"
+                  onClick={() => fetchNextPage()}
+                  loading={isFetching}
+                  variant="light"
+                  fullWidth
+                >
+                  Load more
+                </Button>
+              </When>
+            }
+          />
+        </Then>
+        <Else>
+          <Box my="xs">
+            <ChatBubblesSkeleton />
+          </Box>
+        </Else>
+      </If>
       <Box className="flex-1">
         <Divider my={"xs"} />
         <MessageAddForm

@@ -1,13 +1,12 @@
 import ExperienceCard from "@components/cards/ExperienceCard";
 import StudyCard from "@components/cards/StudyCard";
 import ExpandableText from "@components/visibility/ExpandableText";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetUserProfileQuery, UserProfile } from "@gql/generated";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { ActionIcon, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import groupBy from "lodash/groupBy";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 export default function UserResume({
@@ -31,14 +30,16 @@ export default function UserResume({
           About
         </Title>
         <Group className="px-user-resume-description" grow>
-          <ShowIfElse
-            if={userProfile?.description}
-            else={<Text size="sm">{placeholder}</Text>}
-          >
-            <ExpandableText size={15}>
-              {userProfile?.description}
-            </ExpandableText>
-          </ShowIfElse>
+          <If condition={userProfile?.description}>
+            <Then>
+              <ExpandableText size={15}>
+                {userProfile?.description}
+              </ExpandableText>
+            </Then>
+            <Else>
+              <Text size="sm">{placeholder}</Text>
+            </Else>
+          </If>
         </Group>
       </Paper>
       <Paper shadow="sm" p="md" className=" px-user-resume-studies">
@@ -50,7 +51,7 @@ export default function UserResume({
           <Title order={4} mb={"lg"}>
             Studies
           </Title>
-          <ShowIf if={editable}>
+          <When condition={editable}>
             <NavLink to={`/app/up/${userProfile?.profileSlugUrl}/studies/new`}>
               <ActionIcon
                 variant="subtle"
@@ -61,12 +62,12 @@ export default function UserResume({
                 <PlusCircleIcon />
               </ActionIcon>
             </NavLink>
-          </ShowIf>
+          </When>
         </Group>
         <Paper className="px-user-studies" ref={parent}>
-          <ShowIf if={studies.length === 0}>
+          <When condition={studies.length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
-          </ShowIf>
+          </When>
           {studies.map(
             (s, idx) =>
               s && (
@@ -89,7 +90,7 @@ export default function UserResume({
           <Title order={4} mb="lg">
             Experience
           </Title>
-          <ShowIf if={editable}>
+          <When condition={editable}>
             <NavLink
               to={`/app/up/${userProfile?.profileSlugUrl}/experiences/new`}
             >
@@ -102,12 +103,12 @@ export default function UserResume({
                 <PlusCircleIcon />
               </ActionIcon>
             </NavLink>
-          </ShowIf>
+          </When>
         </Group>
         <Paper className="px-user-experiences">
-          <ShowIf if={Object.entries(experiences).length === 0}>
+          <When condition={Object.entries(experiences).length === 0}>
             <Text size={"sm"}>{placeholder}</Text>
-          </ShowIf>
+          </When>
           {Object.entries(experiences).map((e, idx) => (
             <div key={e[0] ?? idx} className="px-user-experience mb-8">
               {/* @ts-expect-error("types error") */}

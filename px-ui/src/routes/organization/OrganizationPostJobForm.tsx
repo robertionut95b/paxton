@@ -2,7 +2,6 @@ import viewToPlainText from "@ckeditor/ckeditor5-clipboard/src/utils/viewtoplain
 import MantineEditor from "@components/inputs/MantineEditor";
 import { SelectItem } from "@components/select-items/SelectItem";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   ContractType,
@@ -38,7 +37,6 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
   Group,
-  Loader,
   Modal,
   NumberInput,
   Select,
@@ -330,31 +328,27 @@ export default function OrganizationPostJobForm() {
             {form.values.description.length}/8.000
           </Text>
         </Group>
-        <ShowIfElse
-          if={!isJobCategoriesLoading || isAddJobCategoryLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Category"
-            description="The category of this job"
-            mt="md"
-            withAsterisk
-            creatable
-            searchable
-            getCreateLabel={(query) => `+ Create ${query}`}
-            // @ts-expect-error(types-error)
-            onCreate={(query) => createJobCategoryCb(query)}
-            // @ts-expect-error(types-error)
-            data={jobCategories}
-            icon={<LifebuoyIcon width={18} />}
-            {...form.getInputProps("categoryId")}
-            value={selectedJobCategory}
-            onChange={(val) => {
-              setSelectedJobCategory(val);
-              form.setFieldValue("categoryId", val ?? "");
-            }}
-          />
-        </ShowIfElse>
+        <Select
+          label="Category"
+          description="The category of this job"
+          mt="md"
+          withAsterisk
+          creatable
+          searchable
+          disabled={isJobCategoriesLoading || isAddJobCategoryLoading}
+          getCreateLabel={(query) => `+ Create ${query}`}
+          // @ts-expect-error(types-error)
+          onCreate={(query) => createJobCategoryCb(query)}
+          // @ts-expect-error(types-error)
+          data={jobCategories}
+          icon={<LifebuoyIcon width={18} />}
+          {...form.getInputProps("categoryId")}
+          value={selectedJobCategory}
+          onChange={(val) => {
+            setSelectedJobCategory(val);
+            form.setFieldValue("categoryId", val ?? "");
+          }}
+        />
         <DatePicker
           withAsterisk
           mt="md"
@@ -386,41 +380,33 @@ export default function OrganizationPostJobForm() {
           clearable={false}
           {...form.getInputProps("availableTo")}
         />
-        <ShowIfElse
-          if={!isCountryListLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Location"
-            description="The place where this job will be held"
-            searchable
-            mt="md"
-            withAsterisk
-            data={locations}
-            icon={<MapPinIcon width={18} />}
-            {...form.getInputProps("location")}
-          />
-        </ShowIfElse>
-        <ShowIfElse
-          if={!isJobsLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Job"
-            description="The base job type of this listing (e.g. Software Developer)"
-            searchable
-            mt="md"
-            withAsterisk
-            itemComponent={SelectItem}
-            data={(jobs?.getAllJobs ?? [])?.map((j) => ({
-              label: j?.name,
-              value: j?.id.toString() ?? "",
-              description: j?.description,
-            }))}
-            icon={<WrenchIcon width={18} />}
-            {...form.getInputProps("jobId")}
-          />
-        </ShowIfElse>
+        <Select
+          label="Location"
+          description="The place where this job will be held"
+          searchable
+          mt="md"
+          withAsterisk
+          disabled={isCountryListLoading}
+          data={locations}
+          icon={<MapPinIcon width={18} />}
+          {...form.getInputProps("location")}
+        />
+        <Select
+          label="Job"
+          description="The base job type of this listing (e.g. Software Developer)"
+          searchable
+          mt="md"
+          withAsterisk
+          disabled={isJobsLoading}
+          itemComponent={SelectItem}
+          data={(jobs?.getAllJobs ?? [])?.map((j) => ({
+            label: j?.name,
+            value: j?.id.toString() ?? "",
+            description: j?.description,
+          }))}
+          icon={<WrenchIcon width={18} />}
+          {...form.getInputProps("jobId")}
+        />
         <NumberInput
           defaultValue={18}
           label="No. of spots"
@@ -455,59 +441,51 @@ export default function OrganizationPostJobForm() {
           }))}
           {...form.getInputProps("workType")}
         />
-        <ShowIfElse
-          if={!isOrganizationsLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Organization"
-            description="The recruiting company of this job"
-            mt="md"
-            withAsterisk
-            itemComponent={SelectItem}
-            // readOnly
-            data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
-              label: o?.name,
-              value: o?.id.toString() ?? "",
-              image: o?.photography,
-              description: o?.activitySector.name,
-            }))}
-            icon={<BuildingOffice2Icon width={18} />}
-            {...form.getInputProps("organizationId")}
-            value={orgId}
-            onChange={(val) => {
-              setOrgId(val);
-              form.setFieldValue("organizationId", val as string);
-            }}
-          />
-        </ShowIfElse>
-        <ShowIfElse
-          if={!isRecruitersLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Recruiter"
-            description="The recruiting person for this job publishing"
-            mt="md"
-            withAsterisk
-            itemComponent={SelectItem}
-            data={(
-              recruitersData?.getAllRecruitersForOrganizationBySlug ?? []
-            )?.map((r) => ({
-              label:
-                r?.user.firstName && r.user.lastName
-                  ? `${r.user.firstName} ${r.user.lastName}`
-                  : r?.user.username,
-              value: r?.id.toString() ?? "",
-              description: r?.user.userProfile.profileTitle,
-              image:
-                r?.user.userProfile.photography &&
-                `${APP_IMAGES_API_PATH}/100x100/${r.user.userProfile.photography}`,
-            }))}
-            icon={<UserIcon width={18} />}
-            {...form.getInputProps("recruiterId")}
-          />
-        </ShowIfElse>
+        <Select
+          label="Organization"
+          description="The recruiting company of this job"
+          mt="md"
+          withAsterisk
+          disabled={isOrganizationsLoading}
+          itemComponent={SelectItem}
+          // readOnly
+          data={(organizations?.getAllOrganizations ?? [])?.map((o) => ({
+            label: o?.name,
+            value: o?.id.toString() ?? "",
+            image: o?.photography,
+            description: o?.activitySector.name,
+          }))}
+          icon={<BuildingOffice2Icon width={18} />}
+          {...form.getInputProps("organizationId")}
+          value={orgId}
+          onChange={(val) => {
+            setOrgId(val);
+            form.setFieldValue("organizationId", val as string);
+          }}
+        />
+        <Select
+          label="Recruiter"
+          description="The recruiting person for this job publishing"
+          mt="md"
+          withAsterisk
+          disabled={isRecruitersLoading}
+          itemComponent={SelectItem}
+          data={(
+            recruitersData?.getAllRecruitersForOrganizationBySlug ?? []
+          )?.map((r) => ({
+            label:
+              r?.user.firstName && r.user.lastName
+                ? `${r.user.firstName} ${r.user.lastName}`
+                : r?.user.username,
+            value: r?.id.toString() ?? "",
+            description: r?.user.userProfile.profileTitle,
+            image:
+              r?.user.userProfile.photography &&
+              `${APP_IMAGES_API_PATH}/100x100/${r.user.userProfile.photography}`,
+          }))}
+          icon={<UserIcon width={18} />}
+          {...form.getInputProps("recruiterId")}
+        />
         <Button type="submit" fullWidth mt="xl">
           Submit
         </Button>

@@ -1,4 +1,3 @@
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import {
@@ -12,6 +11,7 @@ import {
   Title,
 } from "@mantine/core";
 import React, { ReactNode } from "react";
+import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
 import UserInvitation from "./UserInvitation";
@@ -37,24 +37,26 @@ const InvitationsListSection = ({ length, children }: InvitationListProps) => {
           <Cog6ToothIcon width={24} />
         </ActionIcon>
       </Group>
-      <ShowIfElse
-        if={length > 0}
-        else={
+      <If condition={length > 0}>
+        <Then>
+          <Stack ref={parent}>{children}</Stack>
+        </Then>
+        <Else>
           <Center>
             <Stack align="center">
-              <Image src="/images/user-social.svg" width={86} height={86} />
+              <Image src="/images/user-social.svg" width={76} height={76} />
               <Balancer>
                 <Text size="sm" align="center">
                   No connection requests found
                 </Text>
               </Balancer>
-              <Button variant="outline">Follow or add users</Button>
+              <Button variant="outline">
+                <NavLink to="/app/people/search">Follow or add users</NavLink>
+              </Button>
             </Stack>
           </Center>
-        }
-      >
-        <Stack ref={parent}>{children}</Stack>
-      </ShowIfElse>
+        </Else>
+      </If>
     </Stack>
   );
 };

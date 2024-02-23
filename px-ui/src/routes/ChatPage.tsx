@@ -2,7 +2,6 @@ import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatLinesSkeleton from "@components/messaging/chat/ChatLinesSkeleton";
-import ShowIf from "@components/visibility/ShowIf";
 import {
   FieldType,
   Operator,
@@ -31,6 +30,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
+import { Else, If, Then, When } from "react-if";
 import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
@@ -175,30 +175,41 @@ const ChatPage = () => {
                 })}
                 scrollbarSize={6}
               >
-                <ShowIf if={isLoading}>
-                  <Center mt="xs">
-                    <ChatLinesSkeleton />
-                  </Center>
-                </ShowIf>
-                <ShowIf if={chatLines.length == 0 && !isLoading}>
-                  <Stack mt="sm" align="center" spacing={0}>
-                    <Image src="/images/chat-icon.svg" width={82} />
-                    <Text size="sm" align="center">
-                      No chat rooms yet
-                    </Text>
-                  </Stack>
-                </ShowIf>
-                <div className="px-chatlines-wrapper">
-                  {chatLines.map(
-                    (c, idx) =>
-                      c && (
-                        <div key={c?.id ?? 0 + idx}>
-                          <ChatLine chat={c} active={chatId === String(c.id)} />
+                <If condition={!isLoading}>
+                  <Then>
+                    <If condition={chatLines.length > 0}>
+                      <Then>
+                        <div className="px-chatlines-wrapper">
+                          {chatLines.map(
+                            (c, idx) =>
+                              c && (
+                                <div key={c?.id ?? 0 + idx}>
+                                  <ChatLine
+                                    chat={c}
+                                    active={chatId === String(c.id)}
+                                  />
+                                </div>
+                              ),
+                          )}
                         </div>
-                      ),
-                  )}
-                </div>
-                <ShowIf if={hasNextPage}>
+                      </Then>
+                      <Else>
+                        <Stack mt="md" align="center" spacing={0}>
+                          <Image src="/images/chat-icon.svg" width={76} />
+                          <Text size="sm" align="center">
+                            No chat rooms yet
+                          </Text>
+                        </Stack>
+                      </Else>
+                    </If>
+                  </Then>
+                  <Else>
+                    <Center mt="xs">
+                      <ChatLinesSkeleton />
+                    </Center>
+                  </Else>
+                </If>
+                <When condition={hasNextPage}>
                   <Button
                     fullWidth
                     mt="xs"
@@ -208,7 +219,7 @@ const ChatPage = () => {
                   >
                     Load more
                   </Button>
-                </ShowIf>
+                </When>
               </ScrollArea>
             </Grid.Col>
             <Grid.Col

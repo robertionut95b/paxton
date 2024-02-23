@@ -2,7 +2,6 @@ import { useAuth } from "@auth/useAuth";
 import JobListings from "@components/jobs/JobListings";
 import PageFooter from "@components/layout/PageFooter";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   FieldType,
@@ -26,6 +25,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { formatISO } from "date-fns";
 import { useEffect } from "react";
+import { Else, If, Then } from "react-if";
 import { NavLink, useSearchParams } from "react-router-dom";
 import JobsLeftMenu from "./JobsLeftMenu";
 
@@ -167,9 +167,34 @@ export default function JobsPage() {
       </Grid.Col>
       <Grid.Col sm={6} span={12}>
         <Paper shadow="sm" p="md" className="px-jobs grid gap-8">
-          <ShowIfElse
-            if={jobs.length > 0}
-            else={
+          <If condition={jobs.length > 0}>
+            <Then>
+              <Title mb={"xs"} order={4}>
+                <If condition={!!userProfile?.getUserProfile?.city}>
+                  <Then>
+                    Jobs of interest in:{" "}
+                    {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
+                  </Then>
+                  <Else>Recommended jobs</Else>
+                </If>
+              </Title>
+              <JobListings jobs={jobs} />
+              <Divider my="xs" />
+              <Center>
+                <Button
+                  variant="light"
+                  component={NavLink}
+                  to={
+                    cityId
+                      ? `/app/jobs/search/?city=${cityId}`
+                      : `/app/jobs/search`
+                  }
+                >
+                  See more jobs
+                </Button>
+              </Center>
+            </Then>
+            <Else>
               <Box>
                 <Title mb={8} order={4}>
                   No suitable jobs found
@@ -179,33 +204,8 @@ export default function JobsPage() {
                   refine the search for more results
                 </Text>
               </Box>
-            }
-          >
-            <Title mb={"xs"} order={4}>
-              <ShowIfElse
-                if={userProfile?.getUserProfile?.city}
-                else={"Recommended jobs"}
-              >
-                Jobs of interest in:{" "}
-                {`${userProfile?.getUserProfile?.city?.country.name}, ${userProfile?.getUserProfile?.city?.name}`}
-              </ShowIfElse>
-            </Title>
-            <JobListings jobs={jobs} />
-            <Divider my="xs" />
-            <Center>
-              <Button
-                variant="light"
-                component={NavLink}
-                to={
-                  cityId
-                    ? `/app/jobs/search/?city=${cityId}`
-                    : `/app/jobs/search`
-                }
-              >
-                See more jobs
-              </Button>
-            </Center>
-          </ShowIfElse>
+            </Else>
+          </If>
         </Paper>
       </Grid.Col>
       <Grid.Col sm={3} span={12}>

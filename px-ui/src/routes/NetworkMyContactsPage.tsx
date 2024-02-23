@@ -2,7 +2,6 @@ import { useAuth } from "@auth/useAuth";
 import ContactRecord from "@components/network/ContactRecord";
 import InvitationListSkeleton from "@components/network/InvitationListSkeleton";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
-import ShowIf from "@components/visibility/ShowIf";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
@@ -36,6 +35,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { default as React, useState } from "react";
+import { When } from "react-if";
 import { Link, useNavigate } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
@@ -151,11 +151,10 @@ const NetworkMyContactsPage = () => {
     <Grid>
       <Grid.Col span={12} sm={9}>
         <Paper p="md" shadow="xs">
-          <ShowIf if={isLoadingConnections}>
+          <When condition={isLoadingConnections}>
             <InvitationListSkeleton rowsNo={5} />
-          </ShowIf>
-
-          <ShowIf if={!isLoadingConnections && isError}>
+          </When>
+          <When condition={!isLoadingConnections && isError}>
             <Stack align="center" spacing="xs">
               <Image
                 src="/images/error-broken.svg"
@@ -174,13 +173,14 @@ const NetworkMyContactsPage = () => {
                 Retry
               </Button>
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!isLoadingConnections && !isError && contactsCount === 0}>
+          </When>
+          <When
+            condition={!isLoadingConnections && !isError && contactsCount === 0}
+          >
             <Stack>
               <Text size="md">No contacts</Text>
               <Stack align="center" my="md">
-                <Image src="/images/contacts.svg" width={86} height={86} />
+                <Image src="/images/contacts.svg" width={76} height={76} />
                 <Text size="sm">
                   Seek possible connections using our suggestions
                 </Text>
@@ -193,9 +193,10 @@ const NetworkMyContactsPage = () => {
                 </Button>
               </Stack>
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!isLoadingConnections && !isError && contactsCount > 0}>
+          </When>
+          <When
+            condition={!isLoadingConnections && !isError && contactsCount > 0}
+          >
             <Stack>
               <Text size="md" weight="bold">
                 {contactsCount} contacts
@@ -256,9 +257,8 @@ const NetworkMyContactsPage = () => {
                 )}
               </Stack>
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!isError && contactsCount > 0}>
+          </When>
+          <When condition={!isError && contactsCount > 0}>
             <div className="px-connections-pagination mt-8">
               <PaginationToolbar
                 page={p}
@@ -269,7 +269,7 @@ const NetworkMyContactsPage = () => {
                 totalPages={totalPages}
               />
             </div>
-          </ShowIf>
+          </When>
         </Paper>
       </Grid.Col>
       <Grid.Col span={12} sm={3}>

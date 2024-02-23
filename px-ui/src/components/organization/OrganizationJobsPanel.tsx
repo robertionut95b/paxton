@@ -1,6 +1,5 @@
 import { useAuth } from "@auth/useAuth";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import ShowIf from "@components/visibility/ShowIf";
 import {
   FieldType,
   Operator,
@@ -13,6 +12,7 @@ import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Stack } from "@mantine/core";
 import NotFoundPage from "@routes/NotFoundPage";
 import { formatISO } from "date-fns";
+import { When } from "react-if";
 import { Outlet, useParams } from "react-router-dom";
 import OrganizationLatestJobs from "./OrganizationLatestJobs";
 import OrganizationRecommendedJobs from "./OrganizationRecommendedJobs";
@@ -112,21 +112,23 @@ const OrganizationJobsPanel = () => {
   return (
     <>
       <Stack>
-        <ShowIf
-          if={(recommendedJobsData?.getAllJobListings?.list?.length ?? 0) > 0}
+        <When
+          condition={
+            (recommendedJobsData?.getAllJobListings?.list?.length ?? 0) > 0
+          }
         >
           <OrganizationRecommendedJobs
             jobs={recommendedJobsData?.getAllJobListings?.list ?? []}
             organizationSlug={organizationSlug}
             city={userProfileData?.getUserProfile?.city?.id}
           />
-        </ShowIf>
-        <ShowIf if={jobListings.length > 0}>
+        </When>
+        <When condition={jobListings.length > 0}>
           <OrganizationLatestJobs
             jobs={jobListings}
             organizationSlug={organizationSlug}
           />
-        </ShowIf>
+        </When>
       </Stack>
       <Outlet />
     </>

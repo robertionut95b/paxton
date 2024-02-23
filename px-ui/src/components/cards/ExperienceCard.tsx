@@ -59,7 +59,9 @@ export default function ExperienceCard({
                 <Timeline.Item key={e.id}>
                   <div className="px-experience-wrapper flex justify-between">
                     <div className="px-erperience-timeline-item grow">
-                      <Text size="md">{e.title}</Text>
+                      <Text size="md" weight={"bold"}>
+                        {e.title}
+                      </Text>
                       <Text
                         size="sm"
                         className="px-timeline-item-experience-location"

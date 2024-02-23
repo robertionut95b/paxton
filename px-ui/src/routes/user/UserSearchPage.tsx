@@ -2,7 +2,6 @@ import { useAuth } from "@auth/useAuth";
 import ContactRecord from "@components/network/ContactRecord";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIf from "@components/visibility/ShowIf";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
@@ -36,6 +35,7 @@ import {
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+import { When } from "react-if";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
@@ -222,7 +222,7 @@ const UserSearchPage = () => {
       </Grid.Col>
       <Grid.Col span={12} md={8}>
         <Paper p="md" shadow="xs">
-          <ShowIf if={usersIsError}>
+          <When condition={usersIsError}>
             <Stack align="center" spacing="xs">
               <Image
                 src="/images/error-broken.svg"
@@ -239,15 +239,14 @@ const UserSearchPage = () => {
                 Retry
               </Button>
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!usersIsError && totalElements === 0}>
-            <Stack align="center">
-              <Text size="sm">Could not find any users</Text>
+          </When>
+          <When condition={!usersIsError && totalElements === 0}>
+            <Stack align="center" my="sm">
+              <Image src="/images/contacts.svg" width={76} />
+              <Text size="sm">Could not find anyone for this criteria</Text>
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!usersIsError && totalElements > 0}>
+          </When>
+          <When condition={!usersIsError && totalElements > 0}>
             <Stack ref={parent}>
               <Title order={5}>{totalElements} people</Title>
               {contacts.map(
@@ -261,9 +260,8 @@ const UserSearchPage = () => {
                   ),
               )}
             </Stack>
-          </ShowIf>
-
-          <ShowIf if={!usersIsError && totalElements > 0}>
+          </When>
+          <When condition={!usersIsError && totalElements > 0}>
             <PaginationToolbar
               page={p}
               setPage={setP}
@@ -272,7 +270,7 @@ const UserSearchPage = () => {
               totalElements={totalElements}
               totalPages={totalPages}
             />
-          </ShowIf>
+          </When>
         </Paper>
       </Grid.Col>
     </Grid>

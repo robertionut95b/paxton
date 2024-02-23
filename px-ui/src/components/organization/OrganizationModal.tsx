@@ -1,7 +1,5 @@
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
-  GetOrganizationBySlugNameQuery,
   OrganizationSize,
   Specialization,
   useCreateOrUpdateOrganizationMutation,
@@ -26,7 +24,6 @@ import {
   Button,
   Divider,
   Group,
-  Loader,
   Modal,
   MultiSelect,
   Select,
@@ -49,14 +46,6 @@ const OrganizationModal = () => {
   const navigate = useNavigate();
   const { organizationSlug } = useParams();
   const queryClient = useQueryClient();
-  const prevOrgQuery = queryClient.getQueryData<GetOrganizationBySlugNameQuery>(
-    useGetOrganizationBySlugNameQuery.getKey({
-      slugName: organizationSlug ?? "",
-    }),
-  );
-  const [desc, setDesc] = useState<string>(
-    prevOrgQuery?.getOrganizationBySlugName?.description ?? "",
-  );
 
   const { data: countries, isLoading: isCountryListLoading } =
     useGetCountriesCitiesQuery(graphqlRequestClient);
@@ -100,7 +89,6 @@ const OrganizationModal = () => {
               data.getOrganizationBySlugName?.specializations ?? [],
             locations: trsfLocs ?? [],
           });
-          setDesc(data.getOrganizationBySlugName?.description ?? "");
         },
       },
     );
@@ -195,14 +183,6 @@ const OrganizationModal = () => {
     });
   };
 
-  const changeDescCb = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setDesc(e.currentTarget.value);
-      form.setFieldValue("description", e.currentTarget.value);
-    },
-    [form],
-  );
-
   if (isOrganizationLoading) return <ApplicationSpinner />;
 
   return (
@@ -238,8 +218,6 @@ const OrganizationModal = () => {
           minRows={6}
           icon={<ChatBubbleBottomCenterTextIcon width={18} />}
           {...form.getInputProps("description")}
-          value={desc}
-          onChange={changeDescCb}
         />
         <Group position="right">
           <Text
@@ -247,7 +225,7 @@ const OrganizationModal = () => {
             color={!form.errors.description ? "dimmed" : "red"}
             mt={4}
           >
-            {desc.length}/2.000
+            {form.values.description.length}/2.000
           </Text>
         </Group>
         <TextInput
@@ -258,39 +236,31 @@ const OrganizationModal = () => {
           icon={<CubeIcon width={18} />}
           {...form.getInputProps("slogan")}
         />
-        <ShowIfElse
-          if={!isActivitySectorsLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Activity sector"
-            description="The activity domain of the organization"
-            searchable
-            mt="md"
-            withAsterisk
-            icon={<CogIcon width={18} />}
-            data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
-              label: a?.name,
-              value: String(a?.id),
-            }))}
-            {...form.getInputProps("activitySectorId")}
-          />
-        </ShowIfElse>
-        <ShowIfElse
-          if={!isCountryListLoading}
-          else={<Loader mt="md" size="sm" variant="dots" />}
-        >
-          <Select
-            label="Headquarters"
-            description="The headquarters location of this organization"
-            searchable
-            mt="md"
-            withAsterisk
-            data={locations}
-            icon={<MapPinIcon width={18} />}
-            {...form.getInputProps("headQuartersId")}
-          />
-        </ShowIfElse>
+        <Select
+          label="Activity sector"
+          description="The activity domain of the organization"
+          searchable
+          mt="md"
+          withAsterisk
+          icon={<CogIcon width={18} />}
+          disabled={isActivitySectorsLoading}
+          data={(activitySectors?.getAllActivitySectors ?? []).map((a) => ({
+            label: a?.name,
+            value: String(a?.id),
+          }))}
+          {...form.getInputProps("activitySectorId")}
+        />
+        <Select
+          label="Headquarters"
+          description="The headquarters location of this organization"
+          searchable
+          mt="md"
+          withAsterisk
+          data={locations}
+          icon={<MapPinIcon width={18} />}
+          disabled={isCountryListLoading}
+          {...form.getInputProps("headQuartersId")}
+        />
         <DatePicker
           mt="md"
           label="Founded"

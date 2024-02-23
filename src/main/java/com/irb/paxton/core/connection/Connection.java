@@ -23,11 +23,11 @@ import java.time.OffsetDateTime;
 @Setter
 public class Connection extends PaxtonEntity<Long> {
 
-    @OneToOne
-    @JoinColumn(name = "requester_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User requester;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "addressed_id")
     private User addressed;
 

@@ -1,4 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { useGetRecruiterByIdQuery } from "@gql/generated";
 import {
@@ -27,6 +26,7 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { differenceInYears } from "date-fns";
 import { useCallback, useState } from "react";
+import { When } from "react-if";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 const OrganizationRecruiterPage = () => {
@@ -75,7 +75,7 @@ const OrganizationRecruiterPage = () => {
       }}
     >
       <Stack p="md" spacing={40}>
-        <ShowIf if={userProfile.photography}>
+        <When condition={userProfile.photography}>
           <BackgroundImage
             p="xs"
             radius="sm"
@@ -94,7 +94,7 @@ const OrganizationRecruiterPage = () => {
               {username[0].toUpperCase()}
             </Avatar>
           </BackgroundImage>
-        </ShowIf>
+        </When>
         <Stack spacing={"xs"}>
           <Box>
             <Title order={5} mb={0}>

@@ -1,10 +1,9 @@
 import ExpandableText from "@components/visibility/ExpandableText";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { Study } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { ActionIcon, Avatar, Divider, Group, Paper, Text } from "@mantine/core";
 import { format } from "date-fns";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 export default function StudyCard({
@@ -32,29 +31,39 @@ export default function StudyCard({
               {study?.institution.name ?? "No title provided"}
             </Text>
             <Text size="sm" className="px-study-diploma">
-              <ShowIf if={study?.certification?.name}>
+              <When condition={study?.certification?.name}>
                 {study?.certification?.name ?? "No license provided"}
-              </ShowIf>{" "}
-              <ShowIf if={study?.domainStudy}>
+              </When>{" "}
+              <When condition={study?.domainStudy?.name}>
                 in {study?.domainStudy?.name}
-              </ShowIf>
-              <ShowIf if={study?.degree}> · {study?.degree}</ShowIf>
+              </When>
+              <When condition={study?.degree}> · {study?.degree}</When>
             </Text>
             <Text size="sm" className="px-study-years" color="dimmed" mb={8}>
               {format(new Date(study?.startDate), "yyyy")} -{" "}
               {
-                <ShowIfElse if={study?.endDate} else="present">
-                  {study.endDate && format(new Date(study?.endDate), "yyyy")}
-                </ShowIfElse>
+                <If condition={!!study?.endDate}>
+                  <Then>
+                    {study.endDate && format(new Date(study?.endDate), "yyyy")}
+                  </Then>
+                  <Else>present</Else>
+                </If>
               }
             </Text>
-            <ExpandableText
-              size="sm"
-              className="px-study-description"
-              color="dark"
-            >
-              {study?.description ?? "No description provided"}
-            </ExpandableText>
+            <If condition={study?.description}>
+              <Then>
+                <ExpandableText
+                  size="sm"
+                  className="px-study-description"
+                  color="dark"
+                >
+                  {study?.description}
+                </ExpandableText>
+              </Then>
+              <Else>
+                <Text size="sm">No description provided</Text>
+              </Else>
+            </If>
             {withDivider && <Divider mt={16} />}
           </div>
           <NavLink to={`studies/${study?.id}/update`}>

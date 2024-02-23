@@ -1,9 +1,9 @@
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetAllJobListingsQuery } from "@gql/generated";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { Anchor, Avatar, Group, Paper, Text, Title } from "@mantine/core";
+import { prettyEnumValue } from "@utils/enumUtils";
 import { differenceInBusinessDays, intlFormatDistance } from "date-fns";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type JobListingItemProps = {
@@ -16,22 +16,12 @@ type JobListingItemProps = {
   >;
   compact?: boolean;
   navigable?: boolean;
-  withDescription?: boolean;
 };
 
 export default function JobListingItem({
-  data: {
-    id,
-    title,
-    description,
-    organization,
-    city,
-    availableFrom,
-    availableTo,
-  },
+  data: { id, title, organization, city, availableFrom, availableTo, workType },
   compact = false,
   navigable = true,
-  withDescription = true,
 }: JobListingItemProps) {
   return (
     <Paper py="md" px="xs">
@@ -54,38 +44,39 @@ export default function JobListingItem({
         )}
         <div className="px-job-card-details flex-grow overflow-auto">
           <Title order={5} color="violet">
-            <ShowIfElse if={navigable} else={title}>
-              <Anchor component={NavLink} to={`/app/jobs/view/${id}`}>
-                {title}
-              </Anchor>
-            </ShowIfElse>
+            <If condition={navigable}>
+              <Then>
+                <Anchor component={NavLink} to={`/app/jobs/view/${id}`}>
+                  {title}
+                </Anchor>
+              </Then>
+              <Else>{title}</Else>
+            </If>
           </Title>
           <ul>
             <li>
-              <ShowIfElse
-                if={navigable}
-                else={<Text size={"md"}>{organization.name}</Text>}
-              >
-                <Anchor
-                  component={NavLink}
-                  to={`/app/organizations/${organization.slugName}`}
-                >
+              <If condition={navigable}>
+                <Then>
+                  <Anchor
+                    component={NavLink}
+                    to={`/app/organizations/${organization.slugName}`}
+                  >
+                    <Text size={"sm"}>{organization.name}</Text>
+                  </Anchor>
+                </Then>
+                <Else>
                   <Text size={"md"}>{organization.name}</Text>
-                </Anchor>
-              </ShowIfElse>
+                </Else>
+              </If>
             </li>
-            {withDescription && (
-              <li>
-                <Text my={2} size={"sm"} truncate>
-                  {description}
-                </Text>
-              </li>
-            )}
             <li>
-              <Group spacing={2}>
+              <Group spacing={2} align="center" mt={2}>
                 <MapPinIcon width={14} />
-                <Text mt={2} size={"sm"}>
-                  {city.name}, {city.country.name}
+                <Text size={"sm"}>
+                  {city.name}, {city.country.name} {" - "}
+                </Text>
+                <Text color="dimmed" size={"sm"}>
+                  {prettyEnumValue(workType)} work
                 </Text>
               </Group>
             </li>
@@ -99,26 +90,25 @@ export default function JobListingItem({
                     })}
                   </Text>
                 </Group>
-                {availableTo && (
-                  <ShowIf
-                    if={
-                      differenceInBusinessDays(
-                        new Date(availableTo),
-                        new Date(),
-                      ) <= 3
-                    }
-                  >
-                    <Group spacing={4}>
-                      <ClockIcon width={14} color="red" />
-                      <Text mt={2} size="xs" color="red">
-                        expires{" "}
-                        {intlFormatDistance(new Date(availableTo), new Date(), {
-                          unit: "day",
-                        })}
-                      </Text>
-                    </Group>
-                  </ShowIf>
-                )}
+                <When
+                  condition={
+                    availableTo &&
+                    differenceInBusinessDays(
+                      new Date(availableTo),
+                      new Date(),
+                    ) <= 3
+                  }
+                >
+                  <Group spacing={4}>
+                    <ClockIcon width={14} color="red" />
+                    <Text mt={2} size="xs" color="red">
+                      expires{" "}
+                      {intlFormatDistance(new Date(availableTo), new Date(), {
+                        unit: "day",
+                      })}
+                    </Text>
+                  </Group>
+                </When>
               </Group>
             </li>
           </ul>

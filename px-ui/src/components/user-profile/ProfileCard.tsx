@@ -1,7 +1,6 @@
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { Avatar, Badge, Group, Text } from "@mantine/core";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 const renderInitials = (firstName?: string | null, lastName?: string | null) =>
@@ -38,12 +37,13 @@ export default function ProfileCard({
           {title ?? "No title available"}
         </Text>
         <Text size="md" className="font-semibold capitalize">
-          <ShowIfElse if={firstName && lastName} else={username}>
-            {`${firstName} ${lastName}`}
-          </ShowIfElse>
+          <If condition={firstName && lastName}>
+            <Then>{`${firstName} ${lastName}`}</Then>
+            <Else>{username}</Else>
+          </If>
         </Text>
         <Text size="sm">{location ?? "No location available"}</Text>
-        <ShowIf if={isEmailConfirmed}>
+        <When condition={isEmailConfirmed}>
           <Badge
             mt={"xs"}
             color="teal"
@@ -52,7 +52,7 @@ export default function ProfileCard({
           >
             Verified email
           </Badge>
-        </ShowIf>
+        </When>
       </div>
     </Group>
   );

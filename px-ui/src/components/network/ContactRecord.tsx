@@ -1,4 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import { GetConnectionsForUserQuery } from "@gql/generated";
 import { ClockIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -6,6 +5,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { Anchor, Avatar, Button, Group, Stack, Text } from "@mantine/core";
 import { displayInitials } from "@utils/initials";
 import { intlFormatDistance } from "date-fns";
+import { When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type ContactItemData = NonNullable<
@@ -67,9 +67,9 @@ const ContactRecord = ({
           </Anchor>
         </Stack>
       </Group>
-      <ShowIf if={onClickMessage || onClickRemove}>
+      <When condition={!!onClickMessage || !!onClickRemove}>
         <Group spacing="xs">
-          <ShowIf if={onClickMessage}>
+          <When condition={!!onClickMessage}>
             <Button
               size="xs"
               variant="filled"
@@ -78,8 +78,8 @@ const ContactRecord = ({
             >
               Message
             </Button>
-          </ShowIf>
-          <ShowIf if={onClickRemove}>
+          </When>
+          <When condition={!!onClickRemove}>
             <Button
               size="xs"
               variant="light"
@@ -89,9 +89,9 @@ const ContactRecord = ({
             >
               Remove
             </Button>
-          </ShowIf>
+          </When>
         </Group>
-      </ShowIf>
+      </When>
     </Group>
   );
 };

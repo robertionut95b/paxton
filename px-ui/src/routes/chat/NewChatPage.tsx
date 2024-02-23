@@ -3,8 +3,6 @@ import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import { SelectItem } from "@components/select-items/SelectItem";
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import {
   API_PAGINATION_SIZE,
   APP_IMAGES_API_PATH,
@@ -38,6 +36,7 @@ import { PAGE_SIZE } from "@routes/ChatPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { uniqBy } from "lodash/fp";
 import { useEffect, useState } from "react";
+import { Else, If, Then, When } from "react-if";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "usehooks-ts";
 
@@ -298,12 +297,32 @@ const NewChatPage = () => {
           onChange={setSearchUsers}
         />
       </Box>
-      <ShowIfElse
-        if={individualChatsCount > 0}
-        else={
+      <If condition={individualChatsCount > 0}>
+        <Then>
+          <Stack className="h-full grow" spacing={0}>
+            <Text size="sm" my="xs" align="center" weight="bold">
+              Select a chat ...
+            </Text>
+            <Divider my="xs" />
+            {chatLines?.map((c) => (
+              // @ts-expect-error("type-check")
+              <div key={c?.id}>{c.id && <ChatLine chat={c} />}</div>
+            ))}
+            <Divider my="xs" />
+            <Stack justify="center" align="center" spacing="xs">
+              <Text size="sm" my="xs" align="center" weight="bold">
+                Or create a new one
+              </Text>
+              <Button onClick={createNewChat} fullWidth={false}>
+                New chat
+              </Button>
+            </Stack>
+          </Stack>
+        </Then>
+        <Else>
           <div className="h-full grow">
             <ChatSection currentUser={user} messages={chatMessages} />
-            <ShowIf if={searchUsers.length > 0}>
+            <When condition={searchUsers.length > 0}>
               <Divider mt="md" />
               <Stack justify="center" align="center" spacing="xs">
                 <Text size="sm" my="xs" align="center" weight="bold">
@@ -313,30 +332,10 @@ const NewChatPage = () => {
                   New chat
                 </Button>
               </Stack>
-            </ShowIf>
+            </When>
           </div>
-        }
-      >
-        <Stack className="h-full grow" spacing={0}>
-          <Text size="sm" my="xs" align="center" weight="bold">
-            Select a chat ...
-          </Text>
-          <Divider my="xs" />
-          {chatLines?.map((c) => (
-            // @ts-expect-error("type-check")
-            <div key={c?.id}>{c.id && <ChatLine chat={c} />}</div>
-          ))}
-          <Divider my="xs" />
-          <Stack justify="center" align="center" spacing="xs">
-            <Text size="sm" my="xs" align="center" weight="bold">
-              Or create a new one
-            </Text>
-            <Button onClick={createNewChat} fullWidth={false}>
-              New chat
-            </Button>
-          </Stack>
-        </Stack>
-      </ShowIfElse>
+        </Else>
+      </If>
       <Box>
         <Divider my={"xs"} />
         <MessageAddForm

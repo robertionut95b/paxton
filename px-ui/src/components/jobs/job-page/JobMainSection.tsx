@@ -1,5 +1,3 @@
-import ShowIf from "@components/visibility/ShowIf";
-import ShowIfElse from "@components/visibility/ShowIfElse";
 import { GetAllJobListingsQuery, JobListing } from "@gql/generated";
 import {
   BookmarkIcon,
@@ -20,13 +18,14 @@ import {
   Button,
   Group,
   List,
-  Loader,
+  Skeleton,
   Space,
   Text,
   Title,
 } from "@mantine/core";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { intlFormatDistance, isFuture } from "date-fns";
+import { Else, If, Then, When } from "react-if";
 import { NavLink } from "react-router-dom";
 
 type OmitApplicationFieldsType = NonNullable<
@@ -62,11 +61,11 @@ const JobMainSection = ({
   return (
     <Box>
       <Group position="apart" align={"flex-start"}>
-        <ShowIf if={organization}>
+        <When condition={!!organization}>
           <Avatar size={"md"} src={organization.photography} mb={"md"}>
             {organization.name[0]}
           </Avatar>
-        </ShowIf>
+        </When>
         <Group>
           <ActionIcon>
             <ShareIcon width={20} />
@@ -77,7 +76,7 @@ const JobMainSection = ({
         </Group>
       </Group>
       <Title order={3}>{title}</Title>
-      <Group spacing={6}>
+      <Group spacing={6} mt={5}>
         <Anchor
           size={"sm"}
           variant="link"
@@ -86,14 +85,15 @@ const JobMainSection = ({
         >
           {organization.name}
         </Anchor>
-        {" - "}
         <Text size={"sm"}>
-          {city.country.name}, {city.name}
+          {" - "} {city.country.name}, {city.name}
         </Text>
-        <ShowIf if={applications && applications.length > 0}>
-          {" - "}
-          <Text size="sm">{applications?.length} candidate(s)</Text>
-        </ShowIf>
+        <When condition={applications && applications.length > 0}>
+          <Text size="sm">
+            {" - "}
+            {applications?.length} candidate(s)
+          </Text>
+        </When>
       </Group>
       <Space h="md" />
       <List size="sm" spacing={"xs"} center>
@@ -116,52 +116,54 @@ const JobMainSection = ({
             {organization.activitySector.name} activity line
           </Text>
         </List.Item>
-        <ShowIfElse
-          if={isFuture(new Date(availableTo))}
-          else={
+        <If condition={isFuture(new Date(availableTo))}>
+          <Then>
+            <If condition={isAllowedCandidature}>
+              <Then>
+                <If condition={isCandidatureLoading}>
+                  <Then>
+                    <Skeleton mt="lg" height={20} radius="xl" />
+                  </Then>
+                  <Else>
+                    <Group mt="sm">
+                      <If condition={!applied}>
+                        <Then>
+                          <Button
+                            onClick={submitCandidatureFn}
+                            leftIcon={<CheckCircleIcon width={18} />}
+                          >
+                            Apply
+                          </Button>
+                        </Then>
+                        <Else>
+                          <Button
+                            disabled
+                            leftIcon={<CheckCircleIcon width={18} />}
+                          >
+                            Candidature sent
+                          </Button>
+                        </Else>
+                      </If>
+                      <Button
+                        variant="light"
+                        leftIcon={<BookmarkIcon width={18} />}
+                      >
+                        Save this job
+                      </Button>
+                    </Group>
+                  </Else>
+                </If>
+              </Then>
+            </If>
+          </Then>
+          <Else>
             <List.Item icon={<XMarkIcon width={18} color="red" />}>
               <Text color="red" size="sm">
                 Candidature is no longer allowed for this job
               </Text>
             </List.Item>
-          }
-        >
-          <ShowIf if={isAllowedCandidature}>
-            <ShowIfElse
-              if={isCandidatureLoading}
-              else={
-                <Group mt="sm">
-                  <ShowIfElse
-                    if={!applied}
-                    else={
-                      <Button
-                        disabled
-                        leftIcon={<CheckCircleIcon width={18} />}
-                      >
-                        Candidature sent
-                      </Button>
-                    }
-                  >
-                    <Button
-                      onClick={submitCandidatureFn}
-                      leftIcon={<CheckCircleIcon width={18} />}
-                    >
-                      Apply
-                    </Button>
-                  </ShowIfElse>
-                  <Button
-                    variant="light"
-                    leftIcon={<BookmarkIcon width={18} />}
-                  >
-                    Save this job
-                  </Button>
-                </Group>
-              }
-            >
-              <Loader mt="md" size="xs" variant="dots" />
-            </ShowIfElse>
-          </ShowIf>
-        </ShowIfElse>
+          </Else>
+        </If>
       </List>
     </Box>
   );

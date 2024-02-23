@@ -1,5 +1,4 @@
 import TransferItem from "@components/transfer-item/TransferItem";
-import ShowIf from "@components/visibility/ShowIf";
 import { APP_IMAGES_API_PATH } from "@constants/Properties";
 import {
   GetAllUsersQuery,
@@ -28,6 +27,7 @@ import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormAlterRecruitersOrgSchema } from "@validator/FormAlterRecruitersOrgSchema";
 import { useCallback, useState } from "react";
+import { When } from "react-if";
 import { useNavigate, useParams } from "react-router-dom";
 
 const recrToTrsfItem = (
@@ -219,7 +219,7 @@ const OrganizationRecruitersModal = () => {
         breakpoint="sm"
         mb="md"
       />
-      <ShowIf if={err}>
+      <When condition={err}>
         <Alert
           icon={<ExclamationTriangleIcon width={16} />}
           title="Invalid input"
@@ -230,7 +230,7 @@ const OrganizationRecruitersModal = () => {
         >
           <Text size="sm">{err}</Text>
         </Alert>
-      </ShowIf>
+      </When>
       <Button fullWidth onClick={submitChanges} variant="filled">
         Submit changes
       </Button>

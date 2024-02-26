@@ -212,9 +212,19 @@ mutation AddMessageToChat($MessageInput: MessageInput!) {
 mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
   markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
     id
-    messages {
+    latestMessage {
       id
       deliveredAt
+      content
+      sender {
+        id
+        firstName
+        lastName
+        username
+        userProfile {
+          photography
+        }
+      }
       seenBy {
         user {
           id

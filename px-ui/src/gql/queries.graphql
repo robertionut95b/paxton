@@ -630,6 +630,9 @@ query GetPrivateChatById($chatId: Long!) {
       id
       content
       deliveredAt
+      sender {
+        id
+      }
     }
   }
 }

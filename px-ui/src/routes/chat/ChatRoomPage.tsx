@@ -14,6 +14,7 @@ import {
   GetMessagesForChatIdDocument,
   GetMessagesForChatIdSubscription,
   GetMessagesForChatIdSubscriptionVariables,
+  GetPrivateChatByIdQuery,
   Operator,
   SortDirection,
   useAddMessageToChatMutation,
@@ -55,10 +56,11 @@ import AccessDenied from "@routes/AccessDenied";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
 import { intlFormatDistance } from "date-fns";
+import { produce } from "immer";
 import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then, When } from "react-if";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 const ChatRoomPage = () => {
   const { chatId } = useParams();
@@ -67,7 +69,7 @@ const ChatRoomPage = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
-  const debouncedSearch = useDebounce<string>(search, 1000);
+  const [debouncedSearch] = useDebounceValue<string>(search, 1000);
 
   const chatPageSearchQuery = {
     filters: [
@@ -83,7 +85,7 @@ const ChatRoomPage = () => {
               key: "messages.content",
               value: searchParams.get("m") ?? "",
               operator: Operator.Like,
-              fieldType: FieldType.Char,
+              fieldType: FieldType.String,
             },
           ]
         : []),
@@ -193,11 +195,50 @@ const ChatRoomPage = () => {
   const { mutate: markAllMessagesAsSeen } = useMarkAllMessagesAsSeenMutation(
     graphqlRequestClient,
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(
+      onSuccess: (data) => {
+        queryClient.setQueryData<InfiniteData<GetChatLinesAdvSearchQuery>>(
           useInfiniteGetChatLinesAdvSearchQuery.getKey({
             searchQuery: chatPageSearchQuery,
           }),
+          (prevData) =>
+            prevData
+              ? produce(prevData, (draft) => {
+                  if (!draft.pages) return;
+                  const currentChatPage = draft.pages.filter(
+                    (p) =>
+                      p.getChatAdvSearch?.list?.filter(
+                        (cl) => cl?.id === Number(chatId),
+                      )[0],
+                  )[0];
+                  const currentChatLine =
+                    currentChatPage.getChatAdvSearch?.list?.filter(
+                      (cl) => cl?.id === Number(chatId),
+                    )[0];
+                  if (currentChatLine) {
+                    // update the number of unread messages in Chat line
+                    currentChatLine.unreadMessagesCount = 0;
+                    currentChatLine.latestMessage =
+                      data.markAllMessagesAsSeen?.latestMessage;
+                  }
+                })
+              : prevData,
+        );
+        queryClient.setQueryData<InfiniteData<GetPrivateChatByIdQuery>>(
+          useGetPrivateChatByIdQuery.getKey({ chatId: Number(chatId) }),
+          (prevData) =>
+            prevData
+              ? produce(prevData, (draft) => {
+                  if (!draft.pages) return;
+                  const currentChatLine = draft.pages.filter(
+                    (p) => p.getPrivateChatById?.id === Number(chatId),
+                  )[0].getPrivateChatById;
+                  if (currentChatLine) {
+                    currentChatLine.unreadMessagesCount = 0;
+                    currentChatLine.latestMessage =
+                      data.markAllMessagesAsSeen?.latestMessage;
+                  }
+                })
+              : prevData,
         );
       },
     },
@@ -241,38 +282,65 @@ const ChatRoomPage = () => {
           // update the chat section with the new message
           queryClient.setQueryData<typeof messagesData>(
             useInfiniteGetMessagesPaginatedQuery.getKey({ searchQuery }),
-            // @ts-expect-error("types errors")
-            (oldData) => {
-              if (oldData) {
-                const firstPage = oldData.pages[0];
-                const firstPageUpdated = {
-                  ...firstPage,
-                  getMessagesPaginated: {
-                    ...firstPage.getMessagesPaginated,
-                    list: [
-                      newMessage,
-                      ...(firstPage.getMessagesPaginated?.list ?? []),
-                    ],
-                    totalElements:
-                      firstPage.getMessagesPaginated?.totalElements ?? 0 + 1,
-                  },
-                };
-                const otherPages = oldData.pages.slice(1);
-                return {
-                  pageParams: oldData?.pageParams,
-                  pages: [firstPageUpdated, ...otherPages],
-                };
-              } else return oldData;
-            },
+            (oldData) =>
+              oldData
+                ? produce(oldData, (draft) => {
+                    const firstPage = draft.pages.filter((p) =>
+                      p.getMessagesPaginated?.list?.filter(
+                        (ch) => ch?.id === Number(chatId),
+                      ),
+                    )[0];
+                    if (firstPage.getMessagesPaginated) {
+                      firstPage.getMessagesPaginated.list?.unshift(newMessage);
+                      firstPage.getMessagesPaginated.totalElements += 1;
+                    }
+                  })
+                : oldData,
           );
 
           // update chatline
-          queryClient.invalidateQueries<
-            InfiniteData<GetChatLinesAdvSearchQuery>
-          >(
+          queryClient.setQueryData<InfiniteData<GetChatLinesAdvSearchQuery>>(
             useInfiniteGetChatLinesAdvSearchQuery.getKey({
               searchQuery: chatPageSearchQuery,
             }),
+            (prevData) =>
+              prevData
+                ? produce(prevData, (draft) => {
+                    const currentChatPage = draft.pages.filter(
+                      (p) =>
+                        p.getChatAdvSearch?.list?.filter(
+                          (cl) => cl?.id === Number(chatId),
+                        )[0],
+                    )[0];
+                    const currentChatLine =
+                      currentChatPage.getChatAdvSearch?.list?.filter(
+                        (cl) => cl?.id === Number(chatId),
+                      )[0];
+                    if (currentChatLine) {
+                      currentChatLine.latestMessage = newMessage;
+                      if (newMessage.sender.id !== Number(user?.userId)) {
+                        currentChatLine.unreadMessagesCount += 1;
+                      }
+                    }
+                  })
+                : prevData,
+          );
+
+          // update current chat query
+          queryClient.setQueryData<GetPrivateChatByIdQuery>(
+            useGetPrivateChatByIdQuery.getKey({ chatId: Number(chatId) }),
+            (prevData) =>
+              prevData
+                ? produce(prevData, (draft) => {
+                    const currentChat = draft.getPrivateChatById;
+                    if (currentChat) {
+                      currentChat.latestMessage = newMessage;
+                      if (newMessage.sender.id !== Number(user?.userId)) {
+                        currentChat.unreadMessagesCount += 1;
+                      }
+                    }
+                  })
+                : prevData,
           );
         }
       },
@@ -297,7 +365,12 @@ const ChatRoomPage = () => {
   }, [location, searchParams]);
 
   useEffect(() => {
-    if ((chatData?.getPrivateChatById.unreadMessagesCount ?? 0) > 0) {
+    // mark all messages as seen if either there are unread items or if the current user is not the one updating the chat
+    if (
+      (chatData?.getPrivateChatById.unreadMessagesCount ?? 0) > 0 &&
+      chatData?.getPrivateChatById.latestMessage?.sender.id !==
+        Number(user?.userId)
+    ) {
       markAllMessagesAsSeen({
         chatId: Number(chatId),
         userId: Number(user?.userId),

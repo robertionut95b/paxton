@@ -1303,7 +1303,7 @@ export type MarkAllMessagesAsSeenMutationVariables = Exact<{
 }>;
 
 
-export type MarkAllMessagesAsSeenMutation = { __typename?: 'Mutation', markAllMessagesAsSeen?: { __typename?: 'Chat', id: number, messages?: Array<{ __typename?: 'Message', id: number, deliveredAt: Date, seenBy?: Array<{ __typename?: 'MessageSeenBy', seenAt: Date, user: { __typename?: 'User', id: number } } | null> | null } | null> | null } | null };
+export type MarkAllMessagesAsSeenMutation = { __typename?: 'Mutation', markAllMessagesAsSeen?: { __typename?: 'Chat', id: number, latestMessage?: { __typename?: 'Message', id: number, deliveredAt: Date, content: string, sender: { __typename?: 'User', id: number, firstName: string, lastName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, seenBy?: Array<{ __typename?: 'MessageSeenBy', seenAt: Date, user: { __typename?: 'User', id: number } } | null> | null } | null } | null };
 
 export type UpdateChatMutationVariables = Exact<{
   ChatInput: ChatInput;
@@ -1529,7 +1529,7 @@ export type GetPrivateChatByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'Chat', id: number, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date } | null } | null };
+export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'Chat', id: number, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
 
 export type GetChatAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
@@ -2222,9 +2222,19 @@ export const MarkAllMessagesAsSeenDocument = `
     mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
   markAllMessagesAsSeen(chatId: $chatId, userId: $userId) {
     id
-    messages {
+    latestMessage {
       id
       deliveredAt
+      content
+      sender {
+        id
+        firstName
+        lastName
+        username
+        userProfile {
+          photography
+        }
+      }
       seenBy {
         user {
           id
@@ -4259,6 +4269,9 @@ export const GetPrivateChatByIdDocument = `
       id
       content
       deliveredAt
+      sender {
+        id
+      }
     }
   }
 }

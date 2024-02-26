@@ -32,7 +32,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then, When } from "react-if";
 import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 export const PAGE_SIZE = 10;
 
@@ -41,7 +41,7 @@ const ChatPage = () => {
   const { chatId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
-  const debouncedSearch = useDebounce<string>(search, 1000);
+  const [debouncedSearch] = useDebounceValue<string>(search, 1000);
 
   const searchQuery = useMemo(
     () => ({
@@ -58,7 +58,7 @@ const ChatPage = () => {
                 key: "messages.content",
                 value: debouncedSearch ?? "",
                 operator: Operator.Like,
-                fieldType: FieldType.Char,
+                fieldType: FieldType.String,
               },
             ]
           : []),
@@ -87,7 +87,7 @@ const ChatPage = () => {
       searchQuery,
     },
     {
-      refetchInterval: 5000,
+      // refetchInterval: 5000,
       getNextPageParam: (lastPage, allPages) => {
         const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
         const totalItems = lastPage.getChatAdvSearch?.totalElements ?? 0;

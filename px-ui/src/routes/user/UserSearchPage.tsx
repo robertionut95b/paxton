@@ -37,7 +37,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { When } from "react-if";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 const UserSearchPage = () => {
   const { user } = useAuth();
@@ -46,7 +46,7 @@ const UserSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const peopleQuery = searchParams.get("q");
   const [searchQuery, setSearchQuery] = useState(peopleQuery ?? "");
-  const debouncedQuery = useDebounce(searchQuery, 1500);
+  const [debouncedQuery] = useDebounceValue(searchQuery, 1500);
   const [selectedUser, setSelectedUser] = useState<
     React.ComponentProps<typeof ContactRecord>["userConnection"] | null
   >(null);

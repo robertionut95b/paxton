@@ -37,7 +37,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { default as React, useState } from "react";
 import { When } from "react-if";
 import { Link, useNavigate } from "react-router-dom";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 type SortByOptions = "lastModified" | "lastName" | "firstName";
 
@@ -49,7 +49,7 @@ const NetworkMyContactsPage = () => {
     React.ComponentProps<typeof ContactRecord>["userConnection"] | null
   >(null);
   const [searchByName, setSearchByName] = useState<string>("");
-  const searchByNameDebounced = useDebounce(searchByName, 1000);
+  const [searchByNameDebounced] = useDebounceValue(searchByName, 1000);
   const [sortBy, setSortBy] = useState<SortByOptions>("lastModified");
   const [p, setP] = useState(1);
   const [ps, setPs] = useState(API_PAGINATION_SIZE);

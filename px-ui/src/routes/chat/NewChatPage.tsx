@@ -38,7 +38,7 @@ import { uniqBy } from "lodash/fp";
 import { useEffect, useState } from "react";
 import { Else, If, Then, When } from "react-if";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 const NewChatPage = () => {
   const { user } = useAuth();
@@ -47,7 +47,7 @@ const NewChatPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const pChatUser = searchParams.get("chatUser") ?? null;
   const [usrSearch, setUsrSearch] = useState("");
-  const usrSearchDebounced = useDebounce<string>(usrSearch, 1000);
+  const [usrSearchDebounced] = useDebounceValue<string>(usrSearch, 1000);
   const [searchUsers, setSearchUsers] = useState<string[]>([]);
   const chatPageSearchQuery = {
     filters: [

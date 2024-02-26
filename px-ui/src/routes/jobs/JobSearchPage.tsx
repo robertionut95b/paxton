@@ -49,7 +49,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then } from "react-if";
 import { useLocation, useSearchParams } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 import JobsSearchDetailsPage from "./JobsSearchDetailsPage";
 
 const todayIsoFmt = formatISO(new Date());
@@ -81,7 +81,7 @@ const JobSearchPage = () => {
   const contractType = searchParams.get("ct");
 
   const [searchQuery, setSearchQuery] = useState(jobQuery ?? "");
-  const debouncedQuery = useDebounce(searchQuery, 1500);
+  const [debouncedQuery] = useDebounceValue(searchQuery, 1500);
 
   const { data: organizationsData, isInitialLoading: isOrgsLoading } =
     useGetAllOrganizationsQuery(graphqlRequestClient);

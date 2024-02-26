@@ -15,12 +15,14 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Validated
 public class ChatService extends AbstractService<Chat, Long> {
 
     @Autowired
@@ -95,7 +98,7 @@ public class ChatService extends AbstractService<Chat, Long> {
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(authentication, returnObject)")
-    public PaginatedResponse<Chat> getChatAdvSearch(SearchRequest searchRequest) {
+    public PaginatedResponse<Chat> getChatAdvSearch(@Valid SearchRequest searchRequest) {
         searchRequest.getFilters().add(new FilterRequest("chatType", Operator.EQUAL, FieldType.INTEGER, ChatType.PRIVATE_CHAT.ordinal(), null, null));
         return super.advSearch(searchRequest);
     }

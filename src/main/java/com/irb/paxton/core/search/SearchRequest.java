@@ -3,6 +3,7 @@ package com.irb.paxton.core.search;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class SearchRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 8514625832019794838L;
 
+    @Valid
     private List<FilterRequest> filters;
 
     private List<SortRequest> sorts;

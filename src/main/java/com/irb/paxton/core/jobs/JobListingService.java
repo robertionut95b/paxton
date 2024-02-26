@@ -5,18 +5,21 @@ import com.irb.paxton.core.jobs.mapper.JobListingMapper;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 @Service
+@Validated
 public class JobListingService {
 
     @Autowired
@@ -29,7 +32,7 @@ public class JobListingService {
         return this.jobListingRepository.findAll();
     }
 
-    public PaginatedResponse<JobListing> getAllJobListingsPaginatedFiltered(SearchRequest searchRequest) {
+    public PaginatedResponse<JobListing> getAllJobListingsPaginatedFiltered(@Valid SearchRequest searchRequest) {
         if (searchRequest == null) searchRequest = new SearchRequest();
         SearchSpecification<JobListing> jobListingSearchSpecification = new SearchSpecification<>(searchRequest);
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());

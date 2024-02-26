@@ -1,9 +1,7 @@
 package com.irb.paxton.core.search;
 
-import com.irb.paxton.core.search.exceptions.InvalidSearchSyntaxException;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.SemanticException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +9,7 @@ import java.util.List;
 
 @Slf4j
 public enum Operator {
+
     EQUAL {
         public <T> Predicate build(Root<T> root, CriteriaBuilder cb, FilterRequest request, Predicate predicate) {
             Object value = request.getFieldType().parse(request.getValue().toString());
@@ -182,25 +181,13 @@ public enum Operator {
             String[] pathSteps = property.split("\\.");
             String step = pathSteps[0];
             path = root.get(step);
-
             for (int i = 1; i <= pathSteps.length - 1; i++) {
-                path = this.extractValueOrThrow(path, pathSteps[i]);
+                path = path.get(pathSteps[i]);
             }
         } else {
-            path = this.extractValueOrThrow(root, property);
+            path = root.get(property);
         }
         return path;
-    }
-
-    public <Y, T> Path<Y> extractValueOrThrow(Path<T> path, String s) {
-        try {
-            return path.get(s);
-        } catch (RuntimeException ex) {
-            if (ex.getCause() instanceof SemanticException && ex.getMessage().contains("Could not resolve attribute")) {
-                throw new InvalidSearchSyntaxException(ex.getCause().getMessage().split("' of '")[0], ex);
-            }
-            throw ex;
-        }
     }
 
     public abstract <T> Predicate build(Root<T> root, CriteriaBuilder cb, FilterRequest request, Predicate predicate);

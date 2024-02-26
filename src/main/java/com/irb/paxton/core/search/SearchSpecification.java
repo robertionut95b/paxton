@@ -1,6 +1,5 @@
 package com.irb.paxton.core.search;
 
-import com.irb.paxton.core.search.exceptions.InvalidSearchSyntaxException;
 import jakarta.persistence.criteria.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -33,16 +32,7 @@ public class SearchSpecification<T> implements Specification<T> {
 
         for (FilterRequest filter : this.request.getFilters()) {
             log.debug("Requested dataset with filter: '{}', operator - '{}', value - '{}'", filter.getKey(), filter.getOperator().toString(), filter.getValue());
-            try {
-                predicate = filter.getOperator().build(root, cb, filter, predicate);
-            } catch (RuntimeException ex) {
-                if (ex.getMessage().contains("Can't compare test expression of type")) {
-                    // TODO: enrich exception to Graphql type error
-                    throw new InvalidSearchSyntaxException(("Invalid query provided: Cannot compare" +
-                            " attribute \"%s\" to value provided \"%s\"").formatted(filter.getKey(), filter.getValue()), ex);
-                }
-                throw ex;
-            }
+            predicate = filter.getOperator().build(root, cb, filter, predicate);
         }
 
         List<Order> orders = new ArrayList<>();

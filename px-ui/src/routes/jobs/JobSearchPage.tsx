@@ -23,7 +23,9 @@ import {
   Cog6ToothIcon,
   DocumentTextIcon,
   MapIcon,
+  ShieldExclamationIcon,
 } from "@heroicons/react/24/outline";
+import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import {
   Button,
@@ -42,6 +44,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { prettyEnumValue } from "@utils/enumUtils";
 import { formatISO } from "date-fns";
@@ -206,6 +209,14 @@ const JobSearchPage = () => {
       keepPreviousData: true,
       staleTime: 1000 * 60,
       enabled: !isProfileLoading,
+      onError: (err: GraphqlApiResponse) => {
+        showNotification({
+          title: "Job search failed",
+          message: err.response.errors?.[0].message,
+          autoClose: 5000,
+          icon: <ShieldExclamationIcon width={20} />,
+        });
+      },
     },
   );
 

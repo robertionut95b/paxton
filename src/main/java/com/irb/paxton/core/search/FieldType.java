@@ -23,29 +23,15 @@ public enum FieldType {
 
     DATE {
         public Object parse(String value) {
-            Object date = null;
-            try {
-                OffsetDateTime formatter = OffsetDateTime.parse(value);
-                date = formatter.toLocalDate();
-            } catch (Exception e) {
-                log.info("Failed parse field type DATE {}", e.getMessage());
-            }
-
-            return date;
+            OffsetDateTime formatter = OffsetDateTime.parse(value);
+            return formatter.toLocalDate();
         }
     },
 
     DATETIME {
         public Object parse(String value) {
-            Object date = null;
-            try {
-                OffsetDateTime formatter = OffsetDateTime.parse(value);
-                date = formatter.toLocalDateTime();
-            } catch (Exception e) {
-                log.info("Failed parse field type DATETIME {}", e.getMessage());
-            }
-
-            return date;
+            OffsetDateTime formatter = OffsetDateTime.parse(value);
+            return formatter.toLocalDateTime();
         }
     },
 

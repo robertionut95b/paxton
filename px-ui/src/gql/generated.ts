@@ -143,6 +143,15 @@ export type ChatInput = {
   users: Array<InputMaybe<Scalars['Long']['input']>>;
 };
 
+export type ChatLiveUpdate = {
+  __typename?: 'ChatLiveUpdate';
+  id: Scalars['Long']['output'];
+  latestMessage?: Maybe<Message>;
+  title?: Maybe<Scalars['String']['output']>;
+  unreadMessagesCount: Scalars['Int']['output'];
+  users?: Maybe<Array<Maybe<User>>>;
+};
+
 export type ChatPage = {
   __typename?: 'ChatPage';
   list?: Maybe<Array<Maybe<Chat>>>;
@@ -1093,7 +1102,13 @@ export type StudyInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  getLiveUpdatesForChats?: Maybe<ChatLiveUpdate>;
   getMessagesForChatId?: Maybe<Message>;
+};
+
+
+export type SubscriptionGetLiveUpdatesForChatsArgs = {
+  auth: Scalars['String']['input'];
 };
 
 
@@ -1614,6 +1629,13 @@ export type GetMessagesForChatIdSubscriptionVariables = Exact<{
 
 
 export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
+
+export type GetLiveUpdatesForChatsSubscriptionVariables = Exact<{
+  auth: Scalars['String']['input'];
+}>;
+
+
+export type GetLiveUpdatesForChatsSubscription = { __typename?: 'Subscription', getLiveUpdatesForChats?: { __typename?: 'ChatLiveUpdate', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null };
 
 
 
@@ -5021,6 +5043,33 @@ export const GetMessagesForChatIdDocument = `
     }
     deliveredAt
     seenAt
+  }
+}
+    `;
+export const GetLiveUpdatesForChatsDocument = `
+    subscription GetLiveUpdatesForChats($auth: String!) {
+  getLiveUpdatesForChats(auth: $auth) {
+    id
+    unreadMessagesCount
+    title
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
   }
 }
     `;

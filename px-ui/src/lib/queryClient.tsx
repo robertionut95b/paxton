@@ -23,7 +23,7 @@ export const queryClient = new QueryClient({
           if (error.response.errors?.[0].message.includes("does not exist")) {
             showNotification({
               title: "Data fetching error",
-              message: "This object does not exist in our database",
+              message: "No data could be found",
               autoClose: 5000,
               icon: <ExclamationTriangleIcon width={20} />,
             });

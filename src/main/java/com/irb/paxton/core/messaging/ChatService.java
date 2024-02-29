@@ -1,5 +1,6 @@
 package com.irb.paxton.core.messaging;
 
+import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
 import com.irb.paxton.core.messaging.exceptions.ChatNotFoundException;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
@@ -16,6 +17,7 @@ import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -26,11 +28,13 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 @Validated
+@Slf4j
 public class ChatService extends AbstractService<Chat, Long> {
 
     @Autowired
@@ -64,12 +68,33 @@ public class ChatService extends AbstractService<Chat, Long> {
         chat.addMessage(message);
         // publish message to subscribers
         chatStream.publishMessageToRoom(chat.getId(), message);
+        // publish updates to users in chats
+        chat.getUsers().forEach(u -> {
+            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
+            // update this instance by deep cloning and add latest message as the current saving message
+            ChatLiveUpdateDto chatWithLastMsg = this.chatMapper.toChatLiveUpdateDto(chat);
+            chatWithLastMsg.setLatestMessage(message);
+            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
+                // do not send SSE to the current user as it is obsolete
+                chatStream.streamChatUpdateFluxToUser(u.getId(), chatWithLastMsg);
+            }
+        });
         return chatRepository.save(chat);
     }
 
     @Transactional
     public Chat createChat(ChatInput chatInput) {
-        return this.create(chatMapper.toEntity(chatInput));
+        Chat newChat = this.create(chatMapper.toEntity(chatInput));
+        // publish SSE to listeners
+        newChat.getUsers().forEach(u -> {
+            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
+            ChatLiveUpdateDto chatLiveUpdateDto = chatMapper.toChatLiveUpdateDto(newChat);
+            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
+                // do not send SSE to the current user as it is obsolete
+                chatStream.streamChatUpdateFluxToUser(u.getId(), chatLiveUpdateDto);
+            }
+        });
+        return newChat;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
@@ -84,6 +109,15 @@ public class ChatService extends AbstractService<Chat, Long> {
     public Chat updateChat(ChatInput chatInput) {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);
+        // publish SSE to listeners
+        updatedChat.getUsers().forEach(u -> {
+            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
+            ChatLiveUpdateDto chatLiveUpdateDto = chatMapper.toChatLiveUpdateDto(updatedChat);
+            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
+                // do not send SSE to the current user as it is obsolete
+                chatStream.streamChatUpdateFluxToUser(u.getId(), chatLiveUpdateDto);
+            }
+        });
         return chatRepository.save(updatedChat);
     }
 
@@ -138,7 +172,7 @@ public class ChatService extends AbstractService<Chat, Long> {
     @Transactional
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
     public Chat removeChatById(Long chatId) {
-        Chat findChat = this.chatRepository.findById(chatId)
+        Chat findChat = this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
                 .orElseThrow(() -> new ChatNotFoundException("Chat by id %s does not exist".formatted(chatId)));
         this.chatRepository.delete(findChat);
         return findChat;
@@ -147,5 +181,9 @@ public class ChatService extends AbstractService<Chat, Long> {
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
     public Publisher<Message> getChatMessagesPublisher(Long chatId) {
         return chatStream.joinRoom(chatId);
+    }
+
+    public Publisher<ChatLiveUpdateDto> getLiveUpdatesForChats(User user) {
+        return chatStream.joinSseChatUpdatesSinkByUser(user.getId());
     }
 }

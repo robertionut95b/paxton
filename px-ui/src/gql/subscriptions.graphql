@@ -16,3 +16,29 @@ subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
     seenAt
   }
 }
+
+subscription GetLiveUpdatesForChats($auth: String!) {
+  getLiveUpdatesForChats(auth: $auth) {
+    id
+    unreadMessagesCount
+    title
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        firstName
+        lastName
+      }
+    }
+  }
+}

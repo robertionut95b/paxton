@@ -119,6 +119,14 @@ type Chat {
     latestMessage: Message
 }
 
+type ChatLiveUpdate {
+    id: Long!
+    users: [User]
+    title: String
+    latestMessage: Message
+    unreadMessagesCount: Int!
+}
+
 type ChatPage {
     list: [Chat]
     page: Int!
@@ -796,4 +804,5 @@ type Mutation {
 
 type Subscription {
     getMessagesForChatId(chatId: Long!, auth: String!): Message
+    getLiveUpdatesForChats(auth: String!): ChatLiveUpdate
 }

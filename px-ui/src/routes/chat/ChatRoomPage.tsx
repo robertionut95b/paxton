@@ -52,14 +52,19 @@ import {
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import AccessDenied from "@routes/AccessDenied";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
 import { intlFormatDistance } from "date-fns";
 import { produce } from "immer";
 import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then, When } from "react-if";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  Navigate,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useDebounceValue } from "usehooks-ts";
 
 const ChatRoomPage = () => {
@@ -186,6 +191,7 @@ const ChatRoomPage = () => {
             },
           };
       },
+      enabled: !!isInitialLoading && !!isError,
     },
   );
 
@@ -344,6 +350,7 @@ const ChatRoomPage = () => {
           );
         }
       },
+      skip: isInitialLoading || isError,
     },
   );
 
@@ -400,7 +407,7 @@ const ChatRoomPage = () => {
       ?.toLocaleLowerCase()
       .includes("access denied")
   ) {
-    return <AccessDenied />;
+    return <Navigate to="/app/inbox/messages" />;
   }
 
   if (!chatData)
@@ -416,6 +423,9 @@ const ChatRoomPage = () => {
           <ActionIcon color="violet" onClick={() => refetch()}>
             <ArrowUturnRightIcon width={24} title="Retry" />
           </ActionIcon>
+          <Button variant="light" title="Back to conversations">
+            <NavLink to="/app/inbox/messages">Back to conversations</NavLink>
+          </Button>
         </Stack>
       </Center>
     );

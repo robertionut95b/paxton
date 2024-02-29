@@ -1,6 +1,7 @@
 package com.irb.paxton.core.messaging.mapper;
 
 import com.irb.paxton.core.messaging.Chat;
+import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import org.mapstruct.*;
@@ -15,4 +16,6 @@ public abstract class ChatMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "chatType", source = "chatInput.chatType")
     public abstract Chat partialUpdate(ChatInput chatInput, @MappingTarget Chat chat);
+
+    public abstract ChatLiveUpdateDto toChatLiveUpdateDto(Chat chat);
 }

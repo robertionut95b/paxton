@@ -1,5 +1,6 @@
 package com.irb.paxton.core.messaging;
 
+import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.ConnectableFlux;
@@ -16,9 +17,15 @@ public class ChatRoomManager {
 
     private final Map<Long, ConnectableFlux<Message>> chatRooms;
 
+    private final Map<Long, ConnectableFlux<ChatLiveUpdateDto>> chatUpdateChannels;
+
+    private final Map<Long, FluxSink<ChatLiveUpdateDto>> chatUpdateStreams;
+
     private final Map<Long, FluxSink<Message>> chatStreams;
 
     public ChatRoomManager() {
+        this.chatUpdateChannels = new ConcurrentHashMap<>();
+        this.chatUpdateStreams = new ConcurrentHashMap<>();
         this.chatRooms = new ConcurrentHashMap<>();
         this.chatStreams = new ConcurrentHashMap<>();
     }
@@ -51,4 +58,32 @@ public class ChatRoomManager {
                     .formatted(message.getContent().getBytes().length, roomId));
         }
     }
+
+    public ConnectableFlux<ChatLiveUpdateDto> joinSseChatUpdatesSinkByUser(Long userId) {
+        // check if a room is already available
+        ConnectableFlux<ChatLiveUpdateDto> chatUpdates = chatUpdateChannels.get(userId);
+        if (chatUpdates == null) {
+            Flux<ChatLiveUpdateDto> publisher = null;
+            AtomicReference<FluxSink<ChatLiveUpdateDto>> chatUpdatesStream = new AtomicReference<>(chatUpdateStreams.get(userId));
+            if (chatUpdatesStream.get() == null) {
+                publisher = Flux.create(chatUpdatesStream::set);
+            }
+            chatUpdates = publisher.publish();
+            chatUpdates.connect();
+            chatUpdateChannels.put(userId, chatUpdates);
+            chatUpdateStreams.put(userId, chatUpdatesStream.get());
+            log.debug("Chat updates stream created for userId=%d. Initiating...".formatted(userId));
+        }
+        return chatUpdates;
+    }
+
+    public void streamChatUpdateFluxToUser(Long userId, ChatLiveUpdateDto chatUpdate) {
+        FluxSink<ChatLiveUpdateDto> chatUpdatesStream = chatUpdateStreams.get(userId);
+        if (chatUpdatesStream != null) {
+            chatUpdatesStream.next(chatUpdate);
+            log.debug("Chat update [%d bytes] sent to userId=%d"
+                    .formatted(chatUpdate.toString().getBytes().length, userId));
+        }
+    }
+
 }

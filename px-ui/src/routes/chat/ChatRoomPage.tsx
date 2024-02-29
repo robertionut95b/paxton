@@ -191,7 +191,7 @@ const ChatRoomPage = () => {
             },
           };
       },
-      enabled: !!isInitialLoading && !!isError,
+      enabled: !!isInitialLoading || !isError,
     },
   );
 

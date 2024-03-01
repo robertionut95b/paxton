@@ -269,8 +269,7 @@ const ChatRoomPage = () => {
     },
   });
 
-  // eslint-disable-next-line no-empty-pattern
-  const {} = useSubscription<
+  useSubscription<
     GetMessagesForChatIdSubscription,
     GetMessagesForChatIdSubscriptionVariables
   >(

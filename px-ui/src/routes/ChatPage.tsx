@@ -129,8 +129,7 @@ const ChatPage = () => {
     },
   );
 
-  // eslint-disable-next-line no-empty-pattern
-  const {} = useSubscription<
+  useSubscription<
     GetLiveUpdatesForChatsSubscription,
     GetLiveUpdatesForChatsSubscriptionVariables
   >(

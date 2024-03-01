@@ -269,7 +269,7 @@ const ChatRoomPage = () => {
     },
   });
 
-  useSubscription<
+  const { error: isSubError } = useSubscription<
     GetMessagesForChatIdSubscription,
     GetMessagesForChatIdSubscriptionVariables
   >(
@@ -409,7 +409,7 @@ const ChatRoomPage = () => {
     return <Navigate to="/app/inbox/messages" />;
   }
 
-  if (!chatData)
+  if (!chatData || isSubError)
     return (
       <Center h={"100%"}>
         <Stack align="center">

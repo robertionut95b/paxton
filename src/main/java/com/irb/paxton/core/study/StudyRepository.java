@@ -1,8 +1,8 @@
 package com.irb.paxton.core.study;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StudyRepository extends JpaRepository<Study, Long> {
+public interface StudyRepository extends AbstractRepository<Study, Long> {
 }

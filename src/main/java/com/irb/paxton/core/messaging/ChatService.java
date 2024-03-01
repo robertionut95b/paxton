@@ -6,6 +6,7 @@ import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
 import com.irb.paxton.core.messaging.mapper.ChatMapper;
 import com.irb.paxton.core.messaging.mapper.MessageMapper;
+import com.irb.paxton.core.messaging.type.ChatLiveUpdatesManagerService;
 import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
@@ -19,7 +20,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,26 +36,29 @@ import java.util.stream.Stream;
 @Slf4j
 public class ChatService extends AbstractService<Chat, Long> {
 
-    @Autowired
-    private ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
 
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
 
-    @Autowired
-    private MessageMapper messageMapper;
+    private final MessageMapper messageMapper;
 
-    @Autowired
-    private ChatMapper chatMapper;
+    private final ChatMapper chatMapper;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ChatRoomManager chatStream;
+    private final ChatLiveUpdatesManagerService liveUpdatesManagerService;
 
-    public ChatService(AbstractRepository<Chat, Long> repository) {
+    private final ChatRoomManagerService chatRoomManagerService;
+
+    public ChatService(AbstractRepository<Chat, Long> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
         super(repository);
+        this.chatRepository = chatRepository;
+        this.messageRepository = messageRepository;
+        this.messageMapper = messageMapper;
+        this.chatMapper = chatMapper;
+        this.userRepository = userRepository;
+        this.liveUpdatesManagerService = liveUpdatesManagerService;
+        this.chatRoomManagerService = chatRoomManagerService;
     }
 
     @Transactional
@@ -67,18 +69,9 @@ public class ChatService extends AbstractService<Chat, Long> {
         messageRepository.save(message);
         chat.addMessage(message);
         // publish message to subscribers
-        chatStream.publishMessageToRoom(chat.getId(), message);
+        chatRoomManagerService.publishMessageToChannel(chat.getId(), message);
         // publish updates to users in chats
-        chat.getUsers().forEach(u -> {
-            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
-            // update this instance by deep cloning and add latest message as the current saving message
-            ChatLiveUpdateDto chatWithLastMsg = this.chatMapper.toChatLiveUpdateDto(chat);
-            chatWithLastMsg.setLatestMessage(message);
-            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
-                // do not send SSE to the current user as it is obsolete
-                chatStream.streamChatUpdateFluxToUser(u.getId(), chatWithLastMsg);
-            }
-        });
+        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(chat.getUsers(), message, chat);
         return chatRepository.save(chat);
     }
 
@@ -86,14 +79,7 @@ public class ChatService extends AbstractService<Chat, Long> {
     public Chat createChat(ChatInput chatInput) {
         Chat newChat = this.create(chatMapper.toEntity(chatInput));
         // publish SSE to listeners
-        newChat.getUsers().forEach(u -> {
-            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
-            ChatLiveUpdateDto chatLiveUpdateDto = chatMapper.toChatLiveUpdateDto(newChat);
-            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
-                // do not send SSE to the current user as it is obsolete
-                chatStream.streamChatUpdateFluxToUser(u.getId(), chatLiveUpdateDto);
-            }
-        });
+        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(newChat.getUsers(), null, newChat);
         return newChat;
     }
 
@@ -110,14 +96,7 @@ public class ChatService extends AbstractService<Chat, Long> {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);
         // publish SSE to listeners
-        updatedChat.getUsers().forEach(u -> {
-            Optional<String> currentUsername = SecurityUtils.getCurrentUserLogin();
-            ChatLiveUpdateDto chatLiveUpdateDto = chatMapper.toChatLiveUpdateDto(updatedChat);
-            if (currentUsername.isPresent() && !u.getUsername().equalsIgnoreCase(currentUsername.get())) {
-                // do not send SSE to the current user as it is obsolete
-                chatStream.streamChatUpdateFluxToUser(u.getId(), chatLiveUpdateDto);
-            }
-        });
+        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(updatedChat.getUsers(), updatedChat.getLatestMessage(), updatedChat);
         return chatRepository.save(updatedChat);
     }
 
@@ -180,10 +159,10 @@ public class ChatService extends AbstractService<Chat, Long> {
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
     public Publisher<Message> getChatMessagesPublisher(Long chatId) {
-        return chatStream.joinRoom(chatId);
+        return chatRoomManagerService.joinChannel(chatId);
     }
 
     public Publisher<ChatLiveUpdateDto> getLiveUpdatesForChats(User user) {
-        return chatStream.joinSseChatUpdatesSinkByUser(user.getId());
+        return liveUpdatesManagerService.joinChannel(user.getId());
     }
 }

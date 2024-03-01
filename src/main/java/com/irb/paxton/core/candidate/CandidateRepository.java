@@ -1,9 +1,8 @@
 package com.irb.paxton.core.candidate;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
+public interface CandidateRepository extends AbstractRepository<Candidate, Long> {
 }

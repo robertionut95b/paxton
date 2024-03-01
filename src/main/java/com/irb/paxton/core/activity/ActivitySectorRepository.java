@@ -1,8 +1,8 @@
 package com.irb.paxton.core.activity;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ActivitySectorRepository extends JpaRepository<ActivitySector, Long> {
+public interface ActivitySectorRepository extends AbstractRepository<ActivitySector, Long> {
 }

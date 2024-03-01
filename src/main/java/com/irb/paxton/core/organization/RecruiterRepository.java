@@ -15,7 +15,5 @@ public interface RecruiterRepository extends AbstractRepository<Recruiter, Long>
 
     Collection<Recruiter> findByOrganizationSlugName(String organizationSlug);
 
-    boolean existsByUser_IdAndOrganization_Id(Long id, Long id1);
-
     boolean existsByUser_IdAndOrganization_IdNot(Long id, Long id1);
 }

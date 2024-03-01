@@ -1,8 +1,8 @@
 package com.irb.paxton.core.study.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DomainRepository extends JpaRepository<Domain, Long> {
+public interface DomainRepository extends AbstractRepository<Domain, Long> {
 }

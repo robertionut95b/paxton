@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends AbstractRepository<User, Long> {
 
-    Optional<User> findByUserProfile_Id(Long id);
-
     Optional<User> findByEmail(String email);
 
     Optional<User> findByEmailAndAuthProviders(String email, AuthProvider authProviders);

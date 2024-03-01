@@ -1,8 +1,8 @@
 package com.irb.paxton.core.profile.experience;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ExperienceRepository extends JpaRepository<Experience, Long> {
+public interface ExperienceRepository extends AbstractRepository<Experience, Long> {
 }

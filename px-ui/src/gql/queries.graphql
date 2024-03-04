@@ -1,6 +1,7 @@
 query GetCurrentUser {
   getCurrentUser {
     id
+    urlId
     firstName
     lastName
     username
@@ -78,6 +79,7 @@ query GetUserProfile($profileSlugUrl: String) {
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
     id
     user {
+      urlId
       firstName
       lastName
       username
@@ -637,6 +639,33 @@ query GetPrivateChatById($chatId: Long!) {
   }
 }
 
+query GetPrivateChatByUrlId($chatUrlId: String!) {
+  getPrivateChatByUrlId(chatUrlId: $chatUrlId) {
+    id
+    urlId
+    title
+    unreadMessagesCount
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        id
+      }
+    }
+  }
+}
+
 query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
     list {
@@ -671,6 +700,7 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
 query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
   getChatsWithUsersIds(userIds: $userIds, chatType: $chatType) {
     id
+    urlId
     unreadMessagesCount
     title
     users {
@@ -704,6 +734,7 @@ query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
     list {
       id
+      urlId
       unreadMessagesCount
       title
       users {

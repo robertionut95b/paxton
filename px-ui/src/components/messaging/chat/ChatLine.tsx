@@ -57,7 +57,7 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
   const unreadMessages = c?.unreadMessagesCount ?? 0;
 
   return (
-    <NavLink to={`/app/inbox/messages/chat/${c?.id}`}>
+    <NavLink to={`/app/inbox/messages/chat/${c?.urlId}`}>
       <Grid
         my="sm"
         p="xs"

@@ -29,30 +29,45 @@ export type Scalars = {
   Url: { input: String; output: String; }
 };
 
-export type ActivitySector = {
+export type ActivitySector = BaseEntity & {
   __typename?: 'ActivitySector';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
-export type Application = {
+export type Application = BaseEntity & {
   __typename?: 'Application';
   applicantProfile: UserProfile;
   applicationDocuments?: Maybe<Array<Maybe<ApplicationDocument>>>;
   candidate: Candidate;
   chat: ChatResponse;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   currentStep: ProcessSteps;
   dateOfApplication: Scalars['DateTime']['output'];
   id: Scalars['Long']['output'];
   jobListing: JobListing;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   processSteps?: Maybe<Array<Maybe<ApplicationProcessSteps>>>;
   status: ApplicationStatus;
+  urlId: Scalars['String']['output'];
 };
 
-export type ApplicationDocument = {
+export type ApplicationDocument = BaseEntity & {
   __typename?: 'ApplicationDocument';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   document: Document;
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
 export type ApplicationInput = {
@@ -73,12 +88,17 @@ export type ApplicationPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type ApplicationProcessSteps = {
+export type ApplicationProcessSteps = BaseEntity & {
   __typename?: 'ApplicationProcessSteps';
   application: Application;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   processStep: ProcessSteps;
   registeredAt: Scalars['DateTime']['output'];
+  urlId: Scalars['String']['output'];
 };
 
 export type ApplicationProcessStepsInput = {
@@ -100,10 +120,24 @@ export type ApplicationsCountByStep = {
   stepTitle: Scalars['String']['output'];
 };
 
-export type Candidate = {
+export type BaseEntity = {
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
+};
+
+export type Candidate = BaseEntity & {
   __typename?: 'Candidate';
   applications?: Maybe<Array<Maybe<Application>>>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
   user: User;
 };
 
@@ -115,10 +149,15 @@ export type CandidatePage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type Certification = {
+export type Certification = BaseEntity & {
   __typename?: 'Certification';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
 export type CertificationInput = {
@@ -149,13 +188,18 @@ export type ChatPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type ChatResponse = {
+export type ChatResponse = BaseEntity & {
   __typename?: 'ChatResponse';
   chatType?: Maybe<ChatType>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   latestMessage?: Maybe<Message>;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   title?: Maybe<Scalars['String']['output']>;
   unreadMessagesCount: Scalars['Int']['output'];
+  urlId: Scalars['String']['output'];
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -165,22 +209,32 @@ export enum ChatType {
   PrivateChat = 'PRIVATE_CHAT'
 }
 
-export type City = {
+export type City = BaseEntity & {
   __typename?: 'City';
   country: Country;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
-export type Connection = {
+export type Connection = BaseEntity & {
   __typename?: 'Connection';
   addressed: User;
   connectionStatus: ConnectionStatus;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   lastModified: Scalars['DateTime']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   requester: User;
+  urlId: Scalars['String']['output'];
 };
 
 export type ConnectionCreateInput = {
@@ -222,40 +276,62 @@ export enum ContractType {
   TemporaryEmployee = 'TEMPORARY_EMPLOYEE'
 }
 
-export type Country = {
+export type Country = BaseEntity & {
   __typename?: 'Country';
   cities?: Maybe<Array<Maybe<City>>>;
   code: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type Document = {
-  __typename?: 'Document';
-  name: Scalars['String']['output'];
-};
-
-export type Domain = {
-  __typename?: 'Domain';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
+};
+
+export type Document = BaseEntity & {
+  __typename?: 'Document';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
+};
+
+export type Domain = BaseEntity & {
+  __typename?: 'Domain';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   studies?: Maybe<Array<Maybe<Study>>>;
+  urlId: Scalars['String']['output'];
 };
 
 export type DomainInput = {
   name: Scalars['String']['input'];
 };
 
-export type Experience = {
+export type Experience = BaseEntity & {
   __typename?: 'Experience';
   activitySector: ActivitySector;
   city?: Maybe<City>;
   contractType: ContractType;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   endDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   organization?: Maybe<Organization>;
   startDate: Scalars['Date']['output'];
   title: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
   userProfile: UserProfile;
 };
 
@@ -293,13 +369,18 @@ export type FiltersInput = {
   values?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
-export type Institution = {
+export type Institution = BaseEntity & {
   __typename?: 'Institution';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   photography?: Maybe<Scalars['String']['output']>;
   studies?: Maybe<Array<Maybe<Study>>>;
+  urlId: Scalars['String']['output'];
 };
 
 export type InstitutionInput = {
@@ -308,18 +389,28 @@ export type InstitutionInput = {
   photography?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Job = {
+export type Job = BaseEntity & {
   __typename?: 'Job';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   jobListings?: Maybe<Array<Maybe<JobListing>>>;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
-export type JobCategory = {
+export type JobCategory = BaseEntity & {
   __typename?: 'JobCategory';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
 export type JobCategoryInput = {
@@ -333,7 +424,7 @@ export type JobInput = {
   name: Scalars['String']['input'];
 };
 
-export type JobListing = {
+export type JobListing = BaseEntity & {
   __typename?: 'JobListing';
   applications?: Maybe<Array<Maybe<Application>>>;
   availableFrom: Scalars['Date']['output'];
@@ -341,15 +432,20 @@ export type JobListing = {
   category?: Maybe<JobCategory>;
   city: City;
   contractType: ContractType;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   formattedDescription: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   isActive?: Maybe<Scalars['Boolean']['output']>;
   job: Job;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   numberOfVacancies: Scalars['Int']['output'];
   organization: Organization;
   recruiter?: Maybe<Recruiter>;
   title: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
   workType: WorkType;
 };
 
@@ -386,15 +482,20 @@ export type JobPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type Message = {
+export type Message = BaseEntity & {
   __typename?: 'Message';
   chat?: Maybe<ChatResponse>;
   content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   deliveredAt: Scalars['DateTime']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   seenAt?: Maybe<Scalars['DateTime']['output']>;
   seenBy?: Maybe<Array<Maybe<MessageSeenBy>>>;
   sender: User;
+  urlId: Scalars['String']['output'];
 };
 
 export type MessageInput = {
@@ -412,10 +513,16 @@ export type MessagePage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type MessageSeenBy = {
+export type MessageSeenBy = BaseEntity & {
   __typename?: 'MessageSeenBy';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
   message: Message;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   seenAt: Scalars['DateTime']['output'];
+  urlId: Scalars['String']['output'];
   user: User;
 };
 
@@ -626,17 +733,21 @@ export enum Operator {
   NotIn = 'NOT_IN'
 }
 
-export type Organization = {
+export type Organization = BaseEntity & {
   __typename?: 'Organization';
   activitySector: ActivitySector;
   affiliates?: Maybe<Array<Maybe<Organization>>>;
   companySize: OrganizationSize;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   foundedAt: Scalars['Date']['output'];
   headQuarters: City;
   id: Scalars['Long']['output'];
   jobs?: Maybe<Array<Maybe<JobListing>>>;
   locations?: Maybe<Array<Maybe<City>>>;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   photography?: Maybe<Scalars['String']['output']>;
   recruiters?: Maybe<Array<Maybe<Recruiter>>>;
@@ -644,6 +755,7 @@ export type Organization = {
   slogan: Scalars['String']['output'];
   slugName: Scalars['String']['output'];
   specializations?: Maybe<Array<Maybe<Specialization>>>;
+  urlId: Scalars['String']['output'];
   webSite?: Maybe<Scalars['Url']['output']>;
 };
 
@@ -673,27 +785,42 @@ export enum OrganizationSize {
   Over_10000 = 'OVER_10000'
 }
 
-export type Photography = {
+export type Photography = BaseEntity & {
   __typename?: 'Photography';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
   userProfile?: Maybe<UserProfile>;
 };
 
-export type Privilege = {
+export type Privilege = BaseEntity & {
   __typename?: 'Privilege';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  urlId: Scalars['String']['output'];
 };
 
-export type Process = {
+export type Process = BaseEntity & {
   __typename?: 'Process';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   organizations?: Maybe<Array<Maybe<Organization>>>;
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
+  urlId: Scalars['String']['output'];
 };
 
 export type ProcessInput = {
@@ -720,13 +847,18 @@ export type ProcessPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type ProcessSteps = {
+export type ProcessSteps = BaseEntity & {
   __typename?: 'ProcessSteps';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   order: Scalars['Int']['output'];
   process: Process;
   status: Status;
   step: Step;
+  urlId: Scalars['String']['output'];
 };
 
 export type ProcessStepsInput = {
@@ -783,6 +915,7 @@ export type Query = {
   getOrganizationById?: Maybe<Organization>;
   getOrganizationBySlugName?: Maybe<Organization>;
   getPrivateChatById?: Maybe<ChatResponse>;
+  getPrivateChatByUrlId?: Maybe<ChatResponse>;
   getRecruiterById?: Maybe<Recruiter>;
   getRelatedJobListings?: Maybe<Array<Maybe<JobListing>>>;
   getStepsByProcess?: Maybe<Array<Maybe<Step>>>;
@@ -924,6 +1057,11 @@ export type QueryGetPrivateChatByIdArgs = {
 };
 
 
+export type QueryGetPrivateChatByUrlIdArgs = {
+  chatUrlId: Scalars['String']['input'];
+};
+
+
 export type QueryGetRecruiterByIdArgs = {
   recruiterId: Scalars['Long']['input'];
 };
@@ -943,13 +1081,18 @@ export type QueryGetUserProfileArgs = {
   profileSlugUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Recruiter = {
+export type Recruiter = BaseEntity & {
   __typename?: 'Recruiter';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   isActive: Scalars['Boolean']['output'];
   lastActive?: Maybe<Scalars['DateTime']['output']>;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   organization: Organization;
   registeredAt: Scalars['DateTime']['output'];
+  urlId: Scalars['String']['output'];
   user: User;
 };
 
@@ -968,11 +1111,16 @@ export type RecruiterPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type Role = {
+export type Role = BaseEntity & {
   __typename?: 'Role';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   name: Scalars['String']['output'];
   privileges?: Maybe<Array<Maybe<Privilege>>>;
+  urlId: Scalars['String']['output'];
 };
 
 export type SearchQueryInput = {
@@ -1047,12 +1195,17 @@ export enum Status {
   Removed = 'REMOVED'
 }
 
-export type Step = {
+export type Step = BaseEntity & {
   __typename?: 'Step';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   processSteps?: Maybe<Array<Maybe<ProcessSteps>>>;
   title: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
 };
 
 export type StepInput = {
@@ -1060,16 +1213,21 @@ export type StepInput = {
   title: Scalars['String']['input'];
 };
 
-export type Study = {
+export type Study = BaseEntity & {
   __typename?: 'Study';
   certification?: Maybe<Certification>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   degree?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   domainStudy?: Maybe<Domain>;
   endDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['Long']['output'];
   institution: Institution;
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   startDate: Scalars['Date']['output'];
+  urlId: Scalars['String']['output'];
   userProfile: UserProfile;
 };
 
@@ -1102,24 +1260,34 @@ export type SubscriptionGetMessagesForChatIdArgs = {
   chatId: Scalars['Long']['input'];
 };
 
-export type User = {
+export type User = BaseEntity & {
   __typename?: 'User';
   birthDate?: Maybe<Scalars['Date']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   displayName: Scalars['String']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['Long']['output'];
   isEmailConfirmed: Scalars['Boolean']['output'];
   lastName: Scalars['String']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   roles?: Maybe<Array<Maybe<Role>>>;
+  urlId: Scalars['String']['output'];
   userProfile: UserProfile;
   username: Scalars['String']['output'];
 };
 
-export type UserConnection = {
+export type UserConnection = BaseEntity & {
   __typename?: 'UserConnection';
   connectedAt: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
   user: User;
 };
 
@@ -1139,17 +1307,22 @@ export type UserPage = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type UserProfile = {
+export type UserProfile = BaseEntity & {
   __typename?: 'UserProfile';
   city?: Maybe<City>;
   coverPhotography?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   experiences?: Maybe<Array<Maybe<Experience>>>;
   id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
   photography?: Maybe<Scalars['String']['output']>;
   profileSlugUrl: Scalars['String']['output'];
   profileTitle: Scalars['String']['output'];
   studies?: Maybe<Array<Maybe<Study>>>;
+  urlId: Scalars['String']['output'];
   user: User;
 };
 
@@ -1288,14 +1461,14 @@ export type CreateChatMutationVariables = Exact<{
 }>;
 
 
-export type CreateChatMutation = { __typename?: 'Mutation', createChat?: { __typename?: 'ChatResponse', id: number } | null };
+export type CreateChatMutation = { __typename?: 'Mutation', createChat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null };
 
 export type AddMessageToChatMutationVariables = Exact<{
   MessageInput: MessageInput;
 }>;
 
 
-export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'ChatResponse', id: number, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
+export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'ChatResponse', id: number, urlId: string, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
 
 export type MarkAllMessagesAsSeenMutationVariables = Exact<{
   chatId: Scalars['Long']['input'];
@@ -1372,7 +1545,7 @@ export type RemoveUserProfileExperienceMutation = { __typename?: 'Mutation', rem
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser?: { __typename?: 'User', id: number, firstName: string, lastName: string, username: string } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser?: { __typename?: 'User', id: number, urlId: string, firstName: string, lastName: string, username: string } | null };
 
 export type GetAllJobListingsQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -1386,7 +1559,7 @@ export type GetUserProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: number, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: number, title: string, contractType: ContractType, startDate: Date, endDate?: Date | null, description: string, organization?: { __typename?: 'Organization', id: number, name: string, photography?: string | null, activitySector: { __typename?: 'ActivitySector', id: number, name: string } } | null, city?: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: number, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: number, degree?: string | null, description?: string | null, startDate: Date, endDate?: Date | null, institution: { __typename?: 'Institution', id: number, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: number, name: string } | null, certification?: { __typename?: 'Certification', id: number, name: string } | null } | null> | null } | null };
+export type GetUserProfileQuery = { __typename?: 'Query', getUserProfile?: { __typename?: 'UserProfile', id: number, photography?: string | null, coverPhotography?: string | null, description?: string | null, profileSlugUrl: string, profileTitle: string, user: { __typename?: 'User', urlId: string, firstName: string, lastName: string, username: string }, city?: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, experiences?: Array<{ __typename?: 'Experience', id: number, title: string, contractType: ContractType, startDate: Date, endDate?: Date | null, description: string, organization?: { __typename?: 'Organization', id: number, name: string, photography?: string | null, activitySector: { __typename?: 'ActivitySector', id: number, name: string } } | null, city?: { __typename?: 'City', id: number, name: string, country: { __typename?: 'Country', code: string, name: string } } | null, activitySector: { __typename?: 'ActivitySector', id: number, name: string } } | null> | null, studies?: Array<{ __typename?: 'Study', id: number, degree?: string | null, description?: string | null, startDate: Date, endDate?: Date | null, institution: { __typename?: 'Institution', id: number, name: string, description?: string | null, photography?: string | null }, domainStudy?: { __typename?: 'Domain', id: number, name: string } | null, certification?: { __typename?: 'Certification', id: number, name: string } | null } | null> | null } | null };
 
 export type GetCountriesCitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1531,6 +1704,13 @@ export type GetPrivateChatByIdQueryVariables = Exact<{
 
 export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
 
+export type GetPrivateChatByUrlIdQueryVariables = Exact<{
+  chatUrlId: Scalars['String']['input'];
+}>;
+
+
+export type GetPrivateChatByUrlIdQuery = { __typename?: 'Query', getPrivateChatByUrlId?: { __typename?: 'ChatResponse', id: number, urlId: string, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
+
 export type GetChatAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
 }>;
@@ -1544,14 +1724,14 @@ export type GetChatsWithUsersIdsQueryVariables = Exact<{
 }>;
 
 
-export type GetChatsWithUsersIdsQuery = { __typename?: 'Query', getChatsWithUsersIds?: Array<{ __typename?: 'ChatResponse', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null };
+export type GetChatsWithUsersIdsQuery = { __typename?: 'Query', getChatsWithUsersIds?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null };
 
 export type GetChatLinesAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
 }>;
 
 
-export type GetChatLinesAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null } | null };
+export type GetChatLinesAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null } | null };
 
 export type GetMessagesPaginatedQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
@@ -2149,6 +2329,7 @@ export const CreateChatDocument = `
     mutation CreateChat($ChatInput: ChatInput!) {
   createChat(ChatInput: $ChatInput) {
     id
+    urlId
   }
 }
     `;
@@ -2177,6 +2358,7 @@ export const AddMessageToChatDocument = `
     mutation AddMessageToChat($MessageInput: MessageInput!) {
   addMessageToChat(MessageInput: $MessageInput) {
     id
+    urlId
     latestMessage {
       id
       content
@@ -2561,6 +2743,7 @@ export const GetCurrentUserDocument = `
     query GetCurrentUser {
   getCurrentUser {
     id
+    urlId
     firstName
     lastName
     username
@@ -2724,6 +2907,7 @@ export const GetUserProfileDocument = `
   getUserProfile(profileSlugUrl: $profileSlugUrl) {
     id
     user {
+      urlId
       firstName
       lastName
       username
@@ -4314,6 +4498,76 @@ useInfiniteGetPrivateChatByIdQuery.getKey = (variables: GetPrivateChatByIdQueryV
 
 useGetPrivateChatByIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatByIdQuery, GetPrivateChatByIdQueryVariables>(client, GetPrivateChatByIdDocument, variables, headers);
 
+export const GetPrivateChatByUrlIdDocument = `
+    query GetPrivateChatByUrlId($chatUrlId: String!) {
+  getPrivateChatByUrlId(chatUrlId: $chatUrlId) {
+    id
+    urlId
+    title
+    unreadMessagesCount
+    users {
+      id
+      username
+      firstName
+      lastName
+      userProfile {
+        photography
+        profileTitle
+      }
+    }
+    latestMessage {
+      id
+      content
+      deliveredAt
+      sender {
+        id
+      }
+    }
+  }
+}
+    `;
+
+export const useGetPrivateChatByUrlIdQuery = <
+      TData = GetPrivateChatByUrlIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetPrivateChatByUrlIdQueryVariables,
+      options?: UseQueryOptions<GetPrivateChatByUrlIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<GetPrivateChatByUrlIdQuery, TError, TData>(
+      ['GetPrivateChatByUrlId', variables],
+      fetcher<GetPrivateChatByUrlIdQuery, GetPrivateChatByUrlIdQueryVariables>(client, GetPrivateChatByUrlIdDocument, variables, headers),
+      options
+    )};
+
+useGetPrivateChatByUrlIdQuery.document = GetPrivateChatByUrlIdDocument;
+
+useGetPrivateChatByUrlIdQuery.getKey = (variables: GetPrivateChatByUrlIdQueryVariables) => ['GetPrivateChatByUrlId', variables];
+
+export const useInfiniteGetPrivateChatByUrlIdQuery = <
+      TData = GetPrivateChatByUrlIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetPrivateChatByUrlIdQueryVariables,
+      options?: UseInfiniteQueryOptions<GetPrivateChatByUrlIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<GetPrivateChatByUrlIdQuery, TError, TData>(
+      ['GetPrivateChatByUrlId.infinite', variables],
+      (metaData) => fetcher<GetPrivateChatByUrlIdQuery, GetPrivateChatByUrlIdQueryVariables>(client, GetPrivateChatByUrlIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    )};
+
+useInfiniteGetPrivateChatByUrlIdQuery.getKey = (variables: GetPrivateChatByUrlIdQueryVariables) => ['GetPrivateChatByUrlId.infinite', variables];
+
+
+useGetPrivateChatByUrlIdQuery.fetcher = (client: GraphQLClient, variables: GetPrivateChatByUrlIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetPrivateChatByUrlIdQuery, GetPrivateChatByUrlIdQueryVariables>(client, GetPrivateChatByUrlIdDocument, variables, headers);
+
 export const GetChatAdvSearchDocument = `
     query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
   getChatAdvSearch(searchQuery: $searchQuery) {
@@ -4392,6 +4646,7 @@ export const GetChatsWithUsersIdsDocument = `
     query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
   getChatsWithUsersIds(userIds: $userIds, chatType: $chatType) {
     id
+    urlId
     unreadMessagesCount
     title
     users {
@@ -4468,6 +4723,7 @@ export const GetChatLinesAdvSearchDocument = `
   getChatAdvSearch(searchQuery: $searchQuery) {
     list {
       id
+      urlId
       unreadMessagesCount
       title
       users {

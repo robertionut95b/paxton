@@ -147,7 +147,7 @@ const NewChatPage = () => {
               searchQuery: chatPageSearchQuery,
             }),
           );
-          navigate(`/app/inbox/messages/chat/${data?.addMessageToChat?.id}`);
+          navigate(`/app/inbox/messages/chat/${data?.addMessageToChat?.urlId}`);
         }
       },
     },
@@ -164,7 +164,7 @@ const NewChatPage = () => {
         MessageInput: {
           chatId: chatSearchByMembersData?.[0]?.id ?? 0,
           content: values.content,
-          senderUserId: Number(values.senderUserId) ?? 0,
+          senderUserId: Number(values.senderUserId),
         },
       });
       await queryClient.invalidateQueries(
@@ -177,8 +177,8 @@ const NewChatPage = () => {
           searchQuery: {
             filters: [
               {
-                key: "chat.id",
-                value: String(chatSearchByMembersData?.[0]?.id) ?? "",
+                key: "chat.urlId",
+                value: String(chatSearchByMembersData?.[0]?.urlId) ?? "",
                 operator: Operator.Equal,
                 fieldType: FieldType.Long,
               },
@@ -195,7 +195,7 @@ const NewChatPage = () => {
         }),
       );
       return navigate(
-        `/app/inbox/messages/chat/${chatSearchByMembersData?.[0]?.id}`,
+        `/app/inbox/messages/chat/${chatSearchByMembersData?.[0]?.urlId}`,
       );
     } else {
       if (!user?.userId) return;
@@ -214,7 +214,7 @@ const NewChatPage = () => {
             senderUserId: values.senderUserId ?? 0,
           },
         });
-        navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
+        navigate(`/app/inbox/messages/chat/${data?.createChat?.urlId}`);
         queryClient.invalidateQueries(
           useInfiniteGetChatLinesAdvSearchQuery.getKey({
             searchQuery: chatPageSearchQuery,

@@ -189,6 +189,7 @@ const ChatPage = () => {
         .map((d) => ({
           ...d,
           id: d?.id ?? 0,
+          urlId: d?.urlId ?? "",
           unreadMessagesCount: d?.unreadMessagesCount as number,
           users: d?.users?.filter(
             (u) => String(u?.id) !== String(user?.userId),
@@ -265,7 +266,7 @@ const ChatPage = () => {
                                 <div key={c?.id ?? 0 + idx}>
                                   <ChatLine
                                     chat={c}
-                                    active={chatId === String(c.id)}
+                                    active={chatId === String(c.urlId)}
                                   />
                                 </div>
                               ),

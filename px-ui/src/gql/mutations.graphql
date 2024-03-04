@@ -176,12 +176,14 @@ mutation AddMessageToApplicationChat(
 mutation CreateChat($ChatInput: ChatInput!) {
   createChat(ChatInput: $ChatInput) {
     id
+    urlId
   }
 }
 
 mutation AddMessageToChat($MessageInput: MessageInput!) {
   addMessageToChat(MessageInput: $MessageInput) {
     id
+    urlId
     latestMessage {
       id
       content

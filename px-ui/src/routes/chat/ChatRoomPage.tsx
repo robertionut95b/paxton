@@ -19,6 +19,7 @@ import {
   SortDirection,
   useAddMessageToChatMutation,
   useGetPrivateChatByIdQuery,
+  useGetPrivateChatByUrlIdQuery,
   useGetUserProfileQuery,
   useInfiniteGetChatLinesAdvSearchQuery,
   useInfiniteGetMessagesPaginatedQuery,
@@ -102,10 +103,10 @@ const ChatRoomPage = () => {
     () => ({
       filters: [
         {
-          key: "chat.id",
+          key: "chat.urlId",
           value: chatId as string,
           operator: Operator.Equal,
-          fieldType: FieldType.Long,
+          fieldType: FieldType.String,
         },
         ...(debouncedSearch
           ? [
@@ -143,16 +144,16 @@ const ChatRoomPage = () => {
     error,
     isError,
     refetch,
-  } = useGetPrivateChatByIdQuery(
+  } = useGetPrivateChatByUrlIdQuery(
     graphqlRequestClient,
     {
-      chatId: Number(chatId),
+      chatUrlId: chatId ?? "",
     },
     {
       select: (data) => ({
         getPrivateChatById: {
-          ...data.getPrivateChatById,
-          users: data?.getPrivateChatById?.users?.filter(
+          ...data.getPrivateChatByUrlId,
+          users: data?.getPrivateChatByUrlId?.users?.filter(
             (u) => String(u?.id) !== String(user?.userId),
           ),
         },
@@ -283,7 +284,7 @@ const ChatRoomPage = () => {
     {
       variables: {
         auth: accessToken!,
-        chatId: Number(chatId),
+        chatId: chatData?.getPrivateChatById?.id ?? 0,
       },
       onData: (opts) => {
         const newMessage = opts.data.data?.getMessagesForChatId;
@@ -395,7 +396,7 @@ const ChatRoomPage = () => {
   }) => {
     addMessageToChat({
       MessageInput: {
-        chatId: Number(chatId),
+        chatId: chatData?.getPrivateChatById.id ?? 0,
         content: values.content,
         senderUserId: Number(values.senderUserId),
       },

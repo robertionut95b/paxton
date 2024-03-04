@@ -31,7 +31,6 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { PAGE_SIZE } from "@routes/ChatPage";
 import { useQueryClient } from "@tanstack/react-query";
 import { uniqBy } from "lodash/fp";
 import { useEffect, useState } from "react";
@@ -48,6 +47,7 @@ const NewChatPage = () => {
   const [usrSearch, setUsrSearch] = useState("");
   const [usrSearchDebounced] = useDebounceValue<string>(usrSearch, 1000);
   const [searchUsers, setSearchUsers] = useState<string[]>([]);
+
   const chatPageSearchQuery = {
     filters: [
       {
@@ -74,7 +74,7 @@ const NewChatPage = () => {
       },
     ],
     page: 0,
-    size: PAGE_SIZE,
+    size: API_PAGINATION_SIZE,
   };
   const [usersSelectItems, setUsersSelectItem] = useState<ISelectItem[]>([]);
 
@@ -238,7 +238,7 @@ const NewChatPage = () => {
         searchQuery: chatPageSearchQuery,
       }),
     );
-    if (data) navigate(`/app/inbox/messages/chat/${data?.createChat?.id}`);
+    if (data) navigate(`/app/inbox/messages/chat/${data?.createChat?.urlId}`);
   };
 
   const chatLines = chatSearchByMembersData ?? [];

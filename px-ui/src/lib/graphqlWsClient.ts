@@ -16,6 +16,11 @@ const webSocketLink = new GraphQLWsLink(
   createClient({
     url: APP_GQL_WS_ENDPOINT,
     lazy: true,
+    shouldRetry: () => true,
+    retryAttempts: 10,
+    retryWait: async (attempt) => {
+      await new Promise((resolve) => setTimeout(resolve, attempt * 7000));
+    },
   }),
 );
 

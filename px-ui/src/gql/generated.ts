@@ -177,6 +177,7 @@ export type ChatLiveUpdate = {
   latestMessage?: Maybe<Message>;
   title?: Maybe<Scalars['String']['output']>;
   unreadMessagesCount: Scalars['Int']['output'];
+  urlId: Scalars['String']['output'];
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -1738,7 +1739,7 @@ export type GetMessagesPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null> | null } | null };
+export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null> | null } | null };
 
 export type GetAllStepsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1793,14 +1794,14 @@ export type GetMessagesForChatIdSubscriptionVariables = Exact<{
 }>;
 
 
-export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
+export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, urlId: string, content: string, deliveredAt: Date, seenAt?: Date | null, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
 
 export type GetLiveUpdatesForChatsSubscriptionVariables = Exact<{
   auth: Scalars['String']['input'];
 }>;
 
 
-export type GetLiveUpdatesForChatsSubscription = { __typename?: 'Subscription', getLiveUpdatesForChats?: { __typename?: 'ChatLiveUpdate', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
+export type GetLiveUpdatesForChatsSubscription = { __typename?: 'Subscription', getLiveUpdatesForChats?: { __typename?: 'ChatLiveUpdate', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
 
 
 
@@ -4817,6 +4818,10 @@ export const GetMessagesPaginatedDocument = `
       }
       deliveredAt
       seenAt
+      chat {
+        id
+        urlId
+      }
     }
     page
     totalPages
@@ -5242,7 +5247,12 @@ export const GetMessagesForChatIdDocument = `
     subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
   getMessagesForChatId(chatId: $chatId, auth: $auth) {
     id
+    urlId
     content
+    chat {
+      id
+      urlId
+    }
     sender {
       id
       username
@@ -5262,6 +5272,7 @@ export const GetLiveUpdatesForChatsDocument = `
     subscription GetLiveUpdatesForChats($auth: String!) {
   getLiveUpdatesForChats(auth: $auth) {
     id
+    urlId
     unreadMessagesCount
     title
     users {

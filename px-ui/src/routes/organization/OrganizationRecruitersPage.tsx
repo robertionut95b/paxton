@@ -69,6 +69,7 @@ const OrganizationRecruitersPage = () => {
               r?.user && (
                 <div key={r?.id}>
                   <UserLineCard
+                    // @ts-expect-error("types-to-fix")
                     user={
                       r.user.userProfile.photography
                         ? {

@@ -1,7 +1,12 @@
 subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
   getMessagesForChatId(chatId: $chatId, auth: $auth) {
     id
+    urlId
     content
+    chat {
+      id
+      urlId
+    }
     sender {
       id
       username
@@ -20,6 +25,7 @@ subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
 subscription GetLiveUpdatesForChats($auth: String!) {
   getLiveUpdatesForChats(auth: $auth) {
     id
+    urlId
     unreadMessagesCount
     title
     users {

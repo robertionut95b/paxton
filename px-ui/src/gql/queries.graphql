@@ -785,6 +785,10 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
       }
       deliveredAt
       seenAt
+      chat {
+        id
+        urlId
+      }
     }
     page
     totalPages

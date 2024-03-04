@@ -1,5 +1,7 @@
 package com.irb.paxton.core.messaging;
 
+import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
+import com.irb.paxton.core.messaging.jpalisteners.ChatEntityListener;
 import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.SecurityUtils;
@@ -26,6 +28,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
+@EntityListeners(ChatEntityListener.class)
 public class Chat extends PaxtonEntity {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -111,5 +114,20 @@ public class Chat extends PaxtonEntity {
                     .filter(m -> m.getSeenBy().stream().noneMatch(ms -> ms.getUser().getUsername().equals(username)))
                     .count();
         } else this.unreadMessagesCount = 0;
+    }
+
+    public ChatLiveUpdateDto toChatLiveUpdateDto() {
+        ChatLiveUpdateDto chatLiveUpdateDto = new ChatLiveUpdateDto();
+        chatLiveUpdateDto.setId(this.getId());
+        chatLiveUpdateDto.setUrlId(this.getUrlId());
+        Collection<User> collection = this.getUsers();
+        if (collection != null) {
+            chatLiveUpdateDto.setUsers(new ArrayList<>(collection));
+        }
+        chatLiveUpdateDto.setTitle(this.getTitle());
+        chatLiveUpdateDto.setLatestMessage(this.getLatestMessage());
+        chatLiveUpdateDto.setUnreadMessagesCount(this.getUnreadMessagesCount());
+
+        return chatLiveUpdateDto;
     }
 }

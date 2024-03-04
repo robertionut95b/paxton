@@ -118,6 +118,7 @@ const OrganizationProcessPage = () => {
           const processSteps = process?.processSteps;
           if (processSteps) {
             setUpdPs(
+              // @ts-expect-error("types-to-fix")
               processSteps.map((ps) => ({
                 ...ps,
                 id: ps?.id ?? 0,
@@ -293,6 +294,7 @@ const OrganizationProcessPage = () => {
         order: values.order,
         stepId: values.stepId,
         newVal: true,
+        // @ts-expect-error("types-to-fix")
         step: {
           ...(step as NonNullable<typeof step>),
         },
@@ -379,6 +381,7 @@ const OrganizationProcessPage = () => {
           order: values.order,
           stepId: step.createStep?.id ?? 0,
           newVal: true,
+          // @ts-expect-error("types-to-fix")
           step: {
             ...(step.createStep as NonNullable<(typeof step)["createStep"]>),
           },

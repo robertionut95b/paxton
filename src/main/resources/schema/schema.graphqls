@@ -159,6 +159,7 @@ type ChatResponse implements BaseEntity {
 
 type ChatLiveUpdate {
     id: Long!
+    urlId: String!
     users: [User]
     title: String
     latestMessage: Message

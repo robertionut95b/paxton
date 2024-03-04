@@ -3,6 +3,7 @@ import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatLinesSkeleton from "@components/messaging/chat/ChatLinesSkeleton";
+import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   FieldType,
   GetChatLinesAdvSearchQuery,
@@ -46,8 +47,6 @@ import { Else, If, Then, When } from "react-if";
 import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
 import { useDebounceValue } from "usehooks-ts";
 
-export const PAGE_SIZE = 10;
-
 const ChatPage = () => {
   const { user, accessToken } = useAuth();
   const { chatId } = useParams();
@@ -82,7 +81,7 @@ const ChatPage = () => {
         },
       ],
       page: 0,
-      size: PAGE_SIZE,
+      size: API_PAGINATION_SIZE,
     }),
     [user?.userId, debouncedSearch],
   );
@@ -102,9 +101,8 @@ const ChatPage = () => {
       searchQuery,
     },
     {
-      // refetchInterval: 5000,
       getNextPageParam: (lastPage, allPages) => {
-        const offset: number = (allPages.length ?? 1) * PAGE_SIZE;
+        const offset: number = (allPages.length ?? 1) * API_PAGINATION_SIZE;
         const totalItems = lastPage.getChatAdvSearch?.totalElements ?? 0;
         const currPage = (lastPage.getChatAdvSearch?.page ?? 0) + 1;
         if (offset < totalItems)
@@ -142,41 +140,39 @@ const ChatPage = () => {
       },
       onData: (opts) => {
         const chatUpdate = opts.data.data?.getLiveUpdatesForChats;
-        if (chatUpdate) {
-          // find if this chat update data is corresponding to an update or new chat creation
-          queryClient.setQueryData<InfiniteData<GetChatLinesAdvSearchQuery>>(
-            useInfiniteGetChatLinesAdvSearchQuery.getKey({
-              searchQuery,
-            }),
-            (prevData) =>
-              prevData
-                ? produce(prevData, (draft) => {
-                    const currentChatPage = draft.pages.filter((p) =>
-                      p.getChatAdvSearch?.list?.filter(
-                        (cl) => cl?.id === chatUpdate.id,
-                      ),
+        if (!chatUpdate) return;
+        // find if this chat update data is corresponding to an update or new chat creation
+        queryClient.setQueryData<InfiniteData<GetChatLinesAdvSearchQuery>>(
+          useInfiniteGetChatLinesAdvSearchQuery.getKey({
+            searchQuery,
+          }),
+          (prevData) =>
+            prevData
+              ? produce(prevData, (draft) => {
+                  const currentChatPage = draft.pages.filter((p) =>
+                    p.getChatAdvSearch?.list?.filter(
+                      (cl) => cl?.id === chatUpdate.id,
+                    ),
+                  )[0];
+                  const currentChatLine =
+                    currentChatPage.getChatAdvSearch?.list?.filter(
+                      (cl) => cl?.id === chatUpdate.id,
                     )[0];
-                    const currentChatLine =
-                      currentChatPage.getChatAdvSearch?.list?.filter(
-                        (cl) => cl?.id === chatUpdate.id,
-                      )[0];
-                    // if chat exists, push the update to query data
-                    if (currentChatLine) {
-                      currentChatLine.latestMessage = chatUpdate.latestMessage;
-                      currentChatLine.unreadMessagesCount += 1;
-                    } else {
-                      if (currentChatPage.getChatAdvSearch) {
-                        currentChatPage.getChatAdvSearch?.list?.push(
-                          // @ts-expect-error("types-check")
-                          chatUpdate,
-                        );
-                        currentChatPage.getChatAdvSearch.totalElements += 1;
-                      }
-                    }
-                  })
-                : prevData,
-          );
-        }
+                  // if chat exists, push the update to query data
+                  if (currentChatLine) {
+                    currentChatLine.latestMessage = chatUpdate.latestMessage;
+                    currentChatLine.unreadMessagesCount += 1;
+                  } else {
+                    if (!currentChatPage.getChatAdvSearch) return;
+                    currentChatPage.getChatAdvSearch?.list?.push(
+                      // @ts-expect-error("types-check")
+                      chatUpdate,
+                    );
+                    currentChatPage.getChatAdvSearch.totalElements += 1;
+                  }
+                })
+              : prevData,
+        );
       },
       skip: isInitialLoading || isError,
     },

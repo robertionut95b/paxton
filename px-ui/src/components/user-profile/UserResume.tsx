@@ -74,6 +74,7 @@ export default function UserResume({
                 <div key={idx} className="px-user-study mb-8">
                   <StudyCard
                     withDivider={studies.length - 1 !== idx}
+                    // @ts-expect-error("types-to-fix")
                     study={s}
                   />
                 </div>

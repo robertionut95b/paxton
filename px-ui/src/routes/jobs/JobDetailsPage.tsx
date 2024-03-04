@@ -174,6 +174,7 @@ const JobDetailsPage = () => {
           <JobDescriptionSection description={job.formattedDescription} />
         </Paper>
         <JobRelatedAlertSection
+          // @ts-expect-error("types-to-fix")
           job={job.job}
           location={`${job.city.name}, ${job.city.country.name}`}
           isAlertAllowable

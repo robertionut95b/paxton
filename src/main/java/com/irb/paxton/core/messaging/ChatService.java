@@ -75,10 +75,6 @@ public class ChatService extends AbstractService<Chat> {
         Chat chat = message.getChat();
         messageRepository.persist(message);
         chat.addMessage(message);
-        // publish message to subscribers
-        chatRoomManagerService.publishMessageToChannel(chat.getId(), message);
-        // publish updates to users in chats
-        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(chat.getUsers(), message, chat);
         this.update(chat);
         return chatMapper.toChatResponseDto(chat);
     }
@@ -87,7 +83,6 @@ public class ChatService extends AbstractService<Chat> {
     public ChatResponseDto createChat(ChatInput chatInput) {
         Chat newChat = this.create(chatMapper.toEntity(chatInput));
         // publish SSE to listeners
-        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(newChat.getUsers(), null, newChat);
         return chatMapper.toChatResponseDto(newChat);
     }
 
@@ -109,8 +104,6 @@ public class ChatService extends AbstractService<Chat> {
     public ChatResponseDto updateChat(ChatInput chatInput) {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);
-        // publish SSE to listeners
-        liveUpdatesManagerService.notifyChatUsersExceptingCurrent(updatedChat.getUsers(), updatedChat.getLatestMessage(), updatedChat);
         this.update(updatedChat);
         return chatMapper.toChatResponseDto(updatedChat);
     }

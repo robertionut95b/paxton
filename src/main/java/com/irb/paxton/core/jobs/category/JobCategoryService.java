@@ -6,22 +6,21 @@ import com.irb.paxton.core.jobs.category.input.JobCategoryInput;
 import com.irb.paxton.core.jobs.category.mapper.JobCategoryMapper;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class JobCategoryService extends AbstractService<JobCategory, Long> {
+public class JobCategoryService extends AbstractService<JobCategory> {
 
-    @Autowired
-    private JobCategoryRepository jobCategoryRepository;
+    private final JobCategoryRepository jobCategoryRepository;
 
-    @Autowired
-    private JobCategoryMapper jobCategoryMapper;
+    private final JobCategoryMapper jobCategoryMapper;
 
-    protected JobCategoryService(AbstractRepository<JobCategory, Long> repository) {
+    protected JobCategoryService(AbstractRepository<JobCategory> repository, JobCategoryRepository jobCategoryRepository, JobCategoryMapper jobCategoryMapper) {
         super(repository);
+        this.jobCategoryRepository = jobCategoryRepository;
+        this.jobCategoryMapper = jobCategoryMapper;
     }
 
     public JobCategory addJobCategory(JobCategoryInput jobCategoryInput) {
@@ -37,7 +36,7 @@ public class JobCategoryService extends AbstractService<JobCategory, Long> {
             }
             jobCategory = jobCategoryMapper.inputToJobCategory(jobCategoryInput);
         }
-        jobCategoryRepository.save(jobCategory);
+        this.create(jobCategory);
         return jobCategory;
     }
 }

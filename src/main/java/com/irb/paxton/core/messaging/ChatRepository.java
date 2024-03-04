@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ChatRepository extends AbstractRepository<Chat, Long> {
+public interface ChatRepository extends AbstractRepository<Chat> {
 
     List<Chat> findDistinctByUsers_IdIn(Collection<Long> ids);
 
     @Query("select c from Chat c where c.id = ?1 and c.chatType = ?2")
     Optional<Chat> findByIdAndChatType(Long id, ChatType chatType);
+
+    Optional<Chat> findByUrlIdAndChatType(String urlId, ChatType chatType);
 
 }

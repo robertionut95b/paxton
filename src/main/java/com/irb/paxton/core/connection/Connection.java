@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Connection extends PaxtonEntity<Long> {
+public class Connection extends PaxtonEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")

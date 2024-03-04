@@ -5,7 +5,6 @@ import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationService;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.search.PaginatedResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,11 @@ import java.util.Collection;
 @Service(value = "organizationSecurityService")
 public class OrganizationSecurityServiceImpl implements OrganizationSecurityService {
 
-    @Autowired
-    private OrganizationService organizationService;
+    private final OrganizationService organizationService;
+
+    public OrganizationSecurityServiceImpl(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
 
     @Override
     public boolean isOrganizationRecruiter(Authentication authentication, Organization organization) {

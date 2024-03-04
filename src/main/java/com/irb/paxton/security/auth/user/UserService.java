@@ -19,7 +19,6 @@ import com.irb.paxton.security.auth.user.response.CurrentUserDetails;
 import com.irb.paxton.security.oauth2.AuthProvider;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,22 +29,22 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
-public class UserService extends AbstractService<User, Long> {
+public class UserService extends AbstractService<User> {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
-    @Autowired
-    private RecruiterRepository recruiterRepository;
+    private final RecruiterRepository recruiterRepository;
 
-    protected UserService(AbstractRepository<User, Long> repository) {
+    protected UserService(AbstractRepository<User> repository, UserRepository userRepository, UserProfileRepository userProfileRepository, RoleService roleService, RecruiterRepository recruiterRepository) {
         super(repository);
+        this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.roleService = roleService;
+        this.recruiterRepository = recruiterRepository;
     }
 
     public List<User> getUsers() {
@@ -70,12 +69,12 @@ public class UserService extends AbstractService<User, Long> {
     }
 
     public User updateUser(User user) {
-        return this.userRepository.save(user);
+        return this.update(user);
     }
 
     public void confirmEmailUser(User user) {
         user.setEmailConfirmed(true);
-        this.userRepository.save(user);
+        this.update(user);
     }
 
     @Transactional
@@ -83,15 +82,15 @@ public class UserService extends AbstractService<User, Long> {
         if (findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Email or username already in use");
         }
-        User returnUser = new User(null, user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
+        User returnUser = new User(user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getEmail(), user.getUsername(),
                 List.of(roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))),
                 new Credentials(CredentialsType.PASSWORD, new BCryptPasswordEncoder().encode(user.getPassword()), false, null, null), false);
 
         UserProfile userProfile = new UserProfile(returnUser, null, null, null, null,
                 null, null, String.format("%s's Profile", returnUser.getUsername()), null);
 
-        userRepository.save(returnUser);
-        userProfileRepository.save(userProfile);
+        this.create(returnUser);
+        userProfileRepository.persist(userProfile);
 
         return returnUser;
     }
@@ -104,8 +103,8 @@ public class UserService extends AbstractService<User, Long> {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(List.of(roleService.findByName((PaxtonRole.ROLE_EVERYONE.toString()))));
         }
-        userRepository.save(user);
-        userProfileRepository.save(
+        this.create(user);
+        userProfileRepository.persist(
                 new UserProfile(user, null, null, null, null,
                         null, null, String.format("%s's Profile", user.getUsername()), null)
         );

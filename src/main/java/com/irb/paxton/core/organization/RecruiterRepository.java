@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Repository
-public interface RecruiterRepository extends AbstractRepository<Recruiter, Long> {
+public interface RecruiterRepository extends AbstractRepository<Recruiter> {
 
     Optional<Recruiter> findByUser_Username(String username);
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface StepRepository extends AbstractRepository<Step, Long> {
+public interface StepRepository extends AbstractRepository<Step> {
+
     List<Step> findByProcessSteps_ProcessId(Long id);
 }

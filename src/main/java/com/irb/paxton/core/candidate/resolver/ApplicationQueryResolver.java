@@ -10,15 +10,17 @@ import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 
 @DgsComponent
 public class ApplicationQueryResolver {
 
-    @Autowired
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService;
+
+    public ApplicationQueryResolver(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
 
     @DgsQuery
     public Application getMyApplicationForJobListing(@InputArgument Long JobListingId) {

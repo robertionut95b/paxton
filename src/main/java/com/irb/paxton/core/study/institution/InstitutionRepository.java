@@ -4,5 +4,5 @@ import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InstitutionRepository extends AbstractRepository<Institution, Long> {
+public interface InstitutionRepository extends AbstractRepository<Institution> {
 }

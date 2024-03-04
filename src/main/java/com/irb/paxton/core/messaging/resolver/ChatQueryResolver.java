@@ -9,19 +9,26 @@ import com.irb.paxton.core.search.SearchRequest;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @DgsComponent
 public class ChatQueryResolver {
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatService chatService;
+
+    public ChatQueryResolver(ChatService chatService) {
+        this.chatService = chatService;
+    }
 
     @DgsQuery
     public ChatResponseDto getPrivateChatById(@InputArgument Long chatId) {
         return chatService.getPrivateChatById(chatId);
+    }
+
+    @DgsQuery
+    public ChatResponseDto getPrivateChatByUrlId(@InputArgument String chatUrlId) {
+        return chatService.getPrivateChatByUrlId(chatUrlId);
     }
 
     @DgsQuery

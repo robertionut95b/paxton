@@ -7,15 +7,17 @@ import com.irb.paxton.core.search.SearchRequest;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 
 @DgsComponent
 public class RecruiterQueryResolver {
 
-    @Autowired
-    private RecruiterService recruiterService;
+    private final RecruiterService recruiterService;
+
+    public RecruiterQueryResolver(RecruiterService recruiterService) {
+        this.recruiterService = recruiterService;
+    }
 
     @DgsQuery
     public Collection<Recruiter> getAllRecruitersForOrganization(@InputArgument Long organizationId) {

@@ -14,6 +14,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
 import java.io.Serial;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -32,7 +33,7 @@ import static com.irb.paxton.utils.StringUtils.slugifyString;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Organization extends PaxtonEntity<Long> {
+public class Organization extends PaxtonEntity {
 
     @Serial
     private static final long serialVersionUID = 2770718697434193607L;

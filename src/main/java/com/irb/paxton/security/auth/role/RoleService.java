@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 @Service
-public class RoleService extends AbstractService<Role, Long> {
+public class RoleService extends AbstractService<Role> {
 
     @Autowired
     private RoleRepository roleRepository;
 
-    protected RoleService(AbstractRepository<Role, Long> repository) {
+    protected RoleService(AbstractRepository<Role> repository) {
         super(repository);
     }
 
@@ -25,7 +25,7 @@ public class RoleService extends AbstractService<Role, Long> {
         if (role == null) {
             role = new Role(name, null);
             role.setPrivileges(privileges);
-            this.roleRepository.save(role);
+            this.create(role);
         }
         return role;
     }

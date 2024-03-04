@@ -6,7 +6,6 @@ import com.irb.paxton.core.candidate.documents.input.ApplicationDocumentInput;
 import com.irb.paxton.storage.validator.FileValidatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,14 +22,17 @@ import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION
 @RequestMapping(path = "api/" + API_VERSION + "/applications")
 public class ApplicationDocumentController {
 
-    @Autowired
-    ApplicationDocumentService applicationDocumentService;
+    private final ApplicationDocumentService applicationDocumentService;
 
-    @Autowired
-    FileValidatorService fileValidatorService;
+    private final FileValidatorService fileValidatorService;
 
-    @Autowired
-    ApplicationService applicationService;
+    private final ApplicationService applicationService;
+
+    public ApplicationDocumentController(ApplicationDocumentService applicationDocumentService, FileValidatorService fileValidatorService, ApplicationService applicationService) {
+        this.applicationDocumentService = applicationDocumentService;
+        this.fileValidatorService = fileValidatorService;
+        this.applicationService = applicationService;
+    }
 
     @PostMapping(value = "/{applicationId}/documents/upload", produces = MediaType.TEXT_PLAIN_VALUE)
     public String uploadApplicationDocument(@PathVariable Long applicationId, ApplicationDocumentInput applicationDocumentInput) {

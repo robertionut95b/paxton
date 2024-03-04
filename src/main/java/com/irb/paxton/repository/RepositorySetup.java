@@ -18,7 +18,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class RepositorySetup extends PaxtonEntity<Long> {
+public class RepositorySetup extends PaxtonEntity {
 
     @NotNull
     private boolean isActive;

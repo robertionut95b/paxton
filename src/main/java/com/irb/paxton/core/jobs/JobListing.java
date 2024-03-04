@@ -16,6 +16,7 @@ import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -28,7 +29,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class JobListing extends PaxtonEntity<Long> {
+public class JobListing extends PaxtonEntity {
 
     @Column(nullable = false)
     @NotNull

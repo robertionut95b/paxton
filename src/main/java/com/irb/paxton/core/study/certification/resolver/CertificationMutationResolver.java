@@ -6,17 +6,19 @@ import com.irb.paxton.core.study.certification.input.CertificationInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class CertificationMutationResolver {
 
-    @Autowired
     private CertificationRepository certificationRepository;
+
+    public CertificationMutationResolver(CertificationRepository certificationRepository) {
+        this.certificationRepository = certificationRepository;
+    }
 
     @DgsMutation
     public Certification addCertification(@InputArgument CertificationInput CertificationInput) {
-        return this.certificationRepository.save(
+        return this.certificationRepository.persist(
                 new Certification(CertificationInput.getName(), null)
         );
     }

@@ -26,7 +26,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Chat extends PaxtonEntity<Long> {
+public class Chat extends PaxtonEntity {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Message> messages = new ArrayList<>();

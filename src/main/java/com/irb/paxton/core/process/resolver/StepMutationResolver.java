@@ -6,13 +6,15 @@ import com.irb.paxton.core.process.input.StepInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class StepMutationResolver {
 
-    @Autowired
-    private StepService stepService;
+    private final StepService stepService;
+
+    public StepMutationResolver(StepService stepService) {
+        this.stepService = stepService;
+    }
 
     @DgsMutation
     public Step createStep(@InputArgument StepInput stepInput) {

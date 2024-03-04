@@ -8,13 +8,15 @@ import com.irb.paxton.core.study.input.StudyInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class UserProfileMutationResolver {
 
-    @Autowired
     private UserProfileService userProfileService;
+
+    public UserProfileMutationResolver(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @DgsMutation
     public UserProfile updateUserProfile(@InputArgument UserProfileInput UserProfileInput) {

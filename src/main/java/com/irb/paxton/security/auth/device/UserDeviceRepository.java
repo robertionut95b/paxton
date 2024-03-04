@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface UserDeviceRepository extends AbstractRepository<UserDevice, Long> {
+public interface UserDeviceRepository extends AbstractRepository<UserDevice> {
 
     List<UserDevice> findByAgentAndUserIdAndIpAddressAndExpiresAtAfterAndIsVerifiedTrue(String agent, Long userId, String ipAddress, LocalDateTime expiresAt);
 

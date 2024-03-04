@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
+/**
+ * Abstract and generic identifiable interface used for all model entities in the application
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface Identifiable<T> extends Serializable {
 

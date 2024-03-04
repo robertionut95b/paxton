@@ -14,7 +14,6 @@ import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,19 +29,19 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class ConnectionService extends AbstractService<Connection, Long> {
+public class ConnectionService extends AbstractService<Connection> {
 
-    @Autowired
-    private ConnectionRepository connectionRepository;
+    private final ConnectionRepository connectionRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private ConnectionMapper connectionRequestMapper;
+    private final ConnectionMapper connectionRequestMapper;
 
-    protected ConnectionService(AbstractRepository<Connection, Long> repository) {
+    protected ConnectionService(AbstractRepository<Connection> repository, ConnectionRepository connectionRepository, UserService userService, ConnectionMapper connectionRequestMapper) {
         super(repository);
+        this.connectionRepository = connectionRepository;
+        this.userService = userService;
+        this.connectionRequestMapper = connectionRequestMapper;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#connectionCreateInput.requesterId) or @paxtonSecurityService.isCurrentUserById(#connectionCreateInput.addressedId)")
@@ -55,7 +54,7 @@ public class ConnectionService extends AbstractService<Connection, Long> {
             throw new InvalidConnectionStateException("Connection request already exists between users");
         }
         Connection connection = connectionRequestMapper.toEntity(connectionCreateInput);
-        return this.connectionRepository.save(connection);
+        return this.create(connection);
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(#connectionUpdateInput.requesterId) or @paxtonSecurityService.isCurrentUserById(#connectionUpdateInput.addressedId)")
@@ -63,7 +62,7 @@ public class ConnectionService extends AbstractService<Connection, Long> {
     public Connection updateConnectionRequest(ConnectionUpdateInput connectionUpdateInput) {
         Connection initialConnection = this.findById(connectionUpdateInput.getId());
         Connection connection = connectionRequestMapper.partialUpdate(connectionUpdateInput, initialConnection);
-        return connectionRepository.save(connection);
+        return this.create(connection);
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isCurrentUserById(returnObject.requester.id) or @paxtonSecurityService.isCurrentUserById(returnObject.addressed.id)")

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CityRepository extends AbstractRepository<City, Long> {
+public interface CityRepository extends AbstractRepository<City> {
 
     Optional<City> findByName(String name);
 }

@@ -6,13 +6,15 @@ import com.irb.paxton.core.organization.input.OrganizationInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class OrganizationMutationResolver {
 
-    @Autowired
     private OrganizationService organizationService;
+
+    public OrganizationMutationResolver(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
 
     @DgsMutation
     public Organization createOrUpdateOrganization(@InputArgument OrganizationInput OrganizationInput) {

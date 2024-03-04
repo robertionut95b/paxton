@@ -17,7 +17,6 @@ import com.irb.paxton.core.study.input.StudyInput;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -25,28 +24,25 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Service
-public class UserProfileService extends AbstractService<UserProfile, Long> {
+public class UserProfileService extends AbstractService<UserProfile> {
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private CityRepository cityRepository;
+    private final UserProfileMapper userProfileMapper;
 
-    @Autowired
-    private UserProfileMapper userProfileMapper;
+    private final ExperienceRepository experienceRepository;
 
-    @Autowired
-    private ExperienceRepository experienceRepository;
+    private final StudyRepository studyRepository;
 
-    @Autowired
-    private StudyRepository studyRepository;
-
-    protected UserProfileService(AbstractRepository<UserProfile, Long> repository) {
+    protected UserProfileService(AbstractRepository<UserProfile> repository, UserProfileRepository userProfileRepository, UserService userService, CityRepository cityRepository, UserProfileMapper userProfileMapper, ExperienceRepository experienceRepository, StudyRepository studyRepository) {
         super(repository);
+        this.userProfileRepository = userProfileRepository;
+        this.userService = userService;
+        this.userProfileMapper = userProfileMapper;
+        this.experienceRepository = experienceRepository;
+        this.studyRepository = studyRepository;
     }
 
     public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
@@ -69,7 +65,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
             userProfileMapper.updateUserFields(user, userProfileInput);
             this.userService.updateUser(user);
         }
-        return this.userProfileRepository.save(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
+        return this.userProfileRepository.update(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
     }
 
     @Transactional
@@ -81,7 +77,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
         experiences.add(newExperience);
 
         userProfile.setExperiences(experiences);
-        return this.userProfileRepository.save(userProfile);
+        return this.userProfileRepository.update(userProfile);
     }
 
     @Transactional
@@ -90,7 +86,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
         Experience actualExperience = this.experienceRepository.findById(experienceInput.getId())
                 .orElseThrow(() -> new ExperienceNotFoundException(String.format("%s does not exist", experienceInput.getId().toString())));
         Experience updatedExperience = this.userProfileMapper.updateUserProfileExperience(actualExperience, experienceInput);
-        experienceRepository.save(updatedExperience);
+        experienceRepository.update(updatedExperience);
 
         return updatedExperience.getUserProfile();
     }
@@ -104,7 +100,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
         studies.add(newStudy);
 
         userProfile.setStudies(studies);
-        return this.userProfileRepository.save(userProfile);
+        return this.userProfileRepository.update(userProfile);
     }
 
     @Transactional
@@ -113,7 +109,7 @@ public class UserProfileService extends AbstractService<UserProfile, Long> {
         Study actualStudy = this.studyRepository.findById(studyInput.getId())
                 .orElseThrow(() -> new StudyNotFoundException(String.format("%s does not exist", studyInput.getId().toString())));
         Study updatedStudy = this.userProfileMapper.updateUserProfileStudy(actualStudy, studyInput);
-        this.studyRepository.save(updatedStudy);
+        this.studyRepository.update(updatedStudy);
         return updatedStudy.getUserProfile();
     }
 

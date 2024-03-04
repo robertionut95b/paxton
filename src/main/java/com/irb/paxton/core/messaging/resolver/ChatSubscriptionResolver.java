@@ -9,7 +9,6 @@ import com.irb.paxton.security.auth.user.UserService;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsSubscription;
 import org.reactivestreams.Publisher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 import javax.naming.AuthenticationException;
@@ -17,14 +16,17 @@ import javax.naming.AuthenticationException;
 @DgsComponent
 public class ChatSubscriptionResolver {
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatService chatService;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public ChatSubscriptionResolver(ChatService chatService, AuthenticationService authenticationService, UserService userService) {
+        this.chatService = chatService;
+        this.authenticationService = authenticationService;
+        this.userService = userService;
+    }
 
     // Found no way to access the security context in reactive methods by DGS subscriptions, will paas the JWT in the method's arguments and set the context manually
     // TODO: Find a way to access the security context in reactive methods for DGS subscriptions

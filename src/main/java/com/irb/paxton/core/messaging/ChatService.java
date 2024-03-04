@@ -36,7 +36,9 @@ import java.util.stream.Stream;
 @Service
 @Validated
 @Slf4j
-public class ChatService extends AbstractService<Chat, Long> {
+public class ChatService extends AbstractService<Chat> {
+
+    public static final String CHAT_BY_ID_S_DOES_NOT_EXIST = "Chat by id %s does not exist";
 
     private final ChatRepository chatRepository;
 
@@ -54,7 +56,7 @@ public class ChatService extends AbstractService<Chat, Long> {
 
     private final ChatRoomManagerService chatRoomManagerService;
 
-    public ChatService(AbstractRepository<Chat, Long> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
+    public ChatService(AbstractRepository<Chat> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
         super(repository);
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
@@ -71,7 +73,7 @@ public class ChatService extends AbstractService<Chat, Long> {
     public ChatResponseDto addMessageToChat(MessageInput messageInput) {
         Message message = messageMapper.toEntity(messageInput);
         Chat chat = message.getChat();
-        messageRepository.save(message);
+        messageRepository.persist(message);
         chat.addMessage(message);
         // publish message to subscribers
         chatRoomManagerService.publishMessageToChannel(chat.getId(), message);
@@ -89,10 +91,16 @@ public class ChatService extends AbstractService<Chat, Long> {
         return chatMapper.toChatResponseDto(newChat);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberById(#chatId)")
     public ChatResponseDto getPrivateChatById(Long chatId) {
         return chatMapper.toChatResponseDto(this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
-                .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId))));
+                .orElseThrow(() -> new GenericEntityNotFoundException(CHAT_BY_ID_S_DOES_NOT_EXIST.formatted(chatId))));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberByUrlId(#chatUrlId)")
+    public ChatResponseDto getPrivateChatByUrlId(String chatUrlId) {
+        return chatMapper.toChatResponseDto(this.chatRepository.findByUrlIdAndChatType(chatUrlId, ChatType.PRIVATE_CHAT)
+                .orElseThrow(() -> new GenericEntityNotFoundException(CHAT_BY_ID_S_DOES_NOT_EXIST.formatted(chatUrlId))));
     }
 
     @Transactional
@@ -159,14 +167,14 @@ public class ChatService extends AbstractService<Chat, Long> {
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
     public ChatResponseDto removeChatById(Long chatId) {
         Chat findChat = this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
-                .orElseThrow(() -> new ChatNotFoundException("Chat by id %s does not exist".formatted(chatId)));
+                .orElseThrow(() -> new ChatNotFoundException(CHAT_BY_ID_S_DOES_NOT_EXIST.formatted(chatId)));
         // leave chat instead of deletion
         User currentUser = this.authenticationService.getCurrentUserFromSecurityContext();
         findChat.leaveChatForUser(currentUser);
         return chatMapper.toChatResponseDto(findChat);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberById(#chatId)")
     public Publisher<Message> getChatMessagesPublisher(Long chatId) {
         return chatRoomManagerService.joinChannel(chatId);
     }

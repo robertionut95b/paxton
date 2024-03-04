@@ -7,7 +7,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -23,14 +22,17 @@ import static com.irb.paxton.utils.SocketUtils.pingHost;
 @Slf4j
 public class PaxtonMailService implements EmailService {
 
-    @Autowired
-    MailProperties mailProperties;
+    private final MailProperties mailProperties;
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
-    @Autowired
-    private TemplateEngine templateEngine;
+    private final TemplateEngine templateEngine;
+
+    public PaxtonMailService(MailProperties mailProperties, JavaMailSender emailSender, TemplateEngine templateEngine) {
+        this.mailProperties = mailProperties;
+        this.emailSender = emailSender;
+        this.templateEngine = templateEngine;
+    }
 
     @PostConstruct
     public void checkConnection() {

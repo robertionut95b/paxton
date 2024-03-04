@@ -25,7 +25,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class ApplicationProcessSteps extends PaxtonEntity<Long> implements Comparable<ApplicationProcessSteps> {
+public class ApplicationProcessSteps extends PaxtonEntity implements Comparable<ApplicationProcessSteps> {
 
     @JsonBackReference(value = "processStep")
     @ManyToOne

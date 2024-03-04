@@ -24,9 +24,23 @@ directive @constraint(
     uniqueTypeName: String
 ) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
-type ActivitySector {
+interface BaseEntity {
+    id: Long!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
+}
+
+type ActivitySector implements BaseEntity{
     id: Long!
     name: String!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 enum ApplicationStatus {
@@ -35,7 +49,7 @@ enum ApplicationStatus {
     CANCELED
 }
 
-type Application {
+type Application implements BaseEntity {
     id: Long!
     dateOfApplication: DateTime!
     applicantProfile: UserProfile!
@@ -46,6 +60,11 @@ type Application {
     processSteps: [ApplicationProcessSteps]
     applicationDocuments: [ApplicationDocument]
     chat: ChatResponse!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type ApplicationsCountByStep {
@@ -53,9 +72,14 @@ type ApplicationsCountByStep {
     stepTitle: String!
 }
 
-type ApplicationDocument {
+type ApplicationDocument implements BaseEntity {
     id: Long!
     document: Document!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input ApplicationInput {
@@ -82,17 +106,27 @@ input ApplicationProcessStepsInput {
     registeredAt: DateTime
 }
 
-type ApplicationProcessSteps {
+type ApplicationProcessSteps implements BaseEntity {
     id: Long!
     processStep: ProcessSteps!
     application: Application!
     registeredAt: DateTime!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type Candidate {
+type Candidate implements BaseEntity {
     id: Long!
     user: User!
     applications: [Application]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type CandidatePage {
@@ -109,13 +143,18 @@ input ChatInput {
     chatType: ChatType
 }
 
-type ChatResponse {
+type ChatResponse implements BaseEntity {
     id: Long!
     title: String
     chatType: ChatType
     unreadMessagesCount: Int!
     users: [User]
     latestMessage: Message
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type ChatLiveUpdate {
@@ -149,27 +188,43 @@ enum ContractType {
     SEASONAL
 }
 
-type City {
+type City implements BaseEntity {
     id: Long!
     name: String!
     country: Country!
     longitude: Float
     latitude: Float
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type Certification {
+type Certification implements BaseEntity {
     id: Long!
     name: String!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input CertificationInput {
     name: String!
 }
 
-type Country {
+type Country implements BaseEntity {
+    id: Long!
     code: String!
     name: String!
     cities: [City]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 enum ConnectionStatus {
@@ -179,18 +234,28 @@ enum ConnectionStatus {
     DECLINED
 }
 
-type Connection {
+type Connection implements BaseEntity {
     id: Long!
     requester: User!
     addressed: User!
     connectionStatus: ConnectionStatus!
     lastModified: DateTime!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type UserConnection {
+type UserConnection implements BaseEntity {
     id: Long!
     user: User!
     connectedAt: DateTime!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type ConnectionPage {
@@ -221,26 +286,42 @@ input ConnectionUpdateInput {
     connectionStatus: ConnectionStatus!
 }
 
-type Document {
+type Document implements BaseEntity {
+    id: Long!
     name: String!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type Domain {
+type Domain implements BaseEntity {
     id: Long!
     name: String!
     studies: [Study]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input DomainInput {
     name: String!
 }
 
-type Institution {
+type Institution implements BaseEntity {
     id: Long!
     name: String!
     description: String
     photography: String
     studies: [Study]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input InstitutionInput {
@@ -249,7 +330,7 @@ input InstitutionInput {
     photography: String
 }
 
-type Experience {
+type Experience implements BaseEntity {
     id: Long!
     title: String!
     contractType: ContractType!
@@ -260,6 +341,11 @@ type Experience {
     activitySector: ActivitySector!
     description: String!
     userProfile: UserProfile!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input ExperienceInput {
@@ -275,9 +361,14 @@ input ExperienceInput {
     userProfileSlugUrl: String!
 }
 
-type JobCategory {
+type JobCategory implements BaseEntity {
     id: Long!
     name: String!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input JobCategoryInput {
@@ -285,11 +376,16 @@ input JobCategoryInput {
     name: String!
 }
 
-type Job {
+type Job implements BaseEntity {
     id: Long!
     name: String!
     description: String!
     jobListings: [JobListing]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type JobPage {
@@ -322,7 +418,7 @@ input JobListingInput {
     workType: WorkType!
 }
 
-type JobListing {
+type JobListing implements BaseEntity {
     id: Long!
     title: String!
     description: String!
@@ -339,6 +435,11 @@ type JobListing {
     applications: [Application]
     workType: WorkType!
     recruiter: Recruiter
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 type JobListingPage {
@@ -348,7 +449,7 @@ type JobListingPage {
     totalElements: Int!
 }
 
-type Message {
+type Message implements BaseEntity {
     id: Long!
     content: String!
     sender: User!
@@ -356,6 +457,11 @@ type Message {
     chat: ChatResponse
     seenBy: [MessageSeenBy]
     seenAt: DateTime
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input MessageInput {
@@ -377,10 +483,16 @@ input MessageSeenInput {
     userId: Long
 }
 
-type MessageSeenBy {
+type MessageSeenBy implements BaseEntity {
+    id: Long!
     user: User!
     message: Message!
     seenAt: DateTime!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 enum OrganizationSize {
@@ -394,7 +506,7 @@ enum OrganizationSize {
     OVER_10000
 }
 
-type Organization {
+type Organization implements BaseEntity {
     id: Long!
     name: String!
     slugName: String!
@@ -412,6 +524,11 @@ type Organization {
     locations: [City]
     specializations: [Specialization]
     affiliates: [Organization]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input OrganizationInput {
@@ -429,12 +546,17 @@ input OrganizationInput {
     specializations: [Specialization]
 }
 
-type Process {
+type Process implements BaseEntity {
     id: Long!
     name: String!
     description: String!
     processSteps: [ProcessSteps]
     organizations: [Organization]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input ProcessInput {
@@ -460,12 +582,17 @@ type ProcessPage {
     totalElements: Int!
 }
 
-type ProcessSteps {
+type ProcessSteps implements BaseEntity {
     id: Long!
     process: Process!
     status: Status!
     step: Step!
     order: Int!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input ProcessStepsInput {
@@ -483,9 +610,14 @@ input ProcessStepsInputCreate {
     order: Int!
 }
 
-type Privilege {
+type Privilege implements BaseEntity {
     id: Long!
     name: String
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 enum Status {
@@ -542,11 +674,16 @@ enum Specialization {
     Industrial_Automation
 }
 
-type Step {
+type Step implements BaseEntity {
     id: Long!
     title: String!
     description: String!
     processSteps: [ProcessSteps]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input StepInput {
@@ -554,7 +691,7 @@ input StepInput {
     description: String! @constraint(minLength: 3, maxLength: 150)
 }
 
-type Study {
+type Study implements BaseEntity {
     id: Long!
     institution: Institution!
     domainStudy: Domain
@@ -564,6 +701,11 @@ type Study {
     startDate: Date!
     endDate: Date
     userProfile: UserProfile!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input StudyInput {
@@ -578,20 +720,30 @@ input StudyInput {
     userProfileSlugUrl: String!
 }
 
-type Photography {
+type Photography implements BaseEntity {
     id: Long!
     name: String!
     path: String!
     userProfile: UserProfile
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type Recruiter {
+type Recruiter implements BaseEntity {
     id: Long!
     user: User!
     organization: Organization!
     isActive: Boolean!
     lastActive: DateTime
     registeredAt: DateTime!
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input RecruiterInput {
@@ -608,14 +760,20 @@ type RecruiterPage {
     totalElements: Int!
 }
 
-type Role {
+type Role implements BaseEntity {
     id: Long!
     name: String!
     privileges: [Privilege]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
-type User {
+type User implements BaseEntity {
     id: Long!
+    urlId: String!
     firstName: String!
     lastName: String!
     displayName: String!
@@ -625,6 +783,10 @@ type User {
     roles: [Role]
     isEmailConfirmed: Boolean!
     userProfile: UserProfile!
+    createdAt: DateTime!
+    createdBy: String!
+    modifiedAt: DateTime!
+    modifiedBy: String!
 }
 
 type UserPage {
@@ -634,7 +796,7 @@ type UserPage {
     totalElements: Int!
 }
 
-type UserProfile {
+type UserProfile implements BaseEntity {
     id: Long!
     user: User!
     photography: String
@@ -645,6 +807,11 @@ type UserProfile {
     profileTitle: String!
     experiences: [Experience]
     studies: [Study]
+    urlId: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
 }
 
 input UserProfileInput {
@@ -750,6 +917,7 @@ type Query {
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
     findRecruitersAdvSearch(searchQuery: SearchQueryInput): RecruiterPage
     getPrivateChatById(chatId: Long!): ChatResponse
+    getPrivateChatByUrlId(chatUrlId: String!): ChatResponse
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
     getChatWithUserId(userId: Long!): ChatResponse
     getChatsWithUsersIds(userIds: [Long]!, chatType: ChatType!): [ChatResponse]

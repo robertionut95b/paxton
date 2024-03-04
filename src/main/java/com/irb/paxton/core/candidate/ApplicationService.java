@@ -15,9 +15,7 @@ import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
-import com.irb.paxton.security.auth.user.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -28,29 +26,27 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 @Service
-public class ApplicationService extends AbstractService<Application, Long> {
+public class ApplicationService extends AbstractService<Application> {
 
     private static final String APPLICATION_NOT_FOUND_BY_ID = "Application by id %s does not exist";
 
-    @Autowired
-    UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private final ApplicationMapper applicationMapper;
 
-    @Autowired
-    private ApplicationMapper applicationMapper;
+    private final ChatService chatService;
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatMapper chatMapper;
 
-    @Autowired
-    private ChatMapper chatMapper;
-
-    protected ApplicationService(AbstractRepository<Application, Long> repository) {
+    protected ApplicationService(AbstractRepository<Application> repository, ApplicationRepository applicationRepository, ApplicationMapper applicationMapper, ChatService chatService, ChatMapper chatMapper) {
         super(repository);
+        this.applicationRepository = applicationRepository;
+        this.applicationMapper = applicationMapper;
+        this.chatService = chatService;
+        this.chatMapper = chatMapper;
     }
 
+    @Override
     @PostAuthorize("(hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
     public Application findById(Long applicationId) {
         return applicationRepository
@@ -64,7 +60,7 @@ public class ApplicationService extends AbstractService<Application, Long> {
     public Application applyToJobListing(ApplicationInput applicationInput) {
         Application application = applicationMapper.inputToApplication(applicationInput);
         application.getProcessSteps().forEach(ps -> ps.setApplication(application));
-        applicationRepository.save(application);
+        this.create(application);
         return application;
     }
 
@@ -122,7 +118,7 @@ public class ApplicationService extends AbstractService<Application, Long> {
                 application.setStatus(ApplicationStatus.FINISHED);
             }
         }
-        applicationRepository.save(application);
+        this.create(application);
         return application;
     }
 
@@ -137,7 +133,7 @@ public class ApplicationService extends AbstractService<Application, Long> {
         Application application = this.findByApplicationId(applicationId);
         ChatResponseDto applicationChat = chatService.addMessageToChat(messageInput);
         application.setChat(chatMapper.chatResponseDtoToChat(applicationChat));
-        applicationRepository.save(application);
+        this.create(application);
         return application;
     }
 }

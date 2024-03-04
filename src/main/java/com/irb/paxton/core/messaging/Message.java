@@ -12,6 +12,7 @@ import org.hibernate.Hibernate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -23,7 +24,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Message extends PaxtonEntity<Long> {
+public class Message extends PaxtonEntity {
 
     @NotNull
     @NotNull

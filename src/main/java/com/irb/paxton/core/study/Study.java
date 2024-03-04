@@ -13,6 +13,7 @@ import org.springframework.lang.Nullable;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
@@ -23,7 +24,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Study extends PaxtonEntity<Long> {
+public class Study extends PaxtonEntity {
 
     @ManyToOne
     @JoinColumn(name = "institution_id")

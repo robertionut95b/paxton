@@ -7,13 +7,15 @@ import com.irb.paxton.core.process.input.ProcessInputCreate;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class ProcessMutationResolver {
 
-    @Autowired
-    private ProcessService processService;
+    private final ProcessService processService;
+
+    public ProcessMutationResolver(ProcessService processService) {
+        this.processService = processService;
+    }
 
     @DgsMutation
     public Process createProcess(@InputArgument ProcessInput ProcessInput) {

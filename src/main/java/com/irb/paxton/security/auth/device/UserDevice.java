@@ -22,7 +22,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 @ToString
-public class UserDevice extends PaxtonEntity<Long> {
+public class UserDevice extends PaxtonEntity {
 
     @NotBlank
     @NotEmpty

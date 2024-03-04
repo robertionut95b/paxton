@@ -2,12 +2,13 @@ package com.irb.paxton.core.jobs;
 
 import com.irb.paxton.core.jobs.input.JobListingInput;
 import com.irb.paxton.core.jobs.mapper.JobListingMapper;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -20,13 +21,17 @@ import java.util.List;
 
 @Service
 @Validated
-public class JobListingService {
+public class JobListingService extends AbstractService<JobListing> {
 
-    @Autowired
-    private JobListingRepository jobListingRepository;
+    private final JobListingRepository jobListingRepository;
 
-    @Autowired
-    private JobListingMapper jobListingMapper;
+    private final JobListingMapper jobListingMapper;
+
+    protected JobListingService(AbstractRepository<JobListing> repository, JobListingRepository jobListingRepository, JobListingMapper jobListingMapper) {
+        super(repository);
+        this.jobListingRepository = jobListingRepository;
+        this.jobListingMapper = jobListingMapper;
+    }
 
     public List<JobListing> getAllJobListings() {
         return this.jobListingRepository.findAll();
@@ -49,7 +54,7 @@ public class JobListingService {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.organization))")
     public JobListing publishJobListing(JobListingInput jobListingInput) {
         JobListing jobListing = jobListingMapper.inputToJobListing(jobListingInput);
-        jobListingRepository.save(jobListing);
+        this.create(jobListing);
         return jobListing;
     }
 

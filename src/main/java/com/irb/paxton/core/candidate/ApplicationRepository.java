@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Repository
-public interface ApplicationRepository extends AbstractRepository<Application, Long> {
+public interface ApplicationRepository extends AbstractRepository<Application> {
     @Query(value = """
             SELECT new com.irb.paxton.core.candidate.projection.ApplicationsCountByStep(count(s.title) AS applicationsCount, s.title AS stepTitle) FROM Application ap
             JOIN ap.processSteps aps on aps.registeredAt = (SELECT max(a.registeredAt) FROM ApplicationProcessSteps a WHERE aps.application.id = a.application.id)

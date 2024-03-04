@@ -4,15 +4,17 @@ import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.certification.CertificationRepository;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @DgsComponent
 public class CertificationQueryResolver {
 
-    @Autowired
-    private CertificationRepository certificationRepository;
+    private final CertificationRepository certificationRepository;
+
+    public CertificationQueryResolver(CertificationRepository certificationRepository) {
+        this.certificationRepository = certificationRepository;
+    }
 
     @DgsQuery
     public List<Certification> getAllCertifications() {

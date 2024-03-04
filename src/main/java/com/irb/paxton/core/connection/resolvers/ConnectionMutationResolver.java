@@ -7,13 +7,15 @@ import com.irb.paxton.core.connection.input.ConnectionUpdateInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class ConnectionMutationResolver {
 
-    @Autowired
-    private ConnectionService connectionService;
+    private final ConnectionService connectionService;
+
+    public ConnectionMutationResolver(ConnectionService connectionService) {
+        this.connectionService = connectionService;
+    }
 
     @DgsMutation
     public Connection createConnection(@InputArgument ConnectionCreateInput connectionCreateInput) {

@@ -6,13 +6,15 @@ import com.irb.paxton.core.jobs.input.JobListingInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class JobListingMutationResolver {
 
-    @Autowired
-    private JobListingService jobListingService;
+    private final JobListingService jobListingService;
+
+    public JobListingMutationResolver(JobListingService jobListingService) {
+        this.jobListingService = jobListingService;
+    }
 
     @DgsMutation
     public JobListing publishJobListing(@InputArgument JobListingInput JobListingInput) {

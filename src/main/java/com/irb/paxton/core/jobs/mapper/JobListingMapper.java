@@ -16,7 +16,6 @@ import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.Recruiter;
 import com.irb.paxton.core.organization.RecruiterRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
-import com.irb.paxton.core.process.ProcessRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -41,9 +40,6 @@ public abstract class JobListingMapper {
 
     @Autowired
     private RecruiterRepository recruiterRepository;
-
-    @Autowired
-    private ProcessRepository processRepository;
 
     @Mapping(target = "recruiter", source = "jobListingInput.recruiterId")
     @Mapping(target = "organization", source = "jobListingInput.organizationId")

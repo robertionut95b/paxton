@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irb.paxton.exceptions.handler.GlobalJmsErrorHandler;
 import jakarta.jms.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -23,8 +22,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class ActiveMQConfiguration implements JmsListenerConfigurer {
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
+
+    public ActiveMQConfiguration(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
     @Override
     public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {

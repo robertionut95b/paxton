@@ -14,7 +14,6 @@ import io.github.wimdeblauwe.errorhandlingspringbootstarter.UnauthorizedEntryPoi
 import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.ErrorCodeMapper;
 import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.ErrorMessageMapper;
 import io.github.wimdeblauwe.errorhandlingspringbootstarter.mapper.HttpStatusMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -57,26 +56,29 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
-    @Autowired
-    private PaxtonUserDetailsService paxtonUserDetailsService;
+    private final PaxtonUserDetailsService paxtonUserDetailsService;
 
-    @Autowired
-    private FrontendProperties frontendProperties;
+    private final FrontendProperties frontendProperties;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    private final ApplicationProperties applicationProperties;
 
-    @Autowired
-    private CorsProperties corsProperties;
+    private final CorsProperties corsProperties;
 
-    @Autowired
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-    @Autowired
-    private PaxtonOAuth2Service paxtonOAuth2Service;
+    private final PaxtonOAuth2Service paxtonOAuth2Service;
+
+    public SecurityConfiguration(PaxtonUserDetailsService paxtonUserDetailsService, FrontendProperties frontendProperties, ApplicationProperties applicationProperties, CorsProperties corsProperties, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, PaxtonOAuth2Service paxtonOAuth2Service) {
+        this.paxtonUserDetailsService = paxtonUserDetailsService;
+        this.frontendProperties = frontendProperties;
+        this.applicationProperties = applicationProperties;
+        this.corsProperties = corsProperties;
+        this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+        this.paxtonOAuth2Service = paxtonOAuth2Service;
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

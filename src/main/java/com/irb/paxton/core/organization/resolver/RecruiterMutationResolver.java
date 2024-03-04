@@ -6,7 +6,6 @@ import com.irb.paxton.core.organization.input.RecruiterInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,8 +13,11 @@ import java.util.List;
 @DgsComponent
 public class RecruiterMutationResolver {
 
-    @Autowired
-    private RecruiterService recruiterService;
+    private final RecruiterService recruiterService;
+
+    public RecruiterMutationResolver(RecruiterService recruiterService) {
+        this.recruiterService = recruiterService;
+    }
 
     @DgsMutation
     public Collection<Recruiter> alterRecruitersInOrganization(@InputArgument List<RecruiterInput> RecruiterInput, @InputArgument Long OrganizationId) {

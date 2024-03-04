@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 @Repository
-public interface JobListingRepository extends AbstractRepository<JobListing, Long> {
+public interface JobListingRepository extends AbstractRepository<JobListing> {
 
     //    @Query("SELECT e FROM jobListing e where e.availableFrom >= CURRENT_DATE and e.available_to <= CURRENT_DATE ")
     Collection<JobListing> findByJobNameAndAvailableFromLessThanEqualAndAvailableToGreaterThanEqual(String jobName, LocalDate start, LocalDate end);

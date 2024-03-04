@@ -21,7 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProcessSteps extends PaxtonEntity<Long> implements Comparable<ProcessSteps> {
+public class ProcessSteps extends PaxtonEntity implements Comparable<ProcessSteps> {
 
     @ManyToOne
     @JoinColumn(name = "process_id")

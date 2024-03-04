@@ -7,13 +7,15 @@ import com.irb.paxton.core.messaging.input.MessageInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class ApplicationMutationResolver {
 
-    @Autowired
-    ApplicationService applicationService;
+    private final ApplicationService applicationService;
+
+    public ApplicationMutationResolver(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
 
     @DgsMutation
     public Application applyToJobListing(@InputArgument ApplicationInput ApplicationInput) {

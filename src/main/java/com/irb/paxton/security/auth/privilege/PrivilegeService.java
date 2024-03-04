@@ -6,11 +6,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PrivilegeService extends AbstractService<Privilege, Long> {
+public class PrivilegeService extends AbstractService<Privilege> {
 
     private final PrivilegeRepository privilegeRepository;
 
-    protected PrivilegeService(AbstractRepository<Privilege, Long> repository, PrivilegeRepository privilegeRepository) {
+    protected PrivilegeService(AbstractRepository<Privilege> repository, PrivilegeRepository privilegeRepository) {
         super(repository);
         this.privilegeRepository = privilegeRepository;
     }
@@ -20,7 +20,7 @@ public class PrivilegeService extends AbstractService<Privilege, Long> {
         Privilege privilege = this.privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name, null);
-            this.privilegeRepository.save(privilege);
+            this.privilegeRepository.persist(privilege);
         }
         return privilege;
     }

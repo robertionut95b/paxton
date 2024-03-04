@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PhotographyRepository extends AbstractRepository<Photography, Long> {
+public interface PhotographyRepository extends AbstractRepository<Photography> {
 
     Optional<Photography> findByName(String name);
 }

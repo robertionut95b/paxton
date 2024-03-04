@@ -6,17 +6,19 @@ import com.irb.paxton.core.study.institution.input.InstitutionInput;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class InstitutionMutationResolver {
 
-    @Autowired
-    private InstitutionRepository institutionRepository;
+    private final InstitutionRepository institutionRepository;
+
+    public InstitutionMutationResolver(InstitutionRepository institutionRepository) {
+        this.institutionRepository = institutionRepository;
+    }
 
     @DgsMutation
     public Institution addInstitution(@InputArgument InstitutionInput InstitutionInput) {
-        return this.institutionRepository.save(
+        return this.institutionRepository.persist(
                 new Institution(
                         InstitutionInput.getName(),
                         InstitutionInput.getDescription(),

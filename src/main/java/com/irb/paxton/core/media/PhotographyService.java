@@ -11,7 +11,6 @@ import com.irb.paxton.storage.StorageService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -21,22 +20,22 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class PhotographyService extends AbstractService<Photography, Long> {
+public class PhotographyService extends AbstractService<Photography> {
 
-    @Autowired
-    private PhotographyRepository photographyRepository;
+    private final PhotographyRepository photographyRepository;
 
-    @Autowired
-    private UserProfileMapper userProfileMapper;
+    private final UserProfileMapper userProfileMapper;
 
-    @Autowired
-    private StorageService storageService;
+    private final StorageService storageService;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    protected PhotographyService(AbstractRepository<Photography, Long> repository) {
+    protected PhotographyService(AbstractRepository<Photography> repository, PhotographyRepository photographyRepository, UserProfileMapper userProfileMapper, StorageService storageService, RestTemplate restTemplate) {
         super(repository);
+        this.photographyRepository = photographyRepository;
+        this.userProfileMapper = userProfileMapper;
+        this.storageService = storageService;
+        this.restTemplate = restTemplate;
     }
 
     public Photography findByName(String imageName) {
@@ -79,7 +78,7 @@ public class PhotographyService extends AbstractService<Photography, Long> {
             storageService.remove(currentPhotography.getPath());
             log.info("Cleaned old cover newPhotography file within service");
         }
-        photographyRepository.save(newPhotography);
+        this.create(newPhotography);
         userProfile.setCoverPhotography(newPhotography.getName());
         return newPhotography;
     }
@@ -105,13 +104,13 @@ public class PhotographyService extends AbstractService<Photography, Long> {
             storageService.remove(currentPhotography.getPath());
             log.info("Cleaned old avatar newPhotography file within service");
         }
-        photographyRepository.save(newPhotography);
+        this.create(newPhotography);
         userProfile.setPhotography(newPhotography.getName());
         return newPhotography;
     }
 
     @Transactional
     public void createPhotography(@NotNull Photography photography) {
-        this.photographyRepository.save(photography);
+        this.create(photography);
     }
 }

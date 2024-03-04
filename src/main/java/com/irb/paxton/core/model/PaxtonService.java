@@ -3,9 +3,11 @@ package com.irb.paxton.core.model;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 
-public interface PaxtonService<K, T extends PaxtonEntity<K>> {
+public interface PaxtonService<T extends PaxtonEntity> {
 
-    T findById(K id);
+    T findById(Long id);
+
+    T findByUrlId(String urlId);
 
     T create(T newEntity);
 
@@ -13,7 +15,7 @@ public interface PaxtonService<K, T extends PaxtonEntity<K>> {
 
     void delete(T entity);
 
-    void deleteById(K id);
+    void deleteById(Long id);
 
     PaginatedResponse<T> advSearch(SearchRequest searchRequest);
 }

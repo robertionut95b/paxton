@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -24,7 +25,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Recruiter extends PaxtonEntity<Long> {
+public class Recruiter extends PaxtonEntity {
 
     @ManyToOne
     @MapsId

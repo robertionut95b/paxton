@@ -1,18 +1,15 @@
 package com.irb.paxton.core.jobs;
 
-import com.irb.paxton.core.jobs.category.JobCategoryRepository;
 import com.irb.paxton.core.jobs.exception.JobAlreadyExistsException;
 import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.jobs.input.JobInput;
 import com.irb.paxton.core.jobs.mapper.JobMapper;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
-import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,22 +19,16 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class JobService extends AbstractService<Job, Long> {
+public class JobService extends AbstractService<Job> {
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final JobMapper jobMapper;
 
-    @Autowired
-    private JobCategoryRepository jobCategoryRepository;
-
-    @Autowired
-    private JobMapper jobMapper;
-
-    protected JobService(AbstractRepository<Job, Long> repository) {
+    protected JobService(AbstractRepository<Job> repository, JobRepository jobRepository, JobMapper jobMapper) {
         super(repository);
+        this.jobRepository = jobRepository;
+        this.jobMapper = jobMapper;
     }
 
     public Job publishJob(JobInput jobInput) {
@@ -53,17 +44,12 @@ public class JobService extends AbstractService<Job, Long> {
             }
             job = jobMapper.toEntity(jobInput);
         }
-        jobRepository.save(job);
+        this.create(job);
         return job;
     }
 
     public List<Job> findAllJobs() {
         return this.jobRepository.findAll();
-    }
-
-    public Job findById(Long jobId) {
-        return this.jobRepository.findById(jobId)
-                .orElseThrow(() -> new JobNotFoundException("Job by id [%s] does not exist".formatted(jobId)));
     }
 
     public PaginatedResponse<Job> getAllJobsPaginatedFiltered(SearchRequest searchRequest) {

@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class UserDeviceService extends AbstractService<UserDevice, Long> {
+public class UserDeviceService extends AbstractService<UserDevice> {
 
     @Autowired
     private UserDeviceRepository userDeviceRepository;
 
-    protected UserDeviceService(AbstractRepository<UserDevice, Long> repository) {
+    protected UserDeviceService(AbstractRepository<UserDevice> repository) {
         super(repository);
     }
 
@@ -34,7 +34,7 @@ public class UserDeviceService extends AbstractService<UserDevice, Long> {
                 );
         if (devicesList.isEmpty()) {
             userDevice.setVerified(false);
-            this.userDeviceRepository.save(userDevice);
+            this.create(userDevice);
             // check with e-mail verification if user approves this device
             throw new UnknownDeviceDetectedException(userDevice.getId(), "This device is not trusted, check your e-mail for confirmation code");
         }
@@ -46,7 +46,7 @@ public class UserDeviceService extends AbstractService<UserDevice, Long> {
         );
         if (devices.isEmpty()) {
             userDevice.setVerified(false);
-            return this.userDeviceRepository.save(userDevice);
+            return this.create(userDevice);
         }
         return null;
     }

@@ -7,15 +7,17 @@ import com.irb.paxton.core.search.SearchRequest;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 
 @DgsComponent
 public class JobListingQueryResolver {
 
-    @Autowired
-    private JobListingService jobListingService;
+    private final JobListingService jobListingService;
+
+    public JobListingQueryResolver(JobListingService jobListingService) {
+        this.jobListingService = jobListingService;
+    }
 
     @DgsQuery
     public PaginatedResponse<JobListing> getAllJobListings(@InputArgument SearchRequest searchQuery) {

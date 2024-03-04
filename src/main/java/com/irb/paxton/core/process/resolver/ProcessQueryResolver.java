@@ -7,13 +7,15 @@ import com.irb.paxton.core.search.SearchRequest;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class ProcessQueryResolver {
 
-    @Autowired
-    private ProcessService processService;
+    private final ProcessService processService;
+
+    public ProcessQueryResolver(ProcessService processService) {
+        this.processService = processService;
+    }
 
     @DgsQuery
     public PaginatedResponse<Process> getAllProcesses(@InputArgument SearchRequest searchQuery) {

@@ -21,7 +21,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Job extends PaxtonEntity<Long> {
+public class Job extends PaxtonEntity {
 
     @NotNull
     @NotBlank

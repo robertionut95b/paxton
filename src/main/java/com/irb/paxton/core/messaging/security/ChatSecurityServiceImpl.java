@@ -66,10 +66,18 @@ public class ChatSecurityServiceImpl implements ChatSecurityService {
     }
 
     @Override
-    public boolean isCurrentUserChatMember(Long chatId) {
+    public boolean isCurrentUserChatMemberById(Long chatId) {
         User user = this.authenticationService.getCurrentUserFromSecurityContext();
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
+        return chat.getUsers().contains(user);
+    }
+
+    @Override
+    public boolean isCurrentUserChatMemberByUrlId(String chatUrlId) {
+        User user = this.authenticationService.getCurrentUserFromSecurityContext();
+        Chat chat = chatRepository.findByUrlId(chatUrlId)
+                .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatUrlId)));
         return chat.getUsers().contains(user);
     }
 

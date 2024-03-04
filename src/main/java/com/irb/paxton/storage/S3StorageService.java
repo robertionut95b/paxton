@@ -7,7 +7,6 @@ import io.minio.messages.Item;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -26,7 +25,6 @@ import java.util.UUID;
 @ConditionalOnBean(value = MinioClient.class)
 public class S3StorageService implements StorageService, BucketStorageService<Result<Item>> {
 
-    @Autowired
     private final MinioClient minioClient;
 
     private final String bucketName = "paxton-storage";

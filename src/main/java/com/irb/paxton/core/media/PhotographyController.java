@@ -3,7 +3,6 @@ package com.irb.paxton.core.media;
 import com.irb.paxton.storage.StorageService;
 import com.irb.paxton.utils.Base64Utils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -25,11 +24,14 @@ import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION
 @RequestMapping(path = "api/" + API_VERSION)
 public class PhotographyController {
 
-    @Autowired
-    private StorageService storageService;
+    private final StorageService storageService;
 
-    @Autowired
-    private PhotographyService photographyService;
+    private final PhotographyService photographyService;
+
+    public PhotographyController(StorageService storageService, PhotographyService photographyService) {
+        this.storageService = storageService;
+        this.photographyService = photographyService;
+    }
 
     @GetMapping(value = {"/images/{size}/{imageName}", "/images/{imageName}"}, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable(required = false) Optional<String> size, @PathVariable String imageName) throws IOException {

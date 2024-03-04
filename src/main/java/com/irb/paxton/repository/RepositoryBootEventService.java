@@ -34,7 +34,7 @@ import com.irb.paxton.security.auth.user.credentials.Credentials;
 import com.irb.paxton.security.auth.user.credentials.CredentialsType;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,59 +51,64 @@ import static com.irb.paxton.config.properties.ApplicationProperties.DEFAULT_PRO
 @Slf4j
 public class RepositoryBootEventService {
 
-    @Autowired
-    private RepositorySetupRepository setupRepository;
+    public static final String LOG_CREATE_DEFAULT_USER_MSG = "Registering default user {} with credentials value=\"{}\". Please note this down as it is automatically generated";
 
-    @Autowired
-    private RoleService roleService;
+    private final RepositorySetupRepository setupRepository;
 
-    @Autowired
-    private PrivilegeService privilegeService;
+    private final RoleService roleService;
 
-    @Autowired
-    private UserService userService;
+    private final PrivilegeService privilegeService;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final UserService userService;
 
-    @Autowired
-    private JobCategoryRepository jobCategoryRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private ProcessRepository processRepository;
+    private final JobCategoryRepository jobCategoryRepository;
 
-    @Autowired
-    private RecruiterRepository recruiterRepository;
+    private final ProcessRepository processRepository;
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final RecruiterRepository recruiterRepository;
 
-    @Autowired
-    private StepRepository stepRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private ProcessStepsRepository processStepsRepository;
+    private final StepRepository stepRepository;
 
-    @Autowired
-    private JobListingRepository jobListingRepository;
+    private final ProcessStepsRepository processStepsRepository;
 
-    @Autowired
-    private CountryRepository countryRepository;
+    private final JobListingRepository jobListingRepository;
 
-    @Autowired
-    private CityRepository cityRepository;
+    private final CountryRepository countryRepository;
 
-    @Autowired
-    private ActivitySectorRepository activitySectorRepository;
+    private final CityRepository cityRepository;
 
-    @Autowired
-    private DomainRepository domainRepository;
+    private final ActivitySectorRepository activitySectorRepository;
 
-    @Autowired
-    private CertificationRepository certificationRepository;
+    private final DomainRepository domainRepository;
 
-    @Autowired
-    private InstitutionRepository institutionRepository;
+    private final CertificationRepository certificationRepository;
+
+    private final InstitutionRepository institutionRepository;
+
+    public RepositoryBootEventService(RepositorySetupRepository setupRepository, RoleService roleService, PrivilegeService privilegeService, UserService userService, OrganizationRepository organizationRepository, JobCategoryRepository jobCategoryRepository, ProcessRepository processRepository, RecruiterRepository recruiterRepository, JobRepository jobRepository, StepRepository stepRepository, ProcessStepsRepository processStepsRepository, JobListingRepository jobListingRepository, CountryRepository countryRepository, CityRepository cityRepository, ActivitySectorRepository activitySectorRepository, DomainRepository domainRepository, CertificationRepository certificationRepository, InstitutionRepository institutionRepository) {
+        this.setupRepository = setupRepository;
+        this.roleService = roleService;
+        this.privilegeService = privilegeService;
+        this.userService = userService;
+        this.organizationRepository = organizationRepository;
+        this.jobCategoryRepository = jobCategoryRepository;
+        this.processRepository = processRepository;
+        this.recruiterRepository = recruiterRepository;
+        this.jobRepository = jobRepository;
+        this.stepRepository = stepRepository;
+        this.processStepsRepository = processStepsRepository;
+        this.jobListingRepository = jobListingRepository;
+        this.countryRepository = countryRepository;
+        this.cityRepository = cityRepository;
+        this.activitySectorRepository = activitySectorRepository;
+        this.domainRepository = domainRepository;
+        this.certificationRepository = certificationRepository;
+        this.institutionRepository = institutionRepository;
+    }
 
     public void setupApplicationRepository() {
         RepositorySetup repositorySetupRecord = this.setupRepository.findByIsActive(true);
@@ -120,7 +125,7 @@ public class RepositoryBootEventService {
         this.setupNomenclaturesRepository();
         this.setupSampleOrganizationRepository();
 
-        this.setupRepository.save(new RepositorySetup(true, true, true));
+        this.setupRepository.persist(new RepositorySetup(true, true, true));
         log.info("Paxton app finished initializing repository, moving on ...");
     }
 
@@ -141,26 +146,37 @@ public class RepositoryBootEventService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         // create system user (root)
-        User systemUser = new User(null, "SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", List.of(adminRole, everyOneRole), null, true);
-        Credentials credentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("paxton123"), true, LocalDate.now(), null);
+        String password = RandomStringUtils.random(32, true, true);
+        User systemUser = new User("SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", List.of(adminRole, everyOneRole), null, true);
+        Credentials credentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
+        log.info(LOG_CREATE_DEFAULT_USER_MSG, "pxSystemUser", password);
         systemUser.setCredentials(credentials);
         userService.registerNewUser(systemUser);
 
         // create base admin user
-        User admin = new User(null, "admin", "admin", null, "admin@paxton.com", "admin", List.of(adminRole, everyOneRole), null, true);
-        Credentials adminCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("admin"), true, LocalDate.now(), null);
+        password = RandomStringUtils.random(32, true, true);
+        String adminStr = "admin";
+        User admin = new User(adminStr, adminStr, null, "admin@paxton.com", adminStr, List.of(adminRole, everyOneRole), null, true);
+        Credentials adminCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
+        log.info(LOG_CREATE_DEFAULT_USER_MSG, adminStr, password);
         admin.setCredentials(adminCredentials);
         userService.registerNewUser(admin);
 
         // create read-only user
-        User readOnly = new User(null, "readOnly", "readOnly", null, "readOnly@paxton.com", "readOnly", List.of(everyOneRole), null, true);
-        Credentials userCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("readOnly"), true, LocalDate.now(), null);
+        password = RandomStringUtils.random(32, true, true);
+        String readOnlyStr = "readOnly";
+        User readOnly = new User(readOnlyStr, readOnlyStr, null, "readOnly@paxton.com", readOnlyStr, List.of(everyOneRole), null, true);
+        Credentials userCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
+        log.info(LOG_CREATE_DEFAULT_USER_MSG, readOnlyStr, password);
         readOnly.setCredentials(userCredentials);
         userService.registerNewUser(readOnly);
 
         // create recruiter user
-        User recruiter = new User(null, "pxRecruiter", "pxRecruiter", null, "pxRecruiter@paxton.com", "pxRecruiter", List.of(recruiterRole, everyOneRole), null, true);
-        Credentials recruiterCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode("pxRecruiter"), true, LocalDate.now(), null);
+        password = RandomStringUtils.random(32, true, true);
+        String pxRecruiterStr = "pxRecruiter";
+        User recruiter = new User(pxRecruiterStr, pxRecruiterStr, null, "pxRecruiter@paxton.com", pxRecruiterStr, List.of(recruiterRole, everyOneRole), null, true);
+        Credentials recruiterCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
+        log.info(LOG_CREATE_DEFAULT_USER_MSG, pxRecruiterStr, password);
         recruiter.setCredentials(recruiterCredentials);
         userService.registerNewUser(recruiter);
     }
@@ -185,15 +201,15 @@ public class RepositoryBootEventService {
         JobCategory educationCategory = new JobCategory("Education", null);
         JobCategory healthcareCategory = new JobCategory("Healthcare", null);
         JobCategory lawCategory = new JobCategory("Law", null);
-        this.organizationRepository.save(paxtonOrg);
-        this.activitySectorRepository.saveAll(List.of(itFinance, healthcare, education, law));
-        this.jobCategoryRepository.saveAll(List.of(itcJobCategory, educationCategory, healthcareCategory, lawCategory));
+        this.organizationRepository.persist(paxtonOrg);
+        this.activitySectorRepository.persistAll(List.of(itFinance, healthcare, education, law));
+        this.jobCategoryRepository.persistAll(List.of(itcJobCategory, educationCategory, healthcareCategory, lawCategory));
 
         // define a job and job listing for Paxton organisation
         Job softwareDeveloper = new Job("Software Developer", "Developers are often natural problem solvers who possess strong analytical skills and the ability to think outside the box", null);
         Job dataAnalyst = new Job("Data Analyst", "A data analyst is a person whose job is to gather and interpret data in order to solve a specific problem", null);
         Job projectManager = new Job("Project Manager", "Project managers have the responsibility of the planning, procurement and execution of a project, in any undertaking that has a defined scope, defined start and a defined finish; regardless of industry", null);
-        this.jobRepository.saveAll(List.of(softwareDeveloper, dataAnalyst, projectManager));
+        this.jobRepository.persistAll(List.of(softwareDeveloper, dataAnalyst, projectManager));
 
 
         User pxRecruiter = this.userService.findByUsername("pxRecruiter").orElseThrow(() -> new UserNotFoundException("pxRecruiter does not exist"));
@@ -206,10 +222,10 @@ public class RepositoryBootEventService {
                 LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth()), true, Buc, 3, softwareDeveloper, ContractType.FULL_TIME, paxtonOrg, itcJobCategory, null, recruiter, WorkType.HYBRID);
 
         softwareDeveloper.setJobListings(List.of(jobListingPaxtonSoftwareDev));
-        jobListingRepository.save(jobListingPaxtonSoftwareDev);
+        jobListingRepository.persist(jobListingPaxtonSoftwareDev);
 
         // Define a basic process as template
-        this.recruiterRepository.save(recruiter);
+        this.recruiterRepository.persist(recruiter);
         Process defaultProcess = new Process(DEFAULT_PROCESS_NAME, "Default recruitment process for all the organizations", null, null);
 
         // define steps
@@ -219,7 +235,7 @@ public class RepositoryBootEventService {
         Step responseStep = new Step(null, "Response", "During this step, the candidate will be informed if an offer is made of if his candidature is rejected");
         Step offerNegotiationStep = new Step(null, "Offer negotiation", "This step will go through the contract negotiation between the employees and the employer");
         Step conclusionStep = new Step(null, "Conclusion", "This is the final step of the process, which will end up with a reject or accept from the employee/employer");
-        this.stepRepository.saveAll(List.of(applyStep, candidatureAnalysisStep, interviewStep, responseStep, offerNegotiationStep, conclusionStep));
+        this.stepRepository.persistAll(List.of(applyStep, candidatureAnalysisStep, interviewStep, responseStep, offerNegotiationStep, conclusionStep));
         // link steps to process
         ProcessSteps processStepsApply = new ProcessSteps(defaultProcess, applyStep, Status.ACTIVE, 1);
         ProcessSteps processStepsAnalysis = new ProcessSteps(defaultProcess, candidatureAnalysisStep, Status.ACTIVE, 2);
@@ -227,10 +243,10 @@ public class RepositoryBootEventService {
         ProcessSteps processStepsResponse = new ProcessSteps(defaultProcess, responseStep, Status.ACTIVE, 4);
         ProcessSteps processStepsOfferNegotiation = new ProcessSteps(defaultProcess, offerNegotiationStep, Status.ACTIVE, 5);
         ProcessSteps processStepsConclusion = new ProcessSteps(defaultProcess, conclusionStep, Status.ACTIVE, 6);
-        this.processStepsRepository.saveAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
+        this.processStepsRepository.persistAll(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
 
         defaultProcess.setProcessSteps(List.of(processStepsApply, processStepsAnalysis, processStepsInterview, processStepsResponse, processStepsOfferNegotiation, processStepsConclusion));
-        this.processRepository.save(defaultProcess);
+        this.processRepository.persist(defaultProcess);
         paxtonOrg.setRecruitmentProcess(defaultProcess);
     }
 
@@ -256,24 +272,24 @@ public class RepositoryBootEventService {
         Country It = new Country("IT", "Italy", new HashSet<>(itCities));
         itCities.forEach(c -> c.setCountry(It));
 
-        countryRepository.saveAll(List.of(Ro, Gr, It));
+        countryRepository.persistAll(List.of(Ro, Gr, It));
 
         // create institutions, domains and certifications
         log.info("Paxton : creating studies objects");
 
         Certification bachelorsDegree = new Certification("Bachelor's degree", null);
         Certification highSchoolDegree = new Certification("High school degree", null);
-        certificationRepository.saveAll(List.of(bachelorsDegree, highSchoolDegree));
+        certificationRepository.persistAll(List.of(bachelorsDegree, highSchoolDegree));
 
         Institution institutionCSIE = new Institution("Faculty of Cybernetics Statistics and Economic Informatics", "The Undergraduate Program in Economic Informatics ensures the training for: analysis, design and implementation of information systems in enterprises; utilization and configuration of software packages with application in economy; development and introduction of the applied software; research and application of the new computer science technologies; computer programming skills.", "https://csie.ase.ro/wp-content/uploads/2020/10/cropped-CSIE_new-300x132.png", null);
         Institution institutionASE = new Institution("Bucharest University of economic studies", "ASE is the Leader of economic and public administration higher education in Romania and South-Eastern Europe, as confirmed by its key positioning in prestigious international rankings.", "https://upload.wikimedia.org/wikipedia/ro/a/a3/Logo_ASE.png", null);
-        institutionRepository.saveAll(List.of(institutionASE, institutionCSIE));
+        institutionRepository.persistAll(List.of(institutionASE, institutionCSIE));
 
         Domain computerScience = new Domain("Computers Science", null);
         Domain economics = new Domain("Economics", null);
         Domain mathematics = new Domain("Mathematics", null);
         Domain statistics = new Domain("Statistics", null);
         Domain agriculture = new Domain("Agriculture", null);
-        domainRepository.saveAll(List.of(computerScience, economics, mathematics, statistics, agriculture));
+        domainRepository.persistAll(List.of(computerScience, economics, mathematics, statistics, agriculture));
     }
 }

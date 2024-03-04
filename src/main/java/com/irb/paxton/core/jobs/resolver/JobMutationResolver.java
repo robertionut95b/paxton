@@ -8,16 +8,18 @@ import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class JobMutationResolver {
 
-    @Autowired
-    private JobService jobService;
+    private final JobService jobService;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
+
+    public JobMutationResolver(JobService jobService, OrganizationRepository organizationRepository) {
+        this.jobService = jobService;
+        this.organizationRepository = organizationRepository;
+    }
 
     @DgsMutation
     public Job publishJob(@InputArgument @Valid JobInput JobInput) {

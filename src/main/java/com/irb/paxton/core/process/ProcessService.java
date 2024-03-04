@@ -16,7 +16,6 @@ import com.irb.paxton.core.process.mapper.ProcessMapper;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -28,25 +27,25 @@ import java.util.Optional;
 import static com.irb.paxton.config.properties.ApplicationProperties.DEFAULT_PROCESS_NAME;
 
 @Service
-public class ProcessService extends AbstractService<Process, Long> {
+public class ProcessService extends AbstractService<Process> {
 
-    @Autowired
-    private ProcessRepository processRepository;
+    private final ProcessRepository processRepository;
 
-    @Autowired
-    private ProcessMapper processMapper;
+    private final ProcessMapper processMapper;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    private ApplicationProcessStepsRepository applicationProcessStepsRepository;
+    private final ApplicationProcessStepsRepository applicationProcessStepsRepository;
 
-    protected ProcessService(AbstractRepository<Process, Long> repository) {
+    protected ProcessService(AbstractRepository<Process> repository, ProcessRepository processRepository, ProcessMapper processMapper, OrganizationRepository organizationRepository, ApplicationRepository applicationRepository, ApplicationProcessStepsRepository applicationProcessStepsRepository) {
         super(repository);
+        this.processRepository = processRepository;
+        this.processMapper = processMapper;
+        this.organizationRepository = organizationRepository;
+        this.applicationRepository = applicationRepository;
+        this.applicationProcessStepsRepository = applicationProcessStepsRepository;
     }
 
     @PreAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR')")
@@ -66,7 +65,7 @@ public class ProcessService extends AbstractService<Process, Long> {
     public Process updateProcess(ProcessInput processInputUpdate) {
         Process process = this.findById(processInputUpdate.getId());
         Process updatedProcess = processMapper.inputToProcessUpdate(process, processInputUpdate);
-        return processRepository.save(updatedProcess);
+        return this.update(updatedProcess);
     }
 
     @Transactional
@@ -90,18 +89,18 @@ public class ProcessService extends AbstractService<Process, Long> {
                     .toList();
             affectedApplications.forEach(a -> {
                 ApplicationProcessSteps currentStep = new ApplicationProcessSteps(firstStep, a, OffsetDateTime.now());
-                applicationProcessStepsRepository.save(currentStep);
+                applicationProcessStepsRepository.persist(currentStep);
                 a.removeAllProcessSteps();
                 a.addProcessSteps(currentStep);
                 a.setCurrentStep(currentStep.getProcessStep());
-                applicationRepository.save(a);
+                applicationRepository.update(a);
             });
         } else
             throw new IllegalStateException("New process must have a starting/ending step with order [1], [n] respectively");
-        processRepository.save(updatedProcess);
+        processRepository.update(updatedProcess);
         // assign the new instance to org
         organization.setRecruitmentProcess(updatedProcess);
-        organizationRepository.save(organization);
+        organizationRepository.update(organization);
         return updatedProcess;
     }
 

@@ -4,25 +4,21 @@ import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.process.input.StepInput;
 import com.irb.paxton.core.process.mapper.StepMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StepService extends AbstractService<Step, Long> {
+public class StepService extends AbstractService<Step> {
 
-    @Autowired
-    private StepRepository stepRepository;
+    private final StepMapper stepMapper;
 
-    @Autowired
-    private StepMapper stepMapper;
-
-    protected StepService(AbstractRepository<Step, Long> repository) {
+    protected StepService(AbstractRepository<Step> repository, StepMapper stepMapper) {
         super(repository);
+        this.stepMapper = stepMapper;
     }
 
     public Step createStep(StepInput stepInput) {
         Step newStep = this.stepMapper.toEntity(stepInput);
-        stepRepository.save(newStep);
+        this.create(newStep);
         return newStep;
     }
 }

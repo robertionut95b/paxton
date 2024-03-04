@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserProfileRepository extends AbstractRepository<UserProfile, Long> {
+public interface UserProfileRepository extends AbstractRepository<UserProfile> {
 
     Optional<UserProfile> findByUser_Id(Long id);
 

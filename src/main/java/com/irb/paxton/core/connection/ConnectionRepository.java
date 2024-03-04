@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ConnectionRepository extends AbstractRepository<Connection, Long> {
+public interface ConnectionRepository extends AbstractRepository<Connection> {
 
     List<Connection> findByRequester_IdOrAddressed_Id(Long id, Long id1);
 

@@ -23,7 +23,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class Photography extends PaxtonEntity<Long> {
+public class Photography extends PaxtonEntity {
 
     @NotNull
     @NotEmpty

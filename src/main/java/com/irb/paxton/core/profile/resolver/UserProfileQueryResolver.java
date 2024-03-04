@@ -6,7 +6,6 @@ import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -15,8 +14,11 @@ import static com.irb.paxton.security.SecurityUtils.getCurrentUserLogin;
 @DgsComponent
 public class UserProfileQueryResolver {
 
-    @Autowired
     private UserProfileService userProfileService;
+
+    public UserProfileQueryResolver(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @DgsQuery
     public Optional<UserProfile> getUserProfile(@InputArgument String profileSlugUrl) {

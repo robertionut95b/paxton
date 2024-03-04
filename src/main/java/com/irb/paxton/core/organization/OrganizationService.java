@@ -7,23 +7,22 @@ import com.irb.paxton.core.organization.input.OrganizationInput;
 import com.irb.paxton.core.organization.mapper.OrganizationMapper;
 import com.irb.paxton.core.process.ProcessService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrganizationService extends AbstractService<Organization, Long> {
+public class OrganizationService extends AbstractService<Organization> {
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private OrganizationMapper organizationMapper;
+    private final OrganizationMapper organizationMapper;
 
-    @Autowired
-    private ProcessService processService;
+    private final ProcessService processService;
 
-    protected OrganizationService(AbstractRepository<Organization, Long> repository) {
+    protected OrganizationService(AbstractRepository<Organization> repository, OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, ProcessService processService) {
         super(repository);
+        this.organizationRepository = organizationRepository;
+        this.organizationMapper = organizationMapper;
+        this.processService = processService;
     }
 
     @Transactional
@@ -38,7 +37,7 @@ public class OrganizationService extends AbstractService<Organization, Long> {
             organization = organizationMapper.organizationInputToOrganization(organizationInput);
             processService.assignDefaultProcessToOrg(organization);
         }
-        organizationRepository.save(organization);
+        this.create(organization);
         return organization;
     }
 

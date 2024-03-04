@@ -9,13 +9,15 @@ import com.irb.paxton.security.auth.user.User;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DgsComponent
 public class ConnectionQueryResolver {
 
-    @Autowired
-    private ConnectionService connectionService;
+    private final ConnectionService connectionService;
+
+    public ConnectionQueryResolver(ConnectionService connectionService) {
+        this.connectionService = connectionService;
+    }
 
     @DgsQuery
     public PaginatedResponse<Connection> getNewConnectionForUser(@InputArgument Long userId, @InputArgument Integer page, @InputArgument Integer size) {

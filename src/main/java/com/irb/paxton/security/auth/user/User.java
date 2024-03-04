@@ -35,7 +35,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 @ToString
-public class User extends PaxtonEntity<Long> {
+public class User extends PaxtonEntity {
 
     @NotBlank
     @NotEmpty
@@ -100,8 +100,7 @@ public class User extends PaxtonEntity<Long> {
     @CollectionTable(name = "px_user_auth_providers", joinColumns = @JoinColumn(name = "owner_id"))
     private Set<AuthProvider> authProviders = new LinkedHashSet<>();
 
-    public User(Long id, String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {
-        this.id = id;
+    public User(String firstName, String lastName, LocalDate birthDate, String email, String username, Collection<Role> roles, Credentials credentials, boolean isEmailConfirmed) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;

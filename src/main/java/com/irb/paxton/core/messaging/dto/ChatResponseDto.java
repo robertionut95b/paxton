@@ -13,6 +13,8 @@ public class ChatResponseDto extends AbstractInput {
 
     private Long id;
 
+    private String urlId;
+
     private Collection<User> users;
 
     private String title;

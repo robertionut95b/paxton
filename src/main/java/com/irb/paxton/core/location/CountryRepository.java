@@ -4,5 +4,5 @@ import com.irb.paxton.core.model.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CountryRepository extends AbstractRepository<Country, Long> {
+public interface CountryRepository extends AbstractRepository<Country> {
 }

@@ -5,15 +5,17 @@ import com.irb.paxton.core.process.StepRepository;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @DgsComponent
 public class StepQueryResolver {
 
-    @Autowired
-    private StepRepository stepRepository;
+    private final StepRepository stepRepository;
+
+    public StepQueryResolver(StepRepository stepRepository) {
+        this.stepRepository = stepRepository;
+    }
 
     @DgsQuery
     public List<Step> getAllSteps() {

@@ -16,7 +16,6 @@ import com.irb.paxton.security.auth.role.RoleRepository;
 import com.irb.paxton.security.auth.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -26,25 +25,25 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class RecruiterService extends AbstractService<Recruiter, Long> {
+public class RecruiterService extends AbstractService<Recruiter> {
 
-    @Autowired
-    private RecruiterRepository recruiterRepository;
+    private final RecruiterRepository recruiterRepository;
 
-    @Autowired
-    private RecruiterMapper recruiterMapper;
+    private final RecruiterMapper recruiterMapper;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    protected RecruiterService(AbstractRepository<Recruiter, Long> repository) {
+    protected RecruiterService(AbstractRepository<Recruiter> repository, RecruiterRepository recruiterRepository, RecruiterMapper recruiterMapper, OrganizationRepository organizationRepository, UserService userService, RoleRepository roleRepository) {
         super(repository);
+        this.recruiterRepository = recruiterRepository;
+        this.recruiterMapper = recruiterMapper;
+        this.organizationRepository = organizationRepository;
+        this.userService = userService;
+        this.roleRepository = roleRepository;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
@@ -100,7 +99,7 @@ public class RecruiterService extends AbstractService<Recruiter, Long> {
             });
         }
         organization.setRecruitersList(newRecruits);
-        organizationRepository.save(organization);
+        organizationRepository.persist(organization);
 
         return organization.getRecruiters();
     }

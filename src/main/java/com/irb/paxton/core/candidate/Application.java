@@ -18,6 +18,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -33,7 +34,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 @EntityListeners(value = {ApplicationListener.class})
-public class Application extends PaxtonEntity<Long> {
+public class Application extends PaxtonEntity {
 
     @Serial
     private static final long serialVersionUID = -9186763748718953611L;

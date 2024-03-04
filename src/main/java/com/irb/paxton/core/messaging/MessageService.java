@@ -8,9 +8,9 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageService extends AbstractService<Message, Long> {
+public class MessageService extends AbstractService<Message> {
 
-    protected MessageService(AbstractRepository<Message, Long> repository) {
+    protected MessageService(AbstractRepository<Message> repository) {
         super(repository);
     }
 

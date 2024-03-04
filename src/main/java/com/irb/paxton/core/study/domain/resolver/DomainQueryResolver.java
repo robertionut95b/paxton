@@ -4,15 +4,17 @@ import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.domain.DomainRepository;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @DgsComponent
 public class DomainQueryResolver {
 
-    @Autowired
-    private DomainRepository domainRepository;
+    private final DomainRepository domainRepository;
+
+    public DomainQueryResolver(DomainRepository domainRepository) {
+        this.domainRepository = domainRepository;
+    }
 
     @DgsQuery
     public List<Domain> getAllDomains() {

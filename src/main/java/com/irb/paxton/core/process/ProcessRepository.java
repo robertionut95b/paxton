@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProcessRepository extends AbstractRepository<Process, Long> {
+public interface ProcessRepository extends AbstractRepository<Process> {
 
     Optional<Process> findByName(String name);
 }

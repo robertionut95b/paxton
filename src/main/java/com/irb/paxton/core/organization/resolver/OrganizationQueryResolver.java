@@ -7,18 +7,20 @@ import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @DgsComponent
 public class OrganizationQueryResolver {
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private OrganizationService organizationService;
+    private final OrganizationService organizationService;
+
+    public OrganizationQueryResolver(OrganizationRepository organizationRepository, OrganizationService organizationService) {
+        this.organizationRepository = organizationRepository;
+        this.organizationService = organizationService;
+    }
 
     @DgsQuery
     public List<Organization> getAllOrganizations() {

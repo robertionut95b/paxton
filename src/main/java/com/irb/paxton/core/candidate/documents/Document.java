@@ -18,7 +18,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @NoArgsConstructor
 @Getter
 @Setter
-public class Document extends PaxtonEntity<Long> {
+public class Document extends PaxtonEntity {
 
     @NotNull
     @NotEmpty

@@ -1,11 +1,10 @@
 package com.irb.paxton.storage.validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.ServletContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.List;
 @Service
 public class ImageFileValidatorService implements ImageFileValidator {
 
-    @Autowired
-    ServletContext servletContext;
+    private ServletContext servletContext;
+
+    public ImageFileValidatorService(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     @Override
     public boolean checkFileMimeType(MultipartFile file, String mimeType) {

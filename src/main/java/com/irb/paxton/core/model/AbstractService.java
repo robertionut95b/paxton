@@ -4,42 +4,46 @@ import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-
 @Service
 @Transactional
-public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Serializable> implements PaxtonService<ID, T> {
+public abstract class AbstractService<T extends PaxtonEntity> implements PaxtonService<T> {
 
-    private final AbstractRepository<T, ID> repository;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final AbstractRepository<T> repository;
 
-    protected AbstractService(AbstractRepository<T, ID> repository) {
+    protected AbstractService(AbstractRepository<T> repository) {
         this.repository = repository;
     }
 
     @Override
-    public T findById(ID id) {
-        return this.repository.findById(id)
-                .orElseThrow(() -> new GenericEntityNotFoundException("Entity by id %s does not exist".formatted(id.toString())));
+    public T findById(Long id) {
+        return this.repository
+                .findById(id)
+                .orElseThrow(() -> new GenericEntityNotFoundException("Entity by id=%s does not exist"
+                        .formatted(id.toString()))
+                );
+    }
+
+    public T findByUrlId(String urlId) {
+        return this.repository
+                .findByUrlId(urlId)
+                .orElseThrow(() -> new GenericEntityNotFoundException("Entity by urlId=%s does not exist"
+                        .formatted(urlId))
+                );
     }
 
     @Override
     public T create(T newEntity) {
-        entityManager.persist(newEntity);
-        return newEntity;
+        return repository.persist(newEntity);
     }
 
     @Override
     public T update(T updated) {
-        return entityManager.merge(updated);
+        return repository.merge(updated);
     }
 
     @Override
@@ -48,7 +52,7 @@ public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Ser
     }
 
     @Override
-    public void deleteById(ID id) {
+    public void deleteById(Long id) {
         T instance = this.findById(id);
         this.repository.delete(instance);
     }

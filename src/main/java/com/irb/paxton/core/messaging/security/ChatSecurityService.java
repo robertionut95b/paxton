@@ -17,7 +17,9 @@ public interface ChatSecurityService extends PaginationSecurityService {
 
     boolean isChatMember(Authentication authentication, List<Object> response);
 
-    boolean isCurrentUserChatMember(Long chatId);
+    boolean isCurrentUserChatMemberById(Long chatId);
+
+    boolean isCurrentUserChatMemberByUrlId(String chatUrlId);
 
     boolean isChatMember(Long chatId, Long userId);
 }

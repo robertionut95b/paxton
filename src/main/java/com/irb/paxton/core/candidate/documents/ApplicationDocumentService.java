@@ -11,7 +11,6 @@ import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
 import com.irb.paxton.storage.exception.FileNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,22 +19,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @Service
-public class ApplicationDocumentService extends AbstractService<ApplicationDocument, Long> {
+public class ApplicationDocumentService extends AbstractService<ApplicationDocument> {
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    private StorageService storageService;
+    private final StorageService storageService;
 
-    @Autowired
-    private DocumentRepository documentRepository;
+    private final DocumentRepository documentRepository;
 
-    @Autowired
-    private ApplicationService applicationService;
-
-    protected ApplicationDocumentService(AbstractRepository<ApplicationDocument, Long> repository) {
+    protected ApplicationDocumentService(AbstractRepository<ApplicationDocument> repository, ApplicationRepository applicationRepository, StorageService storageService, DocumentRepository documentRepository, ApplicationService applicationService) {
         super(repository);
+        this.applicationRepository = applicationRepository;
+        this.storageService = storageService;
+        this.documentRepository = documentRepository;
     }
 
     @Transactional
@@ -51,10 +47,10 @@ public class ApplicationDocumentService extends AbstractService<ApplicationDocum
         FileResponse fileResponse = storageService.store(documentInput, userApplicationsLoc, "applications", application.getId().toString());
         Document document = new Document(fileResponse.getName(), fileResponse.getPath());
         // store the document record
-        documentRepository.save(document);
+        documentRepository.persist(document);
         // update the application's documents collection
         application.addApplicationDocument(new ApplicationDocument(document, application));
-        applicationRepository.save(application);
+        applicationRepository.persist(application);
 
         return document;
     }
@@ -91,7 +87,7 @@ public class ApplicationDocumentService extends AbstractService<ApplicationDocum
             storageService.remove(document.getUrl());
 
             application.removeApplicationDocument(applicationDocument);
-            applicationRepository.save(application);
+            applicationRepository.persist(application);
             documentRepository.delete(document);
         } else {
             throw new FileNotFoundException("Document by id %s does not exist".formatted(documentInput));

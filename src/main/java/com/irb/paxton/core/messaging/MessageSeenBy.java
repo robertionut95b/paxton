@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @AllArgsConstructor
 @Getter
 @Setter
-public class MessageSeenBy extends PaxtonEntity<Long> {
+public class MessageSeenBy extends PaxtonEntity {
 
     @NotNull
     @ManyToOne(optional = false)

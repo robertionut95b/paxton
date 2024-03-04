@@ -13,7 +13,6 @@ type ChatLineProps = {
   active?: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
   const avatar =
     (c?.users?.length ?? 0) > 1 ? (

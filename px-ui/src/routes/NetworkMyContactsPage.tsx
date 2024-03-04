@@ -112,8 +112,7 @@ const NetworkMyContactsPage = () => {
     },
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: foundChatData } = useGetChatWithUserIdQuery(
+  useGetChatWithUserIdQuery(
     graphqlRequestClient,
     {
       userId: selectedUser?.id ?? 0,

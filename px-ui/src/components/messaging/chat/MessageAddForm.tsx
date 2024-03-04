@@ -61,7 +61,6 @@ const MessageAddForm = ({
     ),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changeMsgCb = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setContent(e.currentTarget.value);

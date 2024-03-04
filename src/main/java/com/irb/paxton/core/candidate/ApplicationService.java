@@ -4,9 +4,12 @@ import com.irb.paxton.core.candidate.exception.ApplicationNotFoundException;
 import com.irb.paxton.core.candidate.input.ApplicationInput;
 import com.irb.paxton.core.candidate.mapper.ApplicationMapper;
 import com.irb.paxton.core.candidate.projection.ApplicationsCountByStep;
-import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatService;
+import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.input.MessageInput;
+import com.irb.paxton.core.messaging.mapper.ChatMapper;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.process.Process;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.search.PaginatedResponse;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 @Service
-public class ApplicationService {
+public class ApplicationService extends AbstractService<Application, Long> {
 
     private static final String APPLICATION_NOT_FOUND_BY_ID = "Application by id %s does not exist";
 
@@ -40,6 +43,13 @@ public class ApplicationService {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private ChatMapper chatMapper;
+
+    protected ApplicationService(AbstractRepository<Application, Long> repository) {
+        super(repository);
+    }
 
     @PostAuthorize("(hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, returnObject.candidate.user.username)")
     public Application findById(Long applicationId) {
@@ -125,8 +135,8 @@ public class ApplicationService {
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or (hasRole('ROLE_RECRUITER') and @organizationSecurityService.isOrganizationRecruiter(authentication, returnObject.jobListing.organization)) or returnObject.createdBy == principal.username")
     public Application addMessageToApplicationChat(MessageInput messageInput, Long applicationId) {
         Application application = this.findByApplicationId(applicationId);
-        Chat applicationChat = chatService.addMessageToChat(messageInput);
-        application.setChat(applicationChat);
+        ChatResponseDto applicationChat = chatService.addMessageToChat(messageInput);
+        application.setChat(chatMapper.chatResponseDtoToChat(applicationChat));
         applicationRepository.save(application);
         return application;
     }

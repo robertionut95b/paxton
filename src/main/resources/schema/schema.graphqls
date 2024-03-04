@@ -45,7 +45,7 @@ type Application {
     currentStep: ProcessSteps!
     processSteps: [ApplicationProcessSteps]
     applicationDocuments: [ApplicationDocument]
-    chat: Chat!
+    chat: ChatResponse!
 }
 
 type ApplicationsCountByStep {
@@ -109,12 +109,11 @@ input ChatInput {
     chatType: ChatType
 }
 
-type Chat {
+type ChatResponse {
     id: Long!
     title: String
     chatType: ChatType
     unreadMessagesCount: Int!
-    messages: [Message]
     users: [User]
     latestMessage: Message
 }
@@ -128,7 +127,7 @@ type ChatLiveUpdate {
 }
 
 type ChatPage {
-    list: [Chat]
+    list: [ChatResponse]
     page: Int!
     totalPages: Int!
     totalElements: Int!
@@ -354,7 +353,7 @@ type Message {
     content: String!
     sender: User!
     deliveredAt: DateTime!
-    chat: Chat
+    chat: ChatResponse
     seenBy: [MessageSeenBy]
     seenAt: DateTime
 }
@@ -364,13 +363,6 @@ input MessageInput {
     content: String!
     senderUserId: Long!
     chatId: Long!
-}
-
-type MessageSlice {
-    list: [Message],
-    isFirst: Boolean
-    isLast: Boolean
-    hasNext: Boolean
 }
 
 type MessagePage {
@@ -757,11 +749,10 @@ type Query {
     getAllRecruitersForOrganization(organizationId: Long!): [Recruiter]
     getAllRecruitersForOrganizationBySlug(organizationSlug: String!): [Recruiter]
     findRecruitersAdvSearch(searchQuery: SearchQueryInput): RecruiterPage
-    getPrivateChatById(chatId: Long!): Chat
+    getPrivateChatById(chatId: Long!): ChatResponse
     getChatAdvSearch(searchQuery: SearchQueryInput): ChatPage
-    getChatWithUserId(userId: Long!): Chat
-    getChatsWithUsersIds(userIds: [Long]!, chatType: ChatType!): [Chat]
-    getMessagesSliced(searchQuery: SearchQueryInput): MessageSlice
+    getChatWithUserId(userId: Long!): ChatResponse
+    getChatsWithUsersIds(userIds: [Long]!, chatType: ChatType!): [ChatResponse]
     getMessagesPaginated(searchQuery: SearchQueryInput): MessagePage
     getNewConnectionForUser(userId: Long!, page: Int, size: Int): ConnectionPage
     getConnectionsForUser(userId: Long!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): UserConnectionPage
@@ -790,11 +781,11 @@ type Mutation {
     alterRecruitersInOrganization(RecruiterInput: [RecruiterInput]!, OrganizationId: Long!): [Recruiter]
     updateApplication(ApplicationInput: ApplicationInput!): Application
     addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: Long!): Application
-    addMessageToChat(MessageInput: MessageInput!): Chat
-    createChat(ChatInput: ChatInput!): Chat
-    updateChat(ChatInput: ChatInput!): Chat
-    removeChat(chatId: Long!): Chat
-    markAllMessagesAsSeen(chatId: Long!, userId: Long!): Chat
+    addMessageToChat(MessageInput: MessageInput!): ChatResponse
+    createChat(ChatInput: ChatInput!): ChatResponse
+    updateChat(ChatInput: ChatInput!): ChatResponse
+    removeChat(chatId: Long!): ChatResponse
+    markAllMessagesAsSeen(chatId: Long!, userId: Long!): ChatResponse
     updateProcessForOrganizationId(processInput: ProcessInputCreate!, organizationId: Long!): Process
     createStep(stepInput: StepInput!): Step
     createConnection(connectionCreateInput: ConnectionCreateInput!): Connection

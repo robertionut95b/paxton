@@ -2,6 +2,10 @@ package com.irb.paxton.mail;
 
 import com.irb.paxton.config.properties.MailProperties;
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,10 +14,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
@@ -25,8 +25,10 @@ public class PaxtonMailService implements EmailService {
 
     @Autowired
     MailProperties mailProperties;
+
     @Autowired
     private JavaMailSender emailSender;
+
     @Autowired
     private TemplateEngine templateEngine;
 
@@ -50,7 +52,6 @@ public class PaxtonMailService implements EmailService {
             msg.setSentDate(new Date());
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
             emailSender.send(msg);
-            log.info("A registration confirmation email was sent to the user's address = %s".formatted(to));
         } catch (MessagingException | UnsupportedEncodingException e) {
             log.error(e.getLocalizedMessage(), e);
             throw new RuntimeException(e);

@@ -36,8 +36,14 @@ subscription GetLiveUpdatesForChats($auth: String!) {
       content
       deliveredAt
       sender {
+        id
+        username
+        displayName
         firstName
         lastName
+        userProfile {
+          photography
+        }
       }
     }
   }

@@ -1,9 +1,11 @@
 package com.irb.paxton.core.jobs.category;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface JobCategoryRepository extends JpaRepository<JobCategory, Long> {
+@Repository
+public interface JobCategoryRepository extends AbstractRepository<JobCategory, Long> {
     Optional<JobCategory> findByName(String name);
 }

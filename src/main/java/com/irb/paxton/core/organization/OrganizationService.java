@@ -6,10 +6,9 @@ import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.organization.input.OrganizationInput;
 import com.irb.paxton.core.organization.mapper.OrganizationMapper;
 import com.irb.paxton.core.process.ProcessService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class OrganizationService extends AbstractService<Organization, Long> {

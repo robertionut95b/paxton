@@ -3,14 +3,14 @@ package com.irb.paxton.core.model;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
-import com.irb.paxton.core.search.SlicedResponse;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import java.io.Serializable;
 
 @Service
@@ -18,6 +18,8 @@ import java.io.Serializable;
 public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Serializable> implements PaxtonService<ID, T> {
 
     private final AbstractRepository<T, ID> repository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     protected AbstractService(AbstractRepository<T, ID> repository) {
         this.repository = repository;
@@ -31,17 +33,22 @@ public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Ser
 
     @Override
     public T create(T newEntity) {
-        return this.repository.save(newEntity);
+        entityManager.persist(newEntity);
+        return newEntity;
     }
 
     @Override
     public T update(T updated) {
-        T instanceToUpdate = this.findById(updated.getId());
-        return this.repository.save(instanceToUpdate);
+        return entityManager.merge(updated);
     }
 
     @Override
-    public void delete(ID id) {
+    public void delete(T entity) {
+        this.repository.delete(entity);
+    }
+
+    @Override
+    public void deleteById(ID id) {
         T instance = this.findById(id);
         this.repository.delete(instance);
     }
@@ -53,14 +60,5 @@ public abstract class AbstractService<T extends PaxtonEntity<ID>, ID extends Ser
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
         Page<T> results = this.repository.findAll(searchSpecification, pageable);
         return new PaginatedResponse<>(results, searchRequest.getPage(), results.getTotalPages(), results.getTotalElements());
-    }
-
-    @Override
-    public SlicedResponse<T> slicedSearch(SearchRequest searchRequest) {
-        if (searchRequest == null) searchRequest = new SearchRequest();
-        SearchSpecification<T> searchSpecification = new SearchSpecification<>(searchRequest);
-        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
-        Slice<T> results = this.repository.findAll(searchSpecification, pageable);
-        return new SlicedResponse<>(results, results.isFirst(), results.isLast(), results.hasNext());
     }
 }

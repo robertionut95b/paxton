@@ -1,6 +1,5 @@
 import { useAuth } from "@auth/useAuth";
 import ChatLine from "@components/messaging/chat/ChatLine";
-import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import { SelectItem } from "@components/select-items/SelectItem";
 import {
@@ -244,8 +243,6 @@ const NewChatPage = () => {
 
   const chatLines = chatSearchByMembersData ?? [];
 
-  const chatMessages = chatSearchByMembersData?.[0]?.messages ?? [];
-
   useEffect(() => {
     const usersData = userData ?? [];
     if (usersData.length > 0) {
@@ -321,7 +318,6 @@ const NewChatPage = () => {
         </Then>
         <Else>
           <div className="h-full grow">
-            <ChatSection currentUser={user} messages={chatMessages} />
             <When condition={searchUsers.length > 0}>
               <Divider mt="md" />
               <Stack justify="center" align="center" spacing="xs">

@@ -1,19 +1,18 @@
 package com.irb.paxton.security.auth.privilege;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
-import java.util.List;
-
 @Service
-public class PrivilegeService {
+public class PrivilegeService extends AbstractService<Privilege, Long> {
 
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
+    private final PrivilegeRepository privilegeRepository;
 
-    public List<Privilege> getAllPrivileges() {
-        return this.privilegeRepository.findAll();
+    protected PrivilegeService(AbstractRepository<Privilege, Long> repository, PrivilegeRepository privilegeRepository) {
+        super(repository);
+        this.privilegeRepository = privilegeRepository;
     }
 
     @Transactional

@@ -176,18 +176,6 @@ mutation AddMessageToApplicationChat(
 mutation CreateChat($ChatInput: ChatInput!) {
   createChat(ChatInput: $ChatInput) {
     id
-    messages {
-      id
-      content
-      sender {
-        id
-        username
-        userProfile {
-          photography
-        }
-      }
-      deliveredAt
-    }
   }
 }
 
@@ -220,6 +208,7 @@ mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
         id
         firstName
         lastName
+        displayName
         username
         userProfile {
           photography

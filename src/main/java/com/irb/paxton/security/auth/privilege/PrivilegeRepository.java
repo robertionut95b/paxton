@@ -1,8 +1,10 @@
 package com.irb.paxton.security.auth.privilege;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
+@Repository
+public interface PrivilegeRepository extends AbstractRepository<Privilege, Long> {
 
     Privilege findByName(String name);
 }

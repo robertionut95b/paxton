@@ -4,19 +4,25 @@ import com.irb.paxton.core.jobs.category.exception.JobCategoryAlreadyExistsExcep
 import com.irb.paxton.core.jobs.category.exception.JobCategoryNotFoundException;
 import com.irb.paxton.core.jobs.category.input.JobCategoryInput;
 import com.irb.paxton.core.jobs.category.mapper.JobCategoryMapper;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class JobCategoryService {
+public class JobCategoryService extends AbstractService<JobCategory, Long> {
 
     @Autowired
     private JobCategoryRepository jobCategoryRepository;
 
     @Autowired
     private JobCategoryMapper jobCategoryMapper;
+
+    protected JobCategoryService(AbstractRepository<JobCategory, Long> repository) {
+        super(repository);
+    }
 
     public JobCategory addJobCategory(JobCategoryInput jobCategoryInput) {
         JobCategory jobCategory;

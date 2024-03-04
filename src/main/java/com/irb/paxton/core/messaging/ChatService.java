@@ -1,6 +1,7 @@
 package com.irb.paxton.core.messaging;
 
 import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
+import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.exceptions.ChatNotFoundException;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
@@ -12,6 +13,7 @@ import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.search.*;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
+import com.irb.paxton.security.AuthenticationService;
 import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
@@ -46,24 +48,27 @@ public class ChatService extends AbstractService<Chat, Long> {
 
     private final UserRepository userRepository;
 
+    private final AuthenticationService authenticationService;
+
     private final ChatLiveUpdatesManagerService liveUpdatesManagerService;
 
     private final ChatRoomManagerService chatRoomManagerService;
 
-    public ChatService(AbstractRepository<Chat, Long> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
+    public ChatService(AbstractRepository<Chat, Long> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
         super(repository);
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.messageMapper = messageMapper;
         this.chatMapper = chatMapper;
         this.userRepository = userRepository;
+        this.authenticationService = authenticationService;
         this.liveUpdatesManagerService = liveUpdatesManagerService;
         this.chatRoomManagerService = chatRoomManagerService;
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(#messageInput.chatId, #messageInput.senderUserId)")
-    public Chat addMessageToChat(MessageInput messageInput) {
+    public ChatResponseDto addMessageToChat(MessageInput messageInput) {
         Message message = messageMapper.toEntity(messageInput);
         Chat chat = message.getChat();
         messageRepository.save(message);
@@ -72,42 +77,45 @@ public class ChatService extends AbstractService<Chat, Long> {
         chatRoomManagerService.publishMessageToChannel(chat.getId(), message);
         // publish updates to users in chats
         liveUpdatesManagerService.notifyChatUsersExceptingCurrent(chat.getUsers(), message, chat);
-        return chatRepository.save(chat);
+        this.update(chat);
+        return chatMapper.toChatResponseDto(chat);
     }
 
     @Transactional
-    public Chat createChat(ChatInput chatInput) {
+    public ChatResponseDto createChat(ChatInput chatInput) {
         Chat newChat = this.create(chatMapper.toEntity(chatInput));
         // publish SSE to listeners
         liveUpdatesManagerService.notifyChatUsersExceptingCurrent(newChat.getUsers(), null, newChat);
-        return newChat;
+        return chatMapper.toChatResponseDto(newChat);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
-    public Chat getPrivateChatById(Long chatId) {
-        return this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
-                .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
+    public ChatResponseDto getPrivateChatById(Long chatId) {
+        return chatMapper.toChatResponseDto(this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
+                .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId))));
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
-    public Chat updateChat(ChatInput chatInput) {
+    public ChatResponseDto updateChat(ChatInput chatInput) {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);
         // publish SSE to listeners
         liveUpdatesManagerService.notifyChatUsersExceptingCurrent(updatedChat.getUsers(), updatedChat.getLatestMessage(), updatedChat);
-        return chatRepository.save(updatedChat);
+        this.update(updatedChat);
+        return chatMapper.toChatResponseDto(updatedChat);
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(#chatId, #userId)")
-    public Chat markAllMessagesAsSeen(Long chatId, Long userId) {
+    public ChatResponseDto markAllMessagesAsSeen(Long chatId, Long userId) {
         Chat chat = this.findById(chatId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User by id %s does not exist".formatted(userId)));
         chat.markAllMessagesAsSeenByUser(user);
-        return this.chatRepository.save(chat);
+        this.update(chat);
+        return chatMapper.toChatResponseDto(chat);
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(authentication, returnObject)")
@@ -117,24 +125,22 @@ public class ChatService extends AbstractService<Chat, Long> {
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
-    public Chat getChatWithUserId(Long userId) {
+    public ChatResponseDto getChatWithUserId(Long userId) {
         Authentication authentication = SecurityUtils.getCurrentUserAuth();
         User thisUser = this.userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("Current user must be logged in"));
         List<Chat> chats = chatRepository.findDistinctByUsers_IdIn(List.of(thisUser.getId(), userId));
 
-        return chats.stream()
-                .filter(c -> c.getUsers().size() == 2 && c.getUsers().stream().allMatch(u -> u.getId().equals(thisUser.getId()) || u.getId().equals(userId)))
-                .findFirst()
-                .orElseThrow(() -> new ChatNotFoundException("Chat does not exist between users [%s - %s]".formatted(thisUser.getId(), userId)));
+        return chatMapper
+                .toChatResponseDto(chats.stream()
+                        .filter(c -> c.getUsers().size() == 2 && c.getUsers().stream().allMatch(u -> u.getId().equals(thisUser.getId()) || u.getId().equals(userId)))
+                        .findFirst()
+                        .orElseThrow(() -> new ChatNotFoundException("Chat does not exist between users [%s - %s]".formatted(thisUser.getId(), userId))));
     }
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(authentication, returnObject)")
-    public List<Chat> getChatsWithUsersIds(List<Long> userIds, ChatType chatType) {
-        Authentication authentication = SecurityUtils.getCurrentUserAuth();
-        User thisUser = this.userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new UserNotFoundException("Current user must be logged in"));
-
+    public List<ChatResponseDto> getChatsWithUsersIds(List<Long> userIds, ChatType chatType) {
+        User thisUser = this.authenticationService.getCurrentUserFromSecurityContext();
         List<Chat> chats = chatRepository
                 .findDistinctByUsers_IdIn(Stream.concat(userIds.stream(), Stream.of(thisUser.getId())).toList());
         HashSet<User> thoseUsers = userIds
@@ -145,16 +151,19 @@ public class ChatService extends AbstractService<Chat, Long> {
         return chats.stream()
                 .filter(c -> c.getUsers().size() == userIds.size() && c.getUsers().containsAll(thoseUsers))
                 .filter(c -> c.getChatType().equals(chatType))
+                .map(chatMapper::toChatResponseDto)
                 .toList();
     }
 
     @Transactional
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
-    public Chat removeChatById(Long chatId) {
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
+    public ChatResponseDto removeChatById(Long chatId) {
         Chat findChat = this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
                 .orElseThrow(() -> new ChatNotFoundException("Chat by id %s does not exist".formatted(chatId)));
-        this.chatRepository.delete(findChat);
-        return findChat;
+        // leave chat instead of deletion
+        User currentUser = this.authenticationService.getCurrentUserFromSecurityContext();
+        findChat.leaveChatForUser(currentUser);
+        return chatMapper.toChatResponseDto(findChat);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")

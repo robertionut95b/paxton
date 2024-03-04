@@ -5,6 +5,8 @@ import com.irb.paxton.core.candidate.ApplicationRepository;
 import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.ApplicationStatus;
 import com.irb.paxton.core.candidate.documents.input.ApplicationDocumentInput;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
 import com.irb.paxton.storage.exception.FileNotFoundException;
@@ -18,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @Service
-public class ApplicationDocumentService {
+public class ApplicationDocumentService extends AbstractService<ApplicationDocument, Long> {
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -31,6 +33,10 @@ public class ApplicationDocumentService {
 
     @Autowired
     private ApplicationService applicationService;
+
+    protected ApplicationDocumentService(AbstractRepository<ApplicationDocument, Long> repository) {
+        super(repository);
+    }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @paxtonSecurityService.isOwner(authentication, #application.candidate.user.username)")

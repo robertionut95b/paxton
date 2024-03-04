@@ -1,5 +1,7 @@
 package com.irb.paxton.security.auth.device;
 
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.security.auth.device.exception.UnknownDeviceDetectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,10 +10,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class UserDeviceService {
+public class UserDeviceService extends AbstractService<UserDevice, Long> {
 
     @Autowired
     private UserDeviceRepository userDeviceRepository;
+
+    protected UserDeviceService(AbstractRepository<UserDevice, Long> repository) {
+        super(repository);
+    }
 
     public void registerOrCheckUserDevice(UserDevice userDevice) {
         List<UserDevice> devicesListF = this.userDeviceRepository

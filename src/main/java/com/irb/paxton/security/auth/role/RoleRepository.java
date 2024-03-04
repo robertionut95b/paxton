@@ -1,8 +1,10 @@
 package com.irb.paxton.security.auth.role;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.irb.paxton.core.model.AbstractRepository;
+import org.springframework.stereotype.Repository;
 
-public interface RoleRepository extends JpaRepository<Role, Long> {
+@Repository
+public interface RoleRepository extends AbstractRepository<Role, Long> {
 
     Role findByName(String name);
 }

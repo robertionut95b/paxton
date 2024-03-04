@@ -1,6 +1,7 @@
 package com.irb.paxton.security.auth;
 
 import com.irb.paxton.security.AuthenticationService;
+import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.device.UserDevice;
 import com.irb.paxton.security.auth.device.UserDeviceService;
 import com.irb.paxton.security.auth.forgot.request.FindEmailDto;
@@ -38,8 +39,10 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -266,5 +269,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
+    }
+
+    @Override
+    public User getCurrentUserFromSecurityContext() throws AuthenticationException, UserNotFoundException {
+        String user = SecurityUtils.getCurrentUserLogin()
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userService
+                .findByUsername(user)
+                .orElseThrow(() -> new UserNotFoundException("User [%s] does not exist".formatted(user)));
     }
 }

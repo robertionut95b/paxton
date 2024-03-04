@@ -2,6 +2,7 @@ package com.irb.paxton.core.messaging.mapper;
 
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
+import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import org.mapstruct.*;
@@ -18,4 +19,8 @@ public abstract class ChatMapper {
     public abstract Chat partialUpdate(ChatInput chatInput, @MappingTarget Chat chat);
 
     public abstract ChatLiveUpdateDto toChatLiveUpdateDto(Chat chat);
+
+    public abstract ChatResponseDto toChatResponseDto(Chat chat);
+
+    public abstract Chat chatResponseDtoToChat(ChatResponseDto chatResponseDto);
 }

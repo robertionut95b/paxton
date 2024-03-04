@@ -5,6 +5,8 @@ import com.irb.paxton.core.jobs.exception.JobAlreadyExistsException;
 import com.irb.paxton.core.jobs.exception.JobNotFoundException;
 import com.irb.paxton.core.jobs.input.JobInput;
 import com.irb.paxton.core.jobs.mapper.JobMapper;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
@@ -20,7 +22,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class JobService {
+public class JobService extends AbstractService<Job, Long> {
 
     @Autowired
     private JobRepository jobRepository;
@@ -33,6 +35,10 @@ public class JobService {
 
     @Autowired
     private JobMapper jobMapper;
+
+    protected JobService(AbstractRepository<Job, Long> repository) {
+        super(repository);
+    }
 
     public Job publishJob(JobInput jobInput) {
         Job job;

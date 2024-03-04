@@ -2,6 +2,7 @@ package com.irb.paxton.core.messaging.resolver;
 
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatService;
+import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.type.ChatType;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
@@ -19,7 +20,7 @@ public class ChatQueryResolver {
     private ChatService chatService;
 
     @DgsQuery
-    public Chat getPrivateChatById(@InputArgument Long chatId) {
+    public ChatResponseDto getPrivateChatById(@InputArgument Long chatId) {
         return chatService.getPrivateChatById(chatId);
     }
 
@@ -29,12 +30,12 @@ public class ChatQueryResolver {
     }
 
     @DgsQuery
-    public Chat getChatWithUserId(@InputArgument Long userId) {
+    public ChatResponseDto getChatWithUserId(@InputArgument Long userId) {
         return chatService.getChatWithUserId(userId);
     }
 
     @DgsQuery
-    public List<Chat> getChatsWithUsersIds(@InputArgument List<Long> userIds, @InputArgument ChatType chatType) {
+    public List<ChatResponseDto> getChatsWithUsersIds(@InputArgument List<Long> userIds, @InputArgument ChatType chatType) {
         return chatService.getChatsWithUsersIds(userIds, chatType);
     }
 }

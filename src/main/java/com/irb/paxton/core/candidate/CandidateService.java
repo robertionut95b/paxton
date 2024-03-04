@@ -1,5 +1,7 @@
 package com.irb.paxton.core.candidate;
 
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
 import com.irb.paxton.core.search.SearchSpecification;
@@ -11,10 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CandidateService {
+public class CandidateService extends AbstractService<Candidate, Long> {
 
     @Autowired
     private CandidateRepository candidateRepository;
+
+    protected CandidateService(AbstractRepository<Candidate, Long> repository) {
+        super(repository);
+    }
 
     @PreAuthorize("hasRole('ROLE_RECRUITER') or hasRole('ROLE_ADMINISTRATOR')")
     public PaginatedResponse<Candidate> getAllCandidates(SearchRequest searchRequest) {

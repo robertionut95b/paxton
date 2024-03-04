@@ -2,30 +2,33 @@ package com.irb.paxton.core.messaging.security;
 
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatRepository;
+import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.search.PaginatedResponse;
-import com.irb.paxton.core.search.SlicedResponse;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
-import com.irb.paxton.security.SecurityUtils;
+import com.irb.paxton.security.AuthenticationService;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service(value = "chatSecurityService")
 public class ChatSecurityServiceImpl implements ChatSecurityService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
+
+    private final AuthenticationService authenticationService;
+
+    public ChatSecurityServiceImpl(UserRepository userRepository, ChatRepository chatRepository, AuthenticationService authenticationService) {
+        this.userRepository = userRepository;
+        this.chatRepository = chatRepository;
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public boolean isChatMember(Authentication authentication, PaginatedResponse<Object> response) {
@@ -36,16 +39,8 @@ public class ChatSecurityServiceImpl implements ChatSecurityService {
                         .getUsers()
                         .stream()
                         .anyMatch(user -> user.getUsername().equals(authentication.getName()));
-            } else return false;
-        });
-    }
-
-    @Override
-    public boolean isChatMember(Authentication authentication, SlicedResponse<Object> response) {
-        Slice<Object> list = response.getList();
-        return list.stream().allMatch(o -> {
-            if (o instanceof Chat chat) {
-                return chat
+            } else if (o instanceof ChatResponseDto chatResponseDto) {
+                return chatResponseDto
                         .getUsers()
                         .stream()
                         .anyMatch(user -> user.getUsername().equals(authentication.getName()));
@@ -61,22 +56,21 @@ public class ChatSecurityServiceImpl implements ChatSecurityService {
                         .getUsers()
                         .stream()
                         .anyMatch(user -> user.getUsername().equals(authentication.getName()));
+            } else if (o instanceof ChatResponseDto chatResponseDto) {
+                return chatResponseDto
+                        .getUsers()
+                        .stream()
+                        .anyMatch(user -> user.getUsername().equals(authentication.getName()));
             } else return false;
         });
     }
 
     @Override
     public boolean isCurrentUserChatMember(Long chatId) {
-        Optional<String> optionalUser = SecurityUtils.getCurrentUserLogin();
-        if (optionalUser.isPresent()) {
-            String currentUser = optionalUser.get();
-            Chat chat = chatRepository.findById(chatId)
-                    .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
-            User user = userRepository.findByUsername(currentUser)
-                    .orElseThrow(() -> new UserNotFoundException("User by name %s does not exit".formatted(currentUser)));
-            return chat.getUsers().contains(user);
-        }
-        return false;
+        User user = this.authenticationService.getCurrentUserFromSecurityContext();
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new GenericEntityNotFoundException("Chat by id %s does not exist".formatted(chatId)));
+        return chat.getUsers().contains(user);
     }
 
     @Override

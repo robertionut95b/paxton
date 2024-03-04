@@ -2,6 +2,8 @@ package com.irb.paxton.core.media;
 
 import com.irb.paxton.core.media.exception.PhotographyNotFoundException;
 import com.irb.paxton.core.media.input.PhotographyInput;
+import com.irb.paxton.core.model.AbstractRepository;
+import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.mapper.UserProfileMapper;
 import com.irb.paxton.storage.FileResponse;
@@ -19,7 +21,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class PhotographyService {
+public class PhotographyService extends AbstractService<Photography, Long> {
 
     @Autowired
     private PhotographyRepository photographyRepository;
@@ -32,6 +34,10 @@ public class PhotographyService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    protected PhotographyService(AbstractRepository<Photography, Long> repository) {
+        super(repository);
+    }
 
     public Photography findByName(String imageName) {
         return this.photographyRepository

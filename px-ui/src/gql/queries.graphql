@@ -643,21 +643,6 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
       id
       unreadMessagesCount
       title
-      messages {
-        id
-        content
-        sender {
-          id
-          username
-          firstName
-          lastName
-          displayName
-          userProfile {
-            photography
-          }
-        }
-        deliveredAt
-      }
       users {
         id
         username
@@ -688,21 +673,6 @@ query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
     id
     unreadMessagesCount
     title
-    messages {
-      id
-      content
-      sender {
-        id
-        username
-        firstName
-        lastName
-        displayName
-        userProfile {
-          photography
-        }
-      }
-      deliveredAt
-    }
     users {
       id
       username
@@ -717,8 +687,14 @@ query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
       content
       deliveredAt
       sender {
+        id
+        username
         firstName
         lastName
+        displayName
+        userProfile {
+          photography
+        }
       }
     }
   }
@@ -744,8 +720,14 @@ query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
         content
         deliveredAt
         sender {
+          id
+          username
+          displayName
           firstName
           lastName
+          userProfile {
+            photography
+          }
         }
       }
     }

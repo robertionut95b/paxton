@@ -26,14 +26,8 @@ import {
   useRemoveChatMutation,
 } from "@gql/generated";
 import {
-  ArchiveBoxIcon,
   ArrowUturnRightIcon,
-  EllipsisVerticalIcon,
-  FlagIcon,
-  InboxStackIcon,
   ShieldExclamationIcon,
-  StarIcon,
-  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -45,16 +39,15 @@ import {
   Center,
   Divider,
   Group,
-  Menu,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { truncate } from "@utils/truncateText";
-import { intlFormatDistance } from "date-fns";
+import ChatActionsMenu from "features/chat/ChatActionsMenu";
+import ChatTitleSection from "features/chat/ChatTitleSection";
 import { produce } from "immer";
 import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then, When } from "react-if";
@@ -164,6 +157,17 @@ const ChatRoomPage = () => {
           ),
         },
       }),
+      onError: (error: GraphqlApiResponse) => {
+        const err = error.response.errors?.[0];
+        if (err && err.extensions.classification !== "PERMISSION_DENIED") {
+          showNotification({
+            title: "Unknown error",
+            message: err.message,
+            autoClose: 5000,
+            icon: <ShieldExclamationIcon width={20} />,
+          });
+        }
+      },
     },
   );
 
@@ -191,7 +195,7 @@ const ChatRoomPage = () => {
             },
           };
       },
-      enabled: !!isInitialLoading || !isError,
+      enabled: !(isInitialLoading || isError),
     },
   );
 
@@ -482,94 +486,13 @@ const ChatRoomPage = () => {
           borderBottom: `1px solid ${theme.colorScheme === "dark" ? theme.colors.gray[8] : theme.colors.gray[4]}`,
         })}
       >
-        <Group>
-          {avatar}
-          <Group pb={5}>
-            <Stack spacing={0}>
-              <Text weight="bold" size="sm">
-                {chatData.getPrivateChatById.title ?? chatName}
-              </Text>
-              <If condition={users.length > 1}>
-                <Then>
-                  <If condition={!!chatData.getPrivateChatById.latestMessage}>
-                    <Then>
-                      <Text size="xs">
-                        Last activity:{" "}
-                        {chatData?.getPrivateChatById?.latestMessage
-                          ?.deliveredAt &&
-                          intlFormatDistance(
-                            new Date(
-                              chatData?.getPrivateChatById?.latestMessage?.deliveredAt,
-                            ),
-                            new Date(),
-                          )}
-                      </Text>
-                    </Then>
-                    <Else>
-                      <Text size="xs">Group chat</Text>
-                    </Else>
-                  </If>
-                </Then>
-                <Else>
-                  <Text className="line-clamp-1" size="xs">
-                    {
-                      chatData.getPrivateChatById.users?.[0]?.userProfile
-                        .profileTitle
-                    }
-                  </Text>
-                </Else>
-              </If>
-            </Stack>
-          </Group>
-        </Group>
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <ActionIcon size="lg">
-              <EllipsisVerticalIcon width={24} />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Label>General settings</Menu.Label>
-            <Menu.Item icon={<StarIcon width={14} />}>
-              Mark as favorite
-            </Menu.Item>
-            <Menu.Item icon={<FlagIcon width={14} />}>Report chat</Menu.Item>
-            <Menu.Item icon={<ArchiveBoxIcon width={14} />}>Archive</Menu.Item>
-            <Menu.Item icon={<InboxStackIcon width={14} />}>
-              Mark as unread
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Label>Warning</Menu.Label>
-            <Menu.Item
-              icon={<TrashIcon width={14} />}
-              onClick={() =>
-                openConfirmModal({
-                  title: "Delete chat",
-                  children: (
-                    <Stack>
-                      <Text size="sm">
-                        Are you sure you want to delete this chat?
-                      </Text>
-                      <Text size="sm" weight="bold">
-                        This action is irreversible!
-                      </Text>
-                    </Stack>
-                  ),
-                  labels: { cancel: "Cancel", confirm: "Confirm" },
-                  confirmProps: { color: "red.7" },
-                  onCancel: () => null,
-                  onConfirm: () =>
-                    removeChat({
-                      chatId: Number(chatId),
-                    }),
-                })
-              }
-              color="red.8"
-            >
-              Delete conversation
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        <ChatTitleSection
+          // @ts-expect-error("types-error")
+          chatData={chatData.getPrivateChatById}
+          chatName={chatName}
+          avatar={avatar}
+        />
+        <ChatActionsMenu chatId={Number(chatId)} removeChat={removeChat} />
       </Group>
       <If condition={!isMessagesLoading}>
         <Then>

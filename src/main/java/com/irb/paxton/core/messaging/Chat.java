@@ -94,6 +94,10 @@ public class Chat extends PaxtonEntity<Long> {
         return this;
     }
 
+    public void leaveChatForUser(User user) {
+        this.getUsers().remove(user);
+    }
+
     @PostLoad
     private void onLoad() {
         Optional<String> usernameOpt = SecurityUtils.getCurrentUserLogin();

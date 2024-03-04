@@ -4,7 +4,6 @@ import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
-import com.irb.paxton.core.search.SlicedResponse;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +12,6 @@ public class MessageService extends AbstractService<Message, Long> {
 
     protected MessageService(AbstractRepository<Message, Long> repository) {
         super(repository);
-    }
-
-    @PostAuthorize("@messageSecurityService.isMessageChatMember(authentication, returnObject)")
-    public SlicedResponse<Message> getMessagesSliced(SearchRequest searchQuery) {
-        return super.slicedSearch(searchQuery);
     }
 
     @PostAuthorize("@messageSecurityService.isMessageChatMember(authentication, returnObject)")

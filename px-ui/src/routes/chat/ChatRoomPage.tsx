@@ -493,7 +493,10 @@ const ChatRoomPage = () => {
           chatName={chatName}
           avatar={avatar}
         />
-        <ChatActionsMenu chatId={Number(chatId)} removeChat={removeChat} />
+        <ChatActionsMenu
+          chatId={chatData.getPrivateChatById.id!}
+          removeChat={removeChat}
+        />
       </Group>
       <If condition={!isMessagesLoading}>
         <Then>

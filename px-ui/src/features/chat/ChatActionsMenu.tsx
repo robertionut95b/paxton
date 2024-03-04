@@ -59,7 +59,7 @@ const ChatActionsMenu = ({ removeChat, chatId }: ChatActionsMenuProps) => {
               onCancel: () => null,
               onConfirm: () =>
                 removeChat({
-                  chatId: Number(chatId),
+                  chatId,
                 }),
             })
           }

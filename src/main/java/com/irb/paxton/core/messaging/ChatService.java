@@ -105,7 +105,7 @@ public class ChatService extends AbstractService<Chat> {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberById(returnObject.id)")
     public ChatResponseDto updateChat(ChatInput chatInput) {
         Chat existingChat = this.findById(chatInput.getId());
         Chat updatedChat = this.chatMapper.partialUpdate(chatInput, existingChat);
@@ -132,7 +132,7 @@ public class ChatService extends AbstractService<Chat> {
         return super.advSearch(searchRequest);
     }
 
-    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(returnObject.id)")
+    @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberById(returnObject.id)")
     public ChatResponseDto getChatWithUserId(Long userId) {
         Authentication authentication = SecurityUtils.getCurrentUserAuth();
         User thisUser = this.userRepository.findByUsername(authentication.getName())
@@ -164,7 +164,7 @@ public class ChatService extends AbstractService<Chat> {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMember(#chatId)")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isCurrentUserChatMemberById(#chatId)")
     public ChatResponseDto removeChatById(Long chatId) {
         Chat findChat = this.chatRepository.findByIdAndChatType(chatId, ChatType.PRIVATE_CHAT)
                 .orElseThrow(() -> new ChatNotFoundException(CHAT_BY_ID_S_DOES_NOT_EXIST.formatted(chatId)));

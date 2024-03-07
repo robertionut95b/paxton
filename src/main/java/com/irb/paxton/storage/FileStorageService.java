@@ -1,6 +1,7 @@
 package com.irb.paxton.storage;
 
 import com.irb.paxton.config.properties.FileStorageProperties;
+import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
 import com.irb.paxton.storage.exception.FileStorageException;
 import io.minio.MinioClient;
@@ -73,7 +74,7 @@ public class FileStorageService implements StorageService {
         } catch (IOException e) {
             throw new FileStorageException("Failed to store file.", e);
         }
-        return new FileResponse(newFileName, newFilePath);
+        return new FileResponse(newFileName, newFilePath, FileType.parseString(FilenameUtils.getExtension(newFileName)));
     }
 
     @Override

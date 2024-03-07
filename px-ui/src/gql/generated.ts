@@ -1,5 +1,7 @@
+import { ReadStream } from 'fs';
 import { z } from 'zod'
 import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, useInfiniteQuery, UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -8,6 +10,12 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+interface GraphQLFileUpload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream( options?:{ encoding?: string, highWaterMark?: number } ): ReadStream;
+}
 
 function fetcher<TData, TVariables extends { [key: string]: any }>(client: GraphQLClient, query: string, variables?: TVariables, requestHeaders?: RequestInit['headers']) {
   return async (): Promise<TData> => client.request({
@@ -26,6 +34,7 @@ export type Scalars = {
   Date: { input: Date; output: Date; }
   DateTime: { input: Date; output: Date; }
   Long: { input: number; output: number; }
+  Upload: { input: Promise<GraphQLFileUpload>; output: Promise<GraphQLFileUpload>; }
   Url: { input: String; output: String; }
 };
 
@@ -486,10 +495,11 @@ export type JobPage = {
 export type Message = BaseEntity & {
   __typename?: 'Message';
   chat?: Maybe<ChatResponse>;
-  content: Scalars['String']['output'];
+  content?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
   deliveredAt: Scalars['DateTime']['output'];
+  fileContents?: Maybe<Array<Maybe<MessageFile>>>;
   id: Scalars['Long']['output'];
   modifiedAt: Scalars['DateTime']['output'];
   modifiedBy: Scalars['String']['output'];
@@ -497,6 +507,24 @@ export type Message = BaseEntity & {
   seenBy?: Maybe<Array<Maybe<MessageSeenBy>>>;
   sender: User;
   urlId: Scalars['String']['output'];
+};
+
+export type MessageFile = BaseEntity & {
+  __typename?: 'MessageFile';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['Long']['output'];
+  modifiedAt: Scalars['DateTime']['output'];
+  modifiedBy: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  urlId: Scalars['String']['output'];
+};
+
+export type MessageFileInput = {
+  chatId: Scalars['Long']['input'];
+  id?: InputMaybe<Scalars['Long']['input']>;
+  senderUserId: Scalars['Long']['input'];
 };
 
 export type MessageInput = {
@@ -540,6 +568,7 @@ export type Mutation = {
   addJobCategory?: Maybe<JobCategory>;
   addMessageToApplicationChat?: Maybe<Application>;
   addMessageToChat?: Maybe<ChatResponse>;
+  addMessageWithFileToChat?: Maybe<ChatResponse>;
   addUserProfileExperience?: Maybe<UserProfile>;
   addUserProfileStudy?: Maybe<UserProfile>;
   alterRecruitersInOrganization?: Maybe<Array<Maybe<Recruiter>>>;
@@ -596,6 +625,12 @@ export type MutationAddMessageToApplicationChatArgs = {
 
 export type MutationAddMessageToChatArgs = {
   MessageInput: MessageInput;
+};
+
+
+export type MutationAddMessageWithFileToChatArgs = {
+  fileUpload: Array<InputMaybe<Scalars['Upload']['input']>>;
+  messageInput: MessageFileInput;
 };
 
 
@@ -1469,7 +1504,7 @@ export type AddMessageToChatMutationVariables = Exact<{
 }>;
 
 
-export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'ChatResponse', id: number, urlId: string, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
+export type AddMessageToChatMutation = { __typename?: 'Mutation', addMessageToChat?: { __typename?: 'ChatResponse', id: number, urlId: string, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
 
 export type MarkAllMessagesAsSeenMutationVariables = Exact<{
   chatId: Scalars['Long']['input'];
@@ -1477,7 +1512,7 @@ export type MarkAllMessagesAsSeenMutationVariables = Exact<{
 }>;
 
 
-export type MarkAllMessagesAsSeenMutation = { __typename?: 'Mutation', markAllMessagesAsSeen?: { __typename?: 'ChatResponse', id: number, latestMessage?: { __typename?: 'Message', id: number, deliveredAt: Date, content: string, sender: { __typename?: 'User', id: number, firstName: string, lastName: string, displayName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, seenBy?: Array<{ __typename?: 'MessageSeenBy', seenAt: Date, user: { __typename?: 'User', id: number } } | null> | null } | null } | null };
+export type MarkAllMessagesAsSeenMutation = { __typename?: 'Mutation', markAllMessagesAsSeen?: { __typename?: 'ChatResponse', id: number, latestMessage?: { __typename?: 'Message', id: number, deliveredAt: Date, content?: string | null, sender: { __typename?: 'User', id: number, firstName: string, lastName: string, displayName: string, username: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, seenBy?: Array<{ __typename?: 'MessageSeenBy', seenAt: Date, user: { __typename?: 'User', id: number } } | null> | null } | null } | null };
 
 export type UpdateChatMutationVariables = Exact<{
   ChatInput: ChatInput;
@@ -1542,6 +1577,14 @@ export type RemoveUserProfileExperienceMutationVariables = Exact<{
 
 
 export type RemoveUserProfileExperienceMutation = { __typename?: 'Mutation', removeUserProfileExperience?: { __typename?: 'UserProfile', id: number } | null };
+
+export type AddMessageWithFileToChatMutationVariables = Exact<{
+  messageInput: MessageFileInput;
+  fileUpload: Array<InputMaybe<Scalars['Upload']['input']>> | InputMaybe<Scalars['Upload']['input']>;
+}>;
+
+
+export type AddMessageWithFileToChatMutation = { __typename?: 'Mutation', addMessageWithFileToChat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null };
 
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1703,21 +1746,21 @@ export type GetPrivateChatByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
+export type GetPrivateChatByIdQuery = { __typename?: 'Query', getPrivateChatById?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
 
 export type GetPrivateChatByUrlIdQueryVariables = Exact<{
   chatUrlId: Scalars['String']['input'];
 }>;
 
 
-export type GetPrivateChatByUrlIdQuery = { __typename?: 'Query', getPrivateChatByUrlId?: { __typename?: 'ChatResponse', id: number, urlId: string, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
+export type GetPrivateChatByUrlIdQuery = { __typename?: 'Query', getPrivateChatByUrlId?: { __typename?: 'ChatResponse', id: number, urlId: string, title?: string | null, unreadMessagesCount: number, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null, profileTitle: string } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number } } | null } | null };
 
 export type GetChatAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
 }>;
 
 
-export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
+export type GetChatAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', firstName: string, lastName: string } } | null } | null> | null } | null };
 
 export type GetChatsWithUsersIdsQueryVariables = Exact<{
   userIds: Array<InputMaybe<Scalars['Long']['input']>> | InputMaybe<Scalars['Long']['input']>;
@@ -1725,21 +1768,21 @@ export type GetChatsWithUsersIdsQueryVariables = Exact<{
 }>;
 
 
-export type GetChatsWithUsersIdsQuery = { __typename?: 'Query', getChatsWithUsersIds?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null };
+export type GetChatsWithUsersIdsQuery = { __typename?: 'Query', getChatsWithUsersIds?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null };
 
 export type GetChatLinesAdvSearchQueryVariables = Exact<{
   searchQuery: SearchQueryInput;
 }>;
 
 
-export type GetChatLinesAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null } | null };
+export type GetChatLinesAdvSearchQuery = { __typename?: 'Query', getChatAdvSearch?: { __typename?: 'ChatPage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'ChatResponse', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null> | null } | null };
 
 export type GetMessagesPaginatedQueryVariables = Exact<{
   searchQuery?: InputMaybe<SearchQueryInput>;
 }>;
 
 
-export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, content: string, deliveredAt: Date, seenAt?: Date | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null> | null } | null };
+export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, seenAt?: Date | null, fileContents?: Array<{ __typename?: 'MessageFile', id: number, urlId: string, path: string } | null> | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null> | null } | null };
 
 export type GetAllStepsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1786,7 +1829,7 @@ export type GetChatWithUserIdQueryVariables = Exact<{
 }>;
 
 
-export type GetChatWithUserIdQuery = { __typename?: 'Query', getChatWithUserId?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, latestMessage?: { __typename?: 'Message', content: string } | null } | null };
+export type GetChatWithUserIdQuery = { __typename?: 'Query', getChatWithUserId?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, latestMessage?: { __typename?: 'Message', content?: string | null } | null } | null };
 
 export type GetMessagesForChatIdSubscriptionVariables = Exact<{
   chatId: Scalars['Long']['input'];
@@ -1794,14 +1837,14 @@ export type GetMessagesForChatIdSubscriptionVariables = Exact<{
 }>;
 
 
-export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, urlId: string, content: string, deliveredAt: Date, seenAt?: Date | null, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
+export type GetMessagesForChatIdSubscription = { __typename?: 'Subscription', getMessagesForChatId?: { __typename?: 'Message', id: number, urlId: string, content?: string | null, deliveredAt: Date, seenAt?: Date | null, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null };
 
 export type GetLiveUpdatesForChatsSubscriptionVariables = Exact<{
   auth: Scalars['String']['input'];
 }>;
 
 
-export type GetLiveUpdatesForChatsSubscription = { __typename?: 'Subscription', getLiveUpdatesForChats?: { __typename?: 'ChatLiveUpdate', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content: string, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
+export type GetLiveUpdatesForChatsSubscription = { __typename?: 'Subscription', getLiveUpdatesForChats?: { __typename?: 'ChatLiveUpdate', id: number, urlId: string, unreadMessagesCount: number, title?: string | null, users?: Array<{ __typename?: 'User', id: number, username: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } | null> | null, latestMessage?: { __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, sender: { __typename?: 'User', id: number, username: string, displayName: string, firstName: string, lastName: string, userProfile: { __typename?: 'UserProfile', photography?: string | null } } } | null } | null };
 
 
 
@@ -2739,6 +2782,35 @@ useRemoveUserProfileExperienceMutation.getKey = () => ['RemoveUserProfileExperie
 
 
 useRemoveUserProfileExperienceMutation.fetcher = (client: GraphQLClient, variables: RemoveUserProfileExperienceMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUserProfileExperienceMutation, RemoveUserProfileExperienceMutationVariables>(client, RemoveUserProfileExperienceDocument, variables, headers);
+
+export const AddMessageWithFileToChatDocument = `
+    mutation AddMessageWithFileToChat($messageInput: MessageFileInput!, $fileUpload: [Upload]!) {
+  addMessageWithFileToChat(messageInput: $messageInput, fileUpload: $fileUpload) {
+    id
+    urlId
+  }
+}
+    `;
+
+export const useAddMessageWithFileToChatMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddMessageWithFileToChatMutation, TError, AddMessageWithFileToChatMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<AddMessageWithFileToChatMutation, TError, AddMessageWithFileToChatMutationVariables, TContext>(
+      ['AddMessageWithFileToChat'],
+      (variables?: AddMessageWithFileToChatMutationVariables) => fetcher<AddMessageWithFileToChatMutation, AddMessageWithFileToChatMutationVariables>(client, AddMessageWithFileToChatDocument, variables, headers)(),
+      options
+    )};
+
+useAddMessageWithFileToChatMutation.getKey = () => ['AddMessageWithFileToChat'];
+
+
+useAddMessageWithFileToChatMutation.fetcher = (client: GraphQLClient, variables: AddMessageWithFileToChatMutationVariables, headers?: RequestInit['headers']) => fetcher<AddMessageWithFileToChatMutation, AddMessageWithFileToChatMutationVariables>(client, AddMessageWithFileToChatDocument, variables, headers);
 
 export const GetCurrentUserDocument = `
     query GetCurrentUser {
@@ -4806,6 +4878,11 @@ export const GetMessagesPaginatedDocument = `
     list {
       id
       content
+      fileContents {
+        id
+        urlId
+        path
+      }
       sender {
         id
         username
@@ -5460,6 +5537,14 @@ export function JobListingInputSchema(): z.ZodObject<Properties<JobListingInput>
     recruiterId: z.number().min(1),
     title: z.string().min(5),
     workType: WorkTypeSchema
+  })
+}
+
+export function MessageFileInputSchema(): z.ZodObject<Properties<MessageFileInput>> {
+  return z.object({
+    chatId: z.number(),
+    id: z.number().nullish(),
+    senderUserId: z.number()
   })
 }
 

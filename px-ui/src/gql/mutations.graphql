@@ -327,3 +327,16 @@ mutation RemoveUserProfileExperience($experienceId: Long!) {
     id
   }
 }
+
+mutation AddMessageWithFileToChat(
+  $messageInput: MessageFileInput!
+  $fileUpload: [Upload]!
+) {
+  addMessageWithFileToChat(
+    messageInput: $messageInput
+    fileUpload: $fileUpload
+  ) {
+    id
+    urlId
+  }
+}

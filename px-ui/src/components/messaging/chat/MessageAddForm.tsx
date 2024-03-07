@@ -11,13 +11,16 @@ import {
   ActionIcon,
   Avatar,
   Button,
+  FileButton,
   Group,
+  List,
   Popover,
   Text,
   Textarea,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useCallback, useState } from "react";
+import { When } from "react-if";
 import { useDarkMode } from "usehooks-ts";
 import { z } from "zod";
 
@@ -32,6 +35,7 @@ type MessageAddFormProps = {
 type FormValues = {
   content: string;
   senderUserId: number | undefined;
+  fileUpload: unknown;
 };
 
 const MessageAddForm = ({
@@ -42,6 +46,7 @@ const MessageAddForm = ({
   disabled = false,
 }: MessageAddFormProps) => {
   const [content, setContent] = useState<string>("");
+  const [files, setFiles] = useState<File[]>([]);
   const { isDarkMode } = useDarkMode();
 
   const displayInitials =
@@ -52,12 +57,24 @@ const MessageAddForm = ({
     initialValues: {
       content: "",
       senderUserId: Number(currentUser?.userId),
+      fileUpload: null,
     },
     validate: zodResolver(
-      z.object({
-        content: z.string().min(5).max(maxLength),
-        senderUserId: z.number().min(1),
-      }),
+      z
+        .object({
+          content: z.string().max(maxLength).optional(),
+          senderUserId: z.number().min(1),
+          fileUpload: z.any().optional(),
+        })
+        .superRefine((data, ctx) => {
+          if (data.content !== "" && data.fileUpload) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["content"],
+              message: "Either message or file upload must be set",
+            });
+          }
+        }),
     ),
   });
 
@@ -69,11 +86,21 @@ const MessageAddForm = ({
     [form],
   );
 
+  const setFilesCb = useCallback(
+    (payload: File[]): void => {
+      setFiles(payload);
+      // @ts-expect-error("types-error")
+      form.setFieldValue("fileUpload", payload);
+    },
+    [form],
+  );
+
   const handleSubmit = (values: (typeof form)["values"]) => {
     onSubmit(values);
     if (form.isValid()) {
       form.reset();
       setContent("");
+      setFiles([]);
     }
   };
 
@@ -131,22 +158,28 @@ const MessageAddForm = ({
               />
             </Popover.Dropdown>
           </Popover>
-          <Popover withArrow shadow="md" disabled>
-            <Popover.Target>
-              <ActionIcon disabled>
+          <FileButton
+            onChange={setFilesCb}
+            accept="image/png,image/jpeg"
+            multiple
+          >
+            {(props) => (
+              <ActionIcon {...props}>
                 <PhotoIcon width={26} />
               </ActionIcon>
-            </Popover.Target>
-            <Popover.Dropdown p={0}></Popover.Dropdown>
-          </Popover>
-          <Popover withArrow shadow="md" disabled>
-            <Popover.Target>
-              <ActionIcon disabled>
+            )}
+          </FileButton>
+          <FileButton
+            onChange={setFilesCb}
+            accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            multiple
+          >
+            {(props) => (
+              <ActionIcon {...props}>
                 <PaperClipIcon width={26} />
               </ActionIcon>
-            </Popover.Target>
-            <Popover.Dropdown p={0}></Popover.Dropdown>
-          </Popover>
+            )}
+          </FileButton>
         </Group>
         <Group>
           <Group position="right">
@@ -158,9 +191,19 @@ const MessageAddForm = ({
               {content.length}/{maxLength}
             </Text>
           </Group>
-          <Button type="submit" disabled={content.length === 0 || disabled}>
+          <Button
+            type="submit"
+            disabled={(content.length === 0 && files.length === 0) || disabled}
+          >
             Send
           </Button>
+          <When condition={!!files}>
+            <List size="sm" mt={5} withPadding>
+              {files.map((file, index) => (
+                <List.Item key={index}>{file.name}</List.Item>
+              ))}
+            </List>
+          </When>
         </Group>
       </Group>
     </form>

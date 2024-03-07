@@ -1,4 +1,4 @@
-package com.irb.paxton.core.messaging.type;
+package com.irb.paxton.core.messaging.ws;
 
 import com.irb.paxton.core.messaging.Message;
 import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;

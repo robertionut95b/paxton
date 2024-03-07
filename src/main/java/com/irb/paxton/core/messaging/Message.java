@@ -1,18 +1,18 @@
 package com.irb.paxton.core.messaging;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.messaging.jpalisteners.MessageEntityListener;
+import com.irb.paxton.core.messaging.validator.ContentOrFileRequiredValidation;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
-import org.hibernate.validator.constraints.URL;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -26,11 +26,9 @@ import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFI
 @Getter
 @Setter
 @EntityListeners(MessageEntityListener.class)
+@ContentOrFileRequiredValidation
 public class Message extends PaxtonEntity {
 
-    @NotNull
-    @NotNull
-    @NotBlank
     @Lob
     private String content;
 
@@ -52,8 +50,9 @@ public class Message extends PaxtonEntity {
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
-    @URL
-    private String fileUrl;
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MessageFile> fileContents = new HashSet<>();
 
     public Message markAsSeenBy(User user) {
         Set<MessageSeenBy> currentSeens = this.getSeenBy();
@@ -87,5 +86,9 @@ public class Message extends PaxtonEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public void addFileContent(MessageFile messageFile) {
+        this.fileContents.add(messageFile);
     }
 }

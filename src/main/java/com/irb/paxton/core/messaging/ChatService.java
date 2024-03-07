@@ -4,13 +4,16 @@ import com.irb.paxton.core.messaging.dto.ChatLiveUpdateDto;
 import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.exceptions.ChatNotFoundException;
 import com.irb.paxton.core.messaging.input.ChatInput;
+import com.irb.paxton.core.messaging.input.MessageFileInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
 import com.irb.paxton.core.messaging.mapper.ChatMapper;
 import com.irb.paxton.core.messaging.mapper.MessageMapper;
-import com.irb.paxton.core.messaging.type.ChatLiveUpdatesManagerService;
 import com.irb.paxton.core.messaging.type.ChatType;
+import com.irb.paxton.core.messaging.ws.ChatLiveUpdatesManagerService;
+import com.irb.paxton.core.messaging.ws.ChatRoomManagerService;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
+import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.core.search.*;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
 import com.irb.paxton.security.AuthenticationService;
@@ -18,6 +21,8 @@ import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import com.irb.paxton.storage.FileResponse;
+import com.irb.paxton.storage.StorageService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +32,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,7 +63,9 @@ public class ChatService extends AbstractService<Chat> {
 
     private final ChatRoomManagerService chatRoomManagerService;
 
-    public ChatService(AbstractRepository<Chat> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
+    private final StorageService storageService;
+
+    public ChatService(AbstractRepository<Chat> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService, StorageService storageService) {
         super(repository);
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
@@ -66,6 +75,7 @@ public class ChatService extends AbstractService<Chat> {
         this.authenticationService = authenticationService;
         this.liveUpdatesManagerService = liveUpdatesManagerService;
         this.chatRoomManagerService = chatRoomManagerService;
+        this.storageService = storageService;
     }
 
     @Transactional
@@ -73,6 +83,25 @@ public class ChatService extends AbstractService<Chat> {
     public ChatResponseDto addMessageToChat(MessageInput messageInput) {
         Message message = messageMapper.toEntity(messageInput);
         Chat chat = message.getChat();
+        messageRepository.persist(message);
+        chat.addMessage(message);
+        this.update(chat);
+        return chatMapper.toChatResponseDto(chat);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(#messageFileInput.chatId, #messageFileInput.senderUserId)")
+    public ChatResponseDto addMessageToChatWithFileUpload(MessageFileInput messageFileInput, List<MultipartFile> multipartFile) {
+        Message message = messageMapper.toEntity(messageFileInput);
+        Chat chat = message.getChat();
+        // upload file by Storage service
+        Set<FileResponse> uploadedFiles = multipartFile
+                .stream()
+                .map(mpf -> storageService.store(mpf, "chats/%s".formatted(chat.getId())))
+                .collect(Collectors.toSet());
+        uploadedFiles
+                .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), FileType.IMAGE_JPEG, message)));
+        // TODO: if it fails, remove the file and throw exception
         messageRepository.persist(message);
         chat.addMessage(message);
         this.update(chat);

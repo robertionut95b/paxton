@@ -1,7 +1,7 @@
 package com.irb.paxton.core.messaging.jpalisteners;
 
 import com.irb.paxton.core.messaging.Chat;
-import com.irb.paxton.core.messaging.type.ChatLiveUpdatesManagerService;
+import com.irb.paxton.core.messaging.ws.ChatLiveUpdatesManagerService;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostUpdate;
 import lombok.extern.slf4j.Slf4j;

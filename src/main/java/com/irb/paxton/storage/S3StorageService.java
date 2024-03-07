@@ -1,5 +1,6 @@
 package com.irb.paxton.storage;
 
+import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.PaxtonMinioException;
 import io.minio.*;
 import io.minio.errors.MinioException;
@@ -84,7 +85,7 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
         } finally {
             Files.deleteIfExists(destinationFile);
         }
-        return new FileResponse("%s.%s".formatted(fileName, fileExtension), destinationObject);
+        return new FileResponse("%s.%s".formatted(fileName, fileExtension), destinationObject, FileType.parseString(fileExtension));
     }
 
     @SneakyThrows

@@ -773,6 +773,11 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
     list {
       id
       content
+      fileContents {
+        id
+        urlId
+        path
+      }
       sender {
         id
         username

@@ -1,5 +1,6 @@
-package com.irb.paxton.core.messaging;
+package com.irb.paxton.core.messaging.ws;
 
+import com.irb.paxton.core.messaging.Message;
 import com.irb.paxton.core.model.messaging.AbstractWsMessagingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

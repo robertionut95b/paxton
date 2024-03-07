@@ -1,4 +1,4 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { useAuth } from "@auth/useAuth";
 import ChatBubblesSkeleton from "@components/messaging/chat/ChatBubblesSkeleton";
 import ChatRoomSkeleton from "@components/messaging/chat/ChatRoomSkeleton";
@@ -9,6 +9,9 @@ import {
   APP_IMAGES_API_PATH,
 } from "@constants/Properties";
 import {
+  AddMessageWithFileToChatDocument,
+  AddMessageWithFileToChatMutation,
+  AddMessageWithFileToChatMutationVariables,
   FieldType,
   GetChatLinesAdvSearchQuery,
   GetMessagesForChatIdDocument,
@@ -31,6 +34,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { GraphqlApiResponse } from "@interfaces/api.resp.types";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
+import { graphqlUploadClient } from "@lib/graphqlUploadClient";
 import {
   ActionIcon,
   Avatar,
@@ -218,6 +222,18 @@ const ChatRoomPage = () => {
   const { mutate: addMessageToChat } =
     useAddMessageToChatMutation(graphqlRequestClient);
 
+  const [addMessageWithFileToChat] = useMutation<
+    AddMessageWithFileToChatMutation,
+    AddMessageWithFileToChatMutationVariables
+  >(
+    gql`
+      ${AddMessageWithFileToChatDocument}
+    `,
+    {
+      client: graphqlUploadClient,
+    },
+  );
+
   const { mutate: markAllMessagesAsSeen } = useMarkAllMessagesAsSeenMutation(
     graphqlRequestClient,
     {
@@ -391,14 +407,27 @@ const ChatRoomPage = () => {
   const submitMessage = (values: {
     content: string;
     senderUserId: number | undefined;
+    fileUpload: unknown;
   }) => {
-    addMessageToChat({
-      MessageInput: {
-        chatId: chatData?.getPrivateChatByUrlId.id ?? 0,
-        content: values.content,
-        senderUserId: Number(values.senderUserId),
-      },
-    });
+    if (!values.fileUpload) {
+      addMessageToChat({
+        MessageInput: {
+          chatId: chatData?.getPrivateChatByUrlId.id ?? 0,
+          content: values.content,
+          senderUserId: Number(values.senderUserId),
+        },
+      });
+    } else
+      addMessageWithFileToChat({
+        variables: {
+          messageInput: {
+            chatId: chatData?.getPrivateChatByUrlId.id ?? 0,
+            senderUserId: Number(values.senderUserId),
+          },
+          // @ts-expect-error("types-error")
+          fileUpload: values.fileUpload,
+        },
+      });
   };
 
   if (isInitialLoading || isFetching) return <ChatRoomSkeleton />;

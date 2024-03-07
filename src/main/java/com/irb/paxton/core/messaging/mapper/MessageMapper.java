@@ -3,6 +3,7 @@ package com.irb.paxton.core.messaging.mapper;
 import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.messaging.ChatRepository;
 import com.irb.paxton.core.messaging.Message;
+import com.irb.paxton.core.messaging.input.MessageFileInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
 import com.irb.paxton.core.model.mapper.ReferenceMapper;
 import com.irb.paxton.security.auth.user.User;
@@ -24,6 +25,10 @@ public abstract class MessageMapper {
     @Mapping(target = "chat", source = "messageInput.chatId")
     @Mapping(target = "sender", source = "messageInput.senderUserId")
     public abstract Message toEntity(MessageInput messageInput);
+
+    @Mapping(target = "chat", source = "messageFileInput.chatId")
+    @Mapping(target = "sender", source = "messageFileInput.senderUserId")
+    public abstract Message toEntity(MessageFileInput messageFileInput);
 
     @Mapping(target = "chat", source = "messageInput.chatId")
     @Mapping(target = "sender", source = "messageInput.senderUserId")

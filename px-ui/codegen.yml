@@ -5,6 +5,15 @@ generates:
   src/gql/generated.ts:
     plugins:
       - typescript
+      - add:
+          content:
+            - "import { ReadStream } from 'fs';"
+            - "interface GraphQLFileUpload {"
+            - "  filename: string;"
+            - "  mimetype: string;"
+            - "  encoding: string;"
+            - "  createReadStream( options?:{ encoding?: string, highWaterMark?: number } ): ReadStream;"
+            - "}"
       - typescript-operations
       - typescript-react-query
       - typescript-validation-schema
@@ -21,6 +30,7 @@ generates:
         DateTime: Date
         Url: String
         Long: number
+        Upload: Promise<GraphQLFileUpload>
       scalarSchemas:
         Date: z.date()
         Email: z.string().email()

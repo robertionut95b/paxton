@@ -1,9 +1,10 @@
 package com.irb.paxton.core.messaging.jpalisteners;
 
-import com.irb.paxton.core.messaging.ChatRoomManagerService;
 import com.irb.paxton.core.messaging.Message;
-import com.irb.paxton.core.messaging.type.ChatLiveUpdatesManagerService;
+import com.irb.paxton.core.messaging.ws.ChatLiveUpdatesManagerService;
+import com.irb.paxton.core.messaging.ws.ChatRoomManagerService;
 import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -30,5 +31,11 @@ public class MessageEntityListener {
         liveUpdatesManagerService.notifyChatUsersExceptingCurrent(
                 message.getChat().getUsers(), message, message.getChat().toChatLiveUpdateDto()
         );
+    }
+
+    @PostRemove
+    private void postDelete(Message message) {
+        if (message.getFileContents() == null) return;
+        // TODO: treat file deletions in the storage system if the message entity is removed
     }
 }

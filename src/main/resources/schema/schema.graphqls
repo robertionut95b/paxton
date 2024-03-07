@@ -4,6 +4,7 @@ scalar Date
 scalar DateTime
 scalar Url
 scalar Long
+scalar Upload
 
 directive @constraint(
     # String constraints
@@ -452,7 +453,8 @@ type JobListingPage {
 
 type Message implements BaseEntity {
     id: Long!
-    content: String!
+    content: String
+    fileContents: [MessageFile]
     sender: User!
     deliveredAt: DateTime!
     chat: ChatResponse
@@ -465,9 +467,26 @@ type Message implements BaseEntity {
     modifiedBy: String!
 }
 
+type MessageFile implements BaseEntity {
+    id: Long!
+    urlId: String!
+    name: String!
+    path: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
+}
+
 input MessageInput {
     id: Long
     content: String!
+    senderUserId: Long!
+    chatId: Long!
+}
+
+input MessageFileInput {
+    id: Long
     senderUserId: Long!
     chatId: Long!
 }
@@ -951,6 +970,7 @@ type Mutation {
     updateApplication(ApplicationInput: ApplicationInput!): Application
     addMessageToApplicationChat(MessageInput: MessageInput!, applicationId: Long!): Application
     addMessageToChat(MessageInput: MessageInput!): ChatResponse
+    addMessageWithFileToChat(messageInput: MessageFileInput!, fileUpload: [Upload]!): ChatResponse
     createChat(ChatInput: ChatInput!): ChatResponse
     updateChat(ChatInput: ChatInput!): ChatResponse
     removeChat(chatId: Long!): ChatResponse

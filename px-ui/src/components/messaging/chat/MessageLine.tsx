@@ -1,13 +1,23 @@
-import { Avatar, Group, Stack, Text } from "@mantine/core";
+import { APP_UPLOADS_API_PATH } from "@constants/Properties";
+import { GetMessagesPaginatedQuery, Message } from "@gql/generated";
+import { Avatar, Group, Image, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
+import { Case, Default, Switch } from "react-if";
 
 type MessageLineProps = {
   avatar?: string | null;
   name: string;
-  content: string;
+  content?: string | null;
   avatarInitials: string;
   sentAt?: Date;
   position: "left" | "right";
+  fileContents?:
+    | NonNullable<
+        NonNullable<
+          NonNullable<GetMessagesPaginatedQuery["getMessagesPaginated"]>["list"]
+        >[number]
+      >["fileContents"]
+    | Message["fileContents"];
 };
 
 const MessageLine = ({
@@ -17,6 +27,7 @@ const MessageLine = ({
   name = "user",
   position,
   sentAt,
+  fileContents,
 }: MessageLineProps) => {
   return (
     <Group
@@ -64,26 +75,64 @@ const MessageLine = ({
                   : theme.colors.gray[8],
           })}
         >
-          <Text
-            size="sm"
-            component={"pre"}
-            color={`${position === "right" ? "white" : "black"}`}
-            style={{
-              whiteSpace: "pre-wrap",
-            }}
-            sx={(theme) => ({
-              color:
-                theme.colorScheme === "light"
-                  ? position === "right"
-                    ? theme.colors.gray[1]
-                    : theme.colors.gray[9]
-                  : position === "right"
-                    ? theme.colors.gray[3]
-                    : theme.colors.gray[4],
-            })}
-          >
-            {content}
-          </Text>
+          <Switch>
+            <Case condition={!!content && (fileContents?.length ?? []) === 0}>
+              <Text
+                size="sm"
+                component={"pre"}
+                color={`${position === "right" ? "white" : "black"}`}
+                style={{
+                  whiteSpace: "pre-wrap",
+                }}
+                sx={(theme) => ({
+                  color:
+                    theme.colorScheme === "light"
+                      ? position === "right"
+                        ? theme.colors.gray[1]
+                        : theme.colors.gray[9]
+                      : position === "right"
+                        ? theme.colors.gray[3]
+                        : theme.colors.gray[4],
+                })}
+              >
+                {content}
+              </Text>
+            </Case>
+            <Case condition={!content && !!fileContents}>
+              <Group spacing={"xs"}>
+                {fileContents?.map((fc) => (
+                  <Image
+                    key={fc!.id}
+                    width={50}
+                    height={50}
+                    src={`${APP_UPLOADS_API_PATH}/images/100x100/${fc!.name}`}
+                  />
+                ))}
+              </Group>
+            </Case>
+            <Default>
+              <Text
+                size="sm"
+                component={"pre"}
+                color={`${position === "right" ? "white" : "black"}`}
+                style={{
+                  whiteSpace: "pre-wrap",
+                }}
+                sx={(theme) => ({
+                  color:
+                    theme.colorScheme === "light"
+                      ? position === "right"
+                        ? theme.colors.gray[1]
+                        : theme.colors.gray[9]
+                      : position === "right"
+                        ? theme.colors.gray[3]
+                        : theme.colors.gray[4],
+                })}
+              >
+                ⚠ Unable to show message
+              </Text>
+            </Default>
+          </Switch>
         </Stack>
       </Stack>
     </Group>

@@ -17,7 +17,7 @@ import java.io.Serial;
 import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_MESSAGE_FILE")
+@Table(name = TABLE_PREFIX + "_MESSAGE_FILES")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

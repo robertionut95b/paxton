@@ -21,7 +21,7 @@ public abstract class PaxtonEntity extends AuditableEntity implements Identifiab
     private static final long serialVersionUID = 524547079635449585L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     protected Long id;
 

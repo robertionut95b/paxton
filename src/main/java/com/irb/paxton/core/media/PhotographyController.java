@@ -2,6 +2,7 @@ package com.irb.paxton.core.media;
 
 import com.irb.paxton.storage.StorageService;
 import com.irb.paxton.utils.Base64Utils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -52,7 +53,7 @@ public class PhotographyController {
 
             }
         }
-        InputStream is = ImageProcessor.resizeImageToInputStream(image, size.get());
+        InputStream is = ImageProcessor.resizeImageToInputStream(image, size.get(), FilenameUtils.getExtension(imageName));
         return ResponseEntity
                 .ok().contentType(MediaType.IMAGE_JPEG)
                 .cacheControl(cacheControl)

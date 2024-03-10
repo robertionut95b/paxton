@@ -90,7 +90,7 @@ const ChatSection = ({
           />
           {(value as typeof messages).map(
             (m) =>
-              m?.content && (
+              m && (
                 <div key={m.id}>
                   <MessageLine
                     avatar={
@@ -103,9 +103,10 @@ const ChatSection = ({
                       m.sender.lastName,
                     )}
                     name={m.sender.firstName}
-                    content={m.content}
+                    content={m?.content}
                     position={isCurrentSender(m) ? "right" : "left"}
                     sentAt={m.deliveredAt}
+                    fileContents={m?.fileContents ?? []}
                   />
                 </div>
               ),

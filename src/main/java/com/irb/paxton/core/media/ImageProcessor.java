@@ -25,7 +25,7 @@ public class ImageProcessor {
         return new int[]{width, height};
     }
 
-    public static InputStream resizeImageToInputStream(Resource image, String size) throws IOException {
+    public static InputStream resizeImageToInputStream(Resource image, String size, String extension) throws IOException {
         InputStream in = image.getInputStream();
         BufferedImage bufferedImage = ImageIO.read(in);
         in.close();
@@ -33,11 +33,11 @@ public class ImageProcessor {
         int[] sizes = splitStringSizesParameter(size);
         BufferedImage bufferedImg = Thumbnails.of(bufferedImage)
                 .size(sizes[0], sizes[1])
-                .outputFormat("jpg")
+                .outputFormat(extension)
                 .asBufferedImage();
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImg, "jpg", outStream);
+        ImageIO.write(bufferedImg, extension, outStream);
 
         return new ByteArrayInputStream(outStream.toByteArray());
     }

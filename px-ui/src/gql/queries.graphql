@@ -775,6 +775,7 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
       content
       fileContents {
         id
+        name
         urlId
         path
       }

@@ -13,10 +13,7 @@ import org.hibernate.annotations.NaturalId;
 
 import java.time.LocalDateTime;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_REFRESH_TOKEN")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

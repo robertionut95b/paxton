@@ -7,26 +7,25 @@ import com.irb.paxton.core.jobs.JobListing;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.Process;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
 import java.io.Serial;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 import static com.irb.paxton.utils.StringUtils.slugifyString;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_ORGANIZATION", indexes = {
-        @Index(name = "px_org_slug_idx", columnList = "slug_name", unique = true)
-}, uniqueConstraints = {
+@Table(
+        indexes = {
+                @Index(name = "px_org_slug_idx", columnList = "slug_name", unique = true)
+        }, uniqueConstraints = {
         @UniqueConstraint(name = "px_uc_organization_name_slug_name", columnNames = {"name", "slug_name"})
 })
 @NoArgsConstructor
@@ -96,14 +95,14 @@ public class Organization extends PaxtonEntity {
     private OrganizationSize companySize;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = TABLE_PREFIX + "_organization_locations",
+    @JoinTable(name = "organization_locations",
             joinColumns = @JoinColumn(name = "organization_id"),
             inverseJoinColumns = @JoinColumn(name = "cities_id"))
     @JsonBackReference
     private Collection<City> locations;
 
     @ElementCollection(targetClass = Specialization.class)
-    @JoinTable(name = TABLE_PREFIX + "_ORGANIZATION_SPECIALIZATIONS", joinColumns = @JoinColumn(name = "organization_id"))
+    @JoinTable(name = "ORGANIZATION_SPECIALIZATIONS", joinColumns = @JoinColumn(name = "organization_id"))
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

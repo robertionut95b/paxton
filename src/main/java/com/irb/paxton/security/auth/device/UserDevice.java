@@ -5,7 +5,6 @@ import com.irb.paxton.security.auth.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -13,10 +12,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_USER_DEVICE")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -6,22 +6,19 @@ import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.Study;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.utils.StringUtils;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-
 import java.util.Collection;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_USER_PROFILE", indexes = @Index(columnList = "profileSlugUrl"))
+@Table(indexes = @Index(columnList = "profileSlugUrl"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

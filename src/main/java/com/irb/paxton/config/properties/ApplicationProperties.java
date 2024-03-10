@@ -12,7 +12,7 @@ public class ApplicationProperties {
 
     public static final String API_VERSION = "v1";
 
-    public static final String TABLE_PREFIX = "PX";
+    public static final String TABLE_PREFIX = "PXT";
 
     public static final String DEFAULT_PROCESS_NAME = "Default recruitment process";
 

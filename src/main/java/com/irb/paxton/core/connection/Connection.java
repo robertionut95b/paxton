@@ -14,7 +14,7 @@ import lombok.Setter;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "PX_CONNECTIONS", uniqueConstraints = {
+@Table(uniqueConstraints = {
         @UniqueConstraint(name = "uc_connection_requester_addressed_id", columnNames = {"requester_id", "addressed_id"})
 })
 @NoArgsConstructor

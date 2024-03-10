@@ -2,23 +2,25 @@ package com.irb.paxton.core.messaging;
 
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_MESSAGE_SEEN_BY", uniqueConstraints = {@UniqueConstraint(name = "UQ_MESSAGE_SEEN_BY_USER_MESSAGE", columnNames = {"user_id", "message_id"})})
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UQ_MESSAGE_SEEN_BY_USER_MESSAGE", columnNames = {"user_id", "message_id"})
+        }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

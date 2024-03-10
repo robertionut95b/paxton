@@ -6,7 +6,6 @@ import com.irb.paxton.core.profile.UserProfile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,10 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_USER_PHOTOGRAPHY")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

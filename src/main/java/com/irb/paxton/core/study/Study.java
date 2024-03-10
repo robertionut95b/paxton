@@ -5,21 +5,20 @@ import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.study.certification.Certification;
 import com.irb.paxton.core.study.domain.Domain;
 import com.irb.paxton.core.study.institution.Institution;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDate;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_STUDY")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -3,7 +3,10 @@ package com.irb.paxton.core.messaging;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.model.storage.AbstractFileEntity;
 import com.irb.paxton.core.model.storage.FileType;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,10 +17,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_MESSAGE_FILES")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

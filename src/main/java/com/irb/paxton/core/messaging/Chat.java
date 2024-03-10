@@ -20,10 +20,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = "PX_CHAT")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -35,7 +32,7 @@ public class Chat extends PaxtonEntity {
     private Collection<Message> messages = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinTable(name = TABLE_PREFIX + "_CHAT_USERS",
+    @JoinTable(
             joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "users_id"),
             indexes = {

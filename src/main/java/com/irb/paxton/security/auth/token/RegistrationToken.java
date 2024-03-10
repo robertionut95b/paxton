@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.token;
 
 import com.irb.paxton.security.auth.user.User;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,10 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_REGISTRATION_TOKEN")
 @NoArgsConstructor
 @Getter
 @Setter

@@ -6,7 +6,6 @@ import com.irb.paxton.core.process.ProcessSteps;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +16,7 @@ import org.hibernate.Hibernate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_APPLICATION_PROCESS_STEPS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -26,10 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_USER")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -69,7 +66,7 @@ public class User extends PaxtonEntity {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-            name = TABLE_PREFIX + "_USER_ROLES",
+            name = "USER_ROLES",
             joinColumns = @JoinColumn(
                     name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(

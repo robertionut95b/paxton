@@ -11,22 +11,20 @@ import com.irb.paxton.core.messaging.Chat;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.process.ProcessSteps;
 import com.irb.paxton.core.profile.UserProfile;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
 import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
 
 @Entity
-@Table(name = TABLE_PREFIX + "_APPLICATION", uniqueConstraints = {
+@Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"candidate_id", "jobListing_id"})
 })
 @NoArgsConstructor

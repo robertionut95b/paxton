@@ -1,7 +1,10 @@
 package com.irb.paxton.core.jobs;
 
 import com.irb.paxton.core.model.PaxtonEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -13,10 +16,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.Collection;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_JOB")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

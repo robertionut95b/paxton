@@ -13,10 +13,7 @@ import org.hibernate.Hibernate;
 import java.util.Collection;
 import java.util.Objects;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.TABLE_PREFIX;
-
 @Entity
-@Table(name = TABLE_PREFIX + "_PROCESS_STEPS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

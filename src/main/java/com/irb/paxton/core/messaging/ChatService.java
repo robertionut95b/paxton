@@ -23,6 +23,7 @@ import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,10 +103,16 @@ public class ChatService extends AbstractService<Chat> {
                 .collect(Collectors.toSet());
         uploadedFiles
                 .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), FileType.IMAGE_JPEG, message)));
-        // TODO: if it fails, remove the file and throw exception
-        messageRepository.persist(message);
-        chat.addMessage(message);
-        this.update(chat);
+        try {
+            messageRepository.persist(message);
+            chat.addMessage(message);
+            this.update(chat);
+        } catch (PersistenceException exception) {
+            // remove the files if any errors happen during persistence
+            uploadedFiles.forEach(uf -> storageService.remove(uf.getPath()));
+            // rollback transaction programmatically
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
         return chatMapper.toChatResponseDto(chat);
     }
 

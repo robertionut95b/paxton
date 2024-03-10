@@ -3,23 +3,23 @@ package com.irb.paxton.core.messaging.jpalisteners;
 import com.irb.paxton.core.messaging.Message;
 import com.irb.paxton.core.messaging.ws.ChatLiveUpdatesManagerService;
 import com.irb.paxton.core.messaging.ws.ChatRoomManagerService;
+import com.irb.paxton.storage.StorageService;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class MessageEntityListener {
 
     private final ChatLiveUpdatesManagerService liveUpdatesManagerService;
 
     private final ChatRoomManagerService chatRoomManagerService;
 
-    public MessageEntityListener(ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService) {
-        this.liveUpdatesManagerService = liveUpdatesManagerService;
-        this.chatRoomManagerService = chatRoomManagerService;
-    }
+    private final StorageService storageService;
 
     @PostPersist
     private void postCreate(Message message) {
@@ -36,6 +36,6 @@ public class MessageEntityListener {
     @PostRemove
     private void postDelete(Message message) {
         if (message.getFileContents() == null) return;
-        // TODO: treat file deletions in the storage system if the message entity is removed
+        message.getFileContents().forEach(file -> storageService.remove(file.getPath()));
     }
 }

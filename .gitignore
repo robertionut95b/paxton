@@ -35,7 +35,7 @@ build/
 .vscode/
 
 ### Fs databases ###
-db/
+/db/
 
 ### env files ###
 .env

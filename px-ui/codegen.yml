@@ -43,3 +43,5 @@ generates:
           minLength: min
           maxLength:
             ["max", "$1", "Field must not be longer than $1 characters"]
+hooks:
+  { afterAllFileWrite: ['sed -i -e"s|.*graphql-request/dist/types.dom.*||g"'] }

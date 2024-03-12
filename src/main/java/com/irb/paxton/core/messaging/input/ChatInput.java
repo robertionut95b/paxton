@@ -5,11 +5,15 @@ import com.irb.paxton.core.model.input.AbstractInput;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 @Data
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatInput extends AbstractInput {
 
     private Long id;

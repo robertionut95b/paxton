@@ -17,5 +17,7 @@ public interface PaxtonService<T extends PaxtonEntity> {
 
     void deleteById(Long id);
 
+    void deleteAll();
+
     PaginatedResponse<T> advSearch(SearchRequest searchRequest);
 }

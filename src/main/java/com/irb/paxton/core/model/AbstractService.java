@@ -52,6 +52,11 @@ public abstract class AbstractService<T extends PaxtonEntity> implements PaxtonS
     }
 
     @Override
+    public void deleteAll() {
+        this.repository.delete(new SearchSpecification<>(new SearchRequest()));
+    }
+
+    @Override
     public void deleteById(Long id) {
         T instance = this.findById(id);
         this.repository.delete(instance);

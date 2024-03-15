@@ -21,6 +21,7 @@ import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import com.irb.paxton.storage.FileProvider;
 import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
 import jakarta.persistence.PersistenceException;
@@ -102,7 +103,7 @@ public class ChatService extends AbstractService<Chat> {
                 .map(mpf -> storageService.store(mpf, "chats/%s".formatted(chat.getId())))
                 .collect(Collectors.toSet());
         uploadedFiles
-                .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), FileType.IMAGE_JPEG, message)));
+                .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), FileType.IMAGE_JPEG, FileProvider.LOCAL, message)));
         try {
             messageRepository.persist(message);
             chat.addMessage(message);

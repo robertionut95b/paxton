@@ -4,7 +4,9 @@ import com.irb.paxton.config.properties.FileStorageProperties;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
 import com.irb.paxton.storage.exception.FileStorageException;
+import com.irb.paxton.storage.naming.FileNamingStandard;
 import io.minio.MinioClient;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.io.Resource;
@@ -16,8 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.file.*;
-import java.util.UUID;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @ConditionalOnMissingBean(value = MinioClient.class)
@@ -25,10 +29,13 @@ public class FileStorageService implements StorageService {
 
     private final Path rootLocation;
 
-    public FileStorageService(FileStorageProperties properties) {
+    private final FileNamingStandard fileNamingStandard;
+
+    public FileStorageService(FileStorageProperties properties, FileNamingStandard fileNamingStandard) {
         this.rootLocation = Paths.get(
                 "%s/%s/".formatted(properties.getStorageRootPath(), properties.getStorageUserPath())
         );
+        this.fileNamingStandard = fileNamingStandard;
         this.init();
     }
 
@@ -44,8 +51,12 @@ public class FileStorageService implements StorageService {
     public FileResponse store(MultipartFile file, String... additionalPath) {
         Path destinationFile;
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID().toString();
-        String newFileName = "%s.%s".formatted(fileName, fileExtension);
+        String newFileName;
+        try {
+            newFileName = "%s.%s".formatted(fileNamingStandard.getFileName(file.getBytes()), fileExtension);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to store file.", e);
+        }
         Path additionalPaths = Paths.get("", additionalPath);
         String newFilePath = additionalPaths
                 .resolve(newFileName).toString();
@@ -56,18 +67,15 @@ public class FileStorageService implements StorageService {
             if (file.getOriginalFilename() == null) {
                 throw new FileStorageException("File has no name.");
             }
-
             destinationFile = this.rootLocation
                     .resolve(additionalPaths)
                     .resolve(newFileName)
                     .normalize();
-            // create subdirectories if not exists
-            Files.createDirectories(destinationFile);
-            if (!destinationFile.getParent().startsWith(this.rootLocation)) {
-                throw new FileStorageException("Cannot store file outside current directory.");
-            }
             try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+                if (!destinationFile.getParent().startsWith(this.rootLocation)) {
+                    throw new FileStorageException("Cannot store file outside current directory.");
+                }
+                FileUtils.copyInputStreamToFile(inputStream, destinationFile.toFile());
             }
         } catch (FileAlreadyExistsException e) {
             throw new FileAlreadyExistsExceptionException("This file already exists.", e);

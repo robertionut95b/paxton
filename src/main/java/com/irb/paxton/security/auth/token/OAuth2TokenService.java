@@ -2,7 +2,6 @@ package com.irb.paxton.security.auth.token;
 
 import com.irb.paxton.security.auth.token.exceptions.TokenAlreadyExistsException;
 import com.irb.paxton.security.auth.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -11,11 +10,11 @@ import java.util.Optional;
 @Service
 public class OAuth2TokenService extends AbstractTokenService<OAuth2Token> {
 
-    @Autowired
-    private OAuth2TokenRepository oAuth2TokenRepository;
+    private final OAuth2TokenRepository oAuth2TokenRepository;
 
-    protected OAuth2TokenService(TokenRepository<OAuth2Token> tokenRepository) {
+    protected OAuth2TokenService(TokenRepository<OAuth2Token> tokenRepository, OAuth2TokenRepository oAuth2TokenRepository) {
         super(tokenRepository);
+        this.oAuth2TokenRepository = oAuth2TokenRepository;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.irb.paxton.core.media;
 
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,5 +42,16 @@ public class ImageProcessor {
         ImageIO.write(bufferedImg, extension, outStream);
 
         return new ByteArrayInputStream(outStream.toByteArray());
+    }
+
+    public static MultipartFile resizeImageToMultipartFile(MultipartFile file, String size) throws IOException {
+        try (InputStream inputStream = ImageProcessor
+                .resizeImageToInputStream(file.getResource(), size, FilenameUtils.getExtension(file.getOriginalFilename()))) {
+            return new ResizedMultipartFile(inputStream.readAllBytes(),
+                    file.getName(),
+                    file.getOriginalFilename(),
+                    file.getContentType()
+            );
+        }
     }
 }

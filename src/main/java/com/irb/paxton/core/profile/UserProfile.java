@@ -1,7 +1,10 @@
 package com.irb.paxton.core.profile;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.model.PaxtonEntity;
+import com.irb.paxton.core.profile.avatar.UserProfileAvatarImage;
+import com.irb.paxton.core.profile.banner.UserProfileBannerImage;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.study.Study;
 import com.irb.paxton.security.auth.user.User;
@@ -30,9 +33,15 @@ public class UserProfile extends PaxtonEntity {
     @NotNull
     private User user;
 
-    private String photography;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
+    @JsonManagedReference
+    private UserProfileAvatarImage userProfileAvatarImage;
 
-    private String coverPhotography;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
+    @JsonManagedReference
+    private UserProfileBannerImage userProfileBannerImage;
 
     @Column(length = 1000)
     private String description;

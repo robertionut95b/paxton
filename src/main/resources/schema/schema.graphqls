@@ -34,7 +34,17 @@ interface BaseEntity {
     modifiedBy: String!
 }
 
-type ActivitySector implements BaseEntity{
+interface FileEntity {
+    id: Long!
+    urlId: String!
+    name: String!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
+}
+
+type ActivitySector implements BaseEntity {
     id: Long!
     name: String!
     urlId: String!
@@ -816,11 +826,35 @@ type UserPage {
     totalElements: Int!
 }
 
+type UserProfileAvatarImage implements FileEntity {
+    id: Long!
+    urlId: String!
+    name: String!
+    url: String!
+    userProfile: UserProfile!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
+}
+
+type UserProfileBannerImage implements FileEntity {
+    id: Long!
+    urlId: String!
+    name: String!
+    url: String!
+    userProfile: UserProfile!
+    createdAt: DateTime!
+    modifiedAt: DateTime!
+    createdBy: String!
+    modifiedBy: String!
+}
+
 type UserProfile implements BaseEntity {
     id: Long!
     user: User!
-    photography: String
-    coverPhotography: String
+    userProfileAvatarImage: UserProfileAvatarImage
+    userProfileBannerImage: UserProfileBannerImage
     description: String
     city: City
     profileSlugUrl: String!

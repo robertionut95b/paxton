@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class ImageFileValidatorService implements ImageFileValidator {
 
-    private ServletContext servletContext;
+    private final ServletContext servletContext;
 
     public ImageFileValidatorService(ServletContext servletContext) {
         this.servletContext = servletContext;

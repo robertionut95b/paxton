@@ -14,7 +14,7 @@ import static com.irb.paxton.security.SecurityUtils.getCurrentUserLogin;
 @DgsComponent
 public class UserProfileQueryResolver {
 
-    private UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
 
     public UserProfileQueryResolver(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;

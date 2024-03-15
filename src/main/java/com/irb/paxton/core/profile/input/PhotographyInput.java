@@ -1,9 +1,8 @@
-package com.irb.paxton.core.media.input;
-
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+package com.irb.paxton.core.profile.input;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class PhotographyInput {

@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class ApplicationProperties {
 
+    public static final String APP_NAME = "paxton";
+
     public static final String API_VERSION = "v1";
 
     public static final String TABLE_PREFIX = "PXT";

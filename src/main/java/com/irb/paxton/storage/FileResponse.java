@@ -13,6 +13,8 @@ public class FileResponse implements File {
 
     private FileType fileType;
 
+    private FileProvider provider = FileProvider.LOCAL;
+
     public FileResponse(String name, String path, FileType fileType) {
         this.name = name;
         this.path = path;

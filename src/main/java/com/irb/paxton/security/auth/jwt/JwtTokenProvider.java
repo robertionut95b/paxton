@@ -15,8 +15,9 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,16 +36,18 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.irb.paxton.config.properties.ApplicationProperties.APP_NAME;
+
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Autowired
-    private AuthenticationProperties authenticationProperties;
+    private final AuthenticationProperties authenticationProperties;
 
-    @Autowired
-    private JwtProperties jwtProperties;
+    private final JwtProperties jwtProperties;
 
+    @Getter
     private Key key;
 
     public Jws<Claims> decodeToken(String token) {
@@ -66,7 +69,7 @@ public class JwtTokenProvider {
         String birthDate = ((PaxtonUserDetails) userDetails).getBirthDate() != null ?
                 ((PaxtonUserDetails) userDetails).getBirthDate().toString() : null;
         return Jwts.builder()
-                .setIssuer("paxton")
+                .setIssuer(APP_NAME)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(userDetails.getUsername())
@@ -94,7 +97,7 @@ public class JwtTokenProvider {
         PaxtonUserDetails userDetails = new PaxtonUserDetails(user);
         String birthDate = userDetails.getBirthDate() != null ? userDetails.getBirthDate().toString() : null;
         return Jwts.builder()
-                .setIssuer("paxton")
+                .setIssuer(APP_NAME)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .setSubject(user.getUsername())
@@ -120,7 +123,7 @@ public class JwtTokenProvider {
     public String generateRefreshTokenFromUser() {
         Instant expiryDate = Instant.now().plusSeconds(jwtProperties.getRefreshTokenExpiryInSeconds());
         return Jwts.builder()
-                .setIssuer("paxton")
+                .setIssuer(APP_NAME)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(this.key)
@@ -137,7 +140,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(jwtProperties.getPermissionsClaimName()).toString().split(","))
                 .map(SimpleGrantedAuthority::new).toList();
-        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+        PaxtonUserDetails principal = new PaxtonUserDetails(new User(Long.valueOf(claims.get("userId").toString()), claims.get("email").toString(), claims.getSubject()));
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
@@ -173,10 +176,6 @@ public class JwtTokenProvider {
     private String getCookieValueByName(HttpServletRequest request, String name) {
         Cookie cookie = WebUtils.getCookie(request, name);
         return cookie != null ? cookie.getValue() : null;
-    }
-
-    public Key getKey() {
-        return key;
     }
 
     public Long getRefreshExpiry() {

@@ -1,16 +1,14 @@
 package com.irb.paxton.security.oauth2;
 
-import com.irb.paxton.core.media.Photography;
-import com.irb.paxton.core.media.PhotographyService;
+import com.irb.paxton.core.profile.avatar.UserProfileAvatarImageService;
 import com.irb.paxton.exceptions.handler.common.OAuth2AuthenticationProcessingException;
-import com.irb.paxton.security.auth.role.RoleService;
 import com.irb.paxton.security.auth.user.PaxtonUserDetails;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import com.irb.paxton.security.oauth2.user.OAuth2UserInfo;
 import com.irb.paxton.security.oauth2.user.OAuth2UserInfoFactory;
 import io.micrometer.common.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,20 +16,15 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private PhotographyService photographyService;
+    private final UserProfileAvatarImageService userProfileAvatarImageService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -57,11 +50,6 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
         User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
-//            if (!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
-//                throw new OAuth2AuthenticationProcessingException("Looks like you're signed up with " +
-//                        user.getProvider() + " account. Please use your " + user.getProvider() +
-//                        " account to login.");
-//            }
             user = updateExistingUser(user, oAuth2UserInfo);
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
@@ -87,13 +75,9 @@ public class PaxtonOAuth2Service extends DefaultOAuth2UserService {
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         existingUser.setFirstName(oAuth2UserInfo.getFirstName());
         existingUser.setLastName(oAuth2UserInfo.getLastName());
-        String base64ImageUrl = Base64.getEncoder().encodeToString(oAuth2UserInfo.getImageUrl().getBytes());
-        Optional<Photography> profileAvatarOpt = photographyService.findByNameReturnOptional(base64ImageUrl);
-        if (profileAvatarOpt.isEmpty()) {
-            photographyService.createPhotography(new Photography(base64ImageUrl, oAuth2UserInfo.getImageUrl(), existingUser.getUserProfile()));
-        }
-        existingUser.getUserProfile().setPhotography(Base64.getEncoder().encodeToString(oAuth2UserInfo.getImageUrl().getBytes()));
-
+        existingUser.getUserProfile().setUserProfileAvatarImage(userProfileAvatarImageService
+                .getOAuth2UserAvatarImage(oAuth2UserInfo.getImageUrl(), existingUser)
+        );
         return userService.updateUser(existingUser);
     }
 }

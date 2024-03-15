@@ -6,16 +6,17 @@ import com.irb.paxton.core.activity.exception.ActivitySectorNotFoundException;
 import com.irb.paxton.core.location.City;
 import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.location.exception.CityNotFoundException;
-import com.irb.paxton.core.media.Photography;
-import com.irb.paxton.core.media.input.PhotographyInput;
 import com.irb.paxton.core.organization.Organization;
 import com.irb.paxton.core.organization.OrganizationRepository;
 import com.irb.paxton.core.organization.exception.OrganizationNotFoundException;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.UserProfileRepository;
+import com.irb.paxton.core.profile.avatar.UserProfileAvatarImage;
+import com.irb.paxton.core.profile.banner.UserProfileBannerImage;
 import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
 import com.irb.paxton.core.profile.experience.Experience;
 import com.irb.paxton.core.profile.experience.input.ExperienceInput;
+import com.irb.paxton.core.profile.input.PhotographyInput;
 import com.irb.paxton.core.profile.input.UserProfileInput;
 import com.irb.paxton.core.study.Study;
 import com.irb.paxton.core.study.certification.Certification;
@@ -60,13 +61,13 @@ public abstract class UserProfileMapper {
 
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "studies", ignore = true)
-    @Mapping(target = "photography", ignore = true)
+    @Mapping(target = "userProfileAvatarImage", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "experiences", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "coverPhotography", ignore = true)
+    @Mapping(target = "userProfileBannerImage", ignore = true)
     public abstract UserProfile userProfileInputToUserProfile(UserProfileInput userProfileInput);
 
     public City mapCity(String cityValue) {
@@ -81,13 +82,13 @@ public abstract class UserProfileMapper {
 
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "studies", ignore = true)
-    @Mapping(target = "photography", ignore = true)
+    @Mapping(target = "userProfileAvatarImage", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "experiences", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "coverPhotography", ignore = true)
+    @Mapping(target = "userProfileBannerImage", ignore = true)
     @Mapping(target = "userProfile.profileTitle", source = "userProfileInput.profileTitle")
     @Mapping(target = "userProfile.description", source = "userProfileInput.description")
     @Mapping(target = "userProfile.profileSlugUrl", source = "userProfileInput.profileSlugUrl")
@@ -186,15 +187,15 @@ public abstract class UserProfileMapper {
     @Mapping(target = "userProfile", source = "photographyInput.userId")
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "path", ignore = true)
-    public abstract Photography updateUserProfileBanner(PhotographyInput photographyInput);
+    public abstract UserProfileBannerImage updateUserProfileBanner(PhotographyInput photographyInput);
 
     @Mapping(target = "userProfile", source = "photographyInput.userId")
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "path", ignore = true)
-    public abstract Photography updateUserProfileAvatar(PhotographyInput photographyInput);
+    public abstract UserProfileAvatarImage updateUserProfileAvatar(PhotographyInput photographyInput);
 
     public UserProfile mapUserProfile(Long userId) {
         return this.userProfileRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException("%s does not exist".formatted(userId)));
+                .orElseThrow(() -> new UserProfileNotFoundException("User [userId=%s] does not exist".formatted(userId)));
     }
 }

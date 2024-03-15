@@ -14,4 +14,6 @@ public interface FileServingRepository extends AbstractRepository<AbstractFileEn
     Optional<AbstractFileEntity> findByUrlId(String urlId);
 
     Optional<AbstractFileEntity> findByPath(String path);
+
+    Optional<AbstractFileEntity> findByNameAndProvider(String name, FileProvider provider);
 }

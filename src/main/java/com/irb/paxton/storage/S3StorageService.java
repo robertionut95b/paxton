@@ -2,8 +2,10 @@ package com.irb.paxton.storage;
 
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.PaxtonMinioException;
+import com.irb.paxton.storage.naming.FileNamingStandard;
 import io.minio.*;
 import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import io.minio.messages.Item;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +16,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -28,17 +31,19 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
 
     private final MinioClient minioClient;
 
+    private final FileNamingStandard fileNamingStandard;
+
     private final String bucketName = "paxton-storage";
 
     private final Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
 
-    public S3StorageService(MinioClient minioClient) {
+    public S3StorageService(MinioClient minioClient, FileNamingStandard fileNamingStandard) {
         this.minioClient = minioClient;
+        this.fileNamingStandard = fileNamingStandard;
         this.init();
     }
 
     @Override
-    @SneakyThrows
     public void init() {
         try {
             boolean initialBucket = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
@@ -46,49 +51,41 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                 // create new bucket
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             } else log.info("Found S3 bucket {}", bucketName);
-        } catch (MinioException e) {
+        } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
             log.error("Could not initialize bucket [{}]", bucketName, e);
             throw new PaxtonMinioException("Could not initialize bucket [%s]".formatted(bucketName));
         }
     }
 
-    @SneakyThrows
     @Override
     public FileResponse store(MultipartFile file, String... additionalPath) {
-
         if (file == null || file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("File must not be empty");
         }
-
-        Path destinationFile = this.tmpDir
-                .resolve(Paths.get(file.getOriginalFilename()))
-                .normalize();
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-
         // upload the object to bucket
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID().toString();
-        String destinationObject = String.join("/", additionalPath) + "/%s.%s".formatted(fileName, fileExtension);
+        String fileName;
         try {
-            minioClient.uploadObject(
-                    UploadObjectArgs.builder()
+            fileName = fileNamingStandard.getFileName(file.getBytes());
+        } catch (IOException e) {
+            throw new PaxtonMinioException("Could not store file", e);
+        }
+        String destinationObject = String.join("/", additionalPath) + "/%s.%s".formatted(fileName, fileExtension);
+        try (InputStream inputStream = file.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
                             .bucket(bucketName)
-                            .filename(destinationFile.toString())
                             .object(destinationObject)
+                            .stream(inputStream, inputStream.available(), -1)
                             .build()
             );
-        } catch (MinioException e) {
+        } catch (MinioException | NoSuchAlgorithmException | InvalidKeyException | IOException e) {
             log.error("Could not upload file to Minio instance", e);
             throw new PaxtonMinioException("Could not upload file [%s] to Minio instance".formatted(file.getOriginalFilename()));
-        } finally {
-            Files.deleteIfExists(destinationFile);
         }
         return new FileResponse("%s.%s".formatted(fileName, fileExtension), destinationObject, FileType.parseString(fileExtension));
     }
 
-    @SneakyThrows
     @Override
     public Resource loadAsResourceFromPath(String filePath) {
         try {
@@ -97,9 +94,9 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                     .object(filePath)
                     .build());
             return new InputStreamResource(inputStreamObject);
-        } catch (MinioException e) {
+        } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
             log.error("Could not retrieve file from Minio instance", e);
-            throw new PaxtonMinioException("Could not retrieve file [%s] from Minio instance".formatted(filePath));
+            throw new PaxtonMinioException("Could not retrieve file [%s]".formatted(filePath));
         }
     }
 
@@ -113,7 +110,7 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                     .build());
         } catch (MinioException e) {
             log.error("Could not remove file from Minio instance", e);
-            throw new PaxtonMinioException("Could not remove file [%s] from Minio instance".formatted(filePath));
+            throw new PaxtonMinioException("Could not remove file [%s]".formatted(filePath));
         }
     }
 
@@ -129,5 +126,22 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                         .bucket(bucketName)
                         .build()
         );
+    }
+
+    @Override
+    public String getPresignedUrlByObject(String objectPath) throws PaxtonMinioException {
+        try {
+            return minioClient
+                    .getPresignedObjectUrl(GetPresignedObjectUrlArgs
+                            .builder()
+                            .method(Method.GET)
+                            .bucket(this.bucketName)
+                            .object(objectPath)
+                            .expiry(1, TimeUnit.DAYS)
+                            .build());
+        } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
+            log.error("Could not load URL for object %s".formatted(objectPath), e);
+            throw new PaxtonMinioException("Could not load URL for object");
+        }
     }
 }

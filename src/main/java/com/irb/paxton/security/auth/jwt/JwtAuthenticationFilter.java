@@ -1,7 +1,5 @@
 package com.irb.paxton.security.auth.jwt;
 
-import com.irb.paxton.cache.LoggedOutJwtTokenCache;
-import com.irb.paxton.security.auth.PaxtonUserDetailsService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,12 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtTokenValidator jwtTokenValidator;
-
-    @Autowired
-    private LoggedOutJwtTokenCache tokenCache;
-
-    @Autowired
-    private PaxtonUserDetailsService customUserDetailsService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

@@ -147,7 +147,6 @@ public class SecurityConfiguration {
                         .requestMatchers(antMatcher("/resources/**")).permitAll()
                         .requestMatchers(antMatcher("/assets/**")).permitAll()
                         .requestMatchers(mvc.pattern("/api/v*/auth/**")).permitAll()
-                        .requestMatchers(mvc.pattern("/api/v*/images/**")).permitAll()
                         .requestMatchers(mvc.pattern("/login/**")).permitAll()
                         // front-end paths
                         .requestMatchers(mvc.pattern("/app/**")).permitAll()

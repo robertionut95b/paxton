@@ -2,6 +2,7 @@ package com.irb.paxton.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,4 +18,6 @@ public class FileStorageProperties {
 
     public final String storageUserApplicationsPath = "applications";
 
+    @Value("${saltValue:jOiq9k22fM}")
+    public String saltValue;
 }

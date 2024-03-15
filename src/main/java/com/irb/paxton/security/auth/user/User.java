@@ -122,6 +122,12 @@ public class User extends PaxtonEntity {
         isEmailConfirmed = user.isEmailConfirmed();
     }
 
+    public User(Long id, String email, String username) {
+        this.id = id;
+        this.email = email;
+        this.username = username;
+    }
+
     @PrePersist
     public void updateCreatedModifiedBy() {
         this.setCreatedBy(this.getUsername());

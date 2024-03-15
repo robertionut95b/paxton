@@ -1,6 +1,5 @@
 package com.irb.paxton.core.profile;
 
-import com.irb.paxton.core.location.CityRepository;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
 import com.irb.paxton.core.profile.exception.UserProfileNotFoundException;
@@ -36,7 +35,7 @@ public class UserProfileService extends AbstractService<UserProfile> {
 
     private final StudyRepository studyRepository;
 
-    protected UserProfileService(AbstractRepository<UserProfile> repository, UserProfileRepository userProfileRepository, UserService userService, CityRepository cityRepository, UserProfileMapper userProfileMapper, ExperienceRepository experienceRepository, StudyRepository studyRepository) {
+    protected UserProfileService(AbstractRepository<UserProfile> repository, UserProfileRepository userProfileRepository, UserService userService, UserProfileMapper userProfileMapper, ExperienceRepository experienceRepository, StudyRepository studyRepository) {
         super(repository);
         this.userProfileRepository = userProfileRepository;
         this.userService = userService;

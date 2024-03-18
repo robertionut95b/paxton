@@ -1,8 +1,8 @@
 package com.irb.paxton.core.profile.avatar;
 
 import com.irb.paxton.core.media.ImageProcessor;
-import com.irb.paxton.core.model.AbstractRepository;
-import com.irb.paxton.core.model.AbstractService;
+import com.irb.paxton.core.model.AbstractFileEntityRepository;
+import com.irb.paxton.core.model.AbstractFileService;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.input.PhotographyInput;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserProfileAvatarImageService extends AbstractService<UserProfileAvatarImage> {
+public class UserProfileAvatarImageService extends AbstractFileService<UserProfileAvatarImage> {
 
     private final UserProfileAvatarImageRepository userProfileAvatarImageRepository;
 
@@ -40,7 +40,9 @@ public class UserProfileAvatarImageService extends AbstractService<UserProfileAv
 
     private final FileServingService fileServingService;
 
-    protected UserProfileAvatarImageService(AbstractRepository<UserProfileAvatarImage> repository, UserProfileAvatarImageRepository userProfileAvatarImageRepository, UserProfileMapper userProfileMapper, StorageService storageService, FileNamingStandard fileNamingStandard, FileServingService fileServingService) {
+    private final String STORAGE_PATH = "users/profile/%s/avatar";
+
+    protected UserProfileAvatarImageService(AbstractFileEntityRepository<UserProfileAvatarImage> repository, UserProfileAvatarImageRepository userProfileAvatarImageRepository, UserProfileMapper userProfileMapper, StorageService storageService, FileNamingStandard fileNamingStandard, FileServingService fileServingService) {
         super(repository);
         this.userProfileAvatarImageRepository = userProfileAvatarImageRepository;
         this.userProfileMapper = userProfileMapper;
@@ -49,14 +51,13 @@ public class UserProfileAvatarImageService extends AbstractService<UserProfileAv
         this.fileServingService = fileServingService;
     }
 
-    public Optional<UserProfileAvatarImage> findByNameAndUserIdOpt(String imageName) {
+    public Optional<UserProfileAvatarImage> findByNameOptional(String imageName) {
         return this.userProfileAvatarImageRepository.findByName(imageName);
     }
 
     @Transactional
     @PreAuthorize("authentication.principal.getId() == #photographyInput.userId or hasRole('ROLE_ADMINISTRATOR')")
     public UserProfileAvatarImage changeProfileAvatar(@NotNull PhotographyInput photographyInput) {
-        String storagePath = "users/profile/%s/avatar";
         MultipartFile part;
         try {
             part = resizeImageBeforeUpload(photographyInput.getPhotography());
@@ -69,12 +70,12 @@ public class UserProfileAvatarImageService extends AbstractService<UserProfileAv
         } catch (IOException e) {
             throw new FileStorageException("Could not store file", e);
         }
-        Optional<UserProfileAvatarImage> currentAvatarOpt = findByNameAndUserIdOpt(filename);
+        Optional<UserProfileAvatarImage> currentAvatarOpt = findByNameOptional(filename);
         UserProfileAvatarImage newAvatar = currentAvatarOpt.orElseGet(() -> userProfileMapper.updateUserProfileAvatar(photographyInput));
         UserProfile userProfile = newAvatar.getUserProfile();
 
         String id = userProfile.getUser().getId().toString();
-        FileResponse fr = storageService.store(part, storagePath.formatted(id));
+        FileResponse fr = storageService.store(part, STORAGE_PATH.formatted(id));
 
         newAvatar.setName(fr.getName());
         newAvatar.setPath(fr.getPath());
@@ -106,7 +107,7 @@ public class UserProfileAvatarImageService extends AbstractService<UserProfileAv
         } catch (IOException e) {
             throw new FileStorageException("Could not store avatar file", e);
         }
-        Optional<UserProfileAvatarImage> profileAvatarOpt = this.findByNameAndUserIdOpt(fileName);
+        Optional<UserProfileAvatarImage> profileAvatarOpt = this.findByNameOptional(fileName);
         if (profileAvatarOpt.isPresent()) {
             return profileAvatarOpt.get();
         }

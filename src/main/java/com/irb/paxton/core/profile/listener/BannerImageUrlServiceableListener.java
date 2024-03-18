@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +28,6 @@ public class BannerImageUrlServiceableListener {
                 image.setUrl(null);
             }
         } else
-            image.setUrl("api/v1/users/banners/" + image.getName());
+            image.setUrl("api/%s/users/banners/".formatted(API_VERSION));
     }
 }

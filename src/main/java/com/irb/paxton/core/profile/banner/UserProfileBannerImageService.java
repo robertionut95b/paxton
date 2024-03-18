@@ -1,8 +1,8 @@
 package com.irb.paxton.core.profile.banner;
 
 import com.irb.paxton.core.media.ImageProcessor;
-import com.irb.paxton.core.model.AbstractRepository;
-import com.irb.paxton.core.model.AbstractService;
+import com.irb.paxton.core.model.AbstractFileEntityRepository;
+import com.irb.paxton.core.model.AbstractFileService;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.core.profile.UserProfile;
 import com.irb.paxton.core.profile.input.PhotographyInput;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserProfileBannerImageService extends AbstractService<UserProfileBannerImage> {
+public class UserProfileBannerImageService extends AbstractFileService<UserProfileBannerImage> {
 
     private final UserProfileBannerImageRepository userProfileBannerImageRepository;
 
@@ -35,7 +35,9 @@ public class UserProfileBannerImageService extends AbstractService<UserProfileBa
 
     private final FileNamingStandard fileNamingStandard;
 
-    protected UserProfileBannerImageService(AbstractRepository<UserProfileBannerImage> repository, UserProfileBannerImageRepository userProfileBannerImageRepository, UserProfileMapper userProfileMapper, StorageService storageService, FileNamingStandard fileNamingStandard) {
+    private final String STORAGE_PATH = "users/profile/%s/banner";
+
+    protected UserProfileBannerImageService(AbstractFileEntityRepository<UserProfileBannerImage> repository, UserProfileBannerImageRepository userProfileBannerImageRepository, UserProfileMapper userProfileMapper, StorageService storageService, FileNamingStandard fileNamingStandard) {
         super(repository);
         this.userProfileBannerImageRepository = userProfileBannerImageRepository;
         this.userProfileMapper = userProfileMapper;
@@ -50,7 +52,6 @@ public class UserProfileBannerImageService extends AbstractService<UserProfileBa
     @Transactional
     @PreAuthorize("authentication.principal.getId() == #photographyInput.userId or hasRole('ROLE_ADMINISTRATOR')")
     public UserProfileBannerImage changeProfileBanner(@NotNull PhotographyInput photographyInput) {
-        String storagePath = "users/profile/%s/banner";
         MultipartFile part;
         try {
             part = this.resizeImageBeforeUpload(photographyInput.getPhotography());
@@ -69,7 +70,7 @@ public class UserProfileBannerImageService extends AbstractService<UserProfileBa
         UserProfile userProfile = newBanner.getUserProfile();
 
         String id = userProfile.getUser().getId().toString();
-        FileResponse fr = storageService.store(part, storagePath.formatted(id));
+        FileResponse fr = storageService.store(part, STORAGE_PATH.formatted(id));
 
         newBanner.setName(fr.getName());
         newBanner.setPath(fr.getPath());

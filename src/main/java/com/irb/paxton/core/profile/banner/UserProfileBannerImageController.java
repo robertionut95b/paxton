@@ -1,7 +1,9 @@
 package com.irb.paxton.core.profile.banner;
 
+import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.profile.input.PhotographyInput;
 import com.irb.paxton.storage.FileServingService;
+import com.irb.paxton.storage.exception.FileNotFoundException;
 import com.irb.paxton.storage.validator.ImageFileValidatorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,11 +28,11 @@ import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION
 @RequestMapping(path = "api/" + API_VERSION + "/users")
 public class UserProfileBannerImageController {
 
+    private final ImageFileValidatorService imageFileValidatorService;
+
     private final UserProfileBannerImageService userProfileBannerImageService;
 
     private final FileServingService fileServingService;
-
-    private final ImageFileValidatorService imageFileValidatorService;
 
     @PostMapping(path = "{userId}/upload/banner")
     public UserProfileBannerImage changeProfileBanner(@PathVariable Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
@@ -46,16 +48,19 @@ public class UserProfileBannerImageController {
 
     @GetMapping(value = "/banners/{imageName}")
     public ResponseEntity<byte[]> getProfileBannerImage(@PathVariable String imageName, @RequestParam(required = false) Optional<String> size) {
+        File file = this.userProfileBannerImageService
+                .findByNameOptional(imageName)
+                .orElseThrow(() -> new FileNotFoundException("File does not exist"));
         if (size.isPresent()) {
             byte[] fileBytes = this.fileServingService
-                    .serveResizableImageByFileNameAndSize(imageName, size.get());
+                    .serveResizableImageByFileNameAndSize(file, size.get());
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.parseMediaType(URLConnection.guessContentTypeFromName(imageName)))
                     .body(fileBytes);
         }
         byte[] fileBytes = this.fileServingService
-                .serveFileByFileName(imageName);
+                .serveFileByFileName(file);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(URLConnection.guessContentTypeFromName(imageName)))

@@ -1,7 +1,9 @@
 package com.irb.paxton.core.profile.avatar;
 
+import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.profile.input.PhotographyInput;
 import com.irb.paxton.storage.FileServingService;
+import com.irb.paxton.storage.exception.FileNotFoundException;
 import com.irb.paxton.storage.validator.ImageFileValidatorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -46,16 +48,19 @@ public class UserProfileAvatarImageController {
 
     @GetMapping(value = "/avatars/{imageName}")
     public ResponseEntity<byte[]> getProfileAvatarImage(@PathVariable String imageName, @RequestParam(required = false) Optional<String> size) {
+        File file = this.userProfileAvatarImageService
+                .findByNameOptional(imageName)
+                .orElseThrow(() -> new FileNotFoundException("File does not exist"));
         if (size.isPresent()) {
             byte[] fileBytes = this.fileServingService
-                    .serveResizableImageByFileNameAndSize(imageName, size.get());
+                    .serveResizableImageByFileNameAndSize(file, size.get());
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.parseMediaType(URLConnection.guessContentTypeFromName(imageName)))
                     .body(fileBytes);
         }
         byte[] fileBytes = this.fileServingService
-                .serveFileByFileName(imageName);
+                .serveFileByFileName(file);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(URLConnection.guessContentTypeFromName(imageName)))

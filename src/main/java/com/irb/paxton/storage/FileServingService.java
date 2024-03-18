@@ -22,29 +22,13 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 public class FileServingService {
 
-    private final FileServingRepository fileServingRepository;
-
     private final StorageService storageService;
 
     private final RestTemplate restTemplate;
 
-    private File findFileByName(final String fileName) {
-        return fileServingRepository
-                .findByName(fileName)
-                .orElseThrow(() -> new FileNotFoundException("File by name \"%s\" does not exist".formatted(fileName)));
-    }
-
-    private File findFileByNameAndProvider(final String fileName, final FileProvider provider) {
-        return fileServingRepository
-                .findByNameAndProvider(fileName, provider)
-                .orElseThrow(() -> new FileNotFoundException("File by name \"%s\" does not exist".formatted(fileName)));
-    }
-
-    public byte[] serveFileByFileName(final String fileName) {
-        // get image metadata from repository
-        File file = this.findFileByName(fileName);
+    public byte[] serveFileByFileName(final File file) {
         if (!file.getProvider().equals(FileProvider.LOCAL))
-            return this.getFromExternalUrl(fileName, file.getProvider());
+            return this.getFromExternalUrl(file);
         // load file as resource then output to byte array
         try (InputStream in = storageService.loadAsResourceFromPath(file.getPath()).getInputStream()) {
             return IOUtils.toByteArray(in);
@@ -53,18 +37,16 @@ public class FileServingService {
         }
     }
 
-    public byte[] serveResizableImageByFileNameAndSize(final String fileName, final String size) {
-        // get image metadata from repository
-        File file = this.findFileByName(fileName);
+    public byte[] serveResizableImageByFileNameAndSize(final File file, final String size) {
         if (!file.getProvider().equals(FileProvider.LOCAL))
-            return this.getFromExternalUrl(fileName, file.getProvider());
+            return this.getFromExternalUrl(file);
         if (size == null)
             throw new IllegalArgumentException("Size parameter is not valid");
         if (size.isEmpty())
-            return this.serveFileByFileName(fileName);
+            return this.serveFileByFileName(file);
         // load image as resource then output to byte array
         try (InputStream in = ImageProcessor
-                .resizeImageToInputStream(storageService.loadAsResourceFromPath(file.getPath()), size, FilenameUtils.getExtension(fileName))
+                .resizeImageToInputStream(storageService.loadAsResourceFromPath(file.getPath()), size, FilenameUtils.getExtension(file.getName()))
         ) {
             return IOUtils.toByteArray(in);
         } catch (IOException e) {
@@ -72,12 +54,11 @@ public class FileServingService {
         }
     }
 
-    public byte[] getFromExternalUrl(String fileName, FileProvider provider) {
-        File file = this.findFileByNameAndProvider(fileName, provider);
+    public byte[] getFromExternalUrl(File file) {
         try {
             return restTemplate.getForObject(file.getPath(), byte[].class);
         } catch (IllegalArgumentException | ResourceAccessException e) {
-            throw new FileNotFoundException("Could not lookup external file \"%s\"".formatted(fileName));
+            throw new FileNotFoundException("Could not lookup external file \"%s\"".formatted(file.getName()));
         }
     }
 

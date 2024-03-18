@@ -3,9 +3,7 @@ package com.irb.paxton.core.model.storage;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.storage.FileProvider;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -20,8 +18,7 @@ import java.io.Serial;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public abstract class AbstractFileEntity extends PaxtonEntity implements File {
 
     @Serial
@@ -43,5 +40,4 @@ public abstract class AbstractFileEntity extends PaxtonEntity implements File {
 
     @NotNull
     private FileProvider provider = FileProvider.LOCAL;
-
 }

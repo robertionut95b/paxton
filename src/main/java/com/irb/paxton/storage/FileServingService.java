@@ -2,6 +2,7 @@ package com.irb.paxton.storage;
 
 import com.irb.paxton.core.media.ImageProcessor;
 import com.irb.paxton.core.model.storage.File;
+import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.FileNotFoundException;
 import com.irb.paxton.storage.exception.FileStorageException;
 import com.irb.paxton.utils.PaxtonMimeTypesUtils;
@@ -38,6 +39,8 @@ public class FileServingService {
     }
 
     public byte[] serveResizableImageByFileNameAndSize(final File file, final String size) {
+        if (!file.getFileType().equals(FileType.IMAGE_JPEG) || !file.getFileType().equals(FileType.IMAGE_PNG))
+            throw new IllegalArgumentException("File is not resizeable");
         if (!file.getProvider().equals(FileProvider.LOCAL))
             return this.getFromExternalUrl(file);
         if (size == null)

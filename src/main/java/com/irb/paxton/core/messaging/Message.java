@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.messaging.jpalisteners.MessageEntityListener;
 import com.irb.paxton.core.messaging.validator.ContentOrFileRequiredValidation;
 import com.irb.paxton.core.model.PaxtonEntity;
-import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +14,10 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -56,20 +58,6 @@ public class Message extends PaxtonEntity {
         currentSeens.add(new MessageSeenBy(user, this, OffsetDateTime.now()));
         this.setSeenBy(currentSeens);
         return this;
-    }
-
-    @PostLoad
-    public void onLoad() {
-        Optional<String> usernameOpt = SecurityUtils.getCurrentUserLogin();
-        if (usernameOpt.isPresent()) {
-            String username = usernameOpt.get();
-            this.seenAt = this.seenBy.stream()
-                    .filter(ms -> ms.getMessage().getId().equals(this.getId()))
-                    .filter(ms -> ms.getUser().getUsername().equals(username))
-                    .max(Comparator.comparing(MessageSeenBy::getSeenAt))
-                    .map(MessageSeenBy::getSeenAt)
-                    .orElse(null);
-        }
     }
 
     @Override

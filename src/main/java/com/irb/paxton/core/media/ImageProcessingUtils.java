@@ -12,9 +12,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ImageProcessor {
+public class ImageProcessingUtils {
 
-    private ImageProcessor() {
+    private ImageProcessingUtils() {
     }
 
     public static int[] splitStringSizesParameter(String size) {
@@ -45,7 +45,7 @@ public class ImageProcessor {
     }
 
     public static MultipartFile resizeImageToMultipartFile(MultipartFile file, String size) throws IOException {
-        try (InputStream inputStream = ImageProcessor
+        try (InputStream inputStream = ImageProcessingUtils
                 .resizeImageToInputStream(file.getResource(), size, FilenameUtils.getExtension(file.getOriginalFilename()))) {
             return new ResizedMultipartFile(inputStream.readAllBytes(),
                     file.getName(),

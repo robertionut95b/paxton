@@ -1,6 +1,6 @@
 package com.irb.paxton.core.profile.avatar;
 
-import com.irb.paxton.core.media.ImageProcessor;
+import com.irb.paxton.core.media.ImageProcessingUtils;
 import com.irb.paxton.core.model.AbstractFileEntityRepository;
 import com.irb.paxton.core.model.AbstractFileService;
 import com.irb.paxton.core.model.storage.FileType;
@@ -87,7 +87,7 @@ public class UserProfileAvatarImageService extends AbstractFileService<UserProfi
     }
 
     private MultipartFile resizeImageBeforeUpload(MultipartFile file) throws IOException {
-        return ImageProcessor.resizeImageToMultipartFile(file, "250x250");
+        return ImageProcessingUtils.resizeImageToMultipartFile(file, "250x250");
     }
 
     public UserProfileAvatarImage getOAuth2UserAvatarImage(String fileUrl, User user) {

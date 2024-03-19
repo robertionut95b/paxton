@@ -1,6 +1,6 @@
 package com.irb.paxton.storage;
 
-import com.irb.paxton.core.media.ImageProcessor;
+import com.irb.paxton.core.media.ImageProcessingUtils;
 import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.FileNotFoundException;
@@ -48,7 +48,7 @@ public class FileServingService {
         if (size.isEmpty())
             return this.serveFileByFileName(file);
         // load image as resource then output to byte array
-        try (InputStream in = ImageProcessor
+        try (InputStream in = ImageProcessingUtils
                 .resizeImageToInputStream(storageService.loadAsResourceFromPath(file.getPath()), size, FilenameUtils.getExtension(file.getName()))
         ) {
             return IOUtils.toByteArray(in);

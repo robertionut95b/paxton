@@ -1,6 +1,6 @@
 package com.irb.paxton.core.profile.banner;
 
-import com.irb.paxton.core.media.ImageProcessor;
+import com.irb.paxton.core.media.ImageProcessingUtils;
 import com.irb.paxton.core.model.AbstractFileEntityRepository;
 import com.irb.paxton.core.model.AbstractFileService;
 import com.irb.paxton.core.model.storage.FileType;
@@ -82,6 +82,6 @@ public class UserProfileBannerImageService extends AbstractFileService<UserProfi
     }
 
     private MultipartFile resizeImageBeforeUpload(MultipartFile file) throws IOException {
-        return ImageProcessor.resizeImageToMultipartFile(file, "600x250");
+        return ImageProcessingUtils.resizeImageToMultipartFile(file, "600x250");
     }
 }

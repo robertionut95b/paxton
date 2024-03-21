@@ -34,12 +34,14 @@ import com.irb.paxton.security.auth.user.credentials.Credentials;
 import com.irb.paxton.security.auth.user.credentials.CredentialsType;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -144,9 +146,12 @@ public class RepositoryBootEventService {
         Role recruiterRole = this.roleService.findByName(PaxtonRole.ROLE_RECRUITER.toString());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        SecureRandom secureRandomEncoder = new SecureRandom();
 
         // create system user (root)
-        String password = RandomStringUtils.random(32, true, true);
+        byte[] bytePassword = RandomStringUtils.random(32, true, true).getBytes();
+        secureRandomEncoder.nextBytes(bytePassword);
+        String password = Hex.encodeHexString(bytePassword);
         User systemUser = new User("SystemUser", "Paxton", LocalDate.now(), "paxton@paxton.com", "pxSystemUser", List.of(adminRole, everyOneRole), null, true);
         Credentials credentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
         log.info(LOG_CREATE_DEFAULT_USER_MSG, "pxSystemUser", password);
@@ -154,7 +159,9 @@ public class RepositoryBootEventService {
         userService.registerNewUser(systemUser);
 
         // create base admin user
-        password = RandomStringUtils.random(32, true, true);
+        bytePassword = RandomStringUtils.random(32, true, true).getBytes();
+        secureRandomEncoder.nextBytes(bytePassword);
+        password = Hex.encodeHexString(bytePassword);
         String adminStr = "admin";
         User admin = new User(adminStr, adminStr, null, "admin@paxton.com", adminStr, List.of(adminRole, everyOneRole), null, true);
         Credentials adminCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
@@ -163,7 +170,9 @@ public class RepositoryBootEventService {
         userService.registerNewUser(admin);
 
         // create read-only user
-        password = RandomStringUtils.random(32, true, true);
+        bytePassword = RandomStringUtils.random(32, true, true).getBytes();
+        secureRandomEncoder.nextBytes(bytePassword);
+        password = Hex.encodeHexString(bytePassword);
         String readOnlyStr = "readOnly";
         User readOnly = new User(readOnlyStr, readOnlyStr, null, "readOnly@paxton.com", readOnlyStr, List.of(everyOneRole), null, true);
         Credentials userCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);
@@ -172,7 +181,9 @@ public class RepositoryBootEventService {
         userService.registerNewUser(readOnly);
 
         // create recruiter user
-        password = RandomStringUtils.random(32, true, true);
+        bytePassword = RandomStringUtils.random(32, true, true).getBytes();
+        secureRandomEncoder.nextBytes(bytePassword);
+        password = Hex.encodeHexString(bytePassword);
         String pxRecruiterStr = "pxRecruiter";
         User recruiter = new User(pxRecruiterStr, pxRecruiterStr, null, "pxRecruiter@paxton.com", pxRecruiterStr, List.of(recruiterRole, everyOneRole), null, true);
         Credentials recruiterCredentials = new Credentials(CredentialsType.PASSWORD, passwordEncoder.encode(password), true, LocalDate.now(), null);

@@ -482,6 +482,7 @@ type MessageFile implements BaseEntity {
     urlId: String!
     name: String!
     path: String!
+    url: String!
     createdAt: DateTime!
     modifiedAt: DateTime!
     createdBy: String!

@@ -2,7 +2,6 @@ package com.irb.paxton.core.candidate.documents;
 
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationRepository;
-import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.ApplicationStatus;
 import com.irb.paxton.core.candidate.documents.input.ApplicationDocumentInput;
 import com.irb.paxton.core.model.AbstractRepository;
@@ -27,7 +26,7 @@ public class ApplicationDocumentService extends AbstractService<ApplicationDocum
 
     private final DocumentRepository documentRepository;
 
-    protected ApplicationDocumentService(AbstractRepository<ApplicationDocument> repository, ApplicationRepository applicationRepository, StorageService storageService, DocumentRepository documentRepository, ApplicationService applicationService) {
+    protected ApplicationDocumentService(AbstractRepository<ApplicationDocument> repository, ApplicationRepository applicationRepository, StorageService storageService, DocumentRepository documentRepository) {
         super(repository);
         this.applicationRepository = applicationRepository;
         this.storageService = storageService;

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URLConnection;
-import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
@@ -34,14 +35,13 @@ public class UserProfileBannerImageController {
 
     private final FileServingService fileServingService;
 
+    private final MessageSource messageSource;
+
     @PostMapping(path = "{userId}/upload/banner")
     public UserProfileBannerImage changeProfileBanner(@PathVariable Long userId, @NotNull @Valid PhotographyInput photographyInput) throws IOException {
         photographyInput.setUserId(userId);
-        if (!imageFileValidatorService.checkIsImage(photographyInput.getPhotography())) {
-            throw new IllegalArgumentException("Input is not image");
-        }
-        if (imageFileValidatorService.checkFileMimeType(photographyInput.getPhotography(), List.of("image/jpg", "image/jpeg"))) {
-            throw new IllegalArgumentException("Unsupported image format - jpg/jpeg allowed only");
+        if (!imageFileValidatorService.checkIsValid(photographyInput.getPhotography())) {
+            throw new IllegalArgumentException(messageSource.getMessage("px.application.image.supportedFormats", null, Locale.getDefault()));
         }
         return this.userProfileBannerImageService.changeProfileBanner(photographyInput);
     }

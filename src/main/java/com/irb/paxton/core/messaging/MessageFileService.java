@@ -20,4 +20,9 @@ public class MessageFileService extends AbstractFileService<MessageFile> {
         return repository
                 .findByMessage_Chat_IdAndMessage_IdAndName(chatId, messageId, fileName);
     }
+
+    public Optional<MessageFile> findByMessage_Chat_IdAndName(Long chatId, String fileName) {
+        return repository
+                .findByMessage_Chat_IdAndName(chatId, fileName);
+    }
 }

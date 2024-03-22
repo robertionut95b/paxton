@@ -10,4 +10,7 @@ public interface MessageFileRepository extends AbstractFileEntityRepository<Mess
 
 
     Optional<MessageFile> findByMessage_Chat_IdAndMessage_IdAndName(Long id, Long id1, String name);
+
+    Optional<MessageFile> findByMessage_Chat_IdAndName(Long id, String name);
+
 }

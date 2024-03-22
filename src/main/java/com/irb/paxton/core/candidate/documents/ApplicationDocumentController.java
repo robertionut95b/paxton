@@ -3,9 +3,11 @@ package com.irb.paxton.core.candidate.documents;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.candidate.ApplicationService;
 import com.irb.paxton.core.candidate.documents.input.ApplicationDocumentInput;
-import com.irb.paxton.storage.validator.FileValidatorService;
+import com.irb.paxton.storage.validator.DocumentFileValidatorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,30 +16,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
 
 @Slf4j
 @RestController
 @RequestMapping(path = "api/" + API_VERSION + "/applications")
+@RequiredArgsConstructor
 public class ApplicationDocumentController {
 
     private final ApplicationDocumentService applicationDocumentService;
 
-    private final FileValidatorService fileValidatorService;
+    private final DocumentFileValidatorService fileValidatorService;
 
     private final ApplicationService applicationService;
 
-    public ApplicationDocumentController(ApplicationDocumentService applicationDocumentService, FileValidatorService fileValidatorService, ApplicationService applicationService) {
-        this.applicationDocumentService = applicationDocumentService;
-        this.fileValidatorService = fileValidatorService;
-        this.applicationService = applicationService;
-    }
+    private final MessageSource messageSource;
 
     @PostMapping(value = "/{applicationId}/documents/upload", produces = MediaType.TEXT_PLAIN_VALUE)
     public String uploadApplicationDocument(@PathVariable Long applicationId, ApplicationDocumentInput applicationDocumentInput) {
-        if (!fileValidatorService.checkFileMimeType(applicationDocumentInput.getFiles(), "pdf")) {
-            throw new IllegalArgumentException("Files must be of type %s".formatted("pdf/doc(x)"));
+        if (!fileValidatorService.checkIsValid(applicationDocumentInput.getFiles())) {
+            throw new IllegalArgumentException(messageSource.getMessage("px.application.documents.supportedFormats", null, Locale.getDefault()));
         }
         Application application = applicationService.findById(applicationId);
         Document document = applicationDocumentService.addDocumentsToApplication(application, applicationDocumentInput);

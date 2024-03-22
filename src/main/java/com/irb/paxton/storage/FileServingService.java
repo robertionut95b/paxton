@@ -50,6 +50,7 @@ public class FileServingService {
         // load image as resource then output to byte array
         try (InputStream in = ImageProcessingUtils
                 .resizeImageToInputStream(storageService.loadAsResourceFromPath(file.getPath()), size, FilenameUtils.getExtension(file.getName()))
+                .imageStream()
         ) {
             return IOUtils.toByteArray(in);
         } catch (IOException e) {

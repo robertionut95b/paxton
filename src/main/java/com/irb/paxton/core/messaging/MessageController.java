@@ -26,7 +26,7 @@ public class MessageController {
 
     private final FileServingService fileServingService;
 
-    @GetMapping(path = "{chatId}/messages/{messageId}")
+    @GetMapping(path = "{chatId}/messages/{messageId}/uploads/{fileName}")
     public ResponseEntity<byte[]> getMessageFile(@PathVariable Long chatId, @PathVariable Long messageId, @PathVariable String fileName, @RequestParam(required = false) Optional<String> size) {
         File file = this.messageFileService
                 .findByChatIdMessageIdAndFileNameOpt(chatId, messageId, fileName)

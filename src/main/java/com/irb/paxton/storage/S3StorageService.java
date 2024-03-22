@@ -1,5 +1,6 @@
 package com.irb.paxton.storage;
 
+import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.PaxtonMinioException;
 import com.irb.paxton.storage.naming.FileNamingStandard;
@@ -18,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +28,9 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnBean(value = MinioClient.class)
 public class S3StorageService implements StorageService, BucketStorageService<Result<Item>> {
 
+    private static final String bucketName = "paxton-storage";
     private final MinioClient minioClient;
-
     private final FileNamingStandard fileNamingStandard;
-
-    private final String bucketName = "paxton-storage";
-
-    private final Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
 
     public S3StorageService(MinioClient minioClient, FileNamingStandard fileNamingStandard) {
         this.minioClient = minioClient;
@@ -80,8 +75,38 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                             .build()
             );
         } catch (MinioException | NoSuchAlgorithmException | InvalidKeyException | IOException e) {
-            log.error("Could not upload file to Minio instance", e);
-            throw new PaxtonMinioException("Could not upload file [%s] to Minio instance".formatted(file.getOriginalFilename()));
+            log.error("Could not upload file to S3 instance", e);
+            throw new PaxtonMinioException("Could not upload file [%s] to S3 instance".formatted(file.getOriginalFilename()));
+        }
+        return new FileResponse("%s.%s".formatted(fileName, fileExtension), destinationObject, FileType.parseString(fileExtension));
+    }
+
+    @Override
+    public File store(FileStorageObjectArgs args) {
+        MultipartFile file = args.getMultipartFile();
+        // upload the object to bucket
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String fileName;
+        if (args.getFileName() == null) {
+            try {
+                fileName = fileNamingStandard.getFileName(file.getBytes());
+            } catch (IOException e) {
+                throw new PaxtonMinioException("Could not store file", e);
+            }
+        } else fileName = args.getFileName();
+        String additionalPaths = args.getFilePath() == null ? "" : String.join("/", args.getFilePath());
+        String destinationObject = additionalPaths + "/%s.%s".formatted(fileName, fileExtension);
+        try (InputStream inputStream = file.getInputStream()) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(destinationObject)
+                            .stream(inputStream, inputStream.available(), -1)
+                            .build()
+            );
+        } catch (MinioException | NoSuchAlgorithmException | InvalidKeyException | IOException e) {
+            log.error("Could not upload file to S3 instance", e);
+            throw new PaxtonMinioException("Could not upload file [%s] to S3 instance".formatted(file.getOriginalFilename()));
         }
         return new FileResponse("%s.%s".formatted(fileName, fileExtension), destinationObject, FileType.parseString(fileExtension));
     }
@@ -95,7 +120,7 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                     .build());
             return new InputStreamResource(inputStreamObject);
         } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
-            log.error("Could not retrieve file from Minio instance", e);
+            log.error("Could not retrieve file from S3 instance", e);
             throw new PaxtonMinioException("Could not retrieve file [%s]".formatted(filePath));
         }
     }
@@ -109,7 +134,7 @@ public class S3StorageService implements StorageService, BucketStorageService<Re
                     .object(filePath)
                     .build());
         } catch (MinioException e) {
-            log.error("Could not remove file from Minio instance", e);
+            log.error("Could not remove file from S3 instance", e);
             throw new PaxtonMinioException("Could not remove file [%s]".formatted(filePath));
         }
     }

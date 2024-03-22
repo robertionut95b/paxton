@@ -13,7 +13,7 @@ import com.irb.paxton.core.messaging.ws.ChatLiveUpdatesManagerService;
 import com.irb.paxton.core.messaging.ws.ChatRoomManagerService;
 import com.irb.paxton.core.model.AbstractRepository;
 import com.irb.paxton.core.model.AbstractService;
-import com.irb.paxton.core.model.storage.FileType;
+import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.search.*;
 import com.irb.paxton.exceptions.handler.common.GenericEntityNotFoundException;
 import com.irb.paxton.security.AuthenticationService;
@@ -21,10 +21,10 @@ import com.irb.paxton.security.SecurityUtils;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserRepository;
 import com.irb.paxton.security.auth.user.exceptions.UserNotFoundException;
+import com.irb.paxton.storage.FileImageResponse;
 import com.irb.paxton.storage.FileProvider;
-import com.irb.paxton.storage.FileResponse;
 import com.irb.paxton.storage.StorageService;
-import jakarta.persistence.PersistenceException;
+import com.irb.paxton.storage.validator.DocumentFileValidatorService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +67,12 @@ public class ChatService extends AbstractService<Chat> {
     private final ChatRoomManagerService chatRoomManagerService;
 
     private final StorageService storageService;
+    
+    private final ChatServiceUploadsHelper chatServiceUploadsHelper;
 
-    public ChatService(AbstractRepository<Chat> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService, StorageService storageService) {
+    private final DocumentFileValidatorService documentFileValidatorService;
+
+    public ChatService(AbstractRepository<Chat> repository, ChatRepository chatRepository, MessageRepository messageRepository, MessageMapper messageMapper, ChatMapper chatMapper, UserRepository userRepository, AuthenticationService authenticationService, ChatLiveUpdatesManagerService liveUpdatesManagerService, ChatRoomManagerService chatRoomManagerService, StorageService storageService, ChatServiceUploadsHelper chatServiceUploadsHelper, DocumentFileValidatorService documentFileValidatorService) {
         super(repository);
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
@@ -79,6 +83,8 @@ public class ChatService extends AbstractService<Chat> {
         this.liveUpdatesManagerService = liveUpdatesManagerService;
         this.chatRoomManagerService = chatRoomManagerService;
         this.storageService = storageService;
+        this.chatServiceUploadsHelper = chatServiceUploadsHelper;
+        this.documentFileValidatorService = documentFileValidatorService;
     }
 
     @Transactional
@@ -94,21 +100,27 @@ public class ChatService extends AbstractService<Chat> {
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(#messageFileInput.chatId, #messageFileInput.senderUserId)")
-    public ChatResponseDto addMessageToChatWithFileUpload(MessageFileInput messageFileInput, List<MultipartFile> multipartFile) {
+    public ChatResponseDto addMessageToChatWithFileUpload(MessageFileInput messageFileInput, List<MultipartFile> multipartFiles) {
         Message message = messageMapper.toEntity(messageFileInput);
         Chat chat = message.getChat();
-        // upload file by Storage service
-        Set<FileResponse> uploadedFiles = multipartFile
-                .stream()
-                .map(mpf -> storageService.store(mpf, "chats/%s".formatted(chat.getId())))
-                .collect(Collectors.toSet());
-        uploadedFiles
-                .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), FileType.IMAGE_JPEG, FileProvider.LOCAL, message)));
+        Set<File> uploadedFiles;
+        if (multipartFiles.stream().allMatch(documentFileValidatorService::checkIsValid)) {
+            uploadedFiles = chatServiceUploadsHelper
+                    .processMultipartFilesForChatId(chat.getId(), multipartFiles);
+            uploadedFiles
+                    .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), uf.getFileType(), FileProvider.LOCAL, message)));
+        } else {
+            uploadedFiles = chatServiceUploadsHelper
+                    .processImageMultipartFilesForChatId(chat.getId(), multipartFiles);
+            uploadedFiles
+                    .stream()
+                    .map(FileImageResponse.class::cast)
+                    .forEach(uf -> message.addFileContent(new MessageFile(uf.getName(), uf.getPath(), uf.getFileType(), FileProvider.LOCAL, message, uf.getWidth(), uf.getHeight(), uf.getQuality())));
+        }
         try {
-            messageRepository.persist(message);
             chat.addMessage(message);
             this.update(chat);
-        } catch (PersistenceException exception) {
+        } catch (Exception exception) {
             // remove the files if any errors happen during persistence
             uploadedFiles.forEach(uf -> storageService.remove(uf.getPath()));
             // rollback transaction programmatically

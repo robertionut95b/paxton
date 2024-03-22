@@ -49,7 +49,7 @@ public class Chat extends PaxtonEntity {
     private String title;
 
     @NotNull
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ChatType chatType;
 
     @Transient
@@ -67,6 +67,7 @@ public class Chat extends PaxtonEntity {
     public Chat addMessage(Message message) {
         if (!this.getMessages().contains(message)) {
             this.messages.add(message);
+            this.setLatestMessage(message);
         }
         return this;
     }
@@ -74,6 +75,13 @@ public class Chat extends PaxtonEntity {
     public Chat removeMessage(Message message) {
         this.messages.remove(message);
         return this;
+    }
+
+    public Optional<Message> getMessage(Message message) {
+        return this.messages
+                .stream()
+                .filter(m -> m.equals(message))
+                .findFirst();
     }
 
     public Chat markMessageAsSeenByUser(Message message, User user) {

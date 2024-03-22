@@ -1,5 +1,6 @@
 package com.irb.paxton.core.messaging;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.security.auth.user.User;
 import jakarta.persistence.*;
@@ -27,11 +28,13 @@ import java.util.Objects;
 @Setter
 public class MessageSeenBy extends PaxtonEntity {
 
+    @JsonBackReference("user")
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private User user;
 
+    @JsonBackReference("seenBy")
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)

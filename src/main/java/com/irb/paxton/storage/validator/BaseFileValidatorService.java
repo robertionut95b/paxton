@@ -1,21 +1,16 @@
 package com.irb.paxton.storage.validator;
 
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
-@Service
-public class FileValidatorService implements FileValidator {
+public abstract class BaseFileValidatorService implements FileValidator {
 
     @Override
     public boolean checkFileMimeType(MultipartFile file, String mimeType) {
-        return Objects
-                .requireNonNull(FilenameUtils
-                        .getExtension(file.getOriginalFilename()))
-                .equalsIgnoreCase(mimeType);
+        String contentType = file.getContentType();
+        if (contentType == null) return false;
+        return contentType.equals(mimeType);
     }
 
     @Override

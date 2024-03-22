@@ -1,12 +1,15 @@
 package com.irb.paxton.core.media;
 
+import com.irb.paxton.core.model.storage.ImageFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 
-public class ResizedMultipartFile implements MultipartFile {
+public class ResizedImageMultipartFile implements MultipartFile, ImageFile {
 
     private final byte[] input;
+
+    private final byte[] originalInput;
 
     private final String name;
 
@@ -14,16 +17,26 @@ public class ResizedMultipartFile implements MultipartFile {
 
     private final String contentType;
 
-    public ResizedMultipartFile(byte[] input, String name, String originalFileName, String contentType) {
+    private final int width;
+
+    private final int height;
+
+    private final float quality;
+
+    public ResizedImageMultipartFile(byte[] input, byte[] originalInput, String name, String originalFileName, String contentType, int width, int height, float quality) {
         this.input = input;
+        this.originalInput = originalInput;
         this.name = name;
         this.originalFileName = originalFileName;
         this.contentType = contentType;
+        this.width = width;
+        this.height = height;
+        this.quality = quality;
     }
 
     @Override
     public String getName() {
-        return this.getName();
+        return this.name;
     }
 
     @Override
@@ -51,6 +64,10 @@ public class ResizedMultipartFile implements MultipartFile {
         return input;
     }
 
+    public byte[] getOriginalFileBytes() {
+        return originalInput;
+    }
+
     @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(input);
@@ -61,5 +78,20 @@ public class ResizedMultipartFile implements MultipartFile {
         try (FileOutputStream fos = new FileOutputStream(dest)) {
             fos.write(input);
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public float getQuality() {
+        return this.quality;
     }
 }

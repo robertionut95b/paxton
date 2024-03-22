@@ -9,4 +9,6 @@ public interface FileValidator {
     boolean checkFileMimeType(MultipartFile file, String mimeType);
 
     boolean checkFileMimeType(MultipartFile file, List<String> mimeType);
+
+    boolean checkIsValid(MultipartFile file);
 }

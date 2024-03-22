@@ -4,8 +4,6 @@ import com.irb.paxton.core.model.StringIdentifiableEnum;
 
 public enum FileType implements StringIdentifiableEnum {
 
-    WORD_DOCUMENT("doc"),
-    WORDX_DOCUMENT("docx"),
     PDF_DOCUMENT("pdf"),
     IMAGE_PNG("png"),
     IMAGE_JPEG("jpg");

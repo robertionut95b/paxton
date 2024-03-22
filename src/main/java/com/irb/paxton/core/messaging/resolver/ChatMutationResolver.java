@@ -5,22 +5,30 @@ import com.irb.paxton.core.messaging.dto.ChatResponseDto;
 import com.irb.paxton.core.messaging.input.ChatInput;
 import com.irb.paxton.core.messaging.input.MessageFileInput;
 import com.irb.paxton.core.messaging.input.MessageInput;
+import com.irb.paxton.storage.validator.DocumentFileValidatorService;
+import com.irb.paxton.storage.validator.ImageFileValidatorService;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import graphql.schema.DataFetchingEnvironment;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Locale;
 
 @DgsComponent
+@RequiredArgsConstructor
 public class ChatMutationResolver {
 
     private final ChatService chatService;
 
-    public ChatMutationResolver(ChatService chatService) {
-        this.chatService = chatService;
-    }
+    private final ImageFileValidatorService imageFileValidatorService;
+
+    private final DocumentFileValidatorService documentFileValidatorService;
+
+    private final MessageSource messageSource;
 
     @DgsMutation
     public ChatResponseDto addMessageToChat(@InputArgument MessageInput MessageInput) {
@@ -30,10 +38,13 @@ public class ChatMutationResolver {
     @DgsMutation
     public ChatResponseDto addMessageWithFileToChat(@InputArgument MessageFileInput messageInput, DataFetchingEnvironment dfe) {
         // get file as Multipart type
-        List<MultipartFile> file = dfe.getArgument("fileUpload");
-        if (file.isEmpty())
+        List<MultipartFile> files = dfe.getArgument("fileUpload");
+        if (files.isEmpty())
             throw new IllegalArgumentException("File upload cannot be empty");
-        return chatService.addMessageToChatWithFileUpload(messageInput, file);
+        if (files.stream().noneMatch(uploadFile -> imageFileValidatorService.checkIsValid(uploadFile) || documentFileValidatorService.checkIsValid(uploadFile))) {
+            throw new IllegalArgumentException(messageSource.getMessage("px.application.files.supportedFormats", null, Locale.getDefault()));
+        }
+        return chatService.addMessageToChatWithFileUpload(messageInput, files);
     }
 
     @DgsMutation

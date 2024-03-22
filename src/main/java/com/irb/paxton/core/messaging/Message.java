@@ -1,5 +1,6 @@
 package com.irb.paxton.core.messaging;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.messaging.jpalisteners.MessageEntityListener;
 import com.irb.paxton.core.messaging.validator.ContentOrFileRequiredValidation;
@@ -31,6 +32,7 @@ public class Message extends PaxtonEntity {
     @Lob
     private String content;
 
+    @JsonBackReference("sender")
     @ManyToOne
     @JoinColumn(name = "sender_id")
     @NotNull
@@ -39,17 +41,19 @@ public class Message extends PaxtonEntity {
     @NotNull
     private OffsetDateTime deliveredAt = OffsetDateTime.now();
 
+    @JsonManagedReference("seenBy")
     @ManyToMany(mappedBy = "message", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<MessageSeenBy> seenBy = new LinkedHashSet<>();
 
     @Transient
     private OffsetDateTime seenAt = null;
 
+    @JsonBackReference("chat")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
-    @JsonManagedReference
+    @JsonManagedReference("fileContents")
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MessageFile> fileContents = new HashSet<>();
 
@@ -74,6 +78,7 @@ public class Message extends PaxtonEntity {
     }
 
     public void addFileContent(MessageFile messageFile) {
+        messageFile.setMessage(this);
         this.fileContents.add(messageFile);
     }
 }

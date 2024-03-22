@@ -1,6 +1,7 @@
 package com.irb.paxton.storage.validator;
 
-import jakarta.servlet.ServletContext;
+import com.irb.paxton.exceptions.handler.common.PaxtonValidationException;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,34 +11,28 @@ import java.io.InputStream;
 import java.util.List;
 
 @Service
-public class ImageFileValidatorService implements ImageFileValidator {
+public class ImageFileValidatorService extends BaseFileValidatorService {
 
-    private final ServletContext servletContext;
-
-    public ImageFileValidatorService(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
-
-    @Override
-    public boolean checkFileMimeType(MultipartFile file, String mimeType) {
-        return servletContext
-                .getMimeType(file.getOriginalFilename()).startsWith(mimeType);
-    }
-
-    @Override
-    public boolean checkFileMimeType(MultipartFile file, List<String> mimeType) {
-        return mimeType.stream()
-                .allMatch(m -> this.checkFileMimeType(file, m));
-    }
-
-    @Override
-    public boolean checkIsImage(MultipartFile file) throws IOException {
+    protected boolean checkIsImage(MultipartFile file) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             if (ImageIO.read(inputStream) == null) {
                 // input is not image
                 return false;
             }
         }
-        return true;
+        return this.checkFileMimeType(file, List.of(
+                MediaType.IMAGE_JPEG_VALUE,
+                "image/jpg",
+                MediaType.IMAGE_PNG_VALUE
+        ));
+    }
+
+    @Override
+    public boolean checkIsValid(MultipartFile file) {
+        try {
+            return this.checkIsImage(file);
+        } catch (IOException e) {
+            throw new PaxtonValidationException("Could not validate file", e);
+        }
     }
 }

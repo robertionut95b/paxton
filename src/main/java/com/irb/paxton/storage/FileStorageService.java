@@ -1,8 +1,10 @@
 package com.irb.paxton.storage;
 
 import com.irb.paxton.config.properties.FileStorageProperties;
+import com.irb.paxton.core.model.storage.File;
 import com.irb.paxton.core.model.storage.FileType;
 import com.irb.paxton.storage.exception.FileAlreadyExistsExceptionException;
+import com.irb.paxton.storage.exception.FileStorageEmptyFileException;
 import com.irb.paxton.storage.exception.FileStorageException;
 import com.irb.paxton.storage.naming.FileNamingStandard;
 import io.minio.MinioClient;
@@ -62,10 +64,54 @@ public class FileStorageService implements StorageService {
                 .resolve(newFileName).toString();
         try {
             if (file.isEmpty()) {
-                throw new FileStorageException("Failed to store empty file.");
+                throw new FileStorageEmptyFileException("Failed to store empty file");
             }
             if (file.getOriginalFilename() == null) {
-                throw new FileStorageException("File has no name.");
+                throw new FileStorageEmptyFileException("Failed to store file with invalid name");
+            }
+            destinationFile = this.rootLocation
+                    .resolve(additionalPaths)
+                    .resolve(newFileName)
+                    .normalize();
+            try (InputStream inputStream = file.getInputStream()) {
+                if (!destinationFile.getParent().startsWith(this.rootLocation)) {
+                    throw new FileStorageException("Cannot store file outside current directory.");
+                }
+                FileUtils.copyInputStreamToFile(inputStream, destinationFile.toFile());
+            }
+        } catch (FileAlreadyExistsException e) {
+            throw new FileAlreadyExistsExceptionException("This file already exists.", e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to store file.", e);
+        }
+        return new FileResponse(newFileName, newFilePath, FileType.parseString(FilenameUtils.getExtension(newFileName)));
+    }
+
+    @Override
+    public File store(FileStorageObjectArgs args) {
+        MultipartFile file = args.getMultipartFile();
+        String additionalPath = args.getFilePath() == null ? "" : String.join("/", args.getFilePath());
+
+        Path destinationFile;
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String newFileName;
+        if (args.getFileName() == null) {
+            try {
+                newFileName = "%s.%s".formatted(fileNamingStandard.getFileName(file.getBytes()), fileExtension);
+            } catch (IOException e) {
+                throw new FileStorageException("Failed to store file.", e);
+            }
+        } else newFileName = args.getFileName();
+        Path additionalPaths = Paths.get("", additionalPath);
+        String newFilePath = additionalPaths
+                .resolve(newFileName)
+                .toString();
+        try {
+            if (file.isEmpty()) {
+                throw new FileStorageEmptyFileException("Failed to store empty file");
+            }
+            if (file.getOriginalFilename() == null) {
+                throw new FileStorageEmptyFileException("Failed to store file with invalid name");
             }
             destinationFile = this.rootLocation
                     .resolve(additionalPaths)

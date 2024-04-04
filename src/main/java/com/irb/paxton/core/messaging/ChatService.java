@@ -67,7 +67,7 @@ public class ChatService extends AbstractService<Chat> {
     private final ChatRoomManagerService chatRoomManagerService;
 
     private final StorageService storageService;
-    
+
     private final ChatServiceUploadsHelper chatServiceUploadsHelper;
 
     private final DocumentFileValidatorService documentFileValidatorService;
@@ -171,7 +171,7 @@ public class ChatService extends AbstractService<Chat> {
 
     @PostAuthorize("hasRole('ROLE_ADMINISTRATOR') or @chatSecurityService.isChatMember(authentication, returnObject)")
     public PaginatedResponse<Chat> getChatAdvSearch(@Valid SearchRequest searchRequest) {
-        searchRequest.getFilters().add(new FilterRequest("chatType", Operator.EQUAL, FieldType.INTEGER, ChatType.PRIVATE_CHAT.ordinal(), null, null));
+        searchRequest.getFilters().add(new FilterRequest("chatType", Operator.EQUAL, FieldType.STRING, ChatType.PRIVATE_CHAT, null, null));
         return super.advSearch(searchRequest);
     }
 

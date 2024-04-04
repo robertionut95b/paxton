@@ -17,6 +17,9 @@ import java.io.Serial;
 import java.util.Objects;
 
 @Entity
+@Table(name = "MessageFile", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_messageFile_messageId_fileName", columnNames = {"name", "message_id"})
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

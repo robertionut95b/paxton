@@ -2,7 +2,6 @@ package com.irb.paxton.core.model.storage;
 
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.storage.FileProvider;
-import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,7 +23,6 @@ public abstract class AbstractFileEntity extends PaxtonEntity implements File {
     @Serial
     private static final long serialVersionUID = 7232999451691337839L;
 
-    @Column(unique = true)
     @NotNull
     @NotEmpty
     @NotBlank

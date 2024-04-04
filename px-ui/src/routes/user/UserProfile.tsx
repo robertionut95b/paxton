@@ -5,7 +5,7 @@ import ProfileBanner from "@components/user-profile/ProfileBanner";
 import ProfileCard from "@components/user-profile/ProfileCard";
 import ProfileLoadingSkeleton from "@components/user-profile/ProfileLoadingSkeleton";
 import UserResume from "@components/user-profile/UserResume";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
@@ -27,8 +27,9 @@ export default function UserProfile() {
 
   const userProfile = data.getUserProfile;
   const coverPhoto =
-    userProfile?.coverPhotography && userProfile.coverPhotography !== null
-      ? `${APP_IMAGES_API_PATH}/800x450/${userProfile.coverPhotography}`
+    userProfile?.userProfileBannerImage &&
+    userProfile.userProfileBannerImage !== null
+      ? `${APP_API_BASE_URL}/${userProfile.userProfileBannerImage.url}`
       : "/images/bg-profile.jpg";
 
   const isCurrentUser = userProfile?.user.username === user?.username;
@@ -56,8 +57,8 @@ export default function UserProfile() {
                     : undefined
                 }
                 photography={
-                  userProfile?.photography &&
-                  `${APP_IMAGES_API_PATH}/300x200/${userProfile.photography}`
+                  userProfile?.userProfileAvatarImage &&
+                  `${APP_API_BASE_URL}/${userProfile.userProfileAvatarImage.url}`
                 }
                 title={userProfile?.profileTitle}
                 firstName={userProfile.user?.firstName}

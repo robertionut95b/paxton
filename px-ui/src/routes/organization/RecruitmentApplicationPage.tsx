@@ -13,7 +13,6 @@ import {
   APP_API_BASE_URL,
   APP_API_PATH,
   APP_APPLICATION_DOCS_PATH,
-  APP_IMAGES_API_PATH,
 } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
@@ -374,8 +373,8 @@ const RecruitmentApplicationPage = () => {
           }
           jobTitle={jobListing.title}
           profilePhotoUrl={
-            userProfile.photography
-              ? `${APP_IMAGES_API_PATH}/200x200/${userProfile.photography}`
+            userProfile.userProfileAvatarImage
+              ? `${APP_API_BASE_URL}/${userProfile.userProfileAvatarImage.url}`
               : undefined
           }
         />
@@ -564,7 +563,7 @@ const RecruitmentApplicationPage = () => {
             <MessageAddForm
               currentUser={user}
               currentUserAvatar={
-                currentUserProfile?.getUserProfile?.photography
+                currentUserProfile?.getUserProfile?.userProfileAvatarImage?.url
               }
               onSubmit={(values) =>
                 addMessage({

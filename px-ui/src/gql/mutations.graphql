@@ -129,7 +129,9 @@ mutation AlterRecruitersInOrganization(
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }
@@ -191,7 +193,9 @@ mutation AddMessageToChat($MessageInput: MessageInput!) {
         id
         username
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
       deliveredAt
@@ -213,7 +217,9 @@ mutation MarkAllMessagesAsSeen($chatId: Long!, $userId: Long!) {
         displayName
         username
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
       seenBy {
@@ -275,7 +281,9 @@ mutation CreateConnectionRequest(
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }
@@ -295,7 +303,9 @@ mutation UpdateConnection($connectionRequestInput: ConnectionUpdateInput!) {
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }

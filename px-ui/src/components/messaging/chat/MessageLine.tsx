@@ -1,8 +1,13 @@
-import { APP_UPLOADS_API_PATH } from "@constants/Properties";
+import AttachmentItem from "@components/upload/AttachmentItem";
+import {
+  APP_API_BASE_URL,
+  APP_SUPPORTED_IMAGE_EXTENSIONS,
+} from "@constants/Properties";
 import { GetMessagesPaginatedQuery, Message } from "@gql/generated";
 import { Avatar, Group, Image, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
-import { Case, Default, Switch } from "react-if";
+import { useMemo } from "react";
+import { Case, Default, Else, If, Switch, Then } from "react-if";
 
 type MessageLineProps = {
   avatar?: string | null;
@@ -27,8 +32,17 @@ const MessageLine = ({
   name = "user",
   position,
   sentAt,
-  fileContents,
+  fileContents = [],
 }: MessageLineProps) => {
+  const uqImgsByName =
+    useMemo(
+      () =>
+        Object.groupBy(
+          fileContents!,
+          (i) => i?.name?.split("-")?.[0]?.split(".")?.[0] as PropertyKey,
+        ),
+      [fileContents],
+    ) ?? [];
   return (
     <Group
       px={"sm"}
@@ -100,14 +114,42 @@ const MessageLine = ({
             </Case>
             <Case condition={!content && !!fileContents}>
               <Group spacing={"xs"}>
-                {fileContents?.map((fc) => (
-                  <Image
-                    key={fc!.id}
-                    width={50}
-                    height={50}
-                    src={`${APP_UPLOADS_API_PATH}/images/100x100/${fc!.name}`}
-                  />
-                ))}
+                {Object.entries(uqImgsByName).map(([, value]) =>
+                  value?.map(
+                    (fc) =>
+                      !fc?.name.includes("-") && (
+                        <If
+                          key={fc?.id}
+                          condition={APP_SUPPORTED_IMAGE_EXTENSIONS.some(
+                            (fmt) => fc?.name.toLowerCase().endsWith(fmt),
+                          )}
+                        >
+                          <Then>
+                            <a
+                              key={fc?.id}
+                              href={`${APP_API_BASE_URL}/${fc?.url}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Image
+                                width={60}
+                                height={60}
+                                src={`${APP_API_BASE_URL}/${value.findLast((v) => v?.name.includes("-"))?.url}`}
+                              />
+                            </a>
+                          </Then>
+                          <Else>
+                            <AttachmentItem
+                              key={fc?.id}
+                              fileName={fc!.name}
+                              src={"/images/pdf-icon.svg"}
+                              apiUrl={fc!.url}
+                            />
+                          </Else>
+                        </If>
+                      ),
+                  ),
+                )}
               </Group>
             </Case>
             <Default>

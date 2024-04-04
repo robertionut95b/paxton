@@ -1,7 +1,7 @@
 import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import GenericLoadingSkeleton from "@components/spinners/GenericLoadingSkeleton";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
   CalendarDaysIcon,
@@ -47,8 +47,8 @@ export default function FeedPage() {
           <Stack align="center" spacing={2}>
             <BackgroundImage
               src={
-                upd?.getUserProfile?.coverPhotography
-                  ? `${APP_IMAGES_API_PATH}/300x150/${upd.getUserProfile.coverPhotography}`
+                upd?.getUserProfile?.userProfileBannerImage
+                  ? `${APP_API_BASE_URL}/${upd.getUserProfile.userProfileBannerImage.url}`
                   : "/images/bg-profile.jpg"
               }
               radius="sm"
@@ -66,8 +66,8 @@ export default function FeedPage() {
                     },
                   }}
                   src={
-                    upd && upd.getUserProfile && upd.getUserProfile.photography
-                      ? `${APP_IMAGES_API_PATH}/150x100/${upd.getUserProfile.photography}`
+                    upd?.getUserProfile?.userProfileAvatarImage
+                      ? `${APP_API_BASE_URL}/${upd.getUserProfile.userProfileAvatarImage.url}`
                       : undefined
                   }
                 >
@@ -83,7 +83,7 @@ export default function FeedPage() {
                 : user?.username}
             </Title>
             <Text size="xs" align="center">
-              {upd?.getUserProfile && upd.getUserProfile.profileTitle}
+              {upd?.getUserProfile?.profileTitle}
             </Text>
           </Stack>
         </Paper>
@@ -93,13 +93,13 @@ export default function FeedPage() {
           <Paper p="md" shadow="xs">
             <Stack>
               <Group noWrap>
-                {upd && upd.getUserProfile && (
+                {upd?.getUserProfile && (
                   <Avatar
                     radius="xl"
                     size="md"
                     src={
-                      upd.getUserProfile.photography &&
-                      `${APP_IMAGES_API_PATH}/100x100/${upd.getUserProfile.photography}`
+                      upd.getUserProfile.userProfileAvatarImage &&
+                      `${APP_API_BASE_URL}/100x100/${upd.getUserProfile.userProfileAvatarImage.url}`
                     }
                   >
                     {user?.firstName && user?.lastName

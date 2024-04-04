@@ -1,5 +1,5 @@
 import TransferItem from "@components/transfer-item/TransferItem";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import {
   GetAllUsersQuery,
   GetOrganizationBySlugNameQuery,
@@ -44,8 +44,8 @@ const recrToTrsfItem = (
     key: r?.id,
     description: r?.user.userProfile.profileTitle,
     image:
-      r?.user.userProfile.photography &&
-      `${APP_IMAGES_API_PATH}/50x50/${r?.user.userProfile.photography}`,
+      r?.user.userProfile.userProfileAvatarImage &&
+      `${APP_API_BASE_URL}/${r?.user.userProfile.userProfileAvatarImage.url}`,
   }));
 };
 
@@ -59,8 +59,8 @@ const usrToTrsfItem = (
     key: u?.id,
     description: u?.userProfile.profileTitle,
     image:
-      u?.userProfile.photography &&
-      `${APP_IMAGES_API_PATH}/50x50/${u?.userProfile.photography}`,
+      u?.userProfile.userProfileAvatarImage &&
+      `${APP_API_BASE_URL}/${u?.userProfile.userProfileAvatarImage}`,
   }));
 };
 

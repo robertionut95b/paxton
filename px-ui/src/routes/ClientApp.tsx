@@ -2,7 +2,7 @@ import RoleType from "@auth/RoleType";
 import { useAuth } from "@auth/useAuth";
 import NavBar, { LinkItem } from "@components/navigation/NavBar";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetUserProfileQuery } from "@gql/generated";
 import {
   BellIcon,
@@ -80,10 +80,7 @@ export default function ClientApp() {
             links={renderLinksByPermission(permissions)}
             user={user}
             profileLink={profileData?.getUserProfile?.profileSlugUrl}
-            avatarSrc={
-              profileData?.getUserProfile?.photography &&
-              `${APP_IMAGES_API_PATH}/100x100/${profileData?.getUserProfile?.photography}`
-            }
+            avatarSrc={`${APP_API_BASE_URL}/${profileData?.getUserProfile?.userProfileAvatarImage?.url}`}
           />
         </Else>
       </If>

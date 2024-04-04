@@ -289,6 +289,7 @@ export default function NetworkPage() {
                       usrs && (
                         <UsersSuggestionsSection.Item
                           key={usrs?.id}
+                          // @ts-expect-error("types-error")
                           user={usrs}
                           onConnectClick={(us) =>
                             sendConnectionRequest({

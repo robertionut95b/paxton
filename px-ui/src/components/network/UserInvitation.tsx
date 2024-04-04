@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { GetConnectionInvitationsForUserQuery } from "@gql/generated";
 import { CheckIcon, ClockIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Avatar, Button, Group, Stack, Text } from "@mantine/core";
@@ -20,8 +20,8 @@ type UserInvitationProps = {
 };
 
 const UserInvitation = ({ data, onAccept, onDecline }: UserInvitationProps) => {
-  const src = data.requester.userProfile.photography
-    ? `${APP_IMAGES_API_PATH}/100x100/${data.requester.userProfile.photography}`
+  const src = data.requester.userProfile.userProfileAvatarImage
+    ? `${APP_API_BASE_URL}/${data.requester.userProfile.userProfileAvatarImage.url}`
     : undefined;
   return (
     <Group position="apart">

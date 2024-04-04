@@ -4,10 +4,7 @@ import ChatBubblesSkeleton from "@components/messaging/chat/ChatBubblesSkeleton"
 import ChatRoomSkeleton from "@components/messaging/chat/ChatRoomSkeleton";
 import ChatSection from "@components/messaging/chat/ChatSection";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
-import {
-  API_PAGINATION_SIZE,
-  APP_IMAGES_API_PATH,
-} from "@constants/Properties";
+import { API_PAGINATION_SIZE, APP_API_BASE_URL } from "@constants/Properties";
 import {
   AddMessageWithFileToChatDocument,
   AddMessageWithFileToChatMutation,
@@ -181,7 +178,7 @@ const ChatRoomPage = () => {
     isInitialLoading: isMessagesLoading,
     fetchNextPage,
     hasNextPage,
-    isFetching,
+    isFetchingNextPage,
   } = useInfiniteGetMessagesPaginatedQuery(
     graphqlRequestClient,
     {
@@ -430,7 +427,7 @@ const ChatRoomPage = () => {
       });
   };
 
-  if (isInitialLoading || isFetching) return <ChatRoomSkeleton />;
+  if (isInitialLoading) return <ChatRoomSkeleton />;
 
   if (
     isError &&
@@ -470,8 +467,8 @@ const ChatRoomPage = () => {
             <Avatar
               key={u?.id}
               src={
-                u?.userProfile.photography &&
-                `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
+                u?.userProfile.userProfileAvatarImage &&
+                `${APP_API_BASE_URL}/${u.userProfile.userProfileAvatarImage.url}`
               }
               size="md"
               title={u?.username}
@@ -489,8 +486,8 @@ const ChatRoomPage = () => {
       <Avatar
         key={users?.[0]?.id}
         src={
-          users?.[0]?.userProfile.photography &&
-          `${APP_IMAGES_API_PATH}/100x100/${users?.[0].userProfile.photography}`
+          users?.[0]?.userProfile.userProfileAvatarImage &&
+          `${APP_API_BASE_URL}/${users?.[0].userProfile.userProfileAvatarImage.url}`
         }
         size="md"
         title={users?.[0]?.username}
@@ -537,7 +534,7 @@ const ChatRoomPage = () => {
                   compact
                   mt="xs"
                   onClick={() => fetchNextPage()}
-                  loading={isFetching}
+                  loading={isFetchingNextPage}
                   variant="light"
                   fullWidth
                 >
@@ -559,7 +556,9 @@ const ChatRoomPage = () => {
         <MessageAddForm
           currentUser={user}
           onSubmit={submitMessage}
-          currentUserAvatar={currentUserProfile?.getUserProfile?.photography}
+          currentUserAvatar={
+            currentUserProfile?.getUserProfile?.userProfileAvatarImage?.url
+          }
         />
       </Box>
     </Stack>

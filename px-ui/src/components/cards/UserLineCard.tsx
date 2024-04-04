@@ -1,4 +1,4 @@
-import { User, UserProfile } from "@gql/generated";
+import { User } from "@gql/generated";
 import {
   ChatBubbleLeftEllipsisIcon,
   DocumentTextIcon,
@@ -9,15 +9,8 @@ import { format } from "date-fns";
 import { Else, If, Then } from "react-if";
 import { NavLink } from "react-router-dom";
 
-type UserProfileType = Pick<UserProfile, "photography" | "profileTitle">;
-
 type UserLineCardProps = {
-  user: Omit<
-    User,
-    "email" | "isEmailConfirmed" | "username" | "userProfile" | "createdAt"
-  > & {
-    userProfile: UserProfileType;
-  };
+  user: Partial<User>;
   joinedAt: Date;
 };
 
@@ -26,9 +19,13 @@ const UserLineCard = ({ user, joinedAt }: UserLineCardProps) => {
     <Stack>
       <Group position="apart" noWrap>
         <Group noWrap>
-          <If condition={user.userProfile.photography}>
+          <If condition={!!user?.userProfile?.userProfileAvatarImage}>
             <Then>
-              <Avatar size="lg" radius="xl" src={user.userProfile.photography}>
+              <Avatar
+                size="lg"
+                radius="xl"
+                src={user?.userProfile?.userProfileAvatarImage?.url}
+              >
                 {user.displayName}
               </Avatar>
             </Then>

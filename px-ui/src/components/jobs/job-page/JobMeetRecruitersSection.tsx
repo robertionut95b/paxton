@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { GetAllJobListingsQuery, Recruiter } from "@gql/generated";
 import {
   Avatar,
@@ -45,11 +45,7 @@ const JobMeetRecruitersSection = ({
             <Avatar
               radius={"xl"}
               size={76}
-              src={
-                recruiter?.user.userProfile.photography
-                  ? `${APP_IMAGES_API_PATH}/100x100/${recruiter?.user.userProfile.photography}`
-                  : null
-              }
+              src={`${APP_API_BASE_URL}/${recruiter.user?.userProfile?.userProfileAvatarImage?.url}`}
             >
               {recruiter?.user.username?.[0].toUpperCase()}
             </Avatar>

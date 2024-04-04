@@ -1,9 +1,6 @@
 import UserLineCard from "@components/cards/UserLineCard";
 import PaginationToolbar from "@components/pagination/PaginationToolbar";
-import {
-  API_PAGINATION_SIZE,
-  APP_IMAGES_API_PATH,
-} from "@constants/Properties";
+import { API_PAGINATION_SIZE, APP_API_BASE_URL } from "@constants/Properties";
 import {
   FieldType,
   Operator,
@@ -71,12 +68,12 @@ const OrganizationRecruitersPage = () => {
                   <UserLineCard
                     // @ts-expect-error("types-to-fix")
                     user={
-                      r.user.userProfile.photography
+                      r.user.userProfile.userProfileAvatarImage
                         ? {
                             ...r.user,
                             userProfile: {
                               ...r.user.userProfile,
-                              photography: `${APP_IMAGES_API_PATH}/100x100/${r.user.userProfile.photography}`,
+                              photography: `${APP_API_BASE_URL}/${r.user.userProfile.userProfileAvatarImage.url}`,
                             },
                           }
                         : r.user

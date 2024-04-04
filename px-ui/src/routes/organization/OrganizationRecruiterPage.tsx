@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useGetRecruiterByIdQuery } from "@gql/generated";
 import {
   AtSymbolIcon,
@@ -75,20 +75,20 @@ const OrganizationRecruiterPage = () => {
       }}
     >
       <Stack p="md" spacing={40}>
-        <When condition={userProfile.photography}>
+        <When condition={!!userProfile.userProfileBannerImage}>
           <BackgroundImage
             p="xs"
             radius="sm"
             src={
-              userProfile.coverPhotography
-                ? `${APP_IMAGES_API_PATH}/500x150/${userProfile.coverPhotography}`
+              userProfile.userProfileBannerImage
+                ? `${APP_API_BASE_URL}/${userProfile.userProfileBannerImage.url}`
                 : "/images/bg-profile.jpg"
             }
           >
             <Avatar
               radius="lg"
               size={100}
-              src={`${APP_IMAGES_API_PATH}/200x200/${userProfile.photography}`}
+              src={`${APP_API_BASE_URL}/${userProfile.userProfileAvatarImage?.url}`}
               style={{ border: "2px solid white" }}
             >
               {username[0].toUpperCase()}

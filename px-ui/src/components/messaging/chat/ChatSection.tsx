@@ -1,5 +1,5 @@
 import MessageLine from "@components/messaging/chat/MessageLine";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { GetMessagesPaginatedQuery } from "@gql/generated";
 import { User } from "@interfaces/user.types";
@@ -94,8 +94,8 @@ const ChatSection = ({
                 <div key={m.id}>
                   <MessageLine
                     avatar={
-                      m.sender.userProfile.photography &&
-                      `${APP_IMAGES_API_PATH}/100x100/${m.sender.userProfile.photography}`
+                      m.sender.userProfile.userProfileAvatarImage &&
+                      `${APP_API_BASE_URL}/${m.sender.userProfile?.userProfileAvatarImage?.url}`
                     }
                     avatarInitials={displayInitials(
                       m.sender.username,

@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import {
   Application,
   ApplicationStatus,
@@ -43,8 +43,8 @@ const ApplicationRecordCard = ({ application }: ApplicationRecordCardProps) => {
                 size={"lg"}
                 radius="xl"
                 src={
-                  userProfile.photography &&
-                  `${APP_IMAGES_API_PATH}/100x100/${userProfile.photography}`
+                  userProfile.userProfileAvatarImage &&
+                  `${APP_API_BASE_URL}/${userProfile?.userProfileAvatarImage?.url}`
                 }
               >
                 {user?.username?.[0].toUpperCase() ?? "U"}

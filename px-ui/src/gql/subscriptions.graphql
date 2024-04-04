@@ -3,6 +3,11 @@ subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
     id
     urlId
     content
+    fileContents {
+      id
+      name
+      url
+    }
     chat {
       id
       urlId
@@ -14,7 +19,9 @@ subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {
       lastName
       displayName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
       }
     }
     deliveredAt
@@ -34,7 +41,9 @@ subscription GetLiveUpdatesForChats($auth: String!) {
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
       }
     }
     latestMessage {
@@ -48,7 +57,9 @@ subscription GetLiveUpdatesForChats($auth: String!) {
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
     }

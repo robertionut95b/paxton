@@ -2,7 +2,7 @@ import viewToPlainText from "@ckeditor/ckeditor5-clipboard/src/utils/viewtoplain
 import MantineEditor from "@components/inputs/MantineEditor";
 import { SelectItem } from "@components/select-items/SelectItem";
 import ApplicationSpinner from "@components/spinners/ApplicationSpinner";
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import {
   ContractType,
   FieldType,
@@ -259,7 +259,7 @@ export default function OrganizationPostJobForm() {
           values.availableTo,
           "yyyy-MM-dd",
         ) as unknown as Date,
-        formattedDescription: values.formattedDescription as string,
+        formattedDescription: values.formattedDescription,
         recruiterId: Number(values.recruiterId),
       },
     });
@@ -480,8 +480,8 @@ export default function OrganizationPostJobForm() {
             value: r?.id.toString() ?? "",
             description: r?.user.userProfile.profileTitle,
             image:
-              r?.user.userProfile.photography &&
-              `${APP_IMAGES_API_PATH}/100x100/${r.user.userProfile.photography}`,
+              r?.user.userProfile.userProfileAvatarImage &&
+              `${APP_API_BASE_URL}/${r.user.userProfile.userProfileAvatarImage.url}`,
           }))}
           icon={<UserIcon width={18} />}
           {...form.getInputProps("recruiterId")}

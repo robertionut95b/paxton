@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Avatar,
@@ -38,8 +38,8 @@ const UserSuggestionCard = ({
       >
         <Image
           src={
-            user.userProfile.coverPhotography
-              ? `${APP_IMAGES_API_PATH}/200x400/${user.userProfile.coverPhotography}`
+            user.userProfile.userProfileBannerImage
+              ? `${APP_API_BASE_URL}/${user.userProfile.userProfileBannerImage.url}`
               : "/images/bg-profile.jpg"
           }
           height={100}
@@ -54,8 +54,8 @@ const UserSuggestionCard = ({
             radius={100}
             variant="filled"
             src={
-              user.userProfile.photography
-                ? `${APP_IMAGES_API_PATH}/200x200/${user.userProfile.photography}`
+              user.userProfile.userProfileAvatarImage
+                ? `${APP_API_BASE_URL}/${user.userProfile.userProfileAvatarImage.url}`
                 : undefined
             }
           >

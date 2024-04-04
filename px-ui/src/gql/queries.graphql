@@ -62,7 +62,9 @@ query GetAllJobListings($searchQuery: SearchQueryInput) {
           userProfile {
             id
             profileSlugUrl
-            photography
+            userProfileAvatarImage {
+              url
+            }
             profileTitle
           }
         }
@@ -84,8 +86,12 @@ query GetUserProfile($profileSlugUrl: String) {
       lastName
       username
     }
-    photography
-    coverPhotography
+    userProfileAvatarImage {
+      url
+    }
+    userProfileBannerImage {
+      url
+    }
     description
     city {
       id
@@ -316,7 +322,9 @@ query GetOrganizationBySlugName($slugName: String!) {
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
           profileTitle
         }
       }
@@ -380,7 +388,9 @@ query GetApplicationById($applicationId: Long!) {
       id
       profileSlugUrl
       profileTitle
-      photography
+      userProfileAvatarImage {
+        url
+      }
     }
     candidate {
       user {
@@ -433,7 +443,9 @@ query GetAllApplications($searchQuery: SearchQueryInput) {
         id
         profileSlugUrl
         profileTitle
-        photography
+        userProfileAvatarImage {
+          url
+        }
       }
       candidate {
         user {
@@ -492,7 +504,9 @@ query GetAllRecruitersForOrganizationBySlug($organizationSlug: String!) {
       lastName
       username
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }
@@ -509,8 +523,12 @@ query GetRecruiterById($recruiterId: Long!) {
       username
       birthDate
       userProfile {
-        photography
-        coverPhotography
+        userProfileAvatarImage {
+          url
+        }
+        userProfileBannerImage {
+          url
+        }
         profileTitle
         description
         city {
@@ -542,7 +560,9 @@ query GetAllUsers {
     firstName
     lastName
     userProfile {
-      photography
+      userProfileAvatarImage {
+        url
+      }
       profileTitle
     }
   }
@@ -556,7 +576,9 @@ query GetAllUsersPaged($searchQuery: SearchQueryInput) {
       lastName
       displayName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
         profileSlugUrl
       }
@@ -624,7 +646,9 @@ query GetPrivateChatById($chatId: Long!) {
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }
@@ -651,7 +675,9 @@ query GetPrivateChatByUrlId($chatUrlId: String!) {
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
       }
     }
@@ -678,7 +704,9 @@ query GetChatAdvSearch($searchQuery: SearchQueryInput!) {
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
       latestMessage {
@@ -709,7 +737,9 @@ query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
       firstName
       lastName
       userProfile {
-        photography
+        userProfileAvatarImage {
+          url
+        }
       }
     }
     latestMessage {
@@ -723,7 +753,9 @@ query GetChatsWithUsersIds($userIds: [Long]!, $chatType: ChatType!) {
         lastName
         displayName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
     }
@@ -743,7 +775,9 @@ query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
       latestMessage {
@@ -757,7 +791,9 @@ query GetChatLinesAdvSearch($searchQuery: SearchQueryInput!) {
           firstName
           lastName
           userProfile {
-            photography
+            userProfileAvatarImage {
+              url
+            }
           }
         }
       }
@@ -776,8 +812,7 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
       fileContents {
         id
         name
-        urlId
-        path
+        url
       }
       sender {
         id
@@ -786,7 +821,9 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
         lastName
         displayName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
         }
       }
       deliveredAt
@@ -821,7 +858,9 @@ query FindRecruitersAdvSearch($searchQuery: SearchQueryInput) {
         displayName
         birthDate
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
           profileTitle
         }
       }
@@ -843,7 +882,9 @@ query GetConnectionInvitationsForUser($userId: Long!, $page: Int, $size: Int) {
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
           profileTitle
         }
       }
@@ -878,7 +919,9 @@ query GetConnectionsForUser(
         firstName
         lastName
         userProfile {
-          photography
+          userProfileAvatarImage {
+            url
+          }
           profileTitle
           profileSlugUrl
         }
@@ -899,8 +942,12 @@ query GetAllUserConnectionSuggestions($page: Int, $size: Int) {
       firstName
       lastName
       userProfile {
-        coverPhotography
-        photography
+        userProfileBannerImage {
+          url
+        }
+        userProfileAvatarImage {
+          url
+        }
         profileTitle
         profileSlugUrl
       }

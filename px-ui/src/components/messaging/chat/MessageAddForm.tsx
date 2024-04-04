@@ -1,26 +1,34 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import AttachmentItem from "@components/upload/AttachmentItem";
+import {
+  APP_SUPPORTED_DOCS_TYPES,
+  APP_SUPPORTED_IMAGE_TYPES,
+} from "@constants/Properties";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import {
   FaceSmileIcon,
   PaperClipIcon,
   PhotoIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { User } from "@interfaces/user.types";
 import {
   ActionIcon,
   Avatar,
   Button,
+  Divider,
   FileButton,
+  Flex,
   Group,
-  List,
+  Image,
+  Indicator,
   Popover,
   Text,
   Textarea,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useCallback, useState } from "react";
-import { When } from "react-if";
+import { Else, If, Then, When } from "react-if";
 import { useDarkMode } from "usehooks-ts";
 import { z } from "zod";
 
@@ -45,7 +53,6 @@ const MessageAddForm = ({
   maxLength = 250,
   disabled = false,
 }: MessageAddFormProps) => {
-  const [content, setContent] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
   const { isDarkMode } = useDarkMode();
 
@@ -78,14 +85,6 @@ const MessageAddForm = ({
     ),
   });
 
-  const changeMsgCb = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setContent(e.currentTarget.value);
-      form.setFieldValue("content", e.currentTarget.value);
-    },
-    [form],
-  );
-
   const setFilesCb = useCallback(
     (payload: File[]): void => {
       setFiles(payload);
@@ -99,10 +98,17 @@ const MessageAddForm = ({
     onSubmit(values);
     if (form.isValid()) {
       form.reset();
-      setContent("");
       setFiles([]);
     }
   };
+
+  const removeFileFromState = (file: File) => {
+    const newFiles = files.filter((f) => f.name !== file.name);
+    setFiles(newFiles);
+    setFilesCb(newFiles);
+  };
+
+  console.log(files);
 
   return (
     <form
@@ -110,16 +116,7 @@ const MessageAddForm = ({
       onSubmit={form.onSubmit((values) => handleSubmit(values))}
     >
       <Group spacing={"md"} noWrap>
-        <Avatar
-          size="lg"
-          radius="xl"
-          variant="filled"
-          src={
-            currentUserAvatar
-              ? `${APP_IMAGES_API_PATH}/100x100/${currentUserAvatar}`
-              : undefined
-          }
-        >
+        <Avatar size="lg" radius="xl" variant="filled" src={currentUserAvatar}>
           {displayInitials}
         </Avatar>
         <Textarea
@@ -130,8 +127,6 @@ const MessageAddForm = ({
           minRows={2}
           placeholder="Type in a message..."
           {...form.getInputProps("content")}
-          value={content}
-          onChange={changeMsgCb}
         />
       </Group>
       <Group mt="sm" position="apart">
@@ -148,10 +143,9 @@ const MessageAddForm = ({
                 data={data}
                 // @ts-expect-error(missing types)
                 onEmojiSelect={({ unified }) => {
-                  const newContent = content.concat(
+                  const newContent = form.values.content.concat(
                     String.fromCodePoint(parseInt(unified, 16)),
                   );
-                  setContent(newContent);
                   form.setFieldValue("content", newContent);
                 }}
                 previewEmoji={false}
@@ -160,7 +154,7 @@ const MessageAddForm = ({
           </Popover>
           <FileButton
             onChange={setFilesCb}
-            accept="image/png,image/jpeg"
+            accept={APP_SUPPORTED_IMAGE_TYPES.join(",")}
             multiple
           >
             {(props) => (
@@ -171,7 +165,7 @@ const MessageAddForm = ({
           </FileButton>
           <FileButton
             onChange={setFilesCb}
-            accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            accept={APP_SUPPORTED_DOCS_TYPES.join(",")}
             multiple
           >
             {(props) => (
@@ -188,24 +182,55 @@ const MessageAddForm = ({
               color={!form.errors.description ? "dimmed" : "red"}
               mt={4}
             >
-              {content.length}/{maxLength}
+              {form.values.content.length}/{maxLength}
             </Text>
           </Group>
           <Button
             type="submit"
-            disabled={(content.length === 0 && files.length === 0) || disabled}
+            disabled={
+              (form.values.content.length === 0 && files.length === 0) ||
+              disabled
+            }
           >
             Send
           </Button>
-          <When condition={!!files}>
-            <List size="sm" mt={5} withPadding>
-              {files.map((file, index) => (
-                <List.Item key={index}>{file.name}</List.Item>
-              ))}
-            </List>
-          </When>
         </Group>
       </Group>
+      <When condition={!!files && files.length > 0}>
+        <Divider mt="sm" />
+        <Flex mt={"sm"} gap={"sm"} wrap={"wrap"} justify={"center"}>
+          {files.map((file, index) => (
+            <Indicator
+              key={index + file.name}
+              size={16}
+              label={<XMarkIcon width={14} />}
+              onClick={() => removeFileFromState(file)}
+            >
+              <If
+                condition={APP_SUPPORTED_IMAGE_TYPES.some(
+                  (fmt) => file.type === fmt,
+                )}
+              >
+                <Then>
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    width={80}
+                    height={80}
+                    fit="cover"
+                  />
+                </Then>
+                <Else>
+                  <AttachmentItem
+                    fileName={file.name}
+                    src={"/images/pdf-icon.svg"}
+                    apiUrl="#"
+                  />
+                </Else>
+              </If>
+            </Indicator>
+          ))}
+        </Flex>
+      </When>
     </form>
   );
 };

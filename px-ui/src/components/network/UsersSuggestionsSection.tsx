@@ -12,7 +12,10 @@ export type SuggestionItemProps = Pick<
 > & {
   userProfile: Pick<
     UserProfile,
-    "profileTitle" | "photography" | "coverPhotography" | "profileSlugUrl"
+    | "profileTitle"
+    | "userProfileAvatarImage"
+    | "userProfileBannerImage"
+    | "profileSlugUrl"
   >;
 };
 

@@ -2,10 +2,7 @@ import { useAuth } from "@auth/useAuth";
 import ChatLine from "@components/messaging/chat/ChatLine";
 import MessageAddForm from "@components/messaging/chat/MessageAddForm";
 import { SelectItem } from "@components/select-items/SelectItem";
-import {
-  API_PAGINATION_SIZE,
-  APP_IMAGES_API_PATH,
-} from "@constants/Properties";
+import { API_PAGINATION_SIZE, APP_API_BASE_URL } from "@constants/Properties";
 import {
   ChatType,
   FieldType,
@@ -250,8 +247,8 @@ const NewChatPage = () => {
         value: String(u?.id) ?? "",
         label: `${u?.firstName} ${u?.lastName}`,
         image:
-          u?.userProfile.photography &&
-          `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`,
+          u?.userProfile.userProfileAvatarImage &&
+          `${APP_API_BASE_URL}/${u.userProfile.userProfileAvatarImage.url}`,
         description: u?.userProfile.profileTitle,
       }));
       setUsersSelectItem((prevUsers) =>

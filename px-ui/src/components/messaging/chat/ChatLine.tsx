@@ -1,6 +1,7 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { GetChatsWithUsersIdsQuery } from "@gql/generated";
-import { Avatar, Badge, Flex, Grid, Stack, Text } from "@mantine/core";
+import { DocumentIcon } from "@heroicons/react/24/outline";
+import { Avatar, Badge, Flex, Grid, Group, Stack, Text } from "@mantine/core";
 import { truncate } from "@utils/truncateText";
 import { format } from "date-fns";
 import { Else, If, Then, When } from "react-if";
@@ -22,10 +23,7 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
           .map((u) => (
             <Avatar
               key={u?.id}
-              src={
-                u?.userProfile.photography &&
-                `${APP_IMAGES_API_PATH}/100x100/${u.userProfile.photography}`
-              }
+              src={`${APP_API_BASE_URL}/${u?.userProfile?.userProfileAvatarImage?.url}`}
               size={35}
               title={u?.username}
               radius="xl"
@@ -37,8 +35,8 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
       <Avatar
         key={c?.users?.[0]?.id}
         src={
-          c?.users?.[0]?.userProfile.photography &&
-          `${APP_IMAGES_API_PATH}/100x100/${c?.users?.[0].userProfile.photography}`
+          c?.users?.[0]?.userProfile.userProfileAvatarImage &&
+          `${APP_API_BASE_URL}/${c?.users?.[0].userProfile.userProfileAvatarImage.url}`
         }
         size={40}
         title={c?.users?.[0]?.username}
@@ -99,9 +97,24 @@ const ChatLine = ({ chat: c, active = false }: ChatLineProps) => {
               </Text>
               <If condition={!!c?.latestMessage}>
                 <Then>
-                  <Text size="xs" className="line-clamp-2">
-                    {`${c?.latestMessage?.sender.firstName}: ${c?.latestMessage?.content}`}
-                  </Text>
+                  <If condition={c?.latestMessage?.content}>
+                    <Then>
+                      <Text size="xs" className="line-clamp-2">
+                        {`${c?.latestMessage?.sender.firstName}: ${c?.latestMessage?.content}`}
+                      </Text>
+                    </Then>
+                    <Else>
+                      <Group spacing={5}>
+                        <Text size="xs" className="line-clamp-2">
+                          {`${c?.latestMessage?.sender.firstName}:`}
+                        </Text>
+                        <DocumentIcon width={12} />{" "}
+                        <Text size="xs" className="line-clamp-2">
+                          Attachment
+                        </Text>
+                      </Group>
+                    </Else>
+                  </If>
                 </Then>
                 <Else>
                   <Text size="xs" className="line-clamp-2">

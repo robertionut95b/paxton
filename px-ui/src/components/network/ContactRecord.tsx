@@ -1,4 +1,4 @@
-import { APP_IMAGES_API_PATH } from "@constants/Properties";
+import { APP_API_BASE_URL } from "@constants/Properties";
 import { GetConnectionsForUserQuery } from "@gql/generated";
 import { ClockIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
@@ -27,8 +27,8 @@ const ContactRecord = ({
   onClickRemove,
   onClickMessage,
 }: ContactRecordProps) => {
-  const src = userConnection.userProfile.photography
-    ? `${APP_IMAGES_API_PATH}/100x100/${userConnection.userProfile.photography}`
+  const src = userConnection.userProfile.userProfileAvatarImage
+    ? `${APP_API_BASE_URL}/${userConnection.userProfile.userProfileAvatarImage.url}`
     : undefined;
   return (
     <Group position="apart">

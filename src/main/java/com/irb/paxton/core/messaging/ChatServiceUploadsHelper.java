@@ -97,11 +97,11 @@ public class ChatServiceUploadsHelper {
             return "%s-%spx.%s".formatted(
                     fileNamingStandard.getFileName(resizedImgFile.getOriginalFileBytes()),
                     resizedImgFile.getWidth(),
-                    FileNameUtils.getExtension(resizedImgFile.getOriginalFilename())
+                    FileNameUtils.getExtension(resizedImgFile.getOriginalFilename()).toLowerCase()
             );
         return BASE_FILENAME_FORMAT_STR.formatted(
                 fileNamingStandard.getFileName(resizedImgFile.getOriginalFileBytes()),
-                FileNameUtils.getExtension(resizedImgFile.getOriginalFilename())
+                FileNameUtils.getExtension(resizedImgFile.getOriginalFilename()).toLowerCase()
         );
     }
 

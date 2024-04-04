@@ -28,6 +28,6 @@ public class BannerImageUrlServiceableListener {
                 image.setUrl(null);
             }
         } else
-            image.setUrl("api/%s/users/banners/".formatted(API_VERSION));
+            image.setUrl("api/%s/users/banners/%s".formatted(API_VERSION, image.getName()));
     }
 }

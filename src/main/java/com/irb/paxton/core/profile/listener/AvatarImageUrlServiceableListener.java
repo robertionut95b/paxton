@@ -28,6 +28,6 @@ public class AvatarImageUrlServiceableListener {
                 image.setUrl(null);
             }
         } else
-            image.setUrl("api/%s/users/avatars/".formatted(API_VERSION));
+            image.setUrl("api/%s/users/avatars/%s".formatted(API_VERSION, image.getName()));
     }
 }

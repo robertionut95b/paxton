@@ -8,8 +8,10 @@ import { Avatar, Group, Image, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
 import { useMemo } from "react";
 import { Case, Default, Else, If, Switch, Then } from "react-if";
+import { Link } from "react-router-dom";
 
 type MessageLineProps = {
+  urlId: string;
   avatar?: string | null;
   name: string;
   content?: string | null;
@@ -26,6 +28,7 @@ type MessageLineProps = {
 };
 
 const MessageLine = ({
+  urlId,
   avatar = undefined,
   avatarInitials = "U",
   content,
@@ -125,18 +128,16 @@ const MessageLine = ({
                           )}
                         >
                           <Then>
-                            <a
+                            <Link
                               key={fc?.id}
-                              href={`${APP_API_BASE_URL}/${fc?.url}`}
-                              target="_blank"
-                              rel="noreferrer"
+                              to={`message/${urlId}?img=${fc?.name}`}
                             >
                               <Image
                                 width={60}
                                 height={60}
                                 src={`${APP_API_BASE_URL}/${value.findLast((v) => v?.name.includes("-"))?.url}`}
                               />
-                            </a>
+                            </Link>
                           </Then>
                           <Else>
                             <AttachmentItem

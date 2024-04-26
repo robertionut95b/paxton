@@ -20,6 +20,7 @@ import {
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import LazyLoader from "@utils/LazyLoader";
 import { CheckUserHasRolesOrPermissions } from "@utils/security";
 import { useCallback, useMemo } from "react";
 import { useInterval } from "usehooks-ts";
@@ -173,7 +174,12 @@ export default function AuthProvider({
     [user, loading],
   );
 
-  if (loading) return <ApplicationSpinner />;
+  if (loading)
+    return (
+      <LazyLoader>
+        <ApplicationSpinner />
+      </LazyLoader>
+    );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

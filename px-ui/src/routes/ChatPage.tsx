@@ -3,6 +3,7 @@ import { useAuth } from "@auth/useAuth";
 import PageFooter from "@components/layout/PageFooter";
 import ChatLine from "@components/messaging/chat/ChatLine";
 import ChatLinesSkeleton from "@components/messaging/chat/ChatLinesSkeleton";
+import ChatRoomSkeleton from "@components/messaging/chat/ChatRoomSkeleton";
 import { API_PAGINATION_SIZE } from "@constants/Properties";
 import {
   FieldType,
@@ -41,10 +42,16 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { InfiniteData } from "@tanstack/react-query";
+import ChatEmptyState from "features/chat/ChatEmptyState";
 import { produce } from "immer";
 import { useEffect, useMemo, useState } from "react";
 import { Else, If, Then, When } from "react-if";
-import { NavLink, Outlet, useParams, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  useOutlet,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useDebounceValue } from "usehooks-ts";
 
 const ChatPage = () => {
@@ -53,6 +60,7 @@ const ChatPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
   const [debouncedSearch] = useDebounceValue<string>(search, 1000);
+  const outlet = useOutlet();
 
   const searchQuery = useMemo(
     () => ({
@@ -245,9 +253,9 @@ const ChatPage = () => {
                 offsetScrollbars
                 sx={(theme) => ({
                   [theme.fn.smallerThan("sm")]: {
-                    height: "40vh",
+                    height: "30vh",
                   },
-                  height: "75vh",
+                  height: "50vh",
                 })}
                 scrollbarSize={6}
               >
@@ -291,10 +299,18 @@ const ChatPage = () => {
                               </Button>
                             </Then>
                             <Else>
-                              <Image src="/images/chat-icon.svg" width={76} />
-                              <Text size="sm" align="center">
-                                No chat rooms yet
-                              </Text>
+                              <Stack align="center" spacing={10}>
+                                <Image
+                                  src="/images/paper-plane.svg"
+                                  width={164}
+                                />
+                                <Text size="md" align="center" weight="bold">
+                                  No chat rooms yet
+                                </Text>
+                                <Text size="sm" align="center" weight="normal">
+                                  Start a conversation with people around you
+                                </Text>
+                              </Stack>
                             </Else>
                           </If>
                         </Stack>
@@ -340,7 +356,12 @@ const ChatPage = () => {
                 borderTop: "0px",
               })}
             >
-              <Outlet />
+              <If condition={isLoading}>
+                <Then>
+                  <ChatRoomSkeleton />
+                </Then>
+                <Else>{outlet || <ChatEmptyState />}</Else>
+              </If>
             </Grid.Col>
           </Grid>
         </Paper>

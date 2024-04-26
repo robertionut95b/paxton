@@ -89,6 +89,9 @@ const NewChatPage = lazy(() => import("./chat/NewChatPage"));
 const ChatRoomPage = lazy(() => import("./chat/ChatRoomPage"));
 const JobSearchPage = lazy(() => import("./jobs/JobSearchPage"));
 const UserSearchPage = lazy(() => import("./user/UserSearchPage"));
+const MessageImagePreviewPage = lazy(
+  () => import("./chat/message/MessageImagePreviewPage"),
+);
 
 export default function AppUI() {
   return (
@@ -263,7 +266,12 @@ export default function AppUI() {
             <Route path="notifications" element={<NotificationsPage />}></Route>
             <Route path="inbox/messages" element={<ChatPage />}>
               <Route path="chat/new" element={<NewChatPage />} />
-              <Route path="chat/:chatId" element={<ChatRoomPage />} />
+              <Route path="chat/:chatId" element={<ChatRoomPage />}>
+                <Route
+                  path="message/:messageId"
+                  element={<MessageImagePreviewPage />}
+                />
+              </Route>
             </Route>
             <Route path={"people"}>
               <Route index element={<UserSearchPage />} />

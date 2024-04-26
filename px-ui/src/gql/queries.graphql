@@ -808,6 +808,7 @@ query GetMessagesPaginated($searchQuery: SearchQueryInput) {
   getMessagesPaginated(searchQuery: $searchQuery) {
     list {
       id
+      urlId
       content
       fileContents {
         id

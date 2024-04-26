@@ -14,6 +14,7 @@ import {
 import { User } from "@interfaces/user.types";
 import {
   ActionIcon,
+  Alert,
   Avatar,
   Button,
   Divider,
@@ -108,7 +109,9 @@ const MessageAddForm = ({
     setFilesCb(newFiles);
   };
 
-  console.log(files);
+  const filesSizeInMb =
+    files.reduce((acc, curr) => curr.size + acc, 0) / 1024 / 1024;
+  const filesExceedingSize = filesSizeInMb > 10;
 
   return (
     <form
@@ -189,7 +192,8 @@ const MessageAddForm = ({
             type="submit"
             disabled={
               (form.values.content.length === 0 && files.length === 0) ||
-              disabled
+              disabled ||
+              filesExceedingSize
             }
           >
             Send
@@ -230,6 +234,15 @@ const MessageAddForm = ({
             </Indicator>
           ))}
         </Flex>
+        <When condition={filesExceedingSize}>
+          <Then>
+            <Alert color="red" mt="xs" variant="light">
+              <Text align="center" color="red.7">
+                Files selection exceeded 10Mb. Please choose fewer items
+              </Text>
+            </Alert>
+          </Then>
+        </When>
       </When>
     </form>
   );

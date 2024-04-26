@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import compose from "lodash/fp/compose";
 import groupBy from "lodash/fp/groupBy";
 import { useEffect, useMemo, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 type ChatSectionProps = {
   messages: NonNullable<
@@ -26,23 +27,24 @@ type ChatSectionProps = {
 const ChatSection = ({
   messages,
   currentUser,
-  height = 320,
+  height = "50vh",
   autoScroll = true,
   childrenPre,
   childrenPost,
 }: ChatSectionProps) => {
   const viewport = useRef<HTMLDivElement>(null);
   const [parent] = useAutoAnimate();
+  const { pathname } = useLocation();
   const isCurrentSender = (message: (typeof messages)[number]) =>
     String(message?.sender.id) === String(currentUser?.userId);
 
   useEffect(() => {
-    if (viewport.current) {
+    if (viewport.current && pathname) {
       viewport.current.scrollTo({
         top: viewport.current.scrollHeight,
       });
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (viewport.current && autoScroll) {
@@ -93,6 +95,7 @@ const ChatSection = ({
               m && (
                 <div key={m.id}>
                   <MessageLine
+                    urlId={m.urlId}
                     avatar={
                       m.sender.userProfile.userProfileAvatarImage &&
                       `${APP_API_BASE_URL}/${m.sender.userProfile?.userProfileAvatarImage?.url}`

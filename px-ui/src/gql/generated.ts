@@ -1819,7 +1819,7 @@ export type GetMessagesPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, content?: string | null, deliveredAt: Date, seenAt?: Date | null, fileContents?: Array<{ __typename?: 'MessageFile', id: number, name: string, url: string } | null> | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', userProfileAvatarImage?: { __typename?: 'UserProfileAvatarImage', url: string } | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null> | null } | null };
+export type GetMessagesPaginatedQuery = { __typename?: 'Query', getMessagesPaginated?: { __typename?: 'MessagePage', page: number, totalPages: number, totalElements: number, list?: Array<{ __typename?: 'Message', id: number, urlId: string, content?: string | null, deliveredAt: Date, seenAt?: Date | null, fileContents?: Array<{ __typename?: 'MessageFile', id: number, name: string, url: string } | null> | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', userProfileAvatarImage?: { __typename?: 'UserProfileAvatarImage', url: string } | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null> | null } | null };
 
 export type GetAllStepsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4960,6 +4960,7 @@ export const GetMessagesPaginatedDocument = `
   getMessagesPaginated(searchQuery: $searchQuery) {
     list {
       id
+      urlId
       content
       fileContents {
         id

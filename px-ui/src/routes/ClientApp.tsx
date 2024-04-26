@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/solid";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import { Center, Container, Paper, Skeleton } from "@mantine/core";
+import LazyLoader from "@utils/LazyLoader";
 import { Suspense } from "react";
 import { Else, If, Then } from "react-if";
 import { Outlet } from "react-router-dom";
@@ -85,7 +86,13 @@ export default function ClientApp() {
         </Else>
       </If>
       <Container pb="lg" size="lg">
-        <Suspense fallback={<ApplicationSpinner />}>
+        <Suspense
+          fallback={
+            <LazyLoader>
+              <ApplicationSpinner />
+            </LazyLoader>
+          }
+        >
           <Outlet />
         </Suspense>
       </Container>

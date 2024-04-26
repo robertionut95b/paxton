@@ -39,7 +39,9 @@ import {
   Button,
   Center,
   Divider,
+  Flex,
   Group,
+  Loader,
   Space,
   Stack,
   Text,
@@ -56,10 +58,12 @@ import { Else, If, Then, When } from "react-if";
 import {
   NavLink,
   Navigate,
+  Outlet,
   useLocation,
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { useSpinDelay } from "spin-delay";
 import { useDebounceValue } from "usehooks-ts";
 
 const ChatRoomPage = () => {
@@ -216,10 +220,13 @@ const ChatRoomPage = () => {
     },
   );
 
-  const { mutate: addMessageToChat } =
+  const { mutate: addMessageToChat, isLoading: isAddMessageToChatLoading } =
     useAddMessageToChatMutation(graphqlRequestClient);
 
-  const [addMessageWithFileToChat] = useMutation<
+  const [
+    addMessageWithFileToChat,
+    { loading: isAddMessageToChatWithFileLoading },
+  ] = useMutation<
     AddMessageWithFileToChatMutation,
     AddMessageWithFileToChatMutationVariables
   >(
@@ -228,7 +235,20 @@ const ChatRoomPage = () => {
     `,
     {
       client: graphqlUploadClient,
+      onError: (err) => {
+        showNotification({
+          title: "Could not submit message",
+          message: err.message,
+          autoClose: 5000,
+          icon: <ShieldExclamationIcon width={20} />,
+        });
+      },
     },
+  );
+
+  const addMessageLoding = useSpinDelay(
+    isAddMessageToChatLoading || isAddMessageToChatWithFileLoading,
+    { delay: 500, minDuration: 300 },
   );
 
   const { mutate: markAllMessagesAsSeen } = useMarkAllMessagesAsSeenMutation(
@@ -525,7 +545,6 @@ const ChatRoomPage = () => {
       <If condition={!isMessagesLoading}>
         <Then>
           <ChatSection
-            height={720}
             currentUser={user}
             messages={messages}
             childrenPre={
@@ -551,6 +570,13 @@ const ChatRoomPage = () => {
           </Box>
         </Else>
       </If>
+      <If condition={addMessageLoding}>
+        <Then>
+          <Flex mt="md" p="sm" justify="end" align="center" gap="xs">
+            <Loader size="sm" variant="dots" />
+          </Flex>
+        </Then>
+      </If>
       <Box className="flex-1">
         <Divider my={"xs"} />
         <MessageAddForm
@@ -559,8 +585,10 @@ const ChatRoomPage = () => {
           currentUserAvatar={
             currentUserProfile?.getUserProfile?.userProfileAvatarImage?.url
           }
+          disabled={isAddMessageToChatLoading}
         />
       </Box>
+      <Outlet />
     </Stack>
   );
 };

@@ -26,7 +26,8 @@ const ImagePreviewModal = ({
       <Box h="90vh" style={{ display: "flex" }}>
         <Carousel
           mx="auto"
-          withIndicators
+          withIndicators={images.length > 1}
+          withControls={images.length > 1}
           height="100%"
           style={{ flex: 1 }}
           {...carouselProps}

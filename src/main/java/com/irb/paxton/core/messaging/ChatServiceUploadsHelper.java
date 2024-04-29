@@ -93,7 +93,7 @@ public class ChatServiceUploadsHelper {
     }
 
     private String formatFileNameToImageSize(ResizedImageMultipartFile resizedImgFile) throws IOException {
-        if (resizedImgFile.getWidth() < ImageBreakpointSizes.LARGE.toIntValue() - 1)
+        if (resizedImgFile.getWidth() < ImageBreakpointSizes.LARGE.toIntValue() - 1 && resizedImgFile.getHeight() < ImageBreakpointSizes.LARGE.toIntValue() - 1)
             return "%s-%spx.%s".formatted(
                     fileNamingStandard.getFileName(resizedImgFile.getOriginalFileBytes()),
                     resizedImgFile.getWidth(),

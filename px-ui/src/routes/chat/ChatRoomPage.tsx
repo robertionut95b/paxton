@@ -605,9 +605,7 @@ const ChatRoomPage = () => {
         <MessageAddForm
           currentUser={user}
           onSubmit={submitMessage}
-          currentUserAvatar={
-            currentUserProfile?.getUserProfile?.userProfileAvatarImage?.url
-          }
+          currentUserAvatar={`${APP_API_BASE_URL}/${currentUserProfile?.getUserProfile?.userProfileAvatarImage?.url}`}
           disabled={isAddMessageToChatLoading}
         />
       </Box>

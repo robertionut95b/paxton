@@ -955,6 +955,7 @@ export type Query = {
   getCurrentUser?: Maybe<User>;
   getCurrentUserProfile?: Maybe<UserProfile>;
   getJobById?: Maybe<Job>;
+  getMessageByUrlId?: Maybe<Message>;
   getMessagesPaginated?: Maybe<MessagePage>;
   getMyApplicationForJobListing?: Maybe<Application>;
   getMyApplications?: Maybe<Array<Maybe<Application>>>;
@@ -1064,6 +1065,11 @@ export type QueryGetConnectionsForUserArgs = {
 
 export type QueryGetJobByIdArgs = {
   jobId: Scalars['Long']['input'];
+};
+
+
+export type QueryGetMessageByUrlIdArgs = {
+  urlId: Scalars['String']['input'];
 };
 
 
@@ -1867,6 +1873,13 @@ export type GetChatWithUserIdQueryVariables = Exact<{
 
 
 export type GetChatWithUserIdQuery = { __typename?: 'Query', getChatWithUserId?: { __typename?: 'ChatResponse', id: number, title?: string | null, unreadMessagesCount: number, latestMessage?: { __typename?: 'Message', content?: string | null } | null } | null };
+
+export type GetMessageByUrlIdQueryVariables = Exact<{
+  urlId: Scalars['String']['input'];
+}>;
+
+
+export type GetMessageByUrlIdQuery = { __typename?: 'Query', getMessageByUrlId?: { __typename?: 'Message', id: number, urlId: string, content?: string | null, deliveredAt: Date, seenAt?: Date | null, fileContents?: Array<{ __typename?: 'MessageFile', id: number, name: string, url: string } | null> | null, sender: { __typename?: 'User', id: number, username: string, firstName: string, lastName: string, displayName: string, userProfile: { __typename?: 'UserProfile', userProfileAvatarImage?: { __typename?: 'UserProfileAvatarImage', url: string } | null } }, chat?: { __typename?: 'ChatResponse', id: number, urlId: string } | null } | null };
 
 export type GetMessagesForChatIdSubscriptionVariables = Exact<{
   chatId: Scalars['Long']['input'];
@@ -5415,6 +5428,80 @@ useInfiniteGetChatWithUserIdQuery.getKey = (variables: GetChatWithUserIdQueryVar
 
 
 useGetChatWithUserIdQuery.fetcher = (client: GraphQLClient, variables: GetChatWithUserIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetChatWithUserIdQuery, GetChatWithUserIdQueryVariables>(client, GetChatWithUserIdDocument, variables, headers);
+
+export const GetMessageByUrlIdDocument = `
+    query GetMessageByUrlId($urlId: String!) {
+  getMessageByUrlId(urlId: $urlId) {
+    id
+    urlId
+    content
+    fileContents {
+      id
+      name
+      url
+    }
+    sender {
+      id
+      username
+      firstName
+      lastName
+      displayName
+      userProfile {
+        userProfileAvatarImage {
+          url
+        }
+      }
+    }
+    deliveredAt
+    seenAt
+    chat {
+      id
+      urlId
+    }
+  }
+}
+    `;
+
+export const useGetMessageByUrlIdQuery = <
+      TData = GetMessageByUrlIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetMessageByUrlIdQueryVariables,
+      options?: UseQueryOptions<GetMessageByUrlIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<GetMessageByUrlIdQuery, TError, TData>(
+      ['GetMessageByUrlId', variables],
+      fetcher<GetMessageByUrlIdQuery, GetMessageByUrlIdQueryVariables>(client, GetMessageByUrlIdDocument, variables, headers),
+      options
+    )};
+
+useGetMessageByUrlIdQuery.document = GetMessageByUrlIdDocument;
+
+useGetMessageByUrlIdQuery.getKey = (variables: GetMessageByUrlIdQueryVariables) => ['GetMessageByUrlId', variables];
+
+export const useInfiniteGetMessageByUrlIdQuery = <
+      TData = GetMessageByUrlIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetMessageByUrlIdQueryVariables,
+      options?: UseInfiniteQueryOptions<GetMessageByUrlIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<GetMessageByUrlIdQuery, TError, TData>(
+      ['GetMessageByUrlId.infinite', variables],
+      (metaData) => fetcher<GetMessageByUrlIdQuery, GetMessageByUrlIdQueryVariables>(client, GetMessageByUrlIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      options
+    )};
+
+useInfiniteGetMessageByUrlIdQuery.getKey = (variables: GetMessageByUrlIdQueryVariables) => ['GetMessageByUrlId.infinite', variables];
+
+
+useGetMessageByUrlIdQuery.fetcher = (client: GraphQLClient, variables: GetMessageByUrlIdQueryVariables, headers?: RequestInit['headers']) => fetcher<GetMessageByUrlIdQuery, GetMessageByUrlIdQueryVariables>(client, GetMessageByUrlIdDocument, variables, headers);
 
 export const GetMessagesForChatIdDocument = `
     subscription GetMessagesForChatId($chatId: Long!, $auth: String!) {

@@ -21,4 +21,9 @@ public class MessageQueryResolver {
     public PaginatedResponse<Message> getMessagesPaginated(@InputArgument SearchRequest searchQuery) {
         return this.messageService.getMessagesPaginated(searchQuery);
     }
+
+    @DgsQuery
+    public Message getMessageByUrlId(String urlId) {
+        return this.messageService.getMessageByUrlId(urlId);
+    }
 }

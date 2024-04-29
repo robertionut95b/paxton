@@ -980,6 +980,7 @@ type Query {
     getNewConnectionForUser(userId: Long!, page: Int, size: Int): ConnectionPage
     getConnectionsForUser(userId: Long!, page: Int, size: Int, searchQuery: String, sortBy: SortsInput): UserConnectionPage
     getAllUserConnectionSuggestions(page: Int, size: Int): UserPage
+    getMessageByUrlId(urlId: String!): Message
 }
 
 type Mutation {

@@ -18,4 +18,9 @@ public class MessageService extends AbstractService<Message> {
     public PaginatedResponse<Message> getMessagesPaginated(SearchRequest searchQuery) {
         return super.advSearch(searchQuery);
     }
+
+    @PostAuthorize("@messageSecurityService.isMessageChatMember(authentication, returnObject)")
+    public Message getMessageByUrlId(String urlId) {
+        return super.findByUrlId(urlId);
+    }
 }

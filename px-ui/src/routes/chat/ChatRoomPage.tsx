@@ -60,6 +60,7 @@ import {
   Navigate,
   Outlet,
   useLocation,
+  useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
@@ -74,6 +75,7 @@ const ChatRoomPage = () => {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState<string>(searchParams.get("m") ?? "");
   const [debouncedSearch] = useDebounceValue<string>(search, 1000);
+  const navigate = useNavigate();
 
   const chatPageSearchQuery = {
     filters: [
@@ -147,8 +149,8 @@ const ChatRoomPage = () => {
     data: chatData,
     isInitialLoading,
     error,
-    isError,
-    refetch,
+    isError: isChatError,
+    refetch: refetchChat,
   } = useGetPrivateChatByUrlIdQuery(
     graphqlRequestClient,
     {
@@ -183,6 +185,8 @@ const ChatRoomPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch: refetchMessages,
+    isError: isMessagesError,
   } = useInfiniteGetMessagesPaginatedQuery(
     graphqlRequestClient,
     {
@@ -201,7 +205,7 @@ const ChatRoomPage = () => {
             },
           };
       },
-      enabled: !(isInitialLoading || isError),
+      enabled: !(isInitialLoading || isChatError),
       refetchOnMount: true,
       onSuccess: (data) => {
         if (!data) return;
@@ -320,7 +324,7 @@ const ChatRoomPage = () => {
     },
   });
 
-  const { error: isSubError } = useSubscription<
+  useSubscription<
     GetMessagesForChatIdSubscription,
     GetMessagesForChatIdSubscriptionVariables
   >(
@@ -402,8 +406,21 @@ const ChatRoomPage = () => {
           });
         }
       },
-      skip: isInitialLoading || isError,
+      skip: isInitialLoading || isChatError,
       shouldResubscribe: true,
+      onError: (err) => {
+        if (err.graphQLErrors?.[0].message.includes("null")) {
+          // hacky way to solve null error
+          // TODO: find a way to solve backend null error on URL path
+          return navigate(0);
+        }
+        showNotification({
+          title: "Chat service error",
+          message: "Error when connecting to chat service",
+          autoClose: 5000,
+          icon: <ShieldExclamationIcon width={20} />,
+        });
+      },
     },
   );
 
@@ -450,7 +467,7 @@ const ChatRoomPage = () => {
   if (isInitialLoading) return <ChatRoomSkeleton />;
 
   if (
-    isError &&
+    isChatError &&
     error?.response.errors?.[0].message
       ?.toLocaleLowerCase()
       .includes("access denied")
@@ -458,7 +475,7 @@ const ChatRoomPage = () => {
     return <Navigate to="/app/inbox/messages" />;
   }
 
-  if (!chatData || isSubError)
+  if (!chatData || isChatError || isMessagesError)
     return (
       <Center h={"100%"}>
         <Stack align="center">
@@ -468,7 +485,13 @@ const ChatRoomPage = () => {
           <Text align="center" size="sm">
             Could not load this conversation, please try again later.
           </Text>
-          <ActionIcon color="violet" onClick={() => refetch()}>
+          <ActionIcon
+            color="violet"
+            onClick={() => {
+              if (isChatError) refetchChat();
+              if (isMessagesError) refetchMessages();
+            }}
+          >
             <ArrowUturnLeftIcon width={24} title="Retry" />
           </ActionIcon>
           <Button variant="light" title="Back to conversations">

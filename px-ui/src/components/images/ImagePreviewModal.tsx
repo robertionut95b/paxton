@@ -1,5 +1,5 @@
 import { Carousel, CarouselProps } from "@mantine/carousel";
-import { Box, Image, Modal, ModalProps } from "@mantine/core";
+import { Box, Modal, ModalProps } from "@mantine/core";
 
 type ImagePreviewModalProps = {
   images?: Array<{ url: string; name: string }>;
@@ -34,7 +34,11 @@ const ImagePreviewModal = ({
         >
           {images.map((i) => (
             <Carousel.Slide key={i.name}>
-              <Image src={i.url} alt={i.name} />
+              <img
+                src={i.url}
+                alt={i.name}
+                style={{ objectFit: "contain", width: "100%", height: "100%" }}
+              />
             </Carousel.Slide>
           ))}
         </Carousel>

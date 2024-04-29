@@ -969,3 +969,34 @@ query GetChatWithUserId($userId: Long!) {
     }
   }
 }
+
+query GetMessageByUrlId($urlId: String!) {
+  getMessageByUrlId(urlId: $urlId) {
+    id
+    urlId
+    content
+    fileContents {
+      id
+      name
+      url
+    }
+    sender {
+      id
+      username
+      firstName
+      lastName
+      displayName
+      userProfile {
+        userProfileAvatarImage {
+          url
+        }
+      }
+    }
+    deliveredAt
+    seenAt
+    chat {
+      id
+      urlId
+    }
+  }
+}

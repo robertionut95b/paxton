@@ -1,9 +1,9 @@
 package com.irb.paxton.core.model;
 
 import com.irb.paxton.core.search.SearchRequest;
+import com.irb.paxton.core.search.SearchSpecification;
 import io.hypersistence.utils.spring.repository.BaseJpaRepository;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -28,7 +28,7 @@ public interface AbstractRepository<T extends PaxtonEntity> extends BaseJpaRepos
     @NotNull
     @Deprecated(since = "0.0.0")
     default List<T> findAll() {
-        return this.findAll(Example.of(null), Pageable.ofSize(10)).toList();
+        return this.findAll(new SearchSpecification<>(new SearchRequest()), Pageable.ofSize(10)).toList();
     }
 
     Optional<T> findByUrlId(String urlId);

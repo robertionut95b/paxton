@@ -70,7 +70,7 @@ export default function OrganizationPage() {
               rolesToShow={
                 isAuthorized([RoleType.ROLE_ADMINISTRATOR])
                   ? [RoleType.ROLE_RECRUITER, RoleType.ROLE_EVERYONE]
-                  : user?.roles ?? []
+                  : (user?.roles ?? [])
               }
             />
           </Suspense>

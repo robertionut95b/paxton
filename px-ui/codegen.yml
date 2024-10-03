@@ -25,6 +25,7 @@ generates:
       exposeMutationKeys: true
       exposeFetcher: true
       strictScalars: true
+      skipTypename: true
       scalars:
         Date: Date
         DateTime: Date

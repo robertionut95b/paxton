@@ -52,6 +52,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { useSpinDelay } from "spin-delay";
 import { useDebounceValue } from "usehooks-ts";
 
 const ChatPage = () => {
@@ -158,7 +159,7 @@ const ChatPage = () => {
             prevData
               ? produce(prevData, (draft) => {
                   const currentChatPage = draft.pages.filter((p) =>
-                    p.getChatAdvSearch?.list?.filter(
+                    p?.getChatAdvSearch?.list?.filter(
                       (cl) => cl?.id === chatUpdate.id,
                     ),
                   )[0];
@@ -172,10 +173,7 @@ const ChatPage = () => {
                     currentChatLine.unreadMessagesCount += 1;
                   } else {
                     if (!currentChatPage.getChatAdvSearch) return;
-                    currentChatPage.getChatAdvSearch?.list?.push(
-                      // @ts-expect-error("types-check")
-                      chatUpdate,
-                    );
+                    currentChatPage.getChatAdvSearch?.list?.push(chatUpdate);
                     currentChatPage.getChatAdvSearch.totalElements += 1;
                   }
                 })
@@ -219,6 +217,11 @@ const ChatPage = () => {
     }
   }, [search, searchParams, setSearchParams]);
 
+  const chatLoading = useSpinDelay(isLoading, {
+    delay: 700,
+    minDuration: 500,
+  });
+
   return (
     <Grid justify={"center"}>
       <Grid.Col span={10} md={9}>
@@ -259,7 +262,7 @@ const ChatPage = () => {
                 })}
                 scrollbarSize={6}
               >
-                <If condition={!isLoading}>
+                <If condition={!chatLoading}>
                   <Then>
                     <If condition={chatLines.length > 0 && !isError}>
                       <Then>
@@ -356,7 +359,7 @@ const ChatPage = () => {
                 borderTop: "0px",
               })}
             >
-              <If condition={isLoading}>
+              <If condition={chatLoading}>
                 <Then>
                   <ChatRoomSkeleton />
                 </Then>

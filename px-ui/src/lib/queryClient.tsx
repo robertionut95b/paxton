@@ -20,7 +20,9 @@ export const queryClient = new QueryClient({
       onError: (err) => {
         if ((err as GraphqlApiResponse).response.errors) {
           const error = err as GraphqlApiResponse;
-          if (error.response.errors?.[0].message.includes("does not exist")) {
+          if (
+            error.response.errors?.[0].extensions.classification === "NOT_FOUND"
+          ) {
             showNotification({
               title: "Data fetching error",
               message: "No data could be found",
@@ -30,9 +32,8 @@ export const queryClient = new QueryClient({
             return;
           }
           if (
-            error.response.errors?.[0].message
-              .toLowerCase()
-              .includes("access is denied")
+            error.response.errors?.[0].extensions.classification ===
+            "UNAUTHORIZED"
           ) {
             showNotification({
               title: "Unauthorized access",
@@ -56,9 +57,8 @@ export const queryClient = new QueryClient({
         if ((err as GraphqlApiResponse).response.errors) {
           const error = err as GraphqlApiResponse;
           if (
-            error.response.errors?.[0].message
-              .toLowerCase()
-              .includes("access is denied")
+            error.response.errors?.[0].extensions.classification ===
+            "UNAUTHORIZED"
           ) {
             showNotification({
               title: "Unauthorized access",

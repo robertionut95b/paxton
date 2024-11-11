@@ -2,7 +2,6 @@
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import { default as js } from "@eslint/js";
-import * as graphqlEslint from "@graphql-eslint/eslint-plugin";
 import * as tanstackQuery from "@tanstack/eslint-plugin-query";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -71,23 +70,5 @@ export default [{
         }],
 
         "react-compiler/react-compiler": "error",
-    },
-}, {
-    files: ["**/*.graphql"],
-
-    plugins: { "@graphql-eslint": fixupPluginRules(graphqlEslint) },
-
-    languageOptions: {
-        parser: { ...graphqlEslint, meta: { name: "@graphql-eslint" } },
-        ecmaVersion: 5,
-        sourceType: "script",
-
-        parserOptions: {
-            schema: "../src/main/resources/schema/schema.graphqls",
-        },
-    },
-
-    rules: {
-        "@graphql-eslint/known-type-names": "error",
     },
 }];

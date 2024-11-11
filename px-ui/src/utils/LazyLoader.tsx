@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 
-export interface LazyLoaderProps {
+interface LazyLoaderProps {
   delay?: number;
   children: ReactNode;
 }

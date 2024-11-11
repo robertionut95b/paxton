@@ -7,13 +7,22 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
+const ReactCompilerConfig = {
+  target: "18",
+  runtimeModule: "@/mycache",
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]],
+      },
+    }),
     tsconfigPaths(),
     eslint({
-      fix: true,
+      cache: true,
     }),
     ckeditor5({ theme: require.resolve("@ckeditor/ckeditor5-theme-lark") }),
   ],

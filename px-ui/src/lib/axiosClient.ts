@@ -1,11 +1,11 @@
-import { refreshLogin } from "@auth/authApi";
+import { APP_API_BASE_URL } from "@config/Properties";
+import { refreshLogin } from "@features/auth/api/authApi";
 import {
   resetAuthStateOnErr,
   setAuthenticationByAccessToken,
   setUserByToken,
-} from "@auth/authUtils";
-import { APP_API_BASE_URL } from "@constants/Properties";
-import { ApiAuthCodes, FullAPiResponse } from "@interfaces/api.resp.types";
+} from "@features/auth/utils/authUtils";
+import { ApiAuthCodes, FullAPiResponse } from "@interfaces/api";
 import axios, {
   AxiosError,
   AxiosHeaders,

@@ -29,11 +29,12 @@ generates:
       scalars:
         Date: Date
         DateTime: Date
-        Url: String
+        Url: string
         Long: number
         Upload: Promise<GraphQLFileUpload>
       scalarSchemas:
         Date: z.date()
+        DateTime: z.date()
         Email: z.string().email()
         Url: z.string().url()
         Long: z.number()

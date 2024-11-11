@@ -24,8 +24,8 @@ export const useDownloadFile = ({
   getFileName,
 }: DownloadFileProps): DownloadedFileInfo => {
   const ref = useRef<HTMLAnchorElement | null>(null);
-  const [url, setFileUrl] = useState<string>();
-  const [name, setFileName] = useState<string>();
+  const [url, setUrl] = useState<string>();
+  const [name, setName] = useState<string>();
 
   const download = async () => {
     if (!ref.current) {
@@ -36,13 +36,14 @@ export const useDownloadFile = ({
       preDownloading?.();
       const { data } = await apiDefinition();
       const url = URL.createObjectURL(new Blob([data]));
-      setFileUrl(url);
-      setFileName(getFileName());
+      setUrl(url);
+      setName(getFileName());
       ref.current.href = url;
       ref.current.download = getFileName();
       ref.current?.click();
       postDownloading?.();
       URL.revokeObjectURL(url);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       onError?.();
     }

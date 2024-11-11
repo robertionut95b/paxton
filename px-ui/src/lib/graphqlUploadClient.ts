@@ -4,8 +4,8 @@ import {
   InMemoryCache,
   concat,
 } from "@apollo/client";
-import { authStore } from "@auth/authStore";
-import { APP_GQL_ENDPOINT } from "@constants/Properties";
+import { APP_GQL_ENDPOINT } from "@config/Properties";
+import { authStore } from "@features/auth/stores/authStore";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
 const authMiddleware = new ApolloLink((operation, forward) => {

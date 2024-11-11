@@ -967,6 +967,7 @@ query GetChatWithUserId($userId: Long!) {
     latestMessage {
       content
     }
+    urlId
   }
 }
 

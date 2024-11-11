@@ -9,7 +9,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { APP_GQL_ENDPOINT, APP_GQL_WS_ENDPOINT } from "@constants/Properties";
+import { APP_GQL_ENDPOINT, APP_GQL_WS_ENDPOINT } from "@config/Properties";
 import { createClient } from "graphql-ws";
 
 const webSocketLink = new GraphQLWsLink(

@@ -18,21 +18,23 @@
     "types": ["node", "vite/client"],
     "baseUrl": "src",
     "paths": {
-      "@routes/*": ["routes/*"],
-      "@auth/*": ["auth/*"],
-      "@validator/*": ["validator/*"],
+      "@app/*": ["app/*"],
+      "@assets/*": ["assets/*"],
+      "@components/*": ["components/*"],
+      "@config/*": ["config/*"],
+      "@features/*": ["features/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@gql/*": ["gql/*"],
       "@hooks/*": ["hooks/*"],
       "@lib/*": ["lib/*"],
-      "@interfaces/*": ["interfaces/*"],
-      "@providers/*": ["providers/*"],
-      "@components/*": ["components/*"],
-      "@constants/*": ["constants/*"],
-      "@gql/*": ["gql/*"],
+      "@routes/*": ["routes/*"],
+      "@types/*": ["types/*"],
+      "@test/*": ["test/*"],
+      "@validator/*": ["validator/*"],
       "@utils/*": ["utils/*"],
-      "@styles/*": ["styles/*"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }],
-  "exclude": ["node_modules", "public", "src/gql/generated.ts"]
+  "exclude": ["node_modules", "public", "src/gql/generated.ts", "vite.config.ts"]
 }

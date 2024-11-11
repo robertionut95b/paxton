@@ -35,7 +35,7 @@ export type Scalars = {
   DateTime: { input: Date; output: Date; }
   Long: { input: number; output: number; }
   Upload: { input: Promise<GraphQLFileUpload>; output: Promise<GraphQLFileUpload>; }
-  Url: { input: String; output: String; }
+  Url: { input: string; output: string; }
 };
 
 export type ActivitySector = BaseEntity & {
@@ -1606,7 +1606,7 @@ export type GetCountriesCitiesQuery = { getCountriesCities?: Array<{ code: strin
 export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrganizationsQuery = { getAllOrganizations?: Array<{ id: number, name: string, slugName: string, description: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, photography?: string | null, webSite?: String | null, headQuarters: { id: number, name: string, country: { code: string, name: string } }, activitySector: { id: number, name: string }, recruitmentProcess: { id: number }, locations?: Array<{ id: number, name: string, country: { code: string, name: string } } | null> | null } | null> | null };
+export type GetAllOrganizationsQuery = { getAllOrganizations?: Array<{ id: number, name: string, slugName: string, description: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, photography?: string | null, webSite?: string | null, headQuarters: { id: number, name: string, country: { code: string, name: string } }, activitySector: { id: number, name: string }, recruitmentProcess: { id: number }, locations?: Array<{ id: number, name: string, country: { code: string, name: string } } | null> | null } | null> | null };
 
 export type GetAllActivitySectorsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1650,7 +1650,7 @@ export type GetOrganizationBySlugNameQueryVariables = Exact<{
 }>;
 
 
-export type GetOrganizationBySlugNameQuery = { getOrganizationBySlugName?: { id: number, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: String | null, specializations?: Array<Specialization | null> | null, headQuarters: { id: number, name: string, country: { code: string, name: string } }, activitySector: { id: number, name: string }, recruitmentProcess: { id: number }, locations?: Array<{ id: number, name: string, longitude?: number | null, latitude?: number | null, country: { code: string, name: string } } | null> | null, recruiters?: Array<{ id: number, user: { firstName: string, lastName: string, userProfile: { profileTitle: string, userProfileAvatarImage?: { url: string } | null } } } | null> | null } | null };
+export type GetOrganizationBySlugNameQuery = { getOrganizationBySlugName?: { id: number, name: string, slugName: string, companySize: OrganizationSize, foundedAt: Date, slogan: string, description: string, photography?: string | null, webSite?: string | null, specializations?: Array<Specialization | null> | null, headQuarters: { id: number, name: string, country: { code: string, name: string } }, activitySector: { id: number, name: string }, recruitmentProcess: { id: number }, locations?: Array<{ id: number, name: string, longitude?: number | null, latitude?: number | null, country: { code: string, name: string } } | null> | null, recruiters?: Array<{ id: number, user: { firstName: string, lastName: string, userProfile: { profileTitle: string, userProfileAvatarImage?: { url: string } | null } } } | null> | null } | null };
 
 export type GetRelatedJobListingsQueryVariables = Exact<{
   jobName: Scalars['String']['input'];
@@ -1822,7 +1822,7 @@ export type GetChatWithUserIdQueryVariables = Exact<{
 }>;
 
 
-export type GetChatWithUserIdQuery = { getChatWithUserId?: { id: number, title?: string | null, unreadMessagesCount: number, latestMessage?: { content?: string | null } | null } | null };
+export type GetChatWithUserIdQuery = { getChatWithUserId?: { id: number, title?: string | null, unreadMessagesCount: number, urlId: string, latestMessage?: { content?: string | null } | null } | null };
 
 export type GetMessageByUrlIdQueryVariables = Exact<{
   urlId: Scalars['String']['input'];
@@ -5334,6 +5334,7 @@ export const GetChatWithUserIdDocument = `
     latestMessage {
       content
     }
+    urlId
   }
 }
     `;
@@ -5559,7 +5560,7 @@ export const WorkTypeSchema = z.nativeEnum(WorkType);
 export function ApplicationInputSchema(): z.ZodObject<Properties<ApplicationInput>> {
   return z.object({
     applicantProfileId: z.number(),
-    dateOfApplication: definedNonNullAnySchema.nullish(),
+    dateOfApplication: z.date().nullish(),
     id: z.number().nullish(),
     jobListingId: z.number(),
     processSteps: z.array(z.lazy(() => ApplicationProcessStepsInputSchema().nullable())).nullish(),
@@ -5573,7 +5574,7 @@ export function ApplicationProcessStepsInputSchema(): z.ZodObject<Properties<App
     applicationId: z.number(),
     id: z.number().nullish(),
     processStepId: z.number(),
-    registeredAt: definedNonNullAnySchema.nullish()
+    registeredAt: z.date().nullish()
   })
 }
 
@@ -5768,7 +5769,7 @@ export function RecruiterInputSchema(): z.ZodObject<Properties<RecruiterInput>> 
   return z.object({
     id: z.number(),
     isActive: z.boolean().nullish(),
-    lastActive: definedNonNullAnySchema.nullish(),
+    lastActive: z.date().nullish(),
     organizationId: z.number().nullish()
   })
 }

@@ -2,7 +2,7 @@ import {
   ExclamationTriangleIcon,
   ShieldExclamationIcon,
 } from "@heroicons/react/24/outline";
-import { GraphqlApiResponse } from "@interfaces/api.resp.types";
+import { GraphqlApiResponse } from "@interfaces/api";
 import { showNotification } from "@mantine/notifications";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 

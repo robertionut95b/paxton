@@ -1,7 +1,7 @@
-import { refreshLogin } from "@auth/authApi";
-import { authStore } from "@auth/authStore";
-import { resetAuthStateOnErr } from "@auth/authUtils";
-import { APP_GQL_ENDPOINT } from "@constants/Properties";
+import { APP_GQL_ENDPOINT } from "@config/Properties";
+import { refreshLogin } from "@features/auth/api/authApi";
+import { authStore } from "@features/auth/stores/authStore";
+import { resetAuthStateOnErr } from "@features/auth/utils/authUtils";
 import { GraphQLClient, ResponseMiddleware } from "graphql-request";
 
 const responseMiddleware: ResponseMiddleware = async (response) => {
@@ -13,6 +13,7 @@ const responseMiddleware: ResponseMiddleware = async (response) => {
     // trigger refresh login
     try {
       await refreshLogin();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       resetAuthStateOnErr();
     }

@@ -1,18 +1,18 @@
 import { Routes } from "@app/routes";
-import { useAuth } from "@features/auth/hooks/useAuth";
+import { useAuth, withAuthenticationRequired } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ProtectedRoutes = () => {
-  const { user, loading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (loading) return null;
+  if (isLoading) return null;
 
-  return user ? (
+  return isAuthenticated ? (
     <Outlet />
   ) : (
     <Navigate to={Routes.Login.path} state={{ from: location }} replace />
   );
 };
 
-export default ProtectedRoutes;
+export default withAuthenticationRequired(ProtectedRoutes);

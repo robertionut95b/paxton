@@ -1,5 +1,7 @@
 package com.irb.paxton.core.process;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.candidate.ApplicationProcessSteps;
 import com.irb.paxton.core.model.PaxtonEntity;
 import jakarta.persistence.*;
@@ -20,10 +22,12 @@ import java.util.Objects;
 @Setter
 public class ProcessSteps extends PaxtonEntity implements Comparable<ProcessSteps> {
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "process_id")
     private Process process;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "step_id")
     private Step step;
@@ -35,6 +39,7 @@ public class ProcessSteps extends PaxtonEntity implements Comparable<ProcessStep
     @Column(nullable = false, name = "step_order")
     private int order = 1;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "processStep", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Collection<ApplicationProcessSteps> applications;
 

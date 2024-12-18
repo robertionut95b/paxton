@@ -641,16 +641,6 @@ input ProcessStepsInputCreate {
     order: Int!
 }
 
-type Privilege implements BaseEntity {
-    id: Long!
-    name: String
-    urlId: String!
-    createdAt: DateTime!
-    modifiedAt: DateTime!
-    createdBy: String!
-    modifiedBy: String!
-}
-
 enum Status {
     ACTIVE,
     REMOVED,
@@ -791,17 +781,6 @@ type RecruiterPage {
     totalElements: Int!
 }
 
-type Role implements BaseEntity {
-    id: Long!
-    name: String!
-    privileges: [Privilege]
-    urlId: String!
-    createdAt: DateTime!
-    modifiedAt: DateTime!
-    createdBy: String!
-    modifiedBy: String!
-}
-
 type User implements BaseEntity {
     id: Long!
     urlId: String!
@@ -811,7 +790,6 @@ type User implements BaseEntity {
     birthDate: Date
     email: String!
     username: String!
-    roles: [Role]
     isEmailConfirmed: Boolean!
     userProfile: UserProfile!
     createdAt: DateTime!
@@ -938,7 +916,6 @@ input SearchQueryInput {
 
 type Query {
     healthCheck: String
-    getCurrentUser: User
     getAllJobCategories: [JobCategory]
     getAllUsers: [User]
     getAllUsersPaged(searchQuery: SearchQueryInput): UserPage
@@ -954,7 +931,6 @@ type Query {
     getAllSteps: [Step]
     getStepsByProcess(processId: Int!): [Step]
     getAllActivitySectors: [ActivitySector]
-    getCurrentUserProfile: UserProfile
     getUserProfile(profileSlugUrl: String): UserProfile
     getCountriesCities: [Country]
     getAllInstitutions: [Institution]

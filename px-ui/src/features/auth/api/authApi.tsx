@@ -1,46 +1,11 @@
 import { APP_API_PATH } from "@config/Properties";
 import {
-  LoginUserByTokenMutationProps,
-  LoginUserMutationProps,
-  LoginUserMutationResponseP,
-  ResetPasswordProps,
   ResetPasswordRequestProps,
   SignupUserMutationProps,
 } from "@features/auth/types/auth";
 
 import { api } from "@lib/axiosClient";
-import { AxiosResponse } from "axios";
 const AUTH_PATH = "auth";
-
-export const logoutUser = async (): Promise<void> => {
-  const { data } = await api.post(`${APP_API_PATH}/users/logout`, null);
-  return data;
-};
-
-export const submitLogin = async (
-  body: LoginUserMutationProps,
-): Promise<LoginUserMutationResponseP> => {
-  const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login`, {
-    ...body,
-  });
-  return data;
-};
-
-export const submitLoginByToken = async (
-  body: LoginUserByTokenMutationProps,
-): Promise<LoginUserMutationResponseP> => {
-  const { data } = await api.post(`${APP_API_PATH}/${AUTH_PATH}/login/token`, {
-    ...body,
-  });
-  return data;
-};
-
-export const refreshLogin = async (): Promise<
-  AxiosResponse<LoginUserMutationResponseP>
-> => {
-  const resp = await api.post(`${APP_API_PATH}/${AUTH_PATH}/refreshtoken`);
-  return resp;
-};
 
 export const signupUser = async (
   body: SignupUserMutationProps,
@@ -63,15 +28,6 @@ export const forgotPassword = async (
 ): Promise<void> => {
   const { data } = await api.post(
     `${APP_API_PATH}/${AUTH_PATH}/forgot-password/request`,
-    body,
-  );
-  return data;
-};
-
-export const resetPassword = async (bodyData: ResetPasswordProps) => {
-  const { token, body } = bodyData;
-  const { data } = await api.post(
-    `${APP_API_PATH}/${AUTH_PATH}/forgot-password?token=` + token,
     body,
   );
   return data;

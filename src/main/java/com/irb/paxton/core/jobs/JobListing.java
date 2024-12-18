@@ -1,5 +1,7 @@
 package com.irb.paxton.core.jobs;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.candidate.Application;
 import com.irb.paxton.core.jobs.category.JobCategory;
 import com.irb.paxton.core.jobs.contract.ContractType;
@@ -65,6 +67,7 @@ public class JobListing extends PaxtonEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "city_id")
+    @JsonBackReference
     private City city;
 
     @Positive
@@ -75,6 +78,7 @@ public class JobListing extends PaxtonEntity {
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "job_id", nullable = false)
+    @JsonBackReference
     private Job job;
 
     @Enumerated(EnumType.STRING)
@@ -85,16 +89,20 @@ public class JobListing extends PaxtonEntity {
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "organization_id", nullable = false)
+    @JsonBackReference
     private Organization organization;
 
+    @JsonBackReference
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private JobCategory category;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "jobListing")
     private Collection<Application> applications;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;

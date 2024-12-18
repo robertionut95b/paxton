@@ -1,13 +1,3 @@
-query GetCurrentUser {
-  getCurrentUser {
-    id
-    urlId
-    firstName
-    lastName
-    username
-  }
-}
-
 query GetAllJobListings($searchQuery: SearchQueryInput) {
   getAllJobListings(searchQuery: $searchQuery) {
     list {

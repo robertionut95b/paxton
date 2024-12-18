@@ -1,8 +1,8 @@
 package com.irb.paxton.config;
 
 import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 import java.io.IOException;
 
 @Configuration
-@ConditionalOnExpression("!'${px.app.ui.frontendUrl}'.equals('http://localhost:3000')")
+@Profile("!default & !dev")
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override

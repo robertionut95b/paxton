@@ -1,6 +1,6 @@
 import { ApolloProvider } from "@apollo/client";
 import { IS_ENV_PROD } from "@config/Properties";
-import AuthProvider from "@features/auth/providers/AuthProvider";
+import AppAuthProvider from "@features/auth/providers/AppAuthProvider";
 import apolloGqlClient from "@lib/graphqlWsClient";
 import { queryClient } from "@lib/queryClient";
 import {
@@ -44,46 +44,46 @@ export default function AppProviders({
   };
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          colorScheme,
-          fontFamily: "Inter, sans-serif",
-          primaryColor: "violet",
-          headings: {
+    <AppAuthProvider>
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
+      >
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            colorScheme,
             fontFamily: "Inter, sans-serif",
-          },
-          components: {
-            Container: {
-              defaultProps: {
-                size: "lg",
+            primaryColor: "violet",
+            headings: {
+              fontFamily: "Inter, sans-serif",
+            },
+            components: {
+              Container: {
+                defaultProps: {
+                  size: "lg",
+                },
               },
             },
-          },
-        }}
-        emotionCache={createEmotionCache({
-          key: "mantine",
-          prepend: false,
-        })}
-      >
-        <NotificationsProvider>
-          <QueryClientProvider client={queryClient}>
-            <ApolloProvider client={apolloGqlClient}>
-              <AuthProvider>
+          }}
+          emotionCache={createEmotionCache({
+            key: "mantine",
+            prepend: false,
+          })}
+        >
+          <NotificationsProvider>
+            <QueryClientProvider client={queryClient}>
+              <ApolloProvider client={apolloGqlClient}>
                 <ModalsProvider>
                   <Provider>{children}</Provider>
                 </ModalsProvider>
-              </AuthProvider>
-              {!IS_ENV_PROD && <ReactQueryDevtools initialIsOpen={false} />}
-            </ApolloProvider>
-          </QueryClientProvider>
-        </NotificationsProvider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+                {!IS_ENV_PROD && <ReactQueryDevtools initialIsOpen={false} />}
+              </ApolloProvider>
+            </QueryClientProvider>
+          </NotificationsProvider>
+        </MantineProvider>
+      </ColorSchemeProvider>
+    </AppAuthProvider>
   );
 }

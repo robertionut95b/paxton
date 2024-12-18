@@ -1,10 +1,13 @@
 import { Routes } from "@app/routes";
+import { loader } from "@components/layout/AppLayout";
 import BlocksLoadingSkeleton from "@components/ui/spinners/BlocksLoadingSkeleton";
 import DefaultLayoutSkeleton from "@components/ui/spinners/DefaultLayoutSkeleton";
 import IsAllowed from "@features/auth/components/IsAllowed";
 import NonProtectedRoutes from "@features/auth/components/NonProtectedRoutes";
 import ProtectedRoutes from "@features/auth/components/ProtectedRoutes";
 import Roles from "@features/auth/types/roles";
+import { loaderAuthGuard } from "@features/auth/utils/authUtils";
+import { queryClient } from "@lib/queryClient";
 import { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
@@ -100,16 +103,12 @@ const OrganizationRecruiterJobsPage = lazy(
 const OrganizationModalPage = lazy(
   () => import("@features/organizations/components/OrganizationModal"),
 );
-const LoginPage = lazy(() => import("@app/routes/auth/LoginPage"));
 const SignupPage = lazy(() => import("@app/routes/auth/SignUpPage"));
 const SignupConfirmationPage = lazy(
   () => import("@app/routes/auth/SignupConfirmPage"),
 );
 const ForgotPasswordPage = lazy(
   () => import("@app/routes/auth/ForgotPasswordPage"),
-);
-const ForgotPasswordResetPage = lazy(
-  () => import("@app/routes/auth/ForgotPasswordResetPage"),
 );
 const AdminPage = lazy(() => import("@app/routes/admin/AdminPage"));
 const AdminJobsPage = lazy(() => import("@app/routes/admin/AdminJobsPage"));
@@ -147,6 +146,7 @@ const browserRouter = createBrowserRouter([
       {
         errorElement: <ErrorPage />,
         element: <AppLayout />,
+        loader: loaderAuthGuard(loader(queryClient)),
         children: [
           {
             path: Routes.Feed.path,
@@ -441,20 +441,12 @@ const browserRouter = createBrowserRouter([
     element: <NonProtectedRoutes />,
     children: [
       {
-        path: Routes.Login.path,
-        element: <LoginPage />,
-      },
-      {
         path: Routes.SignUp.path,
         element: <SignupPage />,
       },
       {
         path: Routes.ForgotPassRequest.path,
         element: <ForgotPasswordPage />,
-      },
-      {
-        path: Routes.ForgotPassReset.path,
-        element: <ForgotPasswordResetPage />,
       },
       {
         path: Routes.SignupConfirmation.path,

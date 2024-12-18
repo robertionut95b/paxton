@@ -20,13 +20,11 @@ import java.net.URLConnection;
 import java.util.Locale;
 import java.util.Optional;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
-
 @RestController
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(path = "api/" + API_VERSION + "/users")
+@RequestMapping(path = "api/v1/users")
 public class UserProfileAvatarImageController {
 
     private final UserProfileAvatarImageService userProfileAvatarImageService;

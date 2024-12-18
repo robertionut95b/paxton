@@ -1,5 +1,6 @@
 package com.irb.paxton.core.location;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.irb.paxton.core.model.PaxtonEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +34,7 @@ public class City extends PaxtonEntity {
 
     @ManyToOne
     @JoinColumn(name = "country_code")
+    @JsonBackReference
     private Country country;
 
     private Double longitude;

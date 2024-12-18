@@ -1,12 +1,3 @@
-export interface LoginUserMutationProps {
-  username: string;
-  password: string;
-}
-
-export interface LoginUserByTokenMutationProps {
-  token: string;
-}
-
 export interface LoginUserMutationResponseP {
   access_token: string;
   expires_in: number;
@@ -15,24 +6,14 @@ export interface LoginUserMutationResponseP {
 }
 
 export interface AccessTokenDecode {
-  iss: string;
-  iat: number;
-  exp: number;
-  sub: string;
-  nbf: number;
-  aud: string;
-  jti: string;
-  authorities: string;
-  roles: string;
   userId: number;
-  firstName: string;
-  lastName: string;
-  profileId: number;
-  profileSlugUrl: string;
-  email: string;
-  isEmailConfirmed: boolean;
-  isActive: boolean;
-  isAdmin: boolean;
+  exp: number;
+  resource_access: {
+    "px-ui": {
+      roles: string[];
+    };
+  };
+  user_profile: string;
 }
 
 export interface ResetPasswordRequestProps {

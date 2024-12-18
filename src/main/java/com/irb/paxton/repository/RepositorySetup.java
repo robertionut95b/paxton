@@ -1,6 +1,7 @@
 package com.irb.paxton.repository;
 
 import com.irb.paxton.core.model.PaxtonEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,9 +19,11 @@ public class RepositorySetup extends PaxtonEntity {
     @NotNull
     private boolean isActive;
 
+    @Column(nullable = false, length = 1000)
     @NotNull
-    private boolean isOwned;
+    private String details;
 
-    @NotNull
-    private boolean isCompleted;
+    @Column(name = "version", nullable = false, unique = true, length = 20)
+    private String appVersion;
+
 }

@@ -1,5 +1,5 @@
 import { APP_API_BASE_URL } from "@config/Properties";
-import { refreshLogin } from "@features/auth/api/authApi";
+import { userManager } from "@features/auth/providers/AppAuthProvider";
 import {
   resetAuthStateOnErr,
   setAuthenticationByAccessToken,
@@ -51,9 +51,9 @@ api.interceptors.response.use(
     ) {
       originalReq._retry = true;
       try {
-        const resp = await refreshLogin();
+        const resp = await userManager.signinSilent();
         if (resp) {
-          access_token = resp.data.access_token;
+          access_token = resp.access_token;
           setAuthenticationByAccessToken(access_token);
           setUserByToken(access_token);
         }

@@ -1,5 +1,6 @@
 package com.irb.paxton.core.process;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.irb.paxton.core.model.PaxtonEntity;
 import com.irb.paxton.core.organization.Organization;
 import jakarta.persistence.CascadeType;
@@ -35,9 +36,11 @@ public class Process extends PaxtonEntity {
     @Length(min = 10)
     private String description;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "process", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Collection<ProcessSteps> processSteps;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "recruitmentProcess", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Collection<Organization> organizations;
 }

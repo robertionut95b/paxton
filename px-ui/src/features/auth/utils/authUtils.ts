@@ -1,3 +1,4 @@
+import { Routes } from "@app/routes";
 import {
   authStore,
   authStoreErrorState,
@@ -8,21 +9,25 @@ import type { User } from "@interfaces/user";
 import { api } from "@lib/axiosClient";
 import graphqlRequestClient from "@lib/graphqlRequestClient";
 import jwtDecode from "jwt-decode";
+import { OidcStandardClaims, User as OidcUser } from "oidc-client-ts";
+import { LoaderFunction, LoaderFunctionArgs, redirect } from "react-router-dom";
+import { userManager } from "../providers/AppAuthProvider";
 
-const userDecodeToUser = (userDecode: AccessTokenDecode): User => {
+const userDecodeToUser = (
+  decodedJwt: OidcStandardClaims & AccessTokenDecode,
+): User => {
   return {
-    userId: userDecode.userId,
-    firstName: userDecode.firstName,
-    lastName: userDecode.lastName,
-    permissions: userDecode.authorities.split(","),
-    roles: userDecode.roles
-      .split(",")
+    // @ts-expect-error("types")
+    userId: decodedJwt.sub ?? "",
+    firstName: decodedJwt.given_name ?? "Unknown",
+    lastName: decodedJwt.family_name ?? "Unknown",
+    roles: decodedJwt.resource_access["px-ui"].roles
+      .map((r) => r)
       .map((r) => Roles[r as keyof typeof Roles]),
-    profileSlugUrl: userDecode.profileSlugUrl,
-    sessionTime: userDecode.exp,
-    username: userDecode.sub,
-    profileId: userDecode.profileId,
-    isEmailConfirmed: userDecode.isEmailConfirmed,
+    profileSlugUrl: decodedJwt.user_profile,
+    sessionTime: decodedJwt.exp,
+    username: decodedJwt.preferred_username ?? "unknown",
+    isEmailConfirmed: decodedJwt.email_verified ?? false,
   };
 };
 
@@ -30,7 +35,6 @@ export const setAuthenticationByAccessToken = (accessToken: string) => {
   const bearer = `Bearer ${accessToken}`;
   api.defaults.headers.Authorization = bearer;
   graphqlRequestClient.setHeader("Authorization", bearer);
-  authStore.getState().setAccessToken(accessToken);
 };
 
 export const setUserByToken = (accessToken: string) => {
@@ -39,10 +43,31 @@ export const setUserByToken = (accessToken: string) => {
   // set user instance
   const userMeta = userDecodeToUser(decodedAccessToken);
   authStore.getState().setUser(userMeta);
-  const expiry = decodedAccessToken.exp * 1000 - new Date().getTime() - 1000;
-  authStore.getState().setTokenExpiry(expiry);
-  authStore.getState().setIsRefreshing(false);
+  authStore.getState().setUserLoading(false);
 };
 
 export const resetAuthStateOnErr = () =>
   authStore.setState(() => authStoreErrorState);
+
+export const getUserFromStorage = () => {
+  const oidcStorage = sessionStorage.getItem(
+    `oidc.user:${import.meta.env.VITE_AUTHORITY}:${import.meta.env.VITE_CLIENT_ID}`,
+  );
+  if (!oidcStorage) {
+    return null;
+  }
+
+  return OidcUser.fromStorageString(oidcStorage);
+};
+
+export const loaderAuthGuard =
+  <T extends LoaderFunction>(load?: T): LoaderFunction<T> =>
+  async (args: LoaderFunctionArgs) => {
+    const user = getUserFromStorage();
+    if (user?.access_token) {
+      return load ? await load(args, user) : null;
+    } else {
+      const auth = await userManager.signinSilent();
+      if (!auth?.access_token) throw redirect(Routes.Login.path);
+    }
+  };

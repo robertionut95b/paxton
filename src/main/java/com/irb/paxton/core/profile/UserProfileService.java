@@ -13,10 +13,15 @@ import com.irb.paxton.core.study.Study;
 import com.irb.paxton.core.study.StudyRepository;
 import com.irb.paxton.core.study.exception.StudyNotFoundException;
 import com.irb.paxton.core.study.input.StudyInput;
+import com.irb.paxton.security.SecurityUtils;
+import com.irb.paxton.security.auth.KeycloakProviderService;
+import com.irb.paxton.security.auth.jwt.JwtSecurityUserMapper;
 import com.irb.paxton.security.auth.user.User;
 import com.irb.paxton.security.auth.user.UserService;
 import jakarta.transaction.Transactional;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -35,20 +40,46 @@ public class UserProfileService extends AbstractService<UserProfile> {
 
     private final StudyRepository studyRepository;
 
-    protected UserProfileService(AbstractRepository<UserProfile> repository, UserProfileRepository userProfileRepository, UserService userService, UserProfileMapper userProfileMapper, ExperienceRepository experienceRepository, StudyRepository studyRepository) {
+    private final KeycloakProviderService keycloakProviderService;
+
+    protected UserProfileService(AbstractRepository<UserProfile> repository,
+                                 UserProfileRepository userProfileRepository,
+                                 UserService userService,
+                                 UserProfileMapper userProfileMapper,
+                                 ExperienceRepository experienceRepository,
+                                 StudyRepository studyRepository,
+                                 KeycloakProviderService keycloakProviderService) {
         super(repository);
         this.userProfileRepository = userProfileRepository;
         this.userService = userService;
         this.userProfileMapper = userProfileMapper;
         this.experienceRepository = experienceRepository;
         this.studyRepository = studyRepository;
+        this.keycloakProviderService = keycloakProviderService;
     }
 
-    public Optional<UserProfile> getCurrentUserProfileByUsername(String username) {
-        return this.userProfileRepository.findByUserUsername(username);
-    }
-
+    @Transactional
     public Optional<UserProfile> findBySlugUrl(String profileSlugUrl) {
+        // first, get the Jwt user from Spring security
+        JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityUtils.getCurrentUserAuth();
+        User user = JwtSecurityUserMapper.fromJwtToUser(authentication.getToken());
+        if (authentication.getToken().getClaimAsString("user_profile") == null) {
+            // search the user/profile in the database
+            Optional<User> userOptional = userService.findByUsername(user.getUsername());
+            if (userOptional.isEmpty()) {
+                UserProfile userProfile = new UserProfile();
+                userProfile.setProfileTitle("No title given");
+                // as it does not exist, create the user and user profile entity
+                User userEntity = userService.create(user);
+                userProfile.setUser(userEntity);
+                UserProfile userProfileEntity = this.create(userProfile);
+                // finally, notify keycloak on update
+                UserRepresentation userRepresentation = keycloakProviderService.getUser(user.getUsername()).get();
+                keycloakProviderService.setUserProfile(userRepresentation, userProfileEntity.getProfileSlugUrl());
+                keycloakProviderService.updateUser(userRepresentation);
+                return Optional.of(userProfileEntity);
+            }
+        }
         return this.userProfileRepository.findByProfileSlugUrl(profileSlugUrl);
     }
 
@@ -62,7 +93,7 @@ public class UserProfileService extends AbstractService<UserProfile> {
         if (!userProfileInput.getLastName().equals(user.getLastName())
                 || !userProfileInput.getFirstName().equals(user.getFirstName())) {
             userProfileMapper.updateUserFields(user, userProfileInput);
-            this.userService.updateUser(user);
+            this.userService.update(user);
         }
         return this.userProfileRepository.update(userProfileMapper.updateUserProfile(userProfile, userProfileInput));
     }

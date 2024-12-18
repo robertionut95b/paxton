@@ -10,10 +10,8 @@ import com.irb.paxton.core.organization.input.RecruiterInput;
 import com.irb.paxton.core.organization.mapper.RecruiterMapper;
 import com.irb.paxton.core.search.PaginatedResponse;
 import com.irb.paxton.core.search.SearchRequest;
+import com.irb.paxton.security.auth.KeycloakProviderService;
 import com.irb.paxton.security.auth.role.PaxtonRole;
-import com.irb.paxton.security.auth.role.Role;
-import com.irb.paxton.security.auth.role.RoleRepository;
-import com.irb.paxton.security.auth.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -33,17 +31,18 @@ public class RecruiterService extends AbstractService<Recruiter> {
 
     private final OrganizationRepository organizationRepository;
 
-    private final UserService userService;
+    private final KeycloakProviderService keycloakProviderService;
 
-    private final RoleRepository roleRepository;
-
-    protected RecruiterService(AbstractRepository<Recruiter> repository, RecruiterRepository recruiterRepository, RecruiterMapper recruiterMapper, OrganizationRepository organizationRepository, UserService userService, RoleRepository roleRepository) {
+    protected RecruiterService(AbstractRepository<Recruiter> repository,
+                               RecruiterRepository recruiterRepository,
+                               RecruiterMapper recruiterMapper,
+                               OrganizationRepository organizationRepository,
+                               KeycloakProviderService keycloakProviderService) {
         super(repository);
         this.recruiterRepository = recruiterRepository;
         this.recruiterMapper = recruiterMapper;
         this.organizationRepository = organizationRepository;
-        this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.keycloakProviderService = keycloakProviderService;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
@@ -62,9 +61,6 @@ public class RecruiterService extends AbstractService<Recruiter> {
                 .map(ri -> organization.getRecruiterById(ri.getId()).orElse(recruiterMapper.toEntity(ri, organizationId)))
                 .toList();
 
-        Role recruiterRole = roleRepository
-                .findByName(PaxtonRole.ROLE_RECRUITER.toString());
-
         for (Recruiter newRecruit : newRecruits) {
             // check if user is already assigned in an organization
             if (recruiterRepository.existsByUser_IdAndOrganization_IdNot(newRecruit.getUser().getId(), organizationId)) {
@@ -72,12 +68,10 @@ public class RecruiterService extends AbstractService<Recruiter> {
                         .formatted(newRecruit.getUser().getDisplayName()));
             }
             // check if the user also has the Recruiter role
-            boolean usrInRole = userService
-                    .checkUserIsInRole(newRecruit.getUser().getUsername(), PaxtonRole.ROLE_RECRUITER.toString());
+            boolean usrInRole = keycloakProviderService.checkUserByUsernameHasRole(newRecruit.getUser().getUsername(),
+                    PaxtonRole.ROLE_RECRUITER.toString());
             if (!usrInRole) {
-                Collection<Role> userRoles = newRecruit.getUser().getRoles();
-                userRoles.add(recruiterRole);
-                newRecruit.getUser().setRoles(userRoles);
+                this.keycloakProviderService.addRoleToUserByUsername(newRecruit.getUser().getUsername(), PaxtonRole.ROLE_RECRUITER.toString());
             }
         }
         // check against the current list of users employed in organization
@@ -95,7 +89,7 @@ public class RecruiterService extends AbstractService<Recruiter> {
                 }
                 // remove user from RECRUITER_ROLE as it no longer needs it
                 log.info("Removing user \"%s\" from RECRUITER_ROLE as it no longer needs it".formatted(dr.getUser().getDisplayName()));
-                dr.getUser().removeRole(recruiterRole);
+                this.keycloakProviderService.removeRoleFromUserByUsername(dr.getUser().getUsername(), PaxtonRole.ROLE_RECRUITER.toString());
             });
         }
         organization.setRecruitersList(newRecruits);

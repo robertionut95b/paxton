@@ -22,13 +22,11 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
-
 @RestController
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(path = "api/" + API_VERSION + "/chats")
+@RequestMapping(path = "api/v1/chats")
 public class ChatController {
 
     private final ChatService chatService;

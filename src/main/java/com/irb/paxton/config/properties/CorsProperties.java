@@ -12,6 +12,6 @@ import java.util.List;
 @Getter
 public class CorsProperties {
 
-    @Value("#{'${px.security.cors.allowedOrigins:http://localhost:3000,https://localhost:3000}'.split(',')}")
+    @Value("#{'${allowedOrigins:http://localhost:3000}'.split(',')}")
     private List<String> allowedOrigins;
 }

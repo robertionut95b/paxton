@@ -16,59 +16,71 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
 });
 
-export default [{
+export default [
+  {
     ignores: ["src/gql/generated.ts"],
-}, ...fixupConfigRules(compat.extends(
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended",
-    "plugin:@tanstack/eslint-plugin-query/recommended",
-)), {
+  },
+  ...fixupConfigRules(
+    compat.extends(
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:prettier/recommended",
+      "plugin:@tanstack/eslint-plugin-query/recommended",
+    ),
+  ),
+  {
     plugins: {
-        react: fixupPluginRules(react),
-        "@typescript-eslint": fixupPluginRules(typescriptEslint),
-        "react-hooks": fixupPluginRules(reactHooks),
-        prettier: fixupPluginRules(prettier),
-        "@tanstack/eslint-plugin-query": fixupPluginRules(tanstackQuery),
-        "react-compiler": reactCompiler,
+      react: fixupPluginRules(react),
+      "@typescript-eslint": fixupPluginRules(typescriptEslint),
+      "react-hooks": fixupPluginRules(reactHooks),
+      prettier: fixupPluginRules(prettier),
+      "@tanstack/eslint-plugin-query": fixupPluginRules(tanstackQuery),
+      "react-compiler": reactCompiler,
     },
 
     languageOptions: {
-        globals: {
-            ...globals.browser,
-        },
+      globals: {
+        ...globals.browser,
+      },
 
-        parser: tsParser,
-        ecmaVersion: "latest",
-        sourceType: "module",
+      parser: tsParser,
+      ecmaVersion: "latest",
+      sourceType: "module",
     },
 
     settings: {
-        react: {
-            version: "detect",
-        },
+      react: {
+        version: "detect",
+      },
     },
 
     rules: {
-        "react/react-in-jsx-scope": "off",
+      "react/react-in-jsx-scope": "off",
 
-        "react/jsx-filename-extension": [1, {
-            extensions: [".js", ".jsx", ".ts", ".tsx"],
-        }],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+        },
+      ],
 
-        "react/prop-types": "off",
+      "react/prop-types": "off",
 
-        "@typescript-eslint/no-unused-vars": ["error", {
-            ignoreRestSiblings: true,
-        }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          ignoreRestSiblings: true,
+        },
+      ],
 
-        "react-compiler/react-compiler": "error",
+      "react-compiler/react-compiler": "error",
     },
-}];
+  },
+];

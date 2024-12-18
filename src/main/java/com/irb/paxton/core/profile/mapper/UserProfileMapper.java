@@ -97,13 +97,10 @@ public abstract class UserProfileMapper {
 
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
-    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "emailConfirmed", ignore = true)
     @Mapping(target = "email", ignore = true)
-    @Mapping(target = "credentials", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "birthDate", ignore = true)

@@ -11,9 +11,17 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class AuthenticationProperties {
 
-    private String headerName = "Authorization";
+    private String keycloakUrl = "http://localhost:8081";
 
-    private String headerPrefix = "Bearer ";
+    private String keycloakRealm = "Paxton";
 
-    private String oauth2RedirectUri = "http://localhost:3000/oauth2/redirect";
+    private String keycloakClientId = "px-ui";
+
+    private String keycloakAdminUser = "px_admin";
+
+    private String keycloakMasterClientId = "admin-cli";
+
+    private String keycloakMasterRealm = "master";
+
+    private String keycloakAdminPassword;
 }

@@ -73,12 +73,14 @@ public class Organization extends PaxtonEntity {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Recruiter> recruiters;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "process_id")
     private Process recruitmentProcess;
 
     private java.net.URL webSite;
 
+    @JsonBackReference
     @NotNull
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "activity_sector_id", nullable = false)
@@ -108,6 +110,7 @@ public class Organization extends PaxtonEntity {
     @Column(nullable = false)
     private Collection<Specialization> specializations;
 
+    @JsonManagedReference
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "affiliate_organization_id")
     private Collection<Organization> affiliates;

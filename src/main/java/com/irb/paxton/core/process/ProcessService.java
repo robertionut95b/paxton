@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.DEFAULT_PROCESS_NAME;
-
 @Service
 public class ProcessService extends AbstractService<Process> {
 
@@ -38,6 +36,8 @@ public class ProcessService extends AbstractService<Process> {
     private final ApplicationRepository applicationRepository;
 
     private final ApplicationProcessStepsRepository applicationProcessStepsRepository;
+
+    public static final String DEFAULT_PROCESS_NAME = "Default recruitment process";
 
     protected ProcessService(AbstractRepository<Process> repository, ProcessRepository processRepository, ProcessMapper processMapper, OrganizationRepository organizationRepository, ApplicationRepository applicationRepository, ApplicationProcessStepsRepository applicationProcessStepsRepository) {
         super(repository);

@@ -62,7 +62,7 @@ public class UserProfile extends PaxtonEntity {
 
     @NotBlank
     @NotEmpty
-    private String profileTitle;
+    private String profileTitle = "No title given";
 
     @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
     @OrderBy(value = "startDate DESC")

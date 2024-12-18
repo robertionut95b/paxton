@@ -5,23 +5,14 @@ import { createStore } from "zustand/vanilla";
 
 type AuthStore = {
   user: User | null;
-  userLoading: boolean;
   setUser: (userData: User | null) => void;
+  userLoading: boolean;
   setUserLoading: (newLoading: boolean) => void;
-  accessToken: string | null;
-  setAccessToken: (newAccessToken: string | null) => void;
-  tokenExpiry: number | null;
-  setTokenExpiry: (newTokenExpiry: number | null) => void;
-  isRefreshing: boolean;
-  setIsRefreshing: (newIsRefreshing: boolean) => void;
 };
 
 export const authStoreErrorState: Partial<AuthStore> = {
-  isRefreshing: false,
   user: null,
   userLoading: false,
-  accessToken: null,
-  tokenExpiry: null,
 };
 
 export const authStore = createStore<AuthStore>((set) => ({
@@ -29,15 +20,6 @@ export const authStore = createStore<AuthStore>((set) => ({
   userLoading: true,
   setUser: (userData: User | null) => set(() => ({ user: userData })),
   setUserLoading: (newLoading: boolean) => set({ userLoading: newLoading }),
-  accessToken: null,
-  setAccessToken: (newAccessToken: string | null) =>
-    set({ accessToken: newAccessToken }),
-  tokenExpiry: null,
-  setTokenExpiry: (newTokenExpiry: number | null) =>
-    set({ tokenExpiry: newTokenExpiry }),
-  isRefreshing: false,
-  setIsRefreshing: (newIsRefreshing: boolean) =>
-    set({ isRefreshing: newIsRefreshing }),
 }));
 
 const createBoundedUseStore = ((store) => (selector, equals) =>

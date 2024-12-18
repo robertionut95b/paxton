@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service(value = "paxtonSecurityService")
 public class PaxtonSecurityService {
     /**
@@ -24,7 +26,8 @@ public class PaxtonSecurityService {
     }
 
     public boolean isOwner(Authentication authentication, String userName) {
-        return authentication.getName().equals(userName);
+        Optional<String> userOpt = SecurityUtils.getCurrentUserLogin();
+        return userOpt.map(s -> s.equals(userName)).orElseGet(() -> authentication.getName().equals(userName));
     }
 
     public boolean isJobApplicationRecruiter(Authentication authentication, Application application) {

@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLConnection;
 import java.util.Optional;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
-
 @RestController
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RequestMapping(path = "api/" + API_VERSION + "/chats")
+@RequestMapping(path = "api/v1/chats")
 public class MessageController {
 
     private final MessageFileService messageFileService;

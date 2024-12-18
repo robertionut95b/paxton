@@ -18,11 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
-import static com.irb.paxton.config.properties.ApplicationProperties.API_VERSION;
-
 @Slf4j
 @RestController
-@RequestMapping(path = "api/" + API_VERSION + "/applications")
+@RequestMapping(path = "api/v1/applications")
 @RequiredArgsConstructor
 public class ApplicationDocumentController {
 

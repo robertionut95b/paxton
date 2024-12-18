@@ -21,7 +21,7 @@ public abstract class PaxtonEntity extends AuditableEntity implements Identifiab
     private static final long serialVersionUID = 524547079635449585L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     protected Long id;
 
@@ -29,7 +29,7 @@ public abstract class PaxtonEntity extends AuditableEntity implements Identifiab
     @Tsid
     @NotNull
     @Column(nullable = false, unique = true, length = 13)
-    protected String urlId = TSID.Factory.getTsid().toString();
+    protected String urlId = TSID.Factory.getTsid().toLowerCase();
 
     @Override
     public String getUrlId() {
